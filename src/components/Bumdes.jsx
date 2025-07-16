@@ -17,7 +17,7 @@ export default function Bumdes() {
   const [produk, setProduk] = useState(allProduk);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const productsPerPage = 6; // ✅ 2 row x 3 kolom
+  const productsPerPage = 6; //  2 row x 3 kolom
   const indexOfLast = currentPage * productsPerPage;
   const indexOfFirst = indexOfLast - productsPerPage;
   const currentProduk = produk.slice(indexOfFirst, indexOfLast);
@@ -34,10 +34,10 @@ export default function Bumdes() {
   return (
     <div className="font-poppins bg-gray-50 min-h-screen">
       
-      {/* ✅ Judul Atas langsung dalam kontainer hijau */}
+      {/* Judul Atas langsung dalam kontainer hijau */}
       <div className="bg-[#B6F500] py-12">
         <div className="max-w-6xl mx-auto px-6">
-          {/* ✅ Judul & Deskripsi jadi warna item */}
+          {/* Judul & Deskripsi jadi warna item */}
           <h1 className="text-4xl font-bold text-black text-left">
             Badan Usaha Milik Desa (BUMDes)
           </h1>
@@ -48,7 +48,7 @@ export default function Bumdes() {
         </div>
       </div>
 
-      {/* ✅ Grid Produk */}
+      {/* Grid Produk */}
       <div className="max-w-6xl mx-auto px-4 py-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {currentProduk.map((item) => (
@@ -66,7 +66,7 @@ export default function Bumdes() {
               <div className="p-4 flex flex-col flex-grow">
                 <h3 className="font-semibold text-lg text-gray-800">{item.nama}</h3>
 
-                {/* ✅ Rating Interaktif */}
+                {/* Rating Interaktif */}
                 <div className="flex items-center gap-1 mt-2">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <FaStar
@@ -103,7 +103,7 @@ export default function Bumdes() {
           ))}
         </div>
 
-        {/* ✅ Pagination Interaktif */}
+      
         <div className="flex justify-center gap-2 mt-10">
           {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
             <button
@@ -121,10 +121,9 @@ export default function Bumdes() {
         </div>
       </div>
 
-      {/* ✅ Judul Bawah juga langsung di kontainer hijau */}
       <div className="bg-[#B6F500] py-8 mt-12">
         <div className="max-w-6xl mx-auto px-6 text-left">
-          {/* ✅ Judul & deskripsi bawah jadi hitam */}
+    
           <h2 className="text-3xl font-bold text-black">
             LUMBUNG DESA
           </h2>

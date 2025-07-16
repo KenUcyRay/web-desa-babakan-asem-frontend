@@ -131,7 +131,7 @@ export default function KarangTaruna() {
             ))}
           </div>
 
-          {/* Pagination dummy */}
+          {/* dummy */}
           <div className="flex justify-center gap-2 mt-6">
             <button className="px-3 py-1 border rounded">1</button>
             <button className="px-3 py-1 border rounded bg-[#B6F500]">

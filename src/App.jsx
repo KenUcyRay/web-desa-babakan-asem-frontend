@@ -3,7 +3,7 @@ import TopNavbar from "./components/TopNavbar";
 import NavbarTop from "./components/NavbarTop";
 import Footer from "./components/Footer";
 
-// ✅ Halaman umum
+// hal umum
 import Home from "./components/Home";
 import Administrasi from "./components/Administrasi";
 import Agenda from "./components/Agenda";
@@ -24,7 +24,7 @@ import ForgotPassword from "./components/ForgotPassword";
 import ResetPassword from "./components/ResetPassword";
 import Wait from "./components/Wait";
 
-// ✅ Halaman Infografis (Nested)
+// halaman infografis
 import InfografisLayout from "./components/Infografis/InfografisLayout";
 import Penduduk from "./components/Infografis/Penduduk";
 import IDM from "./components/Infografis/IDM";
@@ -34,7 +34,7 @@ import SDGs from "./components/Infografis/SDGs";
 export default function App() {
   return (
     <Router>
-      {/* Navbar paling atas */}
+
       <TopNavbar />
 
       {/* Supaya NavbarTop nggak ketiban */}
@@ -42,7 +42,7 @@ export default function App() {
         <NavbarTop />
 
         <Routes>
-          {/* ✅ Route Halaman Utama */}
+          {/*  Route Halaman Utama */}
           <Route path="/" element={<Home />} />
           <Route path="/administrasi" element={<Administrasi />} />
           <Route path="/agenda" element={<Agenda />} />
@@ -51,7 +51,7 @@ export default function App() {
           <Route path="/panduan" element={<Panduan />} />
           <Route path="/galeri" element={<Galery />} />
 
-          {/* ✅ Route Halaman Tambahan */}
+          {/* Route Halaman Tambahan */}
           <Route path="/bumdes" element={<Bumdes />} />
           <Route path="/karang-taruna" element={<KarangTaruna />} />
           <Route path="/pkk" element={<Pkk />} />
@@ -65,7 +65,7 @@ export default function App() {
           <Route path="/wait" element={<Wait />} />
           <Route path="/reset-password" element={<ResetPassword />} />
 
-          {/* ✅ Nested route untuk Infografis */}
+          {/* Nested route untuk Infografis */}
           <Route path="/infografis" element={<InfografisLayout />}>
             {/* Default ke Penduduk kalau langsung /infografis */}
             <Route index element={<Penduduk />} />
@@ -75,11 +75,8 @@ export default function App() {
             <Route path="sdgs" element={<SDGs />} />
           </Route>
 
-          {/* ✅ Optional Fallback 404 */}
-          {/* <Route path="*" element={<NotFound />} /> */}
         </Routes>
 
-        {/* Footer selalu muncul di bawah */}
         <Footer />
       </div>
     </Router>

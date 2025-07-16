@@ -7,7 +7,6 @@ export default function NavbarTop() {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  // aktif jika anaknya aktif
   const isTentangActive = ["/profil", "/pemerintahan", "/potensi"].includes(location.pathname);
   const isInformasiActive = ["/administrasi", "/agenda", "/berita"].includes(location.pathname);
 
@@ -15,26 +14,25 @@ export default function NavbarTop() {
   const normalClass = "hover:text-[#B6F500] transition";
 
   return (
-    <div className="w-full sticky top-0 bg-white shadow z-50 font-poppins">
-      <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
+    <div className="w-full sticky top-0 bg-white dark:bg-black shadow z-50 font-poppins">
+      <div className="w-full flex items-center justify-between px-6 lg:px-12 py-4">
         
         {/* ✅ Logo klik ke home */}
-        <Link to="/" className="flex items-center gap-4">
-          <img src={logo} alt="Logo Desa" className="h-14 w-auto" />
-          <div className="hidden sm:block font-bold text-gray-800 text-lg">
-            Desa Babakan Asem <br />
-            <span className="text-sm font-normal text-gray-500">
+        <Link to="/" className="flex items-center gap-3">
+          <img src={logo} alt="Logo Desa" className="h-12 w-auto" />
+          <div className="text-gray-800 dark:text-white text-base sm:text-lg font-bold leading-tight">
+            Desa Babakan Asem 
+            <div className="text-xs font-normal text-gray-500 dark:text-gray-300">
               Kabupaten Sumedang
-            </span>
+            </div>
           </div>
         </Link>
 
         {/* ✅ MENU DESKTOP */}
-        <div className="hidden md:flex items-center gap-6 text-gray-700 font-medium relative">
-          
+        <div className="hidden md:flex items-center gap-6 text-gray-700 dark:text-gray-200 font-medium">
           <NavLink to="/" end className={({ isActive }) => isActive ? activeClass : normalClass}>Beranda</NavLink>
 
-          {/* Dropdown Tentang (hover di desktop) */}
+          {/* Dropdown Tentang */}
           <div className="relative group">
             <span className={`cursor-pointer flex items-center gap-1 ${isTentangActive ? activeClass : "hover:text-[#B6F500]"}`}>
               Tentang ▾
@@ -62,7 +60,6 @@ export default function NavbarTop() {
 
           <NavLink to="/kontak" className={({ isActive }) => isActive ? activeClass : normalClass}>Kontak Kami</NavLink>
 
-          {/* Tombol Masuk */}
           <NavLink to="/login" className="bg-gradient-to-r from-green-400 to-[#B6F500] text-white px-4 py-2 rounded hover:opacity-90 transition">
             Masuk
           </NavLink>
@@ -71,20 +68,20 @@ export default function NavbarTop() {
         {/* ✅ HAMBURGER BUTTON (mobile) */}
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="md:hidden text-2xl text-gray-800"
+          className="md:hidden text-2xl text-gray-800 dark:text-white"
         >
           {mobileOpen ? <FiX /> : <FiMenu />}
         </button>
       </div>
 
-      {/* ✅ MENU MOBILE (slide down) */}
+      {/* ✅ MENU MOBILE */}
       {mobileOpen && (
-        <div className="md:hidden flex flex-col gap-4 px-6 py-4 bg-gradient-to-b from-white to-[#f7f7f7] text-gray-800">
+        <div className="md:hidden flex flex-col gap-4 px-6 py-4 bg-gradient-to-b from-white to-[#f7f7f7] dark:from-black dark:to-gray-900 text-gray-800 dark:text-gray-200">
           <NavLink to="/" end onClick={() => setMobileOpen(false)} className="hover:text-[#B6F500]">Beranda</NavLink>
 
-          {/* Tentang (klik toggle) */}
+          {/* Tentang */}
           <details className="group">
-            <summary className={`cursor-pointer ${isTentangActive ? "text-[#B6F500] font-semibold" : ""}`}>Tentang</summary>
+            <summary className={`${isTentangActive ? "text-[#B6F500]" : ""}`}>Tentang</summary>
             <div className="pl-4 mt-2 flex flex-col gap-2">
               <NavLink to="/profil" onClick={() => setMobileOpen(false)} className="hover:underline">Profil Desa</NavLink>
               <NavLink to="/pemerintahan" onClick={() => setMobileOpen(false)} className="hover:underline">Pemerintahan</NavLink>
@@ -96,7 +93,7 @@ export default function NavbarTop() {
 
           {/* Informasi */}
           <details className="group">
-            <summary className={`cursor-pointer ${isInformasiActive ? "text-[#B6F500] font-semibold" : ""}`}>Informasi</summary>
+            <summary className={`${isInformasiActive ? "text-[#B6F500]" : ""}`}>Informasi</summary>
             <div className="pl-4 mt-2 flex flex-col gap-2">
               <NavLink to="/administrasi" onClick={() => setMobileOpen(false)} className="hover:underline">Administrasi</NavLink>
               <NavLink to="/agenda" onClick={() => setMobileOpen(false)} className="hover:underline">Agenda</NavLink>
