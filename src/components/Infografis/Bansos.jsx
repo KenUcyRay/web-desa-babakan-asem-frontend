@@ -1,30 +1,26 @@
 export default function Bansos() {
+  const data = [
+    { nama: "BLT Dana Desa", penerima: 50 },
+    { nama: "Bantuan Pangan", penerima: 70 },
+    { nama: "PKH", penerima: 40 },
+    { nama: "Rastra", penerima: 30 },
+  ];
+
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-poppins text-gray-800">🤝 Bantuan Sosial Desa</h1>
-      <div className="bg-white rounded-xl shadow p-6">
-        <h2 className="text-lg font-semibold text-gray-700 mb-4">Daftar Penerima Bantuan</h2>
-        <table className="w-full border-collapse">
-          <thead>
-            <tr className="bg-gray-100 text-left">
-              <th className="p-3 border">Nama</th>
-              <th className="p-3 border">Jenis Bantuan</th>
-              <th className="p-3 border">Periode</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td className="p-3 border">Siti Aminah</td>
-              <td className="p-3 border">BLT Dana Desa</td>
-              <td className="p-3 border">Januari - Maret 2025</td>
-            </tr>
-            <tr>
-              <td className="p-3 border">Budi Santoso</td>
-              <td className="p-3 border">PKH</td>
-              <td className="p-3 border">Tahap 1 2025</td>
-            </tr>
-          </tbody>
-        </table>
+    <div className="max-w-6xl mx-auto px-6 py-8 font-poppins">
+      <h2 className="text-3xl font-bold text-gray-800">Data Bantuan Sosial</h2>
+      <p className="mt-2 text-gray-600">Daftar bantuan sosial yang diterima warga desa.</p>
+
+      <div className="grid sm:grid-cols-2 md:grid-cols-2 gap-6 mt-8">
+        {data.map((item, idx) => (
+          <div key={idx} className="bg-white p-6 rounded-xl shadow flex justify-between">
+            <div>
+              <p className="font-semibold text-gray-800">{item.nama}</p>
+              <p className="text-gray-500 text-sm">Jumlah Penerima</p>
+            </div>
+            <span className="text-xl font-bold text-[#B6F500]">{item.penerima}</span>
+          </div>
+        ))}
       </div>
     </div>
   );

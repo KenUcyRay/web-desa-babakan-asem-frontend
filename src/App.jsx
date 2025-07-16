@@ -48,11 +48,10 @@ export default function App() {
           <Route path="/panduan" element={<Panduan />} />
           <Route path="/galeri" element={<Galery />} />
 
-          {/* ✅ Pastikan path & component sesuai */}
+          {/* ✅ Route Halaman Tambahan */}
           <Route path="/bumdes" element={<Bumdes />} />
           <Route path="/karang-taruna" element={<KarangTaruna />} />
           <Route path="/pkk" element={<Pkk />} />
-
           <Route path="/potensi" element={<PotensiDesa />} />
           <Route path="/pemerintahan" element={<Pemerintahan />} />
           <Route path="/profil" element={<ProfilDesa />} />
@@ -62,7 +61,7 @@ export default function App() {
 
           {/* ✅ Nested route untuk Infografis */}
           <Route path="/infografis" element={<InfografisLayout />}>
-            {/* Kalau langsung /infografis, default ke Penduduk */}
+            {/* Default ke Penduduk kalau langsung /infografis */}
             <Route index element={<Penduduk />} />
             <Route path="penduduk" element={<Penduduk />} />
             <Route path="idm" element={<IDM />} />
@@ -70,7 +69,7 @@ export default function App() {
             <Route path="sdgs" element={<SDGs />} />
           </Route>
 
-          {/* ✅ Fallback 404 (optional) */}
+          {/* ✅ Optional Fallback 404 */}
           {/* <Route path="*" element={<NotFound />} /> */}
         </Routes>
 

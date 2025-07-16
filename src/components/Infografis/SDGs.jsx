@@ -1,29 +1,38 @@
+import cuate from "../../assets/cuate.png"; // ✅ Fix path
+import { FaLeaf, FaWater, FaLightbulb } from "react-icons/fa";
+
 export default function SDGs() {
+  const data = [
+    { icon: <FaLeaf />, label: "Lingkungan Bersih", value: "80%" },
+    { icon: <FaWater />, label: "Air Bersih", value: "90%" },
+    { icon: <FaLightbulb />, label: "Energi Terbarukan", value: "60%" },
+  ];
+
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-poppins text-gray-800">🌍 SDGs Desa</h1>
-      <div className="bg-white rounded-xl shadow p-6">
-        <p className="text-gray-600 mb-4">
-          Target pembangunan berkelanjutan di Desa Babakan Asem:
-        </p>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="p-4 border rounded-lg">
-            <h3 className="font-semibold text-gray-800">1. Desa Tanpa Kemiskinan</h3>
-            <p className="text-gray-600 text-sm">Mengurangi angka kemiskinan melalui pemberdayaan ekonomi masyarakat.</p>
-          </div>
-          <div className="p-4 border rounded-lg">
-            <h3 className="font-semibold text-gray-800">2. Desa Sehat & Sejahtera</h3>
-            <p className="text-gray-600 text-sm">Peningkatan fasilitas kesehatan & sanitasi yang layak.</p>
-          </div>
-          <div className="p-4 border rounded-lg">
-            <h3 className="font-semibold text-gray-800">3. Desa Peduli Lingkungan</h3>
-            <p className="text-gray-600 text-sm">Konservasi alam dan pengelolaan sampah berbasis warga.</p>
-          </div>
-          <div className="p-4 border rounded-lg">
-            <h3 className="font-semibold text-gray-800">4. Desa Berinovasi</h3>
-            <p className="text-gray-600 text-sm">Pemanfaatan teknologi untuk pelayanan publik.</p>
-          </div>
+    <div className="max-w-6xl mx-auto px-6 py-8 font-poppins">
+      {/* Judul + Gambar */}
+      <div className="grid md:grid-cols-2 gap-6 items-center">
+        <div>
+          <h2 className="text-3xl font-bold text-gray-800">SDGs Desa</h2>
+          <p className="mt-2 text-gray-600">
+            Indikator pembangunan berkelanjutan di Desa Babakan Asem.
+          </p>
         </div>
+        <img src={cuate} alt="SDGs" className="w-full max-w-md mx-auto" />
+      </div>
+
+      {/* Grid Indikator */}
+      <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 mt-8">
+        {data.map((item, idx) => (
+          <div
+            key={idx}
+            className="flex flex-col items-center bg-white p-6 rounded-xl shadow"
+          >
+            <div className="text-3xl text-[#B6F500]">{item.icon}</div>
+            <p className="text-gray-600 mt-2">{item.label}</p>
+            <p className="text-xl font-bold text-gray-800">{item.value}</p>
+          </div>
+        ))}
       </div>
     </div>
   );

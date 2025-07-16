@@ -1,32 +1,62 @@
-// ✅ Penduduk.jsx
+import pana from "../../assets/pana.png";
+import { FaMale, FaFemale, FaChild, FaHome } from "react-icons/fa";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"; // ✅ Tambah Recharts
+
 export default function Penduduk() {
+  const data = [
+    { icon: <FaMale />, label: "Laki-laki", value: 320 },
+    { icon: <FaFemale />, label: "Perempuan", value: 340 },
+    { icon: <FaHome />, label: "Keluarga", value: 120 },
+    { icon: <FaChild />, label: "Anak-anak", value: 210 },
+  ];
+
+  // ✅ Data untuk chart (ambil dari data atas)
+  const chartData = data.map((item) => ({
+    name: item.label,
+    jumlah: item.value,
+  }));
+
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-poppins text-gray-800">📊 Data Penduduk Desa</h1>
-      <div className="bg-white rounded-xl shadow p-6">
-        <h2 className="text-lg font-semibold text-gray-700 mb-4">Jumlah Penduduk Berdasarkan Jenis Kelamin</h2>
-        <table className="w-full border-collapse">
-          <thead>
-            <tr className="bg-gray-100 text-left">
-              <th className="p-3 border">Kategori</th>
-              <th className="p-3 border">Jumlah</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td className="p-3 border">Laki-laki</td>
-              <td className="p-3 border">1.234</td>
-            </tr>
-            <tr>
-              <td className="p-3 border">Perempuan</td>
-              <td className="p-3 border">1.189</td>
-            </tr>
-            <tr className="bg-gray-50 font-bold">
-              <td className="p-3 border">Total</td>
-              <td className="p-3 border">2.423</td>
-            </tr>
-          </tbody>
-        </table>
+    <div className="max-w-6xl mx-auto px-6 py-8 font-poppins">
+      {/* Judul + Gambar */}
+      <div className="grid md:grid-cols-2 gap-6 items-center">
+        <div>
+          <h2 className="text-3xl font-bold text-gray-800">Demografi Penduduk</h2>
+          <p className="mt-2 text-gray-600">
+            Gambaran jumlah penduduk berdasarkan kategori.
+          </p>
+        </div>
+        <img src={pana} alt="Penduduk" className="w-full max-w-md mx-auto" />
+      </div>
+
+      {/* Grid Statistik */}
+      <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-6 mt-8">
+        {data.map((item, idx) => (
+          <div
+            key={idx}
+            className="flex flex-col items-center bg-white p-6 rounded-xl shadow"
+          >
+            <div className="text-3xl text-[#B6F500]">{item.icon}</div>
+            <p className="text-gray-600 mt-2">{item.label}</p>
+            <p className="text-xl font-bold text-gray-800">{item.value}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* ✅ Tambah Statistik Diagram */}
+      <div className="mt-12">
+        <h3 className="text-2xl font-bold text-gray-800 text-center mb-6">
+          Grafik Demografi Penduduk
+        </h3>
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={chartData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip />
+            <Bar dataKey="jumlah" fill="#B6F500" radius={[6, 6, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
       </div>
     </div>
   );
