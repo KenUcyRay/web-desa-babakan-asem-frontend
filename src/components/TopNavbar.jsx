@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { FaFacebookF, FaInstagram, FaYoutube, FaMoon, FaSun } from "react-icons/fa";
 
 export default function TopNavbar() {
@@ -14,20 +15,20 @@ export default function TopNavbar() {
   }, [darkMode]);
 
   return (
-   <div className="w-full sticky top-[32px] bg-white shadow z-40">
+    <div className="w-full sticky top-[32px] bg-white shadow z-40">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-1 text-sm font-medium text-gray-700 dark:text-gray-200">
         
-        {/* Menu kiri */}
+        {/* ✅ Menu kiri pakai Link supaya SPA */}
         <div className="flex gap-4">
-          <a href="#pkk" className="hover:text-[#B6F500] transition">PKK</a>
-          <a href="#bumdes" className="hover:text-[#B6F500] transition">BUMDES</a>
-          <a href="#karang-taruna" className="hover:text-[#B6F500] transition">Karang Taruna</a>
-          <a href="#galeri" className="hover:text-[#B6F500] transition">Galeri</a>
+          <Link to="/pkk" className="hover:text-[#B6F500] transition">PKK</Link>
+          <Link to="/bumdes" className="hover:text-[#B6F500] transition">BUMDES</Link>
+          <Link to="/karang-taruna" className="hover:text-[#B6F500] transition">Karang Taruna</Link>
+          <Link to="/galeri" className="hover:text-[#B6F500] transition">Galeri</Link>
         </div>
 
         {/* Bagian kanan: sosmed + toggle dark mode */}
         <div className="flex items-center gap-4">
-          <a href="#" className="hover:text-[#B6F500] transition"><FaFacebookF /></a>
+          <a href="https://www.facebook.com/PrabowoSubianto/?locale=id_ID" target="_blank" rel="noopener noreferrer" className="hover:text-[#B6F500] transition"><FaFacebookF /></a>
           <a href="#" className="hover:text-[#B6F500] transition"><FaInstagram /></a>
           <a href="#" className="hover:text-[#B6F500] transition"><FaYoutube /></a>
 

@@ -1,15 +1,15 @@
 import { useState } from "react";
 import logo from "../assets/logo.png";
+import { Link } from "react-router-dom";
 
 export default function NavbarTop() {
   const [openTentang, setOpenTentang] = useState(false);
   const [openInformasi, setOpenInformasi] = useState(false);
 
   return (
-    <div className="w-full sticky top-0 bg-white shadow z-40">
+    <div className="w-full sticky top-0 bg-white shadow z-40 font-poppins">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-8 py-4">
-        
-        {/* Logo besar */}
+        {/* Logo */}
         <div className="flex items-center gap-4">
           <img src={logo} alt="Logo Desa" className="h-16 w-auto" />
           <div className="font-bold text-gray-800 text-lg">
@@ -22,14 +22,11 @@ export default function NavbarTop() {
 
         {/* Menu utama */}
         <div className="flex items-center gap-6 text-gray-700 font-medium relative">
-          <a
-            href="#beranda"
-            className="hover:text-[#B6F500] transition"
-          >
+          <Link to="/" className="hover:text-[#B6F500] transition">
             Beranda
-          </a>
+          </Link>
 
-          {/* Dropdown Tentang (klik toggle) */}
+          {/* Dropdown Tentang */}
           <div className="relative">
             <button
               className="hover:text-[#B6F500] transition flex items-center gap-1"
@@ -38,81 +35,80 @@ export default function NavbarTop() {
               Tentang ▾
             </button>
             {openTentang && (
-              <div className="absolute left-0 mt-2 w-48 bg-gradient-to-b from-[#B6F500] to-white border rounded shadow-md">
-                <a
-                  href="#profil"
+              <div className="absolute left-0 mt-2 w-48 bg-gradient-to-b from-[#B6F500] to-white border rounded shadow-md z-50">
+                <Link
+                  to="/profil"
                   className="block px-4 py-2 hover:text-[#B6F500] hover:bg-[#B6F500]/10 transition"
                 >
                   Profil Desa
-                </a>
-                <a
-                  href="#pemerintahan"
+                </Link>
+                <Link
+                  to="/pemerintahan"
                   className="block px-4 py-2 hover:text-[#B6F500] hover:bg-[#B6F500]/10 transition"
                 >
                   Pemerintahan
-                </a>
-                <a
-                  href="#potensi"
+                </Link>
+                <Link
+                  to="/potensi"
                   className="block px-4 py-2 hover:text-[#B6F500] hover:bg-[#B6F500]/10 transition"
                 >
                   Potensi Desa
-                </a>
+                </Link>
               </div>
             )}
           </div>
 
-          <a
-            href="#infografis"
-            className="hover:text-[#B6F500] transition"
-          >
+          {/* ✅ ke /infografis saja, nanti default ke Penduduk */}
+          <Link to="/infografis" className="hover:text-[#B6F500] transition">
             Infografis
-          </a>
+          </Link>
 
-          {/* Dropdown Informasi (klik toggle juga biar sama) */}
+          {/* Dropdown Informasi */}
           <div className="relative">
             <button
               className="hover:text-[#B6F500] transition flex items-center gap-1"
               onClick={() => setOpenInformasi(!openInformasi)}
             >
               Informasi ▾
-            </button> 
+            </button>
             {openInformasi && (
-              <div className="absolute left-0 mt-2 w-48 bg-gradient-to-b from-[#B6F500] to-white border rounded shadow-md">
-                <a
-                  href="#administrasi"
+              <div className="absolute left-0 mt-2 w-48 bg-gradient-to-b from-[#B6F500] to-white border rounded shadow-md z-50">
+                <Link
+                  to="/administrasi"
                   className="block px-4 py-2 hover:text-[#B6F500] hover:bg-[#B6F500]/10 transition"
                 >
                   Administrasi
-                </a>
-                <a
-                  href="#agenda"
+                </Link>
+                <Link
+                  to="/agenda"
                   className="block px-4 py-2 hover:text-[#B6F500] hover:bg-[#B6F500]/10 transition"
                 >
                   Agenda
-                </a>
-                <a
-                  href="#berita"
+                </Link>
+                <Link
+                  to="/berita"
                   className="block px-4 py-2 hover:text-[#B6F500] hover:bg-[#B6F500]/10 transition"
                 >
                   Berita
-                </a>
+                </Link>
               </div>
             )}
           </div>
 
-          <a
-            href="#kontak"
-            className="hover:text-[#B6F500] transition"
-          >
+          <Link to="/kontak" className="hover:text-[#B6F500] transition">
             Kontak Kami
-          </a>
+          </Link>
 
-          {/* Tombol Masuk Gradient */}
-          <button className="bg-gradient-to-r from-green-400 to-[#B6F500] text-white px-4 py-2 rounded hover:opacity-90 transition">
+          {/* Tombol Masuk */}
+          <Link
+            to="/login"
+            className="bg-gradient-to-r from-green-400 to-[#B6F500] text-white px-4 py-2 rounded hover:opacity-90 transition"
+          >
             Masuk
-          </button>
+          </Link>
         </div>
       </div>
     </div>
   );
 }
+  
