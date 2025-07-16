@@ -1,8 +1,17 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import loginImage from "../assets/login.png";
 
 export default function Login() {
+  const navigate = useNavigate();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // nanti bisa tambahin auth logic di sini
+    alert("Login berhasil (simulasi)");
+    navigate("/");
+  };
+
   return (
     <div className="flex min-h-screen font-poppins">
       
@@ -11,15 +20,15 @@ export default function Login() {
         <div className="bg-white/90 backdrop-blur-md shadow-xl rounded-2xl w-full max-w-md p-8">
           
           {/* Judul */}
-        <h2 className="text-3xl text-gray-900 font-normal font-poppins mb-2 text-center">
-  Selamat Datang!
-</h2>
+          <h2 className="text-3xl text-gray-900 font-normal font-poppins mb-2 text-center">
+            Hallo, Senang Melihatmu Kembali!
+          </h2>
           <p className="text-gray-600 text-center mb-6">
             Masuk ke Portal Desa Babakan Asem
           </p>
 
-          {/* Form */}
-          <form className="space-y-4">
+          {/* ✅ Form Login */}
+          <form className="space-y-4" onSubmit={handleSubmit}>
             <div>
               <label className="block text-gray-700 font-medium mb-1">
                 Email
@@ -28,6 +37,7 @@ export default function Login() {
                 type="email"
                 placeholder="Masukkan email"
                 className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-300 outline-none"
+                required
               />
             </div>
 
@@ -39,6 +49,7 @@ export default function Login() {
                 type="password"
                 placeholder="Masukkan password"
                 className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-300 outline-none"
+                required
               />
             </div>
 
@@ -50,11 +61,14 @@ export default function Login() {
               Masuk
             </button>
 
-            {/* Link tambahan */}
+            {/* ✅ Link Forgot Password */}
             <div className="text-center mt-4">
-              <a href="#" className="text-green-700 hover:underline text-sm">
+              <Link
+                to="/forgot-password"
+                className="text-green-700 hover:underline text-sm"
+              >
                 Lupa password?
-              </a>
+              </Link>
             </div>
           </form>
 
@@ -69,7 +83,7 @@ export default function Login() {
           <p className="text-center text-sm text-gray-700 mt-6">
             Belum punya akun?{" "}
             <Link to="/register" className="text-blue-500 hover:underline">
-            Daftar di sini
+              Daftar di sini
             </Link>
           </p>
         </div>

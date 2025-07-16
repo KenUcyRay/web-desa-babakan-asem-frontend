@@ -12,7 +12,7 @@ export default function Register() {
           
           {/* Judul */}
          <h2 className="text-3xl text-gray-900 font-normal font-poppins mb-2 text-center">
-  Daftar Akun Baru
+   Hallo , Selamat Datang!
 </h2>
 
           <p className="text-gray-600 text-center mb-6">

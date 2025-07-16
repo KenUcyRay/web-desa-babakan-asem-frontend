@@ -20,6 +20,9 @@ import KontakKami from "./components/KontakKami";
 import ProfilDesa from "./components/ProfilDesa";
 import Login from "./components/Login";
 import Register from "./components/Register";
+import ForgotPassword from "./components/ForgotPassword";
+import ResetPassword from "./components/ResetPassword";
+import Wait from "./components/Wait";
 
 // ✅ Halaman Infografis (Nested)
 import InfografisLayout from "./components/Infografis/InfografisLayout";
@@ -58,6 +61,9 @@ export default function App() {
           <Route path="/kontak" element={<KontakKami />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/wait" element={<Wait />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
 
           {/* ✅ Nested route untuk Infografis */}
           <Route path="/infografis" element={<InfografisLayout />}>
