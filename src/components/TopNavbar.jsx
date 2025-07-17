@@ -2,8 +2,6 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FaFacebookF, FaInstagram, FaYoutube, FaMoon, FaSun } from "react-icons/fa";
 
-
-
 export default function TopNavbar() {
   const [darkMode, setDarkMode] = useState(false);
 
@@ -25,6 +23,7 @@ export default function TopNavbar() {
           <Link to="/pkk" className="hover:text-[#B6F500] transition">PKK</Link>
           <Link to="/bumdes" className="hover:text-[#B6F500] transition">BUMDES</Link>
           <Link to="/karang-taruna" className="hover:text-[#B6F500] transition">Karang Taruna</Link>
+          <Link to="/dpd" className="hover:text-[#B6F500] transition">DPD</Link> {/* ✅ Link baru */}
           <Link to="/galeri" className="hover:text-[#B6F500] transition">Galeri</Link>
         </div>
 

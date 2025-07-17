@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { HiOutlineMail } from "react-icons/hi";
 import { FaUsers, FaWpforms } from "react-icons/fa";
 import Pagination from "./Pagination";
@@ -28,7 +29,31 @@ export default function KarangTaruna() {
       waktu: "13:00 - 16:00",
       img: "https://picsum.photos/400/250?random=3",
     },
+    {
+      id: 4,
+      title: "Pelatihan UMKM",
+      lokasi: "Aula Kantor Desa",
+      tanggal: "28 Juni 2025",
+      waktu: "09:00 - 12:00",
+      img: "https://picsum.photos/400/250?random=4",
+    },
+    {
+      id: 5,
+      title: "Pentas Seni Pemuda",
+      lokasi: "Lapangan Desa",
+      tanggal: "5 Juli 2025",
+      waktu: "19:00 - 22:00",
+      img: "https://picsum.photos/400/250?random=5",
+    },
   ];
+
+  // ✅ State untuk pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const kegiatanPerPage = 3; // tampil 3 per halaman
+  const indexOfLast = currentPage * kegiatanPerPage;
+  const indexOfFirst = indexOfLast - kegiatanPerPage;
+  const currentKegiatan = kegiatanDummy.slice(indexOfFirst, indexOfLast);
+  const totalPages = Math.ceil(kegiatanDummy.length / kegiatanPerPage);
 
   return (
     <div className="bg-gray-50 py-10">
@@ -58,8 +83,7 @@ export default function KarangTaruna() {
           <div className="bg-[#B6F500] p-6 rounded-lg shadow text-black">
             <h2 className="text-xl font-semibold">Visi</h2>
             <p className="mt-2">
-              Menjadi pemuda yang aktif, kreatif, dan peduli terhadap pembangunan
-              desa.
+              Menjadi pemuda yang aktif, kreatif, dan peduli terhadap pembangunan desa.
             </p>
           </div>
           <div className="bg-orange-200 p-6 rounded-lg shadow">
@@ -104,7 +128,7 @@ export default function KarangTaruna() {
             Kegiatan terbaru Karang Taruna Desa Babakan Asem
           </p>
           <div className="grid md:grid-cols-3 gap-6">
-            {kegiatanDummy.map((item) => (
+            {currentKegiatan.map((item) => (
               <div
                 key={item.id}
                 className="bg-white shadow rounded-lg overflow-hidden"
@@ -132,15 +156,13 @@ export default function KarangTaruna() {
             ))}
           </div>
 
-          {/* dummy */}
-          <div className="flex justify-center gap-2 mt-6">
-            <button className="px-3 py-1 border rounded">1</button>
-            <button className="px-3 py-1 border rounded bg-[#B6F500]">
-              2
-            </button>
-            <button className="px-3 py-1 border rounded">3</button>
-            <button className="px-3 py-1 border rounded">...</button>
-            <button className="px-3 py-1 border rounded">8</button>
+          {/* ✅ Pagination pakai komponen */}
+          <div className="mt-10 flex justify-center">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
           </div>
         </div>
       </div>

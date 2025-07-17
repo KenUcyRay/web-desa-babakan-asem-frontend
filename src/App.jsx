@@ -33,10 +33,12 @@ import IDM from "./components/Infografis/IDM";
 import Bansos from "./components/Infografis/Bansos";
 import SDGs from "./components/Infografis/SDGs";
 
+// ✅ import halaman DPD
+import Dpd from "./components/Dpd";
+
 export default function App() {
   return (
     <Router>
-
       <TopNavbar />
 
       {/* Supaya NavbarTop nggak ketiban */}
@@ -56,13 +58,14 @@ export default function App() {
           <Route path="/bumdes/:id" element={<DetailProduk />} />
           <Route path="/bumdes" element={<Bumdes />} />
           <Route path="/bumdes/:id" element={<DetailProduk />} />
-          
+
           {/* Route Halaman Tambahan */}
           <Route path="/bumdes" element={<Bumdes />} />
           <Route path="/karang-taruna" element={<KarangTaruna />} />
           <Route path="/pkk" element={<Pkk />} />
           <Route path="/potensi" element={<PotensiDesa />} />
           <Route path="/pemerintahan" element={<Pemerintahan />} />
+          <Route path="/dpd" element={<Dpd />} /> {/* ✅ Halaman DPD */}
           <Route path="/profil" element={<ProfilDesa />} />
           <Route path="/kontak" element={<KontakKami />} />
           <Route path="/login" element={<Login />} />
@@ -80,7 +83,6 @@ export default function App() {
             <Route path="bansos" element={<Bansos />} />
             <Route path="sdgs" element={<SDGs />} />
           </Route>
-
         </Routes>
 
         <Footer />

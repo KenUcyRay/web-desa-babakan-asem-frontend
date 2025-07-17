@@ -22,7 +22,6 @@ export default function Berita() {
   return (
     <div className="bg-[#F8F8F8] w-full py-10">
       <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-6">
-        
         {/* KONTEN UTAMA */}
         <div className="md:col-span-3 space-y-6">
           <h1 className="text-3xl font-bold text-gray-800 mb-6">
@@ -58,8 +57,8 @@ export default function Berita() {
             onPageChange={setCurrentPage}
           />
         </div>
-
         {/* SIDEBAR */}
+        
         <aside>
           <SidebarInfo />
         </aside>

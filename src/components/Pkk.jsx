@@ -1,7 +1,23 @@
+import { useState } from "react";
 import { HiOutlineMail } from "react-icons/hi";
 import { FaWpforms, FaUsers, FaGlobe } from "react-icons/fa";
+import Pagination from "./Pagination";
 
 export default function Pkk() {
+  // ✅ Galeri array panjang (12 foto contoh)
+  const allGaleri = Array.from({ length: 12 }, (_, i) => ({
+    id: i + 1,
+    img: `https://images.unsplash.com/photo-1493815793585-d94ccbc86df8?w=600&random=${i}`,
+  }));
+
+  // ✅ State pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const galeriPerPage = 4; // tampil 4 per halaman
+  const indexOfLast = currentPage * galeriPerPage;
+  const indexOfFirst = indexOfLast - galeriPerPage;
+  const currentGaleri = allGaleri.slice(indexOfFirst, indexOfLast);
+  const totalPages = Math.ceil(allGaleri.length / galeriPerPage);
+
   return (
     <div className="font-poppins text-gray-800">
       {/* ✅ HERO SECTION */}
@@ -181,28 +197,27 @@ export default function Pkk() {
         </div>
       </section>
 
-      {/* ✅ GALERI PKK */}
+      {/* ✅ GALERI PKK dengan Pagination */}
       <section className="max-w-7xl mx-auto px-4 my-10">
         <h2 className="text-3xl font-bold text-center mb-6">Galeri PKK</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[...Array(8)].map((_, i) => (
+          {currentGaleri.map((g) => (
             <img
-              key={i}
-              src="https://images.unsplash.com/photo-1493815793585-d94ccbc86df8?w=600"
+              key={g.id}
+              src={g.img}
               alt="Galeri PKK"
               className="rounded-lg shadow hover:scale-105 transition"
             />
           ))}
         </div>
-        {/* Pagination */}
-        <div className="flex justify-center mt-6 gap-2">
-          <button className="px-3 py-1 border rounded">1</button>
-          <button className="px-3 py-1 border rounded bg-[#B6F500] text-white">
-            2
-          </button>
-          <button className="px-3 py-1 border rounded">3</button>
-          <span className="px-3 py-1">...</span>
-          <button className="px-3 py-1 border rounded">8</button>
+
+        {/* ✅ Pagination pakai komponen */}
+        <div className="mt-10 flex justify-center">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
         </div>
       </section>
     </div>
