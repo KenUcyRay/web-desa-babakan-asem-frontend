@@ -157,15 +157,6 @@ export default function KarangTaruna() {
             ))}
           </div>
 
-<<<<<<< HEAD
-          {/* dummy */}
-          <div className="flex justify-center gap-2 mt-6">
-            <button className="px-3 py-1 border rounded">1</button>
-            <button className="px-3 py-1 border rounded bg-[#B6F500]">2</button>
-            <button className="px-3 py-1 border rounded">3</button>
-            <button className="px-3 py-1 border rounded">...</button>
-            <button className="px-3 py-1 border rounded">8</button>
-=======
           {/* ✅ Pagination pakai komponen */}
           <div className="mt-10 flex justify-center">
             <Pagination
@@ -173,7 +164,6 @@ export default function KarangTaruna() {
               totalPages={totalPages}
               onPageChange={setCurrentPage}
             />
->>>>>>> 6c64165c1cdcf72b5e229811376a97000578a2b6
           </div>
         </div>
       </div>
