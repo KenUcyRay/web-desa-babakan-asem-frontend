@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import TopNavbar from "./components/TopNavbar";
 import NavbarTop from "./components/NavbarTop";
 import Footer from "./components/Footer";
@@ -88,7 +88,8 @@ export default function App() {
 
           {/* ✅ Nested route untuk Infografis */}
           <Route path="/infografis" element={<InfografisLayout />}>
-            <Route index element={<Penduduk />} /> {/* default */}
+            {/* ✅ Redirect default langsung ke penduduk */}
+            <Route index element={<Navigate to="penduduk" replace />} />
             <Route path="penduduk" element={<Penduduk />} />
             <Route path="idm" element={<IDM />} />
             <Route path="bansos" element={<Bansos />} />
