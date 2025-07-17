@@ -15,7 +15,6 @@ export class UserApi {
       }),
     });
   }
-
   static async userRegister(
     name,
     email,
@@ -39,5 +38,51 @@ export class UserApi {
         re_captcha_token: reCaptchaToken,
       }),
     });
+  }
+  static async forgetPassword(email) {
+    return await fetch(
+      `${import.meta.env.VITE_BASE_URL}/users/forgot-password`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          email: email,
+        }),
+      }
+    );
+  }
+  static async verifyResetToken(token) {
+    return await fetch(
+      `${
+        import.meta.env.VITE_BASE_URL
+      }/users/verify-reset-token?token=${token}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      }
+    );
+  }
+
+  static async resetPassword(token, password, confirmPassword) {
+    return await fetch(
+      `${import.meta.env.VITE_BASE_URL}/users/reset-password?token=${token}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          password: password,
+          confirm_password: confirmPassword,
+        }),
+      }
+    );
   }
 }

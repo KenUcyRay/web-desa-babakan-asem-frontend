@@ -31,10 +31,10 @@ export default function Register() {
     const responseBody = await response.json();
     if (response.status === 201) {
       login(responseBody.token);
-      alertSuccess("Registrasi berhasil!");
+      await alertSuccess("Registrasi berhasil!");
       navigate("/");
     } else {
-      alertError(responseBody.error || "Registrasi gagal, silakan coba lagi.");
+      await alertError(responseBody.error || "Registrasi gagal, silakan coba lagi.");
     }
 
     setName("");
