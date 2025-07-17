@@ -1,24 +1,40 @@
-import React from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import loginImage from "../assets/login.png";
+import { UserApi } from "../libs/apis/user-api";
+import ReCAPTCHA from "react-google-recaptcha";
+import { useLocalStorage } from "react-use";
 
 export default function Login() {
   const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
+  const [reCaptchaToken, setReCaptchaToken] = useState("");
+  const [_, setToken] = useLocalStorage("token", "");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // nanti bisa tambahin auth logic di sini
-    alert("Login berhasil (simulasi)");
-    navigate("/");
+
+    const response = await UserApi.userLogin(email, password, reCaptchaToken);
+    const responseBody = await response.json();
+    console.log(responseBody);
+    console.log(response);
+    if (response.status === 200) {
+      setToken(responseBody.token);
+    } else {
+      alert("Login gagal, silakan coba lagi.");
+    }
+
+    setEmail("");
+    setPassword("");
   };
 
   return (
     <div className="flex min-h-screen font-poppins">
-      
       {/* ✅ Bagian Kiri: Form Login */}
       <div className="flex w-full md:w-1/2 items-center justify-center bg-gradient-to-b from-[#B6F500] to-[#FFFCE2] px-8 py-12">
         <div className="bg-white/90 backdrop-blur-md shadow-xl rounded-2xl w-full max-w-md p-8">
-          
           {/* Judul */}
           <h2 className="text-3xl text-gray-900 font-normal font-poppins mb-2 text-center">
             Hallo, Senang Melihatmu Kembali!
@@ -37,6 +53,8 @@ export default function Login() {
                 type="email"
                 placeholder="Masukkan email"
                 className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-300 outline-none"
+                onChange={(e) => setEmail(e.target.value)}
+                value={email}
                 required
               />
             </div>
@@ -49,6 +67,8 @@ export default function Login() {
                 type="password"
                 placeholder="Masukkan password"
                 className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-300 outline-none"
+                onChange={(e) => setPassword(e.target.value)}
+                value={password}
                 required
               />
             </div>
@@ -71,6 +91,12 @@ export default function Login() {
               </Link>
             </div>
           </form>
+
+          <ReCAPTCHA
+            sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
+            size="normal"
+            onChange={(token) => setReCaptchaToken(token)}
+          />
 
           {/* Garis pemisah */}
           <div className="flex items-center my-6">
