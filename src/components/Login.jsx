@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import ReCAPTCHA from "react-google-recaptcha";
 import loginImage from "../assets/login.png";
 import { UserApi } from "../libs/apis/user-api";
-import ReCAPTCHA from "react-google-recaptcha";
 import { useLocalStorage } from "react-use";
 
 export default function Login() {
@@ -94,12 +93,11 @@ export default function Login() {
               </Link>
             </div>
 
-            {/* ✅ reCAPTCHA */}
             <ReCAPTCHA
-              sitekey="ISI_SITE_KEY_KAMU_DI_SINI"
-              onChange={() => setCaptchaVerified(true)}
-              className="my-4"
-            />
+            sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
+            size="normal"
+            onChange={(token) => setReCaptchaToken(token)}
+          />
 
             {/* ✅ Tombol Login */}
             <button
@@ -110,11 +108,7 @@ export default function Login() {
             </button>
           </form>
 
-          <ReCAPTCHA
-            sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
-            size="normal"
-            onChange={(token) => setReCaptchaToken(token)}
-          />
+          
 
           {/* Garis pemisah */}
           <div className="flex items-center my-6">
