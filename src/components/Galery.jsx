@@ -1,4 +1,3 @@
-// import galeri1 from "../assets/galeri.jpg";
 import SidebarInfo from "./SidebarInfo";
 import { useEffect, useState } from "react";
 import Pagination from "./Pagination";
@@ -6,18 +5,11 @@ import { GaleryApi } from "../libs/api/GaleryApi";
 import { alertError } from "../libs/alert";
 
 export default function Galery() {
-  // const allGambar = Array.from({ length: 12 }, () => galeri1);
   const [galery, setGalery] = useState([]);
-
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  // const galeriPerPage = 6;
-  // const indexOfLast = currentPage * galeriPerPage;
-  // const indexOfFirst = indexOfLast - galeriPerPage;
-  // const currentGaleri = allGambar.slice(indexOfFirst, indexOfLast);
-  // const totalPages = Math.ceil(allGambar.length / galeriPerPage);
 
-  const fetchGaleri = async () => {
+  const fetchGalery = async () => {
     const response = await GaleryApi.getGaleri(currentPage);
     if (response.status === 200) {
       const responseBody = await response.json();
@@ -30,7 +22,7 @@ export default function Galery() {
   };
 
   useEffect(() => {
-    fetchGaleri();
+    fetchGalery();
   }, [currentPage]);
 
   return (

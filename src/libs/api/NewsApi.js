@@ -1,7 +1,7 @@
-export class GaleryApi {
-  static async getGaleri(page = 1, limit = 9) {
+export class NewsApi {
+  static async getNews(page = 1, limit = 10) {
     return await fetch(
-      `${import.meta.env.VITE_BASE_URL}/galeri/?limit=${limit}&page=${page}`,
+      `${import.meta.env.VITE_BASE_URL}/news/?page=${page}&limit=${limit}`,
       {
         method: "GET",
         headers: {

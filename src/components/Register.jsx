@@ -34,7 +34,9 @@ export default function Register() {
       await alertSuccess("Registrasi berhasil!");
       navigate("/");
     } else {
-      await alertError(responseBody.error || "Registrasi gagal, silakan coba lagi.");
+      await alertError(
+        responseBody.error || "Registrasi gagal, silakan coba lagi."
+      );
     }
 
     setName("");
@@ -138,12 +140,14 @@ export default function Register() {
               Remember Me
             </label>
 
-            <ReCAPTCHA
-              ref={recaptchaRef}
-              sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
-              size="normal"
-              onChange={(token) => setReCaptchaToken(token)}
-            />
+            <div className="min-w-ful flex items-center justify-center my-8 ">
+              <ReCAPTCHA
+                ref={recaptchaRef}
+                sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
+                size="normal"
+                onChange={(token) => setReCaptchaToken(token)}
+              />
+            </div>
 
             {/* ✅ Tombol Register pakai gradient */}
             <button
