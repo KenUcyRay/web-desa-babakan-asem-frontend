@@ -22,7 +22,6 @@ export default function Agenda() {
   return (
     <div className="min-h-screen bg-[#F8F8F8] py-10 px-4">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-6">
-        
         {/* Judul halaman */}
         <div className="md:col-span-4">
           <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">

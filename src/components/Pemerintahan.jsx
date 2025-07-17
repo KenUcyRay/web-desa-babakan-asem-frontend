@@ -3,10 +3,18 @@ import { FaFlag, FaUsers, FaHome, FaDownload } from "react-icons/fa";
 
 export default function Pemerintahan() {
   const struktur = [
-    { nama: "H. Daryanto Sasmita", jabatan: "Kepala Desa", periode: "2020 - 2026" },
+    {
+      nama: "H. Daryanto Sasmita",
+      jabatan: "Kepala Desa",
+      periode: "2020 - 2026",
+    },
     { nama: "Siti Aminah", jabatan: "Sekretaris Desa", periode: "2020 - 2026" },
     { nama: "Rudi Hartono", jabatan: "Kaur Keuangan", periode: "2020 - 2026" },
-    { nama: "Dewi Lestari", jabatan: "Kaur Perencanaan", periode: "2020 - 2026" },
+    {
+      nama: "Dewi Lestari",
+      jabatan: "Kaur Perencanaan",
+      periode: "2020 - 2026",
+    },
   ];
 
   const regulasi = [
@@ -55,7 +63,9 @@ export default function Pemerintahan() {
         <div className="grid md:grid-cols-2 gap-8 mb-12">
           {/* Lembaga Kemasyarakatan */}
           <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-semibold mb-4">Lembaga Kemasyarakatan</h3>
+            <h3 className="text-lg font-semibold mb-4">
+              Lembaga Kemasyarakatan
+            </h3>
             <div className="space-y-3">
               <button className="w-full flex items-center justify-between bg-gray-100 p-3 rounded hover:bg-gray-200">
                 <span className="flex items-center gap-2">

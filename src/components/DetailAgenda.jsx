@@ -7,7 +7,6 @@ export default function DetailAgenda() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-4 gap-6">
-      
       {/* ✅ Konten utama */}
       <div className="md:col-span-3">
         <img
@@ -15,19 +14,20 @@ export default function DetailAgenda() {
           alt="Detail Agenda"
           className="w-full h-96 object-cover rounded-lg mb-6"
         />
-        <h1 className="text-2xl font-bold mb-3">
-          Judul Agenda {id}
-        </h1>
+        <h1 className="text-2xl font-bold mb-3">Judul Agenda {id}</h1>
         <p className="text-sm text-gray-500 mb-6">
-          Oleh Admin | Tanggal: 14 Juni 2025 | 🗓 Lokasi Balai Desa | 👁 15 Dilihat
+          Oleh Admin | Tanggal: 14 Juni 2025 | 🗓 Lokasi Balai Desa | 👁 15
+          Dilihat
         </p>
 
         <div className="space-y-4 text-gray-800 leading-relaxed">
           <p>
-            Ini adalah detail lengkap dari agenda {id}. Kegiatan ini diadakan untuk mendukung program desa.
+            Ini adalah detail lengkap dari agenda {id}. Kegiatan ini diadakan
+            untuk mendukung program desa.
           </p>
           <p>
-            Lokasi pelaksanaan berada di Balai Desa Babakan Asem. Warga diundang untuk berpartisipasi.
+            Lokasi pelaksanaan berada di Balai Desa Babakan Asem. Warga diundang
+            untuk berpartisipasi.
           </p>
           <p>
             Harap hadir tepat waktu dan membawa perlengkapan yang diperlukan.

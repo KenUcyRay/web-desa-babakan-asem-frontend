@@ -32,8 +32,10 @@ export default function Footer() {
           <div className="md:text-left text-center">
             <p className="text-[16px] font-semibold">Desa Babakan Asem</p>
             <p className="mt-1 text-[13px] leading-snug text-gray-400 hover:text-white transition duration-200">
-              Jalan Babakan Asem No. 142 Desa Babakan Asem,<br />
-              Kecamatan Conggeang, Kabupaten Sumedang,<br />
+              Jalan Babakan Asem No. 142 Desa Babakan Asem,
+              <br />
+              Kecamatan Conggeang, Kabupaten Sumedang,
+              <br />
               Jawa Barat 45391
             </p>
           </div>
@@ -53,8 +55,12 @@ export default function Footer() {
         {/* ✅ Layanan */}
         <div className="md:text-left text-center">
           <p className="text-[16px] font-semibold mb-3">Layanan</p>
-          <p className="text-[14px] text-gray-400 hover:text-white hover:underline transition">Jumadi / Kades Kesik</p>
-          <p className="text-[14px] text-gray-400 hover:text-white hover:underline transition">Yayan / Ambulans Kesik</p>
+          <p className="text-[14px] text-gray-400 hover:text-white hover:underline transition">
+            Jumadi / Kades Kesik
+          </p>
+          <p className="text-[14px] text-gray-400 hover:text-white hover:underline transition">
+            Yayan / Ambulans Kesik
+          </p>
         </div>
 
         {/* ✅ Jelajahi */}
@@ -62,16 +68,36 @@ export default function Footer() {
           <p className="text-[16px] font-semibold mb-3">Jelajahi</p>
           <ul className="space-y-1 text-[14px]">
             <li>
-              <a href="#" className="text-gray-400 hover:text-white hover:underline transition">Website Kemendesa</a>
+              <a
+                href="#"
+                className="text-gray-400 hover:text-white hover:underline transition"
+              >
+                Website Kemendesa
+              </a>
             </li>
             <li>
-              <a href="#" className="text-gray-400 hover:text-white hover:underline transition">Website Kemendagri</a>
+              <a
+                href="#"
+                className="text-gray-400 hover:text-white hover:underline transition"
+              >
+                Website Kemendagri
+              </a>
             </li>
             <li>
-              <a href="#" className="text-gray-400 hover:text-white hover:underline transition">Website Sumedang</a>
+              <a
+                href="#"
+                className="text-gray-400 hover:text-white hover:underline transition"
+              >
+                Website Sumedang
+              </a>
             </li>
             <li>
-              <a href="#" className="text-gray-400 hover:text-white hover:underline transition">Kartanegara</a>
+              <a
+                href="#"
+                className="text-gray-400 hover:text-white hover:underline transition"
+              >
+                Kartanegara
+              </a>
             </li>
           </ul>
         </div>
@@ -80,19 +106,34 @@ export default function Footer() {
       {/* ✅ Garis + Sosial Media */}
       <div className="border-t border-gray-500 mt-8 pt-6 flex flex-col items-center">
         <div className="flex gap-6 mb-4 flex-wrap justify-center">
-          <a href="#" className="text-2xl opacity-70 hover:opacity-100 hover:text-blue-500 transition">
+          <a
+            href="#"
+            className="text-2xl opacity-70 hover:opacity-100 hover:text-blue-500 transition"
+          >
             <FaFacebookF />
           </a>
-          <a href="#" className="text-2xl opacity-70 hover:opacity-100 hover:text-red-600 transition">
+          <a
+            href="#"
+            className="text-2xl opacity-70 hover:opacity-100 hover:text-red-600 transition"
+          >
             <FaYoutube />
           </a>
-          <a href="#" className="text-2xl opacity-70 hover:opacity-100 hover:text-yellow-400 transition">
+          <a
+            href="#"
+            className="text-2xl opacity-70 hover:opacity-100 hover:text-yellow-400 transition"
+          >
             <FaGoogle />
           </a>
-          <a href="#" className="text-2xl opacity-70 hover:opacity-100 hover:text-blue-400 transition">
+          <a
+            href="#"
+            className="text-2xl opacity-70 hover:opacity-100 hover:text-blue-400 transition"
+          >
             <FaTwitter />
           </a>
-          <a href="#" className="text-2xl opacity-70 hover:opacity-100 hover:text-gray-300 transition">
+          <a
+            href="#"
+            className="text-2xl opacity-70 hover:opacity-100 hover:text-gray-300 transition"
+          >
             <FaTiktok />
           </a>
         </div>

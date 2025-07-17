@@ -1,18 +1,28 @@
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 export default function IDM() {
   const skorIDM = [
     { tahun: "2021", skor: 0.68 },
     { tahun: "2022", skor: 0.72 },
     { tahun: "2023", skor: 0.75 },
-    { tahun: "2024", skor: 0.80 },
+    { tahun: "2024", skor: 0.8 },
   ];
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-8 font-poppins">
       {/* Judul */}
       <div className="text-center">
-        <h2 className="text-3xl font-bold text-gray-800">Skor IDM Desa Babakan Asem</h2>
+        <h2 className="text-3xl font-bold text-gray-800">
+          Skor IDM Desa Babakan Asem
+        </h2>
         <p className="mt-2 text-gray-600">
           Indeks Desa Membangun (IDM) dari tahun ke tahun.
         </p>
@@ -49,7 +59,12 @@ export default function IDM() {
             <XAxis dataKey="tahun" />
             <YAxis domain={[0.6, 1]} />
             <Tooltip />
-            <Line type="monotone" dataKey="skor" stroke="#B6F500" strokeWidth={3} />
+            <Line
+              type="monotone"
+              dataKey="skor"
+              stroke="#B6F500"
+              strokeWidth={3}
+            />
           </LineChart>
         </ResponsiveContainer>
       </div>

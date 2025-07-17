@@ -5,15 +5,69 @@ import Pagination from "./Pagination"; // ✅ pakai komponen reusable
 
 export default function Bumdes() {
   const allProduk = [
-    { id: 1, nama: "Beras Organik Premium", harga: "Rp 65.000", rating: 4.5, img: "https://picsum.photos/400/300?random=21" },
-    { id: 2, nama: "Minyak Kelapa Asli", harga: "Rp 45.000", rating: 4, img: "https://picsum.photos/400/300?random=22" },
-    { id: 3, nama: "Keripik Pisang Manis", harga: "Rp 20.000", rating: 5, img: "https://picsum.photos/400/300?random=23" },
-    { id: 4, nama: "Madu Hutan Murni", harga: "Rp 80.000", rating: 4.8, img: "https://picsum.photos/400/300?random=24" },
-    { id: 5, nama: "Gula Aren Asli", harga: "Rp 30.000", rating: 4.3, img: "https://picsum.photos/400/300?random=25" },
-    { id: 6, nama: "Teh Herbal Desa", harga: "Rp 25.000", rating: 4.7, img: "https://picsum.photos/400/300?random=26" },
-    { id: 7, nama: "Sabun Herbal Alami", harga: "Rp 18.000", rating: 4.1, img: "https://picsum.photos/400/300?random=27" },
-    { id: 8, nama: "Kerajinan Tangan Bambu", harga: "Rp 120.000", rating: 4.9, img: "https://picsum.photos/400/300?random=28" },
-    { id: 9, nama: "Beras Hitam Organik", harga: "Rp 70.000", rating: 4.4, img: "https://picsum.photos/400/300?random=29" },
+    {
+      id: 1,
+      nama: "Beras Organik Premium",
+      harga: "Rp 65.000",
+      rating: 4.5,
+      img: "https://picsum.photos/400/300?random=21",
+    },
+    {
+      id: 2,
+      nama: "Minyak Kelapa Asli",
+      harga: "Rp 45.000",
+      rating: 4,
+      img: "https://picsum.photos/400/300?random=22",
+    },
+    {
+      id: 3,
+      nama: "Keripik Pisang Manis",
+      harga: "Rp 20.000",
+      rating: 5,
+      img: "https://picsum.photos/400/300?random=23",
+    },
+    {
+      id: 4,
+      nama: "Madu Hutan Murni",
+      harga: "Rp 80.000",
+      rating: 4.8,
+      img: "https://picsum.photos/400/300?random=24",
+    },
+    {
+      id: 5,
+      nama: "Gula Aren Asli",
+      harga: "Rp 30.000",
+      rating: 4.3,
+      img: "https://picsum.photos/400/300?random=25",
+    },
+    {
+      id: 6,
+      nama: "Teh Herbal Desa",
+      harga: "Rp 25.000",
+      rating: 4.7,
+      img: "https://picsum.photos/400/300?random=26",
+    },
+    {
+      id: 7,
+      nama: "Sabun Herbal Alami",
+      harga: "Rp 18.000",
+      rating: 4.1,
+      img: "https://picsum.photos/400/300?random=27",
+    },
+    {
+      id: 8,
+      nama: "Kerajinan Tangan Bambu",
+      harga: "Rp 120.000",
+      rating: 4.9,
+      img: "https://picsum.photos/400/300?random=28",
+    },
+    {
+      id: 9,
+      nama: "Beras Hitam Organik",
+      harga: "Rp 70.000",
+      rating: 4.4,
+      img: "https://picsum.photos/400/300?random=29",
+    },
   ];
 
   const [produk, setProduk] = useState(allProduk);
@@ -36,7 +90,6 @@ export default function Bumdes() {
 
   return (
     <div className="font-poppins bg-gray-50 min-h-screen">
-      
       {/* Judul Atas */}
       <div className="bg-[#B6F500] py-12">
         <div className="max-w-6xl mx-auto px-6">
@@ -44,7 +97,8 @@ export default function Bumdes() {
             Badan Usaha Milik Desa (BUMDes)
           </h1>
           <p className="text-black/80 mt-2 max-w-2xl">
-            Produk unggulan Desa Babakan Asem yang dikelola oleh masyarakat lokal.
+            Produk unggulan Desa Babakan Asem yang dikelola oleh masyarakat
+            lokal.
           </p>
         </div>
       </div>
@@ -94,7 +148,9 @@ export default function Bumdes() {
 
                 {/* Harga + tombol WA */}
                 <div className="mt-auto flex justify-between items-center pt-4">
-                  <p className="text-lg font-bold text-gray-900">{item.harga}</p>
+                  <p className="text-lg font-bold text-gray-900">
+                    {item.harga}
+                  </p>
                   <a
                     href={`https://wa.me/6281234567890?text=Halo%20saya%20mau%20pesan%20${encodeURIComponent(
                       item.nama

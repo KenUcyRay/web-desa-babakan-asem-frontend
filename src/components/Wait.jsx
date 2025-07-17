@@ -14,8 +14,8 @@ export default function Wait() {
           Silakan cek email kamu!
         </h2>
         <p className="text-gray-600">
-          Kami telah mengirimkan link untuk mengatur ulang password.  
-          Buka email kamu lalu klik link yang diberikan.
+          Kami telah mengirimkan link untuk mengatur ulang password. Buka email
+          kamu lalu klik link yang diberikan.
         </p>
       </div>
     </div>

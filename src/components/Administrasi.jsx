@@ -31,12 +31,11 @@ const services = [
 ];
 
 export default function Administrasi() {
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   return (
     <div className="bg-gray-100 py-10">
       <div className="max-w-6xl mx-auto px-4">
-        
         {/* Tombol atas */}
         <div className="flex flex-wrap gap-4 mb-8">
           <button className="bg-lime-400 text-black font-semibold px-6 py-2 rounded-full">

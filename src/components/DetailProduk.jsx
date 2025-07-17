@@ -17,7 +17,6 @@ export default function DetailProduk() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-4 gap-6">
-      
       {/* ✅ Konten utama */}
       <div className="md:col-span-3">
         <img
@@ -25,11 +24,10 @@ export default function DetailProduk() {
           alt={produk.nama}
           className="w-full h-96 object-cover rounded-lg mb-6"
         />
-        <h1 className="text-2xl font-bold mb-3">
-          {produk.nama}
-        </h1>
+        <h1 className="text-2xl font-bold mb-3">{produk.nama}</h1>
         <p className="text-sm text-gray-500 mb-6">
-          Oleh BUMDes Babakan Asem | Harga: <span className="font-semibold text-black">{produk.harga}</span>
+          Oleh BUMDes Babakan Asem | Harga:{" "}
+          <span className="font-semibold text-black">{produk.harga}</span>
         </p>
 
         <div className="space-y-4 text-gray-800 leading-relaxed">

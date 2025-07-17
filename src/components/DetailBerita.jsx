@@ -8,7 +8,6 @@ export default function DetailBerita() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-4 gap-6">
-      
       {/* ✅ Konten utama */}
       <div className="md:col-span-3">
         <img
@@ -16,17 +15,15 @@ export default function DetailBerita() {
           alt="Detail Berita"
           className="w-full h-96 object-cover rounded-lg mb-6"
         />
-        <h1 className="text-2xl font-bold mb-3">
-          Judul Berita {id}
-        </h1>
+        <h1 className="text-2xl font-bold mb-3">Judul Berita {id}</h1>
         <p className="text-sm text-gray-500 mb-6">
           Oleh Admin | Tanggal: 08 Juni 2025 | 👁 20 Dilihat
         </p>
 
         <div className="space-y-4 text-gray-800 leading-relaxed">
           <p>
-            Lorem ipsum dolor sit amet consectetur. Odio dis et vitae sit facilisis.
-            Commodo et adipiscing scelerisque.
+            Lorem ipsum dolor sit amet consectetur. Odio dis et vitae sit
+            facilisis. Commodo et adipiscing scelerisque.
           </p>
           <p>
             Scelerisque aliquam augue sit id sit commodo semper feugiat. Vitae

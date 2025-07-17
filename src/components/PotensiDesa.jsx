@@ -26,8 +26,9 @@ export default function PotensiDesa() {
           Potensi Desa
         </h1>
         <p className="text-center text-gray-600 mt-2 mb-10">
-          Mata pencaharian utama penduduk Desa Babakan Asem adalah sebagai petani
-          baik buruh tani maupun petani mandiri yang menggarap lahan milik sendiri.
+          Mata pencaharian utama penduduk Desa Babakan Asem adalah sebagai
+          petani baik buruh tani maupun petani mandiri yang menggarap lahan
+          milik sendiri.
         </p>
 
         {/* 3 Kotak Potensi */}
@@ -44,9 +45,9 @@ export default function PotensiDesa() {
                 <FaSeedling /> Pertanian
               </h2>
               <p className="text-sm mt-2 text-gray-800">
-                Mayoritas penduduk bekerja di sektor pertanian, baik sebagai buruh tani
-                maupun petani mandiri. Komoditas utama adalah padi, jagung, ubi kayu,
-                kacang tanah, serta berbagai sayuran.
+                Mayoritas penduduk bekerja di sektor pertanian, baik sebagai
+                buruh tani maupun petani mandiri. Komoditas utama adalah padi,
+                jagung, ubi kayu, kacang tanah, serta berbagai sayuran.
               </p>
             </div>
           </div>
@@ -63,9 +64,9 @@ export default function PotensiDesa() {
                 <FaHorse /> Peternakan
               </h2>
               <p className="text-sm mt-2 text-gray-800">
-                Sektor peternakan meliputi sapi, kambing, ayam, dan domba. Menyediakan
-                kebutuhan daging & susu bagi konsumsi lokal serta menjadi penunjang
-                ekonomi warga.
+                Sektor peternakan meliputi sapi, kambing, ayam, dan domba.
+                Menyediakan kebutuhan daging & susu bagi konsumsi lokal serta
+                menjadi penunjang ekonomi warga.
               </p>
             </div>
           </div>
@@ -82,20 +83,19 @@ export default function PotensiDesa() {
                 <FaTree /> Perkebunan
               </h2>
               <p className="text-sm mt-2 text-gray-800">
-                Perkebunan rakyat menghasilkan tanaman keras seperti mangga, pisang, dan
-                tanaman hortikultura. Memberikan tambahan penghasilan & ketahanan pangan
-                keluarga.
+                Perkebunan rakyat menghasilkan tanaman keras seperti mangga,
+                pisang, dan tanaman hortikultura. Memberikan tambahan
+                penghasilan & ketahanan pangan keluarga.
               </p>
             </div>
           </div>
         </div>
 
         {/* Wisata Desa (Carousel) */}
-        <h2 className="text-2xl font-bold text-center mb-4">
-          Wisata Desa
-        </h2>
+        <h2 className="text-2xl font-bold text-center mb-4">Wisata Desa</h2>
         <p className="text-center text-gray-600 mb-6">
-          Semua individu pasti butuh hiburan – Wisata Alam Khas Desa Babakan Asem
+          Semua individu pasti butuh hiburan – Wisata Alam Khas Desa Babakan
+          Asem
         </p>
 
         <Carousel

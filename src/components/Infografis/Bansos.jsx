@@ -9,16 +9,23 @@ export default function Bansos() {
   return (
     <div className="max-w-6xl mx-auto px-6 py-8 font-poppins">
       <h2 className="text-3xl font-bold text-gray-800">Data Bantuan Sosial</h2>
-      <p className="mt-2 text-gray-600">Daftar bantuan sosial yang diterima warga desa.</p>
+      <p className="mt-2 text-gray-600">
+        Daftar bantuan sosial yang diterima warga desa.
+      </p>
 
       <div className="grid sm:grid-cols-2 md:grid-cols-2 gap-6 mt-8">
         {data.map((item, idx) => (
-          <div key={idx} className="bg-white p-6 rounded-xl shadow flex justify-between">
+          <div
+            key={idx}
+            className="bg-white p-6 rounded-xl shadow flex justify-between"
+          >
             <div>
               <p className="font-semibold text-gray-800">{item.nama}</p>
               <p className="text-gray-500 text-sm">Jumlah Penerima</p>
             </div>
-            <span className="text-xl font-bold text-[#B6F500]">{item.penerima}</span>
+            <span className="text-xl font-bold text-[#B6F500]">
+              {item.penerima}
+            </span>
           </div>
         ))}
       </div>
