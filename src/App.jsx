@@ -57,8 +57,7 @@ export default function App() {
           <Route path="/agenda/:id" element={<DetailAgenda />} />
           <Route path="/bumdes/:id" element={<DetailProduk />} />
           <Route path="/bumdes" element={<Bumdes />} />
-          <Route path="/bumdes/:id" element={<DetailProduk />} />
-
+          
           {/* Route Halaman Tambahan */}
           <Route path="/bumdes" element={<Bumdes />} />
           <Route path="/karang-taruna" element={<KarangTaruna />} />
