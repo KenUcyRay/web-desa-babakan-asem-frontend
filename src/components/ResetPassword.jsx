@@ -1,26 +1,47 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import resetImage from "../assets/reset.png";
+import { alertError, alertSuccess } from "../libs/alert";
+import { UserApi } from "../libs/api/UserApi";
 
 export default function ResetPassword() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token"); // ✅ Ambil token dari URL
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleReset = (e) => {
+  const handleReset = async (e) => {
     e.preventDefault();
 
-    if (!token) {
-      alert("Token tidak valid atau sudah kedaluwarsa!");
-      return;
+    const response = await UserApi.resetPassword(
+      token,
+      password,
+      confirmPassword
+    );
+    if (response.status === 204) {
+      await alertSuccess("Password berhasil diubah! Silakan login kembali.");
+      navigate("/login");
+    } else {
+      await alertError(
+        "Gagal mengubah password. Pastikan token valid dan coba lagi."
+      );
     }
-
-    // ✅ Kirim request ke backend:
-    // axios.post('/reset-password', { token, passwordBaru })
-
-    alert("Password berhasil diubah! Silakan login kembali.");
-    navigate("/login");
+    setPassword("");
+    setConfirmPassword("");
   };
+
+  const vefifyToken = async () => {
+    const response = await UserApi.verifyResetToken(token);
+    if (!response.ok) {
+      await alertError("Token tidak ditemukan. Pastikan buka link dari email.");
+      navigate("/forgot-password");
+    }
+  };
+
+  useEffect(() => {
+    vefifyToken();
+  }, []);
 
   return (
     <div className="flex min-h-screen font-poppins">
@@ -35,12 +56,6 @@ export default function ResetPassword() {
             Masukkan password baru untuk akunmu
           </p>
 
-          {!token && (
-            <p className="text-red-500 text-center mb-4">
-              ⚠️ Token reset tidak ditemukan. Pastikan buka link dari email.
-            </p>
-          )}
-
           {/* Form */}
           <form className="space-y-4" onSubmit={handleReset}>
             <div>
@@ -51,6 +66,8 @@ export default function ResetPassword() {
                 type="password"
                 placeholder="Masukkan password baru"
                 className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-300 outline-none"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
               />
             </div>
@@ -63,6 +80,8 @@ export default function ResetPassword() {
                 type="password"
                 placeholder="Ulangi password baru"
                 className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-300 outline-none"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 required
               />
             </div>

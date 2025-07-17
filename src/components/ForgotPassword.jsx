@@ -1,17 +1,38 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import forgotImage from "../assets/forgot.png";
+import { UserApi } from "../libs/api/UserApi";
+import { alertError, alertSuccess } from "../libs/alert";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function ForgotPassword() {
   const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const { isLoggedIn } = useAuth();
 
-  const handleForgot = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // ✅ Kirim request ke backend untuk kirim email reset password
-    // axios.post('/forgot-password', { email })
 
-    navigate("/wait"); // setelah sukses kirim email → masuk ke halaman tunggu
+    alertSuccess("Loading...");
+
+    const response = await UserApi.forgetPassword(email);
+
+    if (response.status === 204) {
+      await alertSuccess(
+        "Email reset password telah dikirim. Silakan cek inbox Anda."
+      );
+      navigate("/wait");
+      return;
+    }
+    await alertError("Gagal mengirim email reset password. Silakan coba lagi.");
+    setEmail("");
   };
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate("/");
+    }
+  }, []);
 
   return (
     <div className="flex min-h-screen font-poppins">
@@ -27,7 +48,7 @@ export default function ForgotPassword() {
           </p>
 
           {/* Form */}
-          <form className="space-y-4" onSubmit={handleForgot}>
+          <form className="space-y-4" onSubmit={handleSubmit}>
             <div>
               <label className="block text-gray-700 font-medium mb-1">
                 Email
@@ -36,6 +57,8 @@ export default function ForgotPassword() {
                 type="email"
                 placeholder="Masukkan email"
                 className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-300 outline-none"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </div>

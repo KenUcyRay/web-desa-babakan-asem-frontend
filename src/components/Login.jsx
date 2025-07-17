@@ -27,10 +27,10 @@ export default function Login() {
     const responseBody = await response.json();
     if (response.status === 200) {
       login(responseBody.token);
-      alertSuccess("Login berhasil!");
+      await alertSuccess("Login berhasil!");
       navigate("/");
     } else {
-      alertError(responseBody.error || "Login gagal, silakan coba lagi.");
+      await alertError(responseBody.error || "Login gagal, silakan coba lagi.");
     }
 
     setEmail("");
