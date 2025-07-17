@@ -109,12 +109,14 @@ export default function Login() {
               </Link>
             </div>
 
-            <ReCAPTCHA
-              ref={recaptchaRef}
-              sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
-              size="normal"
-              onChange={(token) => setReCaptchaToken(token)}
-            />
+            <div className="min-w-ful flex items-center justify-center my-8 ">
+              <ReCAPTCHA
+                ref={recaptchaRef}
+                sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
+                size="normal"
+                onChange={(token) => setReCaptchaToken(token)}
+              />
+            </div>
 
             {/* ✅ Tombol Login */}
             <button

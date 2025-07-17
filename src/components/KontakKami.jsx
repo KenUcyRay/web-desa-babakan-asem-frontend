@@ -6,8 +6,31 @@ import {
   FaEnvelope,
 } from "react-icons/fa";
 import "@fontsource/poppins";
+import { MessageApi } from "../libs/api/MessageApi";
+import { alertSuccess, alertError } from "../libs/alert";
 
 export default function KontakKami() {
+  const [name, setName] = React.useState("");
+  const [email, setEmail] = React.useState("");
+  const [message, setMessage] = React.useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const response = await MessageApi.createMessage(name, email, message);
+    const responseBody = await response.json();
+
+    if (response.status === 201) {
+      await alertSuccess("Pesan berhasil dikirim!");
+    } else {
+      await alertError("Gagal mengirim pesan: " + responseBody.error);
+    }
+
+    setName("");
+    setEmail("");
+    setMessage("");
+  };
+
   return (
     <div className="font-poppins">
       {/* ✅ Banner dengan gradien hijau */}
@@ -37,7 +60,7 @@ export default function KontakKami() {
 
           {/* Bagian form */}
           <div className="p-6 bg-gradient-to-br from-[#9BEC00] to-[#D2FF72]">
-            <form className="space-y-4">
+            <form className="space-y-4" onSubmit={handleSubmit}>
               <div>
                 <label className="block text-gray-900 font-medium mb-1">
                   Nama
@@ -46,6 +69,9 @@ export default function KontakKami() {
                   type="text"
                   placeholder="Nama anda..."
                   className="w-full rounded-lg p-3 bg-white placeholder-gray-500 shadow focus:outline-none focus:ring-2 focus:ring-[#A4E000]"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
                 />
               </div>
               <div>
@@ -56,6 +82,9 @@ export default function KontakKami() {
                   type="email"
                   placeholder="Email anda..."
                   className="w-full rounded-lg p-3 bg-white placeholder-gray-500 shadow focus:outline-none focus:ring-2 focus:ring-[#A4E000]"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
                 />
               </div>
               <div>
@@ -66,6 +95,9 @@ export default function KontakKami() {
                   rows="4"
                   placeholder="Masukan pesan.."
                   className="w-full rounded-lg p-3 bg-white placeholder-gray-500 shadow focus:outline-none focus:ring-2 focus:ring-[#A4E000]"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  required
                 ></textarea>
               </div>
               {/* ✅ Tombol lebih elegan */}
