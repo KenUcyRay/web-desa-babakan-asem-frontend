@@ -90,20 +90,20 @@ export default function Bumdes() {
 
   return (
     <div className="font-poppins bg-gray-50 min-h-screen">
-      {/* Judul Atas */}
-      <div className="bg-[#B6F500] py-12">
+      {/* ✅ Judul Atas pakai gradient */}
+      <div className="bg-gradient-to-r from-[#9BEC00] to-[#D2FF72] py-12">
         <div className="max-w-6xl mx-auto px-6">
-          <h1 className="text-4xl font-bold text-black">
+          <h1 className="text-4xl font-bold text-gray-900">
             Badan Usaha Milik Desa (BUMDes)
           </h1>
-          <p className="text-black/80 mt-2 max-w-2xl">
+          <p className="text-gray-800 mt-2 max-w-2xl">
             Produk unggulan Desa Babakan Asem yang dikelola oleh masyarakat
             lokal.
           </p>
         </div>
       </div>
 
-      {/* Grid Produk */}
+      {/* ✅ Grid Produk */}
       <div className="max-w-6xl mx-auto px-4 py-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {currentProduk.map((item) => (
@@ -177,11 +177,11 @@ export default function Bumdes() {
         </div>
       </div>
 
-      {/* Footer info */}
-      <div className="bg-[#B6F500] py-8 mt-12">
+      {/* ✅ Footer info pakai gradient */}
+      <div className="bg-gradient-to-r from-[#9BEC00] to-[#D2FF72] py-8 mt-12">
         <div className="max-w-6xl mx-auto px-6 text-left">
-          <h2 className="text-3xl font-bold text-black">LUMBUNG DESA</h2>
-          <p className="text-black/80 mt-2 text-lg">
+          <h2 className="text-3xl font-bold text-gray-900">LUMBUNG DESA</h2>
+          <p className="text-gray-800 mt-2 text-lg">
             Produk Asli Hasil Desa 100% – Mendukung Ekonomi Masyarakat Lokal
           </p>
         </div>

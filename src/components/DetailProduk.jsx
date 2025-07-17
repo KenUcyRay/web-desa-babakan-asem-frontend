@@ -1,10 +1,14 @@
-import { useParams } from "react-router-dom";
-import { FaWhatsapp, FaStar } from "react-icons/fa";
+import { useParams, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { FaWhatsapp, FaStar } from "react-icons/fa";
 import SidebarProduk from "./SidebarProduk";
 
 export default function DetailProduk() {
   const { id } = useParams();
+  const navigate = useNavigate();
+
+  // ✅ Cek login (simulasi)
+  const isLoggedIn = localStorage.getItem("user");
 
   const produk = {
     id,
@@ -15,68 +19,59 @@ export default function DetailProduk() {
     img: "https://picsum.photos/800/500?random=99",
   };
 
-  // ✅ Komentar awal (contoh)
-  const [komentarList, setKomentarList] = useState([
-    {
-      nama: "Budi",
-      pesan: "Produk bagus!",
-      rating: 5,
-      tanggal: new Date("2025-07-15T14:20"),
-    },
-    {
-      nama: "Sari",
-      pesan: "Pengiriman cepat.",
-      rating: 4,
-      tanggal: new Date("2025-07-16T09:45"),
-    },
-  ]);
-  const [nama, setNama] = useState("");
-  const [pesan, setPesan] = useState("");
-  const [rating, setRating] = useState(0);
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState("");
+  const [newName, setNewName] = useState("");
 
-  // ✅ Hitung rata-rata rating
-  const avgRating =
-    komentarList.length > 0
-      ? (
-          komentarList.reduce((sum, k) => sum + k.rating, 0) / komentarList.length
-        ).toFixed(1)
-      : 0;
+  const [rating, setRating] = useState(0); // ⭐ rating yang dipilih
+  const [userRated, setUserRated] = useState(false); // ✅ agar hanya sekali rating
 
-  // ✅ Format tanggal jadi "17 Juli 2025, 14:30"
-  const formatTanggal = (date) => {
-    return new Date(date).toLocaleString("id-ID", {
+  const handleCommentSubmit = (e) => {
+    e.preventDefault();
+
+    if (!isLoggedIn) {
+      alert("Silakan login dulu untuk memberi komentar!");
+      navigate("/login");
+      return;
+    }
+
+    const now = new Date();
+    const formattedDate = now.toLocaleDateString("id-ID", {
       day: "2-digit",
       month: "long",
       year: "numeric",
+    });
+    const formattedTime = now.toLocaleTimeString("id-ID", {
       hour: "2-digit",
       minute: "2-digit",
     });
-  };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!nama.trim() || !pesan.trim() || rating === 0) return;
-
-    const newKomentar = {
-      nama,
-      pesan,
-      rating: Number(rating),
-      tanggal: new Date(),
+    const newEntry = {
+      id: Date.now(),
+      name: newName,
+      text: newComment,
+      date: `${formattedDate} - ${formattedTime}`,
     };
-    setKomentarList([...komentarList, newKomentar]);
 
-    setNama("");
-    setPesan("");
-    setRating(0);
+    setComments([newEntry, ...comments]);
+    setNewComment("");
+    setNewName("");
   };
 
-  const renderStars = (value) => {
-    return Array.from({ length: 5 }, (_, i) => (
-      <FaStar
-        key={i}
-        className={i < value ? "text-yellow-400" : "text-gray-300"}
-      />
-    ));
+  const handleRating = (value) => {
+    if (!isLoggedIn) {
+      alert("Silakan login dulu untuk memberi rating!");
+      navigate("/login");
+      return;
+    }
+
+    if (userRated) {
+      alert("Anda sudah memberi rating untuk produk ini!");
+      return;
+    }
+
+    setRating(value);
+    setUserRated(true); // ✅ hanya boleh sekali
   };
 
   return (
@@ -88,21 +83,27 @@ export default function DetailProduk() {
           alt={produk.nama}
           className="w-full h-96 object-cover rounded-lg mb-6"
         />
-
         <h1 className="text-2xl font-bold mb-3">{produk.nama}</h1>
-
-        {/* ✅ Rata-rata rating */}
-        <div className="flex items-center gap-2 mb-2">
-          {renderStars(Math.round(avgRating))}
-          <span className="text-sm text-gray-600">
-            {avgRating} / 5.0 ({komentarList.length} ulasan)
-          </span>
-        </div>
-
-        <p className="text-sm text-gray-500 mb-6">
+        <p className="text-sm text-gray-500 mb-2">
           Oleh BUMDes Babakan Asem | Harga:{" "}
           <span className="font-semibold text-black">{produk.harga}</span>
         </p>
+
+        {/* ✅ Rating Produk */}
+        <div className="flex items-center gap-2 mb-6">
+          {[1, 2, 3, 4, 5].map((star) => (
+            <FaStar
+              key={star}
+              className={`cursor-pointer text-2xl transition ${
+                star <= rating ? "text-yellow-400" : "text-gray-300"
+              }`}
+              onClick={() => handleRating(star)}
+            />
+          ))}
+          {rating > 0 && (
+            <span className="text-sm text-gray-600">({rating} / 5)</span>
+          )}
+        </div>
 
         <div className="space-y-4 text-gray-800 leading-relaxed">
           <p>{produk.deskripsi}</p>
@@ -125,45 +126,25 @@ export default function DetailProduk() {
 
         {/* ✅ Komentar */}
         <div className="mt-10 p-6 bg-gray-50 rounded-lg shadow">
-          <h2 className="text-xl font-semibold mb-4">💬 Tinggalkan Komentar & Rating</h2>
+          <h2 className="text-xl font-semibold mb-4">💬 Tinggalkan Komentar</h2>
 
-          {/* Form komentar */}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleCommentSubmit} className="space-y-4">
             <input
               type="text"
               placeholder="Nama"
-              value={nama}
-              onChange={(e) => setNama(e.target.value)}
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
               className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-300"
               required
             />
             <textarea
               placeholder="Tulis komentar kamu..."
               rows="4"
-              value={pesan}
-              onChange={(e) => setPesan(e.target.value)}
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
               className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-300"
               required
             />
-
-            {/* Pilih Rating */}
-            <div>
-              <label className="block font-medium mb-1">Rating:</label>
-              <select
-                value={rating}
-                onChange={(e) => setRating(e.target.value)}
-                className="border p-2 rounded-md"
-                required
-              >
-                <option value={0}>Pilih rating...</option>
-                <option value={5}>⭐⭐⭐⭐⭐ (5)</option>
-                <option value={4}>⭐⭐⭐⭐ (4)</option>
-                <option value={3}>⭐⭐⭐ (3)</option>
-                <option value={2}>⭐⭐ (2)</option>
-                <option value={1}>⭐ (1)</option>
-              </select>
-            </div>
-
             <button
               type="submit"
               className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition"
@@ -172,29 +153,21 @@ export default function DetailProduk() {
             </button>
           </form>
 
-          {/* ✅ List komentar */}
-          <div className="mt-6 space-y-4">
-            <h3 className="font-semibold text-lg">Komentar Pengguna</h3>
-            {komentarList.length === 0 && (
-              <p className="text-gray-500 text-sm">Belum ada komentar.</p>
-            )}
-
-            {komentarList.map((k, idx) => (
-              <div key={idx} className="p-4 bg-white rounded-md shadow">
-                <div className="flex items-center justify-between">
-                  <p className="font-semibold">{k.nama}</p>
-                  <span className="text-xs text-gray-400">
-                    {formatTanggal(k.tanggal)}
-                  </span>
+          {/* ✅ List Komentar */}
+          {comments.length > 0 && (
+            <div className="mt-6 space-y-4">
+              {comments.map((c) => (
+                <div
+                  key={c.id}
+                  className="p-4 border rounded-lg bg-white shadow-sm"
+                >
+                  <p className="font-semibold">{c.name}</p>
+                  <p className="text-sm text-gray-500">{c.date}</p>
+                  <p className="mt-2 text-gray-700">{c.text}</p>
                 </div>
-                <div className="flex items-center gap-1">
-                  {renderStars(k.rating)}
-                  <span className="text-xs text-gray-500 ml-1">{k.rating}/5</span>
-                </div>
-                <p className="text-gray-700 mt-1">{k.pesan}</p>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 

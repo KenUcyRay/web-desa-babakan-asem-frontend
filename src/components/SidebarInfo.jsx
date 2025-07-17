@@ -12,7 +12,7 @@ export default function SidebarInfo() {
         {[1, 2, 3, 4].map((i) => (
           <Link
             key={i}
-            to={`/berita/${i}`} // 👉 Link ke detail berita sesuai id
+            to={`/berita/${i}`} // 👉 langsung ke detail berita
             className="flex items-center mb-4 hover:bg-gray-50 p-2 rounded transition"
           >
             <img
@@ -37,7 +37,7 @@ export default function SidebarInfo() {
         {[1, 2, 3].map((i) => (
           <Link
             key={i}
-            to={`/agenda/${i}`} // 👉 Link ke detail agenda sesuai id
+            to={`/agenda/${i}`} // 👉 langsung ke detail agenda
             className="flex items-center mb-4 hover:bg-gray-50 p-2 rounded transition"
           >
             <img

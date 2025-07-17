@@ -1,3 +1,4 @@
+// ✅ components/Infografis/InfografisLayout.jsx
 import { Outlet, NavLink } from "react-router-dom";
 import {
   FaUsers,
@@ -8,16 +9,16 @@ import {
 
 export default function InfografisLayout() {
   const menu = [
-    { to: "penduduk", label: "Penduduk", icon: <FaUsers size={28} /> }, // ✅ icon dibesarin
-    { to: "idm", label: "IDM", icon: <FaChartLine size={28} /> },
-    { to: "bansos", label: "Bansos", icon: <FaHandsHelping size={28} /> },
-    { to: "sdgs", label: "SDGs", icon: <FaSeedling size={28} /> },
+    { to: "penduduk", label: "Penduduk", icon: <FaUsers size={26} /> },
+    { to: "idm", label: "IDM", icon: <FaChartLine size={26} /> },
+    { to: "bansos", label: "Bansos", icon: <FaHandsHelping size={26} /> },
+    { to: "sdgs", label: "SDGs", icon: <FaSeedling size={26} /> },
   ];
 
   return (
     <div className="font-poppins bg-gray-50 min-h-screen">
       {/* 🔹 HEADER INFOGRAFIS */}
-      <div className="py-6">
+      <div className="bg-white shadow-sm py-6">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center px-6">
           {/* Judul di kiri */}
           <div>
@@ -38,8 +39,8 @@ export default function InfografisLayout() {
                 className={({ isActive }) =>
                   `flex flex-col items-center gap-1 px-4 py-2 rounded-lg transition ${
                     isActive
-                      ? "text-[#B6F500] bg-white shadow-md" // ✅ Warna + background biar keliatan aktif
-                      : "text-gray-700 hover:text-[#B6F500]"
+                      ? "text-[#B6F500] bg-gray-100 shadow-md"
+                      : "text-gray-600 hover:text-[#B6F500]"
                   }`
                 }
               >

@@ -1,49 +1,56 @@
-// components/Administrasi.jsx
 import { useNavigate } from "react-router-dom";
 import { HiOutlineMail } from "react-icons/hi";
 import { FaWpforms, FaUsers, FaGlobe } from "react-icons/fa";
 
-const services = [
-  {
-    title: "Surat Pengantar",
-    desc: "Untuk KTP, KK, SKCK, DLL",
-    button: "Lihat Detail",
-    icon: <HiOutlineMail className="text-4xl" />,
-  },
-  {
-    title: "Formulir Layanan",
-    desc: "Isi Formulir Pengajuan",
-    button: "Isi Formulir",
-    icon: <FaWpforms className="text-4xl" />,
-  },
-  {
-    title: "Informasi Kependudukan",
-    desc: "Detail Penduduk",
-    button: "Lihat Data",
-    icon: <FaUsers className="text-4xl" />,
-  },
-  {
-    title: "Layanan Online",
-    desc: "Ajukan & lacak Online",
-    button: "Masuk Portal",
-    icon: <FaGlobe className="text-4xl" />,
-  },
-];
-
 export default function Administrasi() {
   const navigate = useNavigate();
+
+  // mapping langsung dengan target route
+  const services = [
+    {
+      title: "Surat Pengantar",
+      desc: "Untuk KTP, KK, SKCK, DLL",
+      button: "Lihat Detail",
+      icon: <HiOutlineMail className="text-4xl" />,
+      route: "/surat-pengantar",
+    },
+    {
+      title: "Formulir Layanan",
+      desc: "Isi Formulir Pengajuan",
+      button: "Isi Formulir",
+      icon: <FaWpforms className="text-4xl" />,
+      route: "/formulir-layanan",
+    },
+    {
+      title: "Informasi Kependudukan",
+      desc: "Detail Penduduk",
+      button: "Lihat Data",
+      icon: <FaUsers className="text-4xl" />,
+      route: "/infografis/penduduk", // langsung ke infografis penduduk
+    },
+    {
+      title: "Layanan Online",
+      desc: "Ajukan & lacak Online",
+      button: "Masuk Portal",
+      icon: <FaGlobe className="text-4xl" />,
+      route: "/layanan-online",
+    },
+  ];
 
   return (
     <div className="bg-gray-100 py-10">
       <div className="max-w-6xl mx-auto px-4">
         {/* Tombol atas */}
         <div className="flex flex-wrap gap-4 mb-8">
-          <button className="bg-lime-400 text-black font-semibold px-6 py-2 rounded-full">
+          <button
+            onClick={() => navigate("/surat-pengantar")}
+            className="bg-lime-400 text-black font-semibold px-6 py-2 rounded-full hover:bg-lime-300 transition"
+          >
             Ajukan Sekarang
           </button>
           <button
             onClick={() => navigate("/panduan")}
-            className="bg-white text-black font-semibold px-6 py-2 rounded-full border hover:bg-gray-100"
+            className="bg-white text-black font-semibold px-6 py-2 rounded-full border hover:bg-gray-100 transition"
           >
             Panduan Layanan
           </button>
@@ -62,7 +69,10 @@ export default function Administrasi() {
               </div>
               <h3 className="font-semibold text-lg">{service.title}</h3>
               <p className="text-gray-600 text-sm mt-2 mb-4">{service.desc}</p>
-              <button className="bg-lime-400 text-black font-semibold px-5 py-2 rounded-xl hover:bg-lime-300 transition">
+              <button
+                onClick={() => navigate(service.route)}
+                className="bg-lime-400 text-black font-semibold px-5 py-2 rounded-xl hover:bg-lime-300 transition"
+              >
                 {service.button}
               </button>
             </div>
