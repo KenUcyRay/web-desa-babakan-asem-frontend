@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import loginImage from "../assets/login.png";
-import { UserApi } from "../libs/apis/user-api";
+import { UserApi } from "../libs/apis/UserApi";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useLocalStorage } from "react-use";
 
