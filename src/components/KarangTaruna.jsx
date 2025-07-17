@@ -83,12 +83,8 @@ export default function KarangTaruna() {
           <div className="bg-[#B6F500] p-6 rounded-lg shadow text-black">
             <h2 className="text-xl font-semibold">Visi</h2>
             <p className="mt-2">
-<<<<<<< HEAD
               Menjadi pemuda yang aktif, kreatif, dan peduli terhadap
               pembangunan desa.
-=======
-              Menjadi pemuda yang aktif, kreatif, dan peduli terhadap pembangunan desa.
->>>>>>> 6c64165c1cdcf72b5e229811376a97000578a2b6
             </p>
           </div>
           <div className="bg-orange-200 p-6 rounded-lg shadow">
@@ -161,7 +157,6 @@ export default function KarangTaruna() {
             ))}
           </div>
 
-<<<<<<< HEAD
           {/* dummy */}
           <div className="flex justify-center gap-2 mt-6">
             <button className="px-3 py-1 border rounded">1</button>
@@ -169,15 +164,6 @@ export default function KarangTaruna() {
             <button className="px-3 py-1 border rounded">3</button>
             <button className="px-3 py-1 border rounded">...</button>
             <button className="px-3 py-1 border rounded">8</button>
-=======
-          {/* ✅ Pagination pakai komponen */}
-          <div className="mt-10 flex justify-center">
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-            />
->>>>>>> 6c64165c1cdcf72b5e229811376a97000578a2b6
           </div>
         </div>
       </div>
