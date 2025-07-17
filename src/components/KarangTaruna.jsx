@@ -1,5 +1,6 @@
 import { HiOutlineMail } from "react-icons/hi";
 import { FaUsers, FaWpforms } from "react-icons/fa";
+import Pagination from "./Pagination";
 
 export default function KarangTaruna() {
   const kegiatanDummy = [

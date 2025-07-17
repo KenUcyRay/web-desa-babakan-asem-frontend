@@ -1,8 +1,17 @@
 import galeri1 from "../assets/galeri.jpg";
 import SidebarInfo from "./SidebarInfo";
+import { useState } from "react";
+import Pagination from "./Pagination";
 
 export default function Galery() {
-  const dataGambar = [galeri1, galeri1, galeri1, galeri1, galeri1, galeri1];
+  const allGambar = Array.from({ length: 12 }, () => galeri1);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const galeriPerPage = 6;
+  const indexOfLast = currentPage * galeriPerPage;
+  const indexOfFirst = indexOfLast - galeriPerPage;
+  const currentGaleri = allGambar.slice(indexOfFirst, indexOfLast);
+  const totalPages = Math.ceil(allGambar.length / galeriPerPage);
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -13,7 +22,7 @@ export default function Galery() {
         </h1>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {dataGambar.map((img, i) => (
+          {currentGaleri.map((img, i) => (
             <div
               key={i}
               className="rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300"
@@ -26,6 +35,13 @@ export default function Galery() {
             </div>
           ))}
         </div>
+
+        {/* ✅ Pagination */}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
       </div>
 
       {/* Sidebar */}
