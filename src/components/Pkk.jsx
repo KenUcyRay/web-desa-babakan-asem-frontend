@@ -59,21 +59,23 @@ export default function Pkk() {
           Struktur Organisasi PKK Desa Babakan Asem
         </h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-          {["Ketua PKK", "Sekretaris", "Bendahara", "Anggota"].map((role, i) => (
-            <div
-              key={i}
-              className="p-4 border rounded-lg shadow hover:shadow-md transition"
-            >
-              <img
-                src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200"
-                alt="Profile"
-                className="w-20 h-20 mx-auto rounded-full mb-3 object-cover"
-              />
-              <h3 className="font-bold">Nama Lengkap</h3>
-              <p className="text-sm text-gray-600">{role}</p>
-              <p className="text-xs text-gray-500">Masa Jabatan 2023-2028</p>
-            </div>
-          ))}
+          {["Ketua PKK", "Sekretaris", "Bendahara", "Anggota"].map(
+            (role, i) => (
+              <div
+                key={i}
+                className="p-4 border rounded-lg shadow hover:shadow-md transition"
+              >
+                <img
+                  src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200"
+                  alt="Profile"
+                  className="w-20 h-20 mx-auto rounded-full mb-3 object-cover"
+                />
+                <h3 className="font-bold">Nama Lengkap</h3>
+                <p className="text-sm text-gray-600">{role}</p>
+                <p className="text-xs text-gray-500">Masa Jabatan 2023-2028</p>
+              </div>
+            )
+          )}
         </div>
 
         <h3 className="text-2xl font-semibold mt-10 mb-4 text-center">
@@ -158,9 +160,7 @@ export default function Pkk() {
 
       {/* ✅ KELOMPOK POKJA */}
       <section className="max-w-7xl mx-auto px-4 my-10">
-        <h2 className="text-3xl font-bold text-center mb-6">
-          Kelompok POKJA
-        </h2>
+        <h2 className="text-3xl font-bold text-center mb-6">Kelompok POKJA</h2>
         <div className="grid md:grid-cols-4 gap-6">
           {[
             "Gotong Royong",

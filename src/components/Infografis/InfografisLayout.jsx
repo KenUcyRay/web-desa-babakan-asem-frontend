@@ -1,5 +1,10 @@
 import { Outlet, NavLink } from "react-router-dom";
-import { FaUsers, FaChartLine, FaHandsHelping, FaSeedling } from "react-icons/fa";
+import {
+  FaUsers,
+  FaChartLine,
+  FaHandsHelping,
+  FaSeedling,
+} from "react-icons/fa";
 
 export default function InfografisLayout() {
   const menu = [
@@ -11,7 +16,6 @@ export default function InfografisLayout() {
 
   return (
     <div className="font-poppins bg-gray-50 min-h-screen">
-      
       {/* 🔹 HEADER INFOGRAFIS */}
       <div className="py-6">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center px-6">

@@ -1,34 +1,50 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import ReCAPTCHA from "react-google-recaptcha";
 import loginImage from "../assets/login.png";
-import { UserApi } from "../libs/apis/UserApi";
-import { useLocalStorage } from "react-use";
+import { UserApi } from "../libs/api/UserApi";
+import { useAuth } from "../contexts/AuthContext";
+import { alertError, alertSuccess } from "../libs/alert";
 
 export default function Login() {
   const navigate = useNavigate();
+  const recaptchaRef = useRef(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [reCaptchaToken, setReCaptchaToken] = useState("");
-  const [_, setToken] = useLocalStorage("token", "");
+  const { isLoggedIn, login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const response = await UserApi.userLogin(email, password, reCaptchaToken);
+    const response = await UserApi.userLogin(
+      email,
+      password,
+      rememberMe,
+      reCaptchaToken
+    );
     const responseBody = await response.json();
-    console.log(responseBody);
-    console.log(response);
     if (response.status === 200) {
-      setToken(responseBody.token);
+      login(responseBody.token);
+      alertSuccess("Login berhasil!");
+      navigate("/");
     } else {
-      alert("Login gagal, silakan coba lagi.");
+      alertError(responseBody.error || "Login gagal, silakan coba lagi.");
     }
 
     setEmail("");
     setPassword("");
+    setRememberMe(false);
+    setReCaptchaToken("");
+    recaptchaRef.current?.reset();
   };
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate("/");
+    }
+  }, []);
 
   return (
     <div className="flex min-h-screen font-poppins">
@@ -94,10 +110,11 @@ export default function Login() {
             </div>
 
             <ReCAPTCHA
-            sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
-            size="normal"
-            onChange={(token) => setReCaptchaToken(token)}
-          />
+              ref={recaptchaRef}
+              sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
+              size="normal"
+              onChange={(token) => setReCaptchaToken(token)}
+            />
 
             {/* ✅ Tombol Login */}
             <button
@@ -107,8 +124,6 @@ export default function Login() {
               Masuk
             </button>
           </form>
-
-          
 
           {/* Garis pemisah */}
           <div className="flex items-center my-6">

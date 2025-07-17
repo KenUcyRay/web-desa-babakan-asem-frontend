@@ -36,7 +36,6 @@ import SDGs from "./components/Infografis/SDGs";
 export default function App() {
   return (
     <Router>
-
       <TopNavbar />
 
       {/* Supaya NavbarTop nggak ketiban */}
@@ -56,7 +55,7 @@ export default function App() {
           <Route path="/bumdes/:id" element={<DetailProduk />} />
           <Route path="/bumdes" element={<Bumdes />} />
           <Route path="/bumdes/:id" element={<DetailProduk />} />
-          
+
           {/* Route Halaman Tambahan */}
           <Route path="/bumdes" element={<Bumdes />} />
           <Route path="/karang-taruna" element={<KarangTaruna />} />
@@ -80,7 +79,6 @@ export default function App() {
             <Route path="bansos" element={<Bansos />} />
             <Route path="sdgs" element={<SDGs />} />
           </Route>
-
         </Routes>
 
         <Footer />

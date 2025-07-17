@@ -58,8 +58,8 @@ export default function KarangTaruna() {
           <div className="bg-[#B6F500] p-6 rounded-lg shadow text-black">
             <h2 className="text-xl font-semibold">Visi</h2>
             <p className="mt-2">
-              Menjadi pemuda yang aktif, kreatif, dan peduli terhadap pembangunan
-              desa.
+              Menjadi pemuda yang aktif, kreatif, dan peduli terhadap
+              pembangunan desa.
             </p>
           </div>
           <div className="bg-orange-200 p-6 rounded-lg shadow">
@@ -135,9 +135,7 @@ export default function KarangTaruna() {
           {/* dummy */}
           <div className="flex justify-center gap-2 mt-6">
             <button className="px-3 py-1 border rounded">1</button>
-            <button className="px-3 py-1 border rounded bg-[#B6F500]">
-              2
-            </button>
+            <button className="px-3 py-1 border rounded bg-[#B6F500]">2</button>
             <button className="px-3 py-1 border rounded">3</button>
             <button className="px-3 py-1 border rounded">...</button>
             <button className="px-3 py-1 border rounded">8</button>

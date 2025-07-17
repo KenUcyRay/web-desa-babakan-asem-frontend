@@ -15,11 +15,9 @@ export default function ForgotPassword() {
 
   return (
     <div className="flex min-h-screen font-poppins">
-      
       {/* ✅ Bagian Kiri: Form Forgot Password */}
       <div className="flex w-full md:w-1/2 items-center justify-center bg-gradient-to-b from-[#B6F500] to-[#FFFCE2] px-8 py-12">
         <div className="bg-white/90 backdrop-blur-md shadow-xl rounded-2xl w-full max-w-md p-8">
-          
           {/* Judul */}
           <h2 className="text-3xl text-gray-900 font-normal text-center mb-2">
             Lupa Password?

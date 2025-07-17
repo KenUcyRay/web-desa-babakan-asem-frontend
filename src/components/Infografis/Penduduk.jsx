@@ -1,6 +1,14 @@
 import pana from "../../assets/pana.png";
 import { FaMale, FaFemale, FaChild, FaHome } from "react-icons/fa";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"; // ✅ Tambah Recharts
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts"; // ✅ Tambah Recharts
 
 export default function Penduduk() {
   const data = [
@@ -21,7 +29,9 @@ export default function Penduduk() {
       {/* Judul + Gambar */}
       <div className="grid md:grid-cols-2 gap-6 items-center">
         <div>
-          <h2 className="text-3xl font-bold text-gray-800">Demografi Penduduk</h2>
+          <h2 className="text-3xl font-bold text-gray-800">
+            Demografi Penduduk
+          </h2>
           <p className="mt-2 text-gray-600">
             Gambaran jumlah penduduk berdasarkan kategori.
           </p>
