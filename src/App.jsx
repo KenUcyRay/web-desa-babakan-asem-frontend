@@ -33,6 +33,9 @@ import IDM from "./components/Infografis/IDM";
 import Bansos from "./components/Infografis/Bansos";
 import SDGs from "./components/Infografis/SDGs";
 
+// ✅ import halaman DPD
+import Dpd from "./components/Dpd";
+
 export default function App() {
   return (
     <Router>
@@ -62,6 +65,7 @@ export default function App() {
           <Route path="/pkk" element={<Pkk />} />
           <Route path="/potensi" element={<PotensiDesa />} />
           <Route path="/pemerintahan" element={<Pemerintahan />} />
+          <Route path="/dpd" element={<Dpd />} /> {/* ✅ Halaman DPD */}
           <Route path="/profil" element={<ProfilDesa />} />
           <Route path="/kontak" element={<KontakKami />} />
           <Route path="/login" element={<Login />} />

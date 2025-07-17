@@ -57,8 +57,8 @@ export default function Berita() {
             onPageChange={setCurrentPage}
           />
         </div>
-
         {/* SIDEBAR */}
+        
         <aside>
           <SidebarInfo />
         </aside>
