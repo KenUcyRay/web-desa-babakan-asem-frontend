@@ -23,6 +23,8 @@ import Register from "./components/Register";
 import ForgotPassword from "./components/ForgotPassword";
 import ResetPassword from "./components/ResetPassword";
 import Wait from "./components/Wait";
+import DetailAgenda from "./components/DetailAgenda";
+import DetailProduk from "./components/DetailProduk";
 
 // halaman infografis
 import InfografisLayout from "./components/Infografis/InfografisLayout";
@@ -50,7 +52,11 @@ export default function App() {
           <Route path="/berita/:id" element={<DetailBerita />} />
           <Route path="/panduan" element={<Panduan />} />
           <Route path="/galeri" element={<Galery />} />
-
+          <Route path="/agenda/:id" element={<DetailAgenda />} />
+          <Route path="/bumdes/:id" element={<DetailProduk />} />
+          <Route path="/bumdes" element={<Bumdes />} />
+          <Route path="/bumdes/:id" element={<DetailProduk />} />
+          
           {/* Route Halaman Tambahan */}
           <Route path="/bumdes" element={<Bumdes />} />
           <Route path="/karang-taruna" element={<KarangTaruna />} />

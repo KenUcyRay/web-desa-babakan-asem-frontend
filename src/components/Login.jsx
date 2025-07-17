@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import ReCAPTCHA from "react-google-recaptcha";
 import loginImage from "../assets/login.png";
 import { UserApi } from "../libs/apis/user-api";
 import ReCAPTCHA from "react-google-recaptcha";
@@ -73,23 +74,40 @@ export default function Login() {
               />
             </div>
 
-            {/* ✅ Tombol Login dengan gradient */}
+            {/* ✅ Remember Me */}
+            <div className="flex items-center justify-between text-sm">
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={() => setRememberMe(!rememberMe)}
+                  className="w-4 h-4 text-green-500"
+                />
+                Remember Me
+              </label>
+
+              <Link
+                to="/forgot-password"
+                className="text-green-700 hover:underline"
+              >
+                Lupa password?
+              </Link>
+            </div>
+
+            {/* ✅ reCAPTCHA */}
+            <ReCAPTCHA
+              sitekey="ISI_SITE_KEY_KAMU_DI_SINI"
+              onChange={() => setCaptchaVerified(true)}
+              className="my-4"
+            />
+
+            {/* ✅ Tombol Login */}
             <button
               type="submit"
               className="w-full py-3 bg-gradient-to-r from-green-400 to-[#B6F500] text-white font-semibold rounded-lg hover:opacity-90 transition duration-200"
             >
               Masuk
             </button>
-
-            {/* ✅ Link Forgot Password */}
-            <div className="text-center mt-4">
-              <Link
-                to="/forgot-password"
-                className="text-green-700 hover:underline text-sm"
-              >
-                Lupa password?
-              </Link>
-            </div>
           </form>
 
           <ReCAPTCHA
@@ -105,7 +123,6 @@ export default function Login() {
             <span className="flex-1 h-px bg-gray-200"></span>
           </div>
 
-          {/* ✅ Link ke Register */}
           <p className="text-center text-sm text-gray-700 mt-6">
             Belum punya akun?{" "}
             <Link to="/register" className="text-blue-500 hover:underline">

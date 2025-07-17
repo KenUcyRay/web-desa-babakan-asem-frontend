@@ -1,9 +1,8 @@
-// components/DetailBerita.jsx
 import { useParams } from "react-router-dom";
 import berita1 from "../assets/berita1.jpeg";
 import SidebarInfo from "./SidebarInfo";
 
-export default function DetailBerita() {
+export default function DetailAgenda() {
   const { id } = useParams();
 
   return (
@@ -13,28 +12,25 @@ export default function DetailBerita() {
       <div className="md:col-span-3">
         <img
           src={berita1}
-          alt="Detail Berita"
+          alt="Detail Agenda"
           className="w-full h-96 object-cover rounded-lg mb-6"
         />
         <h1 className="text-2xl font-bold mb-3">
-          Judul Berita {id}
+          Judul Agenda {id}
         </h1>
         <p className="text-sm text-gray-500 mb-6">
-          Oleh Admin | Tanggal: 08 Juni 2025 | 👁 20 Dilihat
+          Oleh Admin | Tanggal: 14 Juni 2025 | 🗓 Lokasi Balai Desa | 👁 15 Dilihat
         </p>
 
         <div className="space-y-4 text-gray-800 leading-relaxed">
           <p>
-            Lorem ipsum dolor sit amet consectetur. Odio dis et vitae sit facilisis.
-            Commodo et adipiscing scelerisque.
+            Ini adalah detail lengkap dari agenda {id}. Kegiatan ini diadakan untuk mendukung program desa.
           </p>
           <p>
-            Scelerisque aliquam augue sit id sit commodo semper feugiat. Vitae
-            semper quis auctor adipiscing.
+            Lokasi pelaksanaan berada di Balai Desa Babakan Asem. Warga diundang untuk berpartisipasi.
           </p>
           <p>
-            Tortor dui tempus et sed justo blandit diam erat. Sit placerat enim
-            molestie eget imperdiet.
+            Harap hadir tepat waktu dan membawa perlengkapan yang diperlukan.
           </p>
         </div>
 

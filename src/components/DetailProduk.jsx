@@ -1,10 +1,19 @@
-// components/DetailBerita.jsx
 import { useParams } from "react-router-dom";
-import berita1 from "../assets/berita1.jpeg";
-import SidebarInfo from "./SidebarInfo";
+import SidebarInfo from "./SidebarInfo"; // Bisa diganti SidebarProduk kalau mau
+import { FaWhatsapp } from "react-icons/fa";
+import SidebarProduk from "./SIdebarProduk";
 
-export default function DetailBerita() {
+export default function DetailProduk() {
   const { id } = useParams();
+
+  const produk = {
+    id,
+    nama: "Nama Produk Desa",
+    harga: "Rp 65.000",
+    deskripsi:
+      "Ini adalah deskripsi lengkap produk desa. Bisa mencakup bahan, proses pembuatan, manfaat, dan informasi lainnya.",
+    img: "https://picsum.photos/800/500?random=99",
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -12,30 +21,34 @@ export default function DetailBerita() {
       {/* ✅ Konten utama */}
       <div className="md:col-span-3">
         <img
-          src={berita1}
-          alt="Detail Berita"
+          src={produk.img}
+          alt={produk.nama}
           className="w-full h-96 object-cover rounded-lg mb-6"
         />
         <h1 className="text-2xl font-bold mb-3">
-          Judul Berita {id}
+          {produk.nama}
         </h1>
         <p className="text-sm text-gray-500 mb-6">
-          Oleh Admin | Tanggal: 08 Juni 2025 | 👁 20 Dilihat
+          Oleh BUMDes Babakan Asem | Harga: <span className="font-semibold text-black">{produk.harga}</span>
         </p>
 
         <div className="space-y-4 text-gray-800 leading-relaxed">
-          <p>
-            Lorem ipsum dolor sit amet consectetur. Odio dis et vitae sit facilisis.
-            Commodo et adipiscing scelerisque.
-          </p>
-          <p>
-            Scelerisque aliquam augue sit id sit commodo semper feugiat. Vitae
-            semper quis auctor adipiscing.
-          </p>
-          <p>
-            Tortor dui tempus et sed justo blandit diam erat. Sit placerat enim
-            molestie eget imperdiet.
-          </p>
+          <p>{produk.deskripsi}</p>
+          <p>Produk ini 100% hasil desa dan dikelola oleh masyarakat lokal.</p>
+        </div>
+
+        {/* Tombol WA Pesan */}
+        <div className="mt-6">
+          <a
+            href={`https://wa.me/6281234567890?text=Halo%20saya%20mau%20pesan%20${encodeURIComponent(
+              produk.nama
+            )}`}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition"
+          >
+            <FaWhatsapp /> Pesan via WhatsApp
+          </a>
         </div>
 
         {/* ✅ Komentar */}
@@ -67,7 +80,7 @@ export default function DetailBerita() {
 
       {/* ✅ Sidebar */}
       <aside>
-        <SidebarInfo />
+        <SidebarProduk />
       </aside>
     </div>
   );
