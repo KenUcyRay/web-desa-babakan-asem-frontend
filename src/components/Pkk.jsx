@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { HiOutlineMail } from "react-icons/hi";
-import { FaWpforms, FaUsers, FaGlobe, FaPhotoVideo } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { FaWpforms, FaUsers, FaPhotoVideo } from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
 import Pagination from "./Pagination";
+import { HiHome } from "react-icons/hi";
 
 export default function Pkk() {
+  const navigate = useNavigate();
+
   const allGaleri = Array.from({ length: 12 }, (_, i) => ({
     id: i + 1,
     img: `https://images.unsplash.com/photo-1493815793585-d94ccbc86df8?w=600&random=${i}`,
@@ -19,16 +22,18 @@ export default function Pkk() {
 
   return (
     <div className="font-poppins text-gray-800">
+
+
       {/* ✅ HERO SECTION */}
       <section className="max-w-7xl mx-auto px-4 py-10 flex flex-col md:flex-row items-center gap-8">
-        <div className="flex-1">
+        <div className="flex-1 text-center md:text-left">
           <h1 className="text-3xl md:text-4xl font-bold text-green-700">
             PKK DESA BABAKAN ASEM
           </h1>
           <p className="mt-2 text-lg text-gray-600">
             Pemberdayaan Keluarga Menuju Desa Sejahtera
           </p>
-          <p className="mt-4">
+          <p className="mt-4 leading-relaxed">
             Pemberdayaan Kesejahteraan Keluarga adalah gerakan nasional dalam
             pembangunan masyarakat yang tumbuh dari bawah, dikelola oleh, untuk,
             dan bersama masyarakat menuju terwujudnya keluarga yang beriman,
@@ -40,7 +45,7 @@ export default function Pkk() {
           <img
             src="https://images.unsplash.com/photo-1509062522246-3755977927d7?w=800"
             alt="PKK"
-            className="rounded-xl shadow-xl"
+            className="rounded-xl shadow-xl w-full object-cover"
           />
         </div>
       </section>
@@ -73,7 +78,7 @@ export default function Pkk() {
         <h2 className="text-3xl font-bold text-center mb-6">
           Program Pokok PKK
         </h2>
-        <div className="grid md:grid-cols-4 gap-6">
+        <div className="grid gap-6 grid-cols-[repeat(auto-fit,minmax(260px,1fr))]">
           {[1, 2, 3, 4].map((item) => (
             <div
               key={item}
@@ -102,7 +107,7 @@ export default function Pkk() {
         <h2 className="text-3xl font-bold text-center mb-6">
           Agenda Penting PKK
         </h2>
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid gap-6 grid-cols-[repeat(auto-fit,minmax(280px,1fr))]">
           {[1, 2, 3].map((item) => (
             <div
               key={item}

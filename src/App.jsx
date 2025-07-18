@@ -45,6 +45,7 @@ import SDGs from "./components/Infografis/SDGs";
 
 // ✅ Halaman DPD
 import Dpd from "./components/Dpd";
+import DetailDpd from "./components/DetailDpd";
 
 // ✅ Form Administrasi
 import SuratPengantar from "./components/forms/SuratPengantar";
@@ -98,6 +99,7 @@ function LayoutUmum() {
           <Route path="/profil" element={<ProfilDesa />} />
           <Route path="/kontak" element={<KontakKami />} />
           <Route path="/pkk/struktur" element={<StPkk />} />
+          <Route path="/detail-dpd" element={<DetailDpd />} />
 
           {/* ✅ Auth */}
           <Route path="/login" element={<Login />} />

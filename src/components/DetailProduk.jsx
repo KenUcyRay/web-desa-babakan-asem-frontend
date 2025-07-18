@@ -19,10 +19,6 @@ export default function DetailProduk() {
   const userToken = JSON.parse(localStorage.getItem("token"));
 
   const [rating, setRating] = useState(0);
-  const [userRated, setUserRated] = useState(false);
-
-  const handleKomentar = async (e) => {
-    e.preventDefault();
 
     const user = JSON.parse(localStorage.getItem("token"));
     if (!user) {
@@ -155,45 +151,65 @@ export default function DetailProduk() {
           </a>
         </div>
 
-        {/* ✅ Komentar */}
-        <div className="mt-10 p-6 bg-gray-50 rounded-lg shadow">
-          <h2 className="text-xl font-semibold mb-4">💬 Tinggalkan Komentar</h2>
+          <div className="space-y-4 text-gray-800 leading-relaxed">
+            <p>{produk.deskripsi}</p>
+            <p>Produk ini 100% hasil desa dan dikelola oleh masyarakat lokal.</p>
+          </div>
 
-          <form onSubmit={handleKomentar} className="space-y-4">
-            <textarea
-              placeholder="Tulis komentar kamu..."
-              rows="4"
-              value={pesan}
-              onChange={(e) => setPesan(e.target.value)}
-              className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-300"
-              required
-            />
-            <button
-              type="submit"
-              className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition"
+          {/* ✅ Tombol WA Pesan */}
+          <div className="mt-6">
+            <a
+              href={`https://wa.me/6281234567890?text=Halo%20saya%20mau%20pesan%20${encodeURIComponent(
+                produk.nama
+              )}`}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition"
             >
-              Kirim Komentar
-            </button>
-          </form>
+              <FaWhatsapp /> Pesan via WhatsApp
+            </a>
+          </div>
 
-          {/* ✅ List Komentar */}
-          <div className="mt-6 space-y-4">
-            {comments.map((c, i) => (
-              <div key={i} className="p-4 bg-white rounded-lg shadow">
-                <p className="text-sm text-gray-700">{c.content}</p>
-                <p className="text-xs text-gray-500 mt-1">
-                  ✍ {c.user.name} • {Helper.formatTanggal(c.updated_at)}
-                </p>
-              </div>
-            ))}
+          {/* ✅ Komentar */}
+          <div className="mt-10 p-6 bg-gray-50 rounded-lg shadow">
+            <h2 className="text-xl font-semibold mb-4">💬 Tinggalkan Komentar</h2>
+
+            <form onSubmit={handleKomentar} className="space-y-4">
+              <textarea
+                placeholder="Tulis komentar kamu..."
+                rows="4"
+                value={pesan}
+                onChange={(e) => setPesan(e.target.value)}
+                className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-300"
+                required
+              />
+              <button
+                type="submit"
+                className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition"
+              >
+                Kirim Komentar
+              </button>
+            </form>
+
+            {/* ✅ List Komentar */}
+            <div className="mt-6 space-y-4">
+              {comments.map((c, i) => (
+                <div key={i} className="p-4 bg-white rounded-lg shadow">
+                  <p className="text-sm text-gray-700">{c.content}</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    ✍ {c.user.name} • {Helper.formatTanggal(c.updated_at)}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* ✅ Sidebar */}
-      <aside>
-        <SidebarProduk />
-      </aside>
+        {/* ✅ Sidebar */}
+        <aside>
+          <SidebarProduk />
+        </aside>
+      </div>
     </div>
   );
 }

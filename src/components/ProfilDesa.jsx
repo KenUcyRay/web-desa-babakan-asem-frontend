@@ -6,13 +6,28 @@ import {
   FaEnvelope,
   FaTiktok,
 } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import { HiHome } from "react-icons/hi";
 import kumpul from "../assets/kumpul.jpg";
 
 export default function ProfilDesa() {
+  const navigate = useNavigate();
+
   return (
     <div className="font-poppins bg-gray-50">
+      {/* ✅ Tombol Back */}
+      <div className="max-w-6xl mx-auto px-4 pt-8">
+        <button
+          onClick={() => navigate("/")}
+          className="mb-6 flex items-center gap-2 px-4 py-2 rounded-full text-white font-semibold 
+          bg-gradient-to-r from-[#9BEC00] to-[#D2FF72] shadow hover:shadow-lg hover:scale-105 transition"
+        >
+          <HiHome className="text-lg" /> Kembali ke Beranda
+        </button>
+      </div>
+
       {/* ✅ Bagian Judul + Deskripsi Singkat */}
-      <section className="max-w-6xl mx-auto px-4 py-12 grid md:grid-cols-2 gap-8 items-center">
+      <section className="max-w-6xl mx-auto px-4 py-8 grid md:grid-cols-2 gap-8 items-center">
         <div>
           <h1 className="text-4xl font-bold text-green-700 mb-4">
             Profil Desa Babakan Asem
@@ -35,7 +50,7 @@ export default function ProfilDesa() {
       </section>
 
       {/* ✅ Sejarah Desa */}
-      <section className="bg-white shadow-sm py-12">
+      <section className="bg-white shadow-sm py-10">
         <div className="max-w-4xl mx-auto px-4">
           <h2 className="text-3xl font-bold text-center text-green-700 mb-6">
             Sejarah Desa
@@ -66,6 +81,7 @@ export default function ProfilDesa() {
         <div className="bg-gradient-to-br from-green-50 to-white shadow-md rounded-xl p-6">
           <h3 className="text-2xl font-bold text-green-700 mb-4">Misi</h3>
           <ul className="list-disc list-inside text-gray-700 space-y-2">
+<
             <li>
               Meningkatkan kesejahteraan masyarakat melalui pembangunan
               berkelanjutan.
@@ -112,7 +128,7 @@ export default function ProfilDesa() {
         </div>
       </section>
 
-      {/* ✅ Sosial Media BESAR */}
+      {/* ✅ Sosial Media */}
       <section className="bg-white py-16">
         <div className="max-w-6xl mx-auto px-4">
           <h2 className="text-3xl font-bold text-center text-green-700 mb-10">
@@ -172,19 +188,13 @@ export default function ProfilDesa() {
             </a>
 
             {/* TikTok */}
-            <a
-              href="https://tiktok.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-6 p-6 rounded-xl bg-gray-100 hover:bg-gray-200 shadow-md hover:shadow-xl transition"
-            >
-              <FaTiktok className="text-black text-5xl" />
-              <div>
-                <h3 className="text-xl font-semibold text-gray-800">TikTok</h3>
-                <p className="text-gray-600 text-sm">Konten singkat & seru</p>
-              </div>
-            </a>
-
+            <SocialLink
+              url="https://tiktok.com"
+              icon={<FaTiktok className="text-black text-5xl" />}
+              title="TikTok"
+              desc="Konten singkat & seru"
+              bg="bg-gray-100 hover:bg-gray-200"
+            />
             {/* Gmail */}
             <a
               href="mailto:desababakanasem@gmail.com"
@@ -235,5 +245,23 @@ export default function ProfilDesa() {
         </div>
       </section>
     </div>
+  );
+}
+
+// ✅ Komponen kecil buat sosial media
+function SocialLink({ url, icon, title, desc, bg }) {
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={`flex items-center gap-6 p-6 rounded-xl ${bg} shadow-md hover:shadow-xl transition`}
+    >
+      {icon}
+      <div>
+        <h3 className="text-xl font-semibold">{title}</h3>
+        <p className="text-gray-600 text-sm">{desc}</p>
+      </div>
+    </a>
   );
 }
