@@ -45,7 +45,7 @@ export default function ManagePesan() {
         <h1 className="text-2xl font-bold mb-4">Kelola Pesan Masuk</h1>
 
         {/* Filter */}
-        <div className="flex gap-2 mb-4">
+        {/* <div className="flex gap-2 mb-4">
           {["all", "read", "unread"].map((f) => (
             <button
               key={f}
@@ -60,7 +60,7 @@ export default function ManagePesan() {
               {f === "all" ? "Semua" : f === "read" ? "Sudah Dibaca" : "Belum Dibaca"}
             </button>
           ))}
-        </div>
+        </div> */}
 
         {/* List Pesan */}
         <div className="space-y-4">
@@ -95,7 +95,7 @@ export default function ManagePesan() {
         </div>
 
         {/* Pagination */}
-        <div className="flex justify-center gap-2 mt-4">
+        {/* <div className="flex justify-center gap-2 mt-4">
           {Array.from({ length: totalPages }).map((_, i) => (
             <button
               key={i}
@@ -107,7 +107,7 @@ export default function ManagePesan() {
               {i + 1}
             </button>
           ))}
-        </div>
+        </div> */}
       </div>
     </div>
   );
