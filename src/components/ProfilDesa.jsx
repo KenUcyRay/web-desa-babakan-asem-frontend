@@ -15,16 +15,6 @@ export default function ProfilDesa() {
 
   return (
     <div className="font-poppins bg-gray-50">
-      {/* ✅ Tombol Back */}
-      <div className="max-w-6xl mx-auto px-4 pt-8">
-        <button
-          onClick={() => navigate("/")}
-          className="mb-6 flex items-center gap-2 px-4 py-2 rounded-full text-white font-semibold 
-          bg-gradient-to-r from-[#9BEC00] to-[#D2FF72] shadow hover:shadow-lg hover:scale-105 transition"
-        >
-          <HiHome className="text-lg" /> Kembali ke Beranda
-        </button>
-      </div>
 
       {/* ✅ Bagian Judul + Deskripsi Singkat */}
       <section className="max-w-6xl mx-auto px-4 py-8 grid md:grid-cols-2 gap-8 items-center">
@@ -81,14 +71,12 @@ export default function ProfilDesa() {
         <div className="bg-gradient-to-br from-green-50 to-white shadow-md rounded-xl p-6">
           <h3 className="text-2xl font-bold text-green-700 mb-4">Misi</h3>
           <ul className="list-disc list-inside text-gray-700 space-y-2">
-<
-            <li>
-              Meningkatkan kesejahteraan masyarakat melalui pembangunan
-              berkelanjutan.
-            </li>
-            <li>Memberdayakan potensi desa untuk mendukung ekonomi kreatif.</li>
-            <li>Meningkatkan kualitas pendidikan & kesehatan masyarakat.</li>
-            <li>Menjaga kelestarian lingkungan & budaya lokal.</li>
+        <li>
+          Meningkatkan kesejahteraan masyarakat melalui pembangunan berkelanjutan.
+        </li>
+        <li>Memberdayakan potensi desa untuk mendukung ekonomi kreatif.</li>
+         <li>Meningkatkan kualitas pendidikan & kesehatan masyarakat.</li>
+         <li>Menjaga kelestarian lingkungan & budaya lokal.</li>
           </ul>
         </div>
       </section>

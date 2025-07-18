@@ -21,14 +21,6 @@ export default function Pemerintahan() {
   return (
     <div className="bg-gray-50 py-10 font-poppins">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
-        {/* ✅ Tombol Back */}
-        <button
-          onClick={() => navigate("/")}
-          className="mb-6 flex items-center gap-2 px-4 py-2 rounded-full text-white font-semibold 
-          bg-gradient-to-r from-[#9BEC00] to-[#D2FF72] shadow hover:shadow-lg hover:scale-105 transition"
-        >
-          <HiHome className="text-lg" /> Kembali ke Beranda
-        </button>
 
         {/* Judul Halaman */}
         <h1 className="text-3xl font-bold text-center text-gray-900">
@@ -68,7 +60,7 @@ export default function Pemerintahan() {
           {/* Lembaga */}
           <div className="bg-white rounded-lg shadow p-6">
             <h3 className="text-lg font-semibold mb-4">Lembaga Desa</h3>
-            {["BPD", "LMDP", "RT/RW"].map((nama, i) => (
+            {["BUMDes", "Dpd", "Karang Taruna"].map((nama, i) => (
               <button
                 key={i}
                 className="w-full flex items-center justify-between bg-gray-100 p-3 rounded hover:bg-gray-200 mb-2"

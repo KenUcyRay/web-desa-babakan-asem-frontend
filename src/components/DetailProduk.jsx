@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { FaWhatsapp, FaStar, FaRegStar } from "react-icons/fa";
+import { FaWhatsapp, FaStar, FaRegStar, FaStarHalfAlt } from "react-icons/fa";
 import SidebarProduk from "./SidebarProduk";
 import { Helper } from "../utils/Helper";
 import { alertError, alertSuccess } from "../libs/alert";
@@ -11,48 +11,23 @@ export default function DetailProduk() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState({});
-  // const [userCreated, setUserCreated] = useState({});
   const [comments, setComments] = useState([]);
   const [pesan, setPesan] = useState("");
+  const [rating, setRating] = useState(0);
+  const [userRated, setUserRated] = useState(false);
 
-  // ✅ Cek login token
   const userToken = JSON.parse(localStorage.getItem("token"));
 
-  const [rating, setRating] = useState(0);
-
-    const user = JSON.parse(localStorage.getItem("token"));
-    if (!user) {
-      alert("⚠ Silakan login dulu untuk memberikan komentar!");
-      navigate("/login");
-      return;
-    }
-
-    const response = await CommentApi.createComment(id, "PRODUCT", pesan);
-    const responseBody = await response.json();
-    if (response.status !== 201) {
-      await alertError(
-        `Gagal mengirim komentar. Silakan coba lagi nanti. ${responseBody.error}`
-      );
-      return;
-    }
-
-    await alertSuccess("Komentar berhasil dikirim!");
-
-    setPesan("");
-  };
-
+  // ✅ Ambil detail produk + komentar pertama kali
   const fetchDetailProduct = async () => {
     const response = await ProductApi.getDetailProduct(id);
     const responseBody = await response.json();
     if (response.status === 200) {
       setProduct(responseBody.product);
-      // setUserCreated(responseBody.user_created);
-      setRating(responseBody.rating);
-      setComments(responseBody.comments);
+      setRating(responseBody.rating ?? 0);
+      setComments(responseBody.comments ?? []);
     } else {
-      await alertError(
-        `Gagal mengambil detail product. Silakan coba lagi nanti.`
-      );
+      await alertError("Gagal mengambil detail product. Silakan coba lagi nanti.");
       navigate("/bumdes");
     }
   };
@@ -62,8 +37,6 @@ export default function DetailProduk() {
     const responseBody = await response.json();
     if (response.status === 200) {
       setComments(responseBody.comments);
-    } else {
-      await alertError(`Gagal mengambil comment. Silakan coba lagi nanti.`);
     }
   };
 
@@ -72,13 +45,33 @@ export default function DetailProduk() {
   }, [id]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      fetchComment();
-    }, 5000);
-
+    const interval = setInterval(fetchComment, 5000);
     return () => clearInterval(interval);
   }, [id]);
 
+  // ✅ Kirim Komentar
+  const handleKomentar = async (e) => {
+    e.preventDefault();
+    if (!userToken) {
+      alert("⚠ Silakan login dulu untuk memberikan komentar!");
+      navigate("/login");
+      return;
+    }
+
+    const response = await CommentApi.createComment(id, "PRODUCT", pesan);
+    const responseBody = await response.json();
+
+    if (response.status !== 201) {
+      await alertError(`Gagal mengirim komentar. ${responseBody.error}`);
+      return;
+    }
+
+    await alertSuccess("Komentar berhasil dikirim!");
+    setPesan("");
+    fetchComment();
+  };
+
+  // ✅ Rating
   const handleRating = (value) => {
     if (!userToken) {
       alert("Silakan login dulu untuk memberi rating!");
@@ -98,15 +91,13 @@ export default function DetailProduk() {
       {/* ✅ Konten utama */}
       <div className="md:col-span-3">
         <img
-          src={`${import.meta.env.VITE_BASE_URL}/products/images/${
-            product.featured_image
-          }`}
+          src={`${import.meta.env.VITE_BASE_URL}/products/images/${product.featured_image}`}
           alt={product.title}
           className="w-full h-96 object-cover rounded-lg mb-6"
         />
         <h1 className="text-2xl font-bold mb-3">{product.title}</h1>
         <p className="text-sm text-gray-500 mb-2">
-          Oleh BUMDes Babakan Asem | Harga : {""}
+          Oleh BUMDes Babakan Asem | Harga :{" "}
           <span className="font-semibold text-black">
             {Helper.formatRupiah(product.price)}
           </span>
@@ -127,14 +118,19 @@ export default function DetailProduk() {
               icon = <FaRegStar className="text-gray-300" />;
             }
 
-            return <span key={star}>{icon}</span>;
+            return (
+              <span key={star} onClick={() => handleRating(star)} className="cursor-pointer">
+                {icon}
+              </span>
+            );
           })}
           <span className="text-sm text-gray-500 ml-2">
-            ({rating.toFixed(1)})
+            ({rating?.toFixed(1) ?? "0.0"})
           </span>
         </div>
 
-        <div className="space-y-4 text-gray-800 leading-relaxed">
+        {/* ✅ Deskripsi */}
+        <div className="space-y-4 text-gray-800 leading-relaxed mt-4">
           <p>{product.description}</p>
           <p>Produk ini 100% hasil desa dan dikelola oleh masyarakat lokal.</p>
         </div>
@@ -151,65 +147,46 @@ export default function DetailProduk() {
           </a>
         </div>
 
-          <div className="space-y-4 text-gray-800 leading-relaxed">
-            <p>{produk.deskripsi}</p>
-            <p>Produk ini 100% hasil desa dan dikelola oleh masyarakat lokal.</p>
-          </div>
+        {/* ✅ Komentar */}
+        <div className="mt-10 p-6 bg-gray-50 rounded-lg shadow">
+          <h2 className="text-xl font-semibold mb-4">💬 Tinggalkan Komentar</h2>
 
-          {/* ✅ Tombol WA Pesan */}
-          <div className="mt-6">
-            <a
-              href={`https://wa.me/6281234567890?text=Halo%20saya%20mau%20pesan%20${encodeURIComponent(
-                produk.nama
-              )}`}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition"
+          <form onSubmit={handleKomentar} className="space-y-4">
+            <textarea
+              placeholder="Tulis komentar kamu..."
+              rows="4"
+              value={pesan}
+              onChange={(e) => setPesan(e.target.value)}
+              className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-300"
+              required
+            />
+            <button
+              type="submit"
+              className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition"
             >
-              <FaWhatsapp /> Pesan via WhatsApp
-            </a>
-          </div>
+              Kirim Komentar
+            </button>
+          </form>
 
-          {/* ✅ Komentar */}
-          <div className="mt-10 p-6 bg-gray-50 rounded-lg shadow">
-            <h2 className="text-xl font-semibold mb-4">💬 Tinggalkan Komentar</h2>
-
-            <form onSubmit={handleKomentar} className="space-y-4">
-              <textarea
-                placeholder="Tulis komentar kamu..."
-                rows="4"
-                value={pesan}
-                onChange={(e) => setPesan(e.target.value)}
-                className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-300"
-                required
-              />
-              <button
-                type="submit"
-                className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition"
-              >
-                Kirim Komentar
-              </button>
-            </form>
-
-            {/* ✅ List Komentar */}
-            <div className="mt-6 space-y-4">
-              {comments.map((c, i) => (
-                <div key={i} className="p-4 bg-white rounded-lg shadow">
-                  <p className="text-sm text-gray-700">{c.content}</p>
-                  <p className="text-xs text-gray-500 mt-1">
-                    ✍ {c.user.name} • {Helper.formatTanggal(c.updated_at)}
-                  </p>
-                </div>
-              ))}
-            </div>
+          {/* ✅ List Komentar */}
+          <div className="mt-6 space-y-4">
+            {comments.map((c, i) => (
+              <div key={i} className="p-4 bg-white rounded-lg shadow">
+                <p className="text-sm text-gray-700">{c.content}</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  ✍ {c.user?.name ?? "Anonim"} • {Helper.formatTanggal(c.updated_at)}
+                </p>
+              </div>
+            ))}
+            {comments.length === 0 && <p className="text-center text-gray-400">Belum ada komentar</p>}
           </div>
         </div>
-
-        {/* ✅ Sidebar */}
-        <aside>
-          <SidebarProduk />
-        </aside>
       </div>
+
+      {/* ✅ Sidebar */}
+      <aside>
+        <SidebarProduk />
+      </aside>
     </div>
   );
 }
