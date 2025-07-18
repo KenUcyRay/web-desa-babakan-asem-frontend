@@ -2,94 +2,115 @@ import berita1 from "../assets/berita1.jpeg";
 import { Link } from "react-router-dom";
 import { HiOutlineMail } from "react-icons/hi";
 import { FaUsers, FaWhatsapp } from "react-icons/fa";
+import { useState } from "react";
 
 export default function SidebarInfo() {
+  const [hovered, setHovered] = useState(null);
+
   return (
     <div className="space-y-6">
       {/* ✅ Kartu Berita Terbaru */}
-      <div className="bg-white p-4 rounded-xl shadow">
+      <div className="bg-white p-4 rounded-xl shadow-lg">
         <h2 className="font-bold text-lg mb-4 border-b pb-2">Berita Terbaru</h2>
         {[1, 2, 3, 4].map((i) => (
-          <Link
+          <div
             key={i}
-            to={`/berita/${i}`} // 👉 langsung ke detail berita
-            className="flex items-center mb-4 hover:bg-gray-50 p-2 rounded transition"
+            className="relative"
+            onMouseEnter={() => setHovered(`berita-${i}`)}
+            onMouseLeave={() => setHovered(null)}
           >
-            <img
-              src={berita1}
-              alt={`Berita ${i}`}
-              className="w-12 h-12 object-cover rounded mr-3"
-            />
-            <div>
-              <p className="text-sm font-semibold hover:text-green-600">
-                Judul Berita {i}
-              </p>
-              <p className="text-xs text-gray-500">14/6/2025</p>
-              <p className="text-xs text-gray-400">👁 Dilihat Sekian Kali</p>
+            <Link
+              to={`/berita/${i}`}
+              className="flex items-center mb-3 bg-gradient-to-r from-[#FFFCE2] to-white p-2 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 hover:scale-[1.02]"
+            >
+              <img
+                src={berita1}
+                alt={`Berita ${i}`}
+                className="w-12 h-12 object-cover rounded-lg mr-3"
+              />
+              <div>
+                <p className="text-sm font-semibold hover:text-green-600">
+                  Judul Berita {i}
+                </p>
+                <p className="text-xs text-gray-500">14/6/2025</p>
+              </div>
+            </Link>
+
+            {/* ✅ Dropdown penjelasan kecil */}
+            <div
+              className={`absolute left-0 top-full mt-1 w-full bg-white text-xs text-gray-600 p-2 rounded-md shadow-md transition-all duration-300 ${
+                hovered === `berita-${i}`
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 -translate-y-1 pointer-events-none"
+              }`}
+            >
+              Ringkasan singkat berita {i} untuk gambaran umum.
             </div>
-          </Link>
+          </div>
         ))}
       </div>
 
       {/* ✅ Kartu Agenda Terbaru */}
-      <div className="bg-white p-4 rounded-xl shadow">
+      <div className="bg-white p-4 rounded-xl shadow-lg">
         <h2 className="font-bold text-lg mb-4 border-b pb-2">Agenda Terbaru</h2>
         {[1, 2, 3].map((i) => (
-          <Link
+          <div
             key={i}
-            to={`/agenda/${i}`} // 👉 langsung ke detail agenda
-            className="flex items-center mb-4 hover:bg-gray-50 p-2 rounded transition"
+            className="relative"
+            onMouseEnter={() => setHovered(`agenda-${i}`)}
+            onMouseLeave={() => setHovered(null)}
           >
-            <img
-              src={berita1}
-              alt={`Agenda ${i}`}
-              className="w-12 h-12 object-cover rounded mr-3"
-            />
-            <div>
-              <p className="text-sm font-semibold hover:text-green-600">
-                Judul Agenda {i}
-              </p>
-              <p className="text-xs text-gray-500">14/6/2025</p>
-              <p className="text-xs text-gray-400">👁 Dilihat Sekian Kali</p>
+            <Link
+              to={`/agenda/${i}`}
+              className="flex items-center mb-3 bg-gradient-to-r from-[#FFFCE2] to-white p-2 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 hover:scale-[1.02]"
+            >
+              <img
+                src={berita1}
+                alt={`Agenda ${i}`}
+                className="w-12 h-12 object-cover rounded-lg mr-3"
+              />
+              <div>
+                <p className="text-sm font-semibold hover:text-green-600">
+                  Judul Agenda {i}
+                </p>
+                <p className="text-xs text-gray-500">14/6/2025</p>
+              </div>
+            </Link>
+
+            {/* ✅ Dropdown penjelasan kecil */}
+            <div
+              className={`absolute left-0 top-full mt-1 w-full bg-white text-xs text-gray-600 p-2 rounded-md shadow-md transition-all duration-300 ${
+                hovered === `agenda-${i}`
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 -translate-y-1 pointer-events-none"
+              }`}
+            >
+              Deskripsi singkat agenda {i} yang akan datang.
             </div>
-          </Link>
+          </div>
         ))}
       </div>
 
       {/* ✅ Kartu Kontak Kami */}
       <div className="space-y-4">
-        {/* WhatsApp */}
-        <div className="bg-gradient-to-r from-[#B6F500] to-[#FFFCE2] p-4 rounded-xl shadow flex items-center gap-4">
-          <div className="bg-white p-2 rounded-full text-green-600">
-            <FaWhatsapp className="w-6 h-6" />
+        {[
+          { icon: <FaWhatsapp className="w-6 h-6" />, label: "WhatsApp", value: "0812-3456-7890" },
+          { icon: <FaUsers className="w-6 h-6" />, label: "Telepon", value: "(0261) 123456" },
+          { icon: <HiOutlineMail className="w-6 h-6" />, label: "Email", value: "info@babakanasem.id" },
+        ].map((item, idx) => (
+          <div
+            key={idx}
+            className="bg-gradient-to-r from-[#B6F500] to-[#FFFCE2] p-4 rounded-xl shadow hover:shadow-lg hover:scale-[1.02] transition-all duration-300 flex items-center gap-4"
+          >
+            <div className="bg-white p-2 rounded-full text-green-600">
+              {item.icon}
+            </div>
+            <div>
+              <p className="text-sm font-semibold">{item.label}</p>
+              <p className="text-xs text-gray-700">{item.value}</p>
+            </div>
           </div>
-          <div>
-            <p className="text-sm font-semibold">WhatsApp</p>
-            <p className="text-xs text-gray-700">0812-3456-7890</p>
-          </div>
-        </div>
-
-        {/* Telepon */}
-        <div className="bg-gradient-to-r from-[#B6F500] to-[#FFFCE2] p-4 rounded-xl shadow flex items-center gap-4">
-          <div className="bg-white p-2 rounded-full text-green-600">
-            <FaUsers className="w-6 h-6" />
-          </div>
-          <div>
-            <p className="text-sm font-semibold">Telepon</p>
-            <p className="text-xs text-gray-700">(0261) 123456</p>
-          </div>
-        </div>
-
-        {/* Email */}
-        <div className="bg-gradient-to-r from-[#B6F500] to-[#FFFCE2] p-4 rounded-xl shadow flex items-center gap-4">
-          <div className="bg-white p-2 rounded-full text-green-600">
-            <HiOutlineMail className="w-6 h-6" />
-          </div>
-          <div>
-            <p className="text-sm font-semibold">Email</p>
-            <p className="text-xs text-gray-700">info@babakanasem.id</p>
-          </div>
-        </div>
+        ))}
       </div>
     </div>
   );

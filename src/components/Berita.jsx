@@ -5,20 +5,6 @@ import Pagination from "./Pagination";
 import { NewsApi } from "../libs/api/NewsApi";
 
 export default function Berita() {
-  // const allBerita = Array.from({ length: 12 }, (_, i) => ({
-  //   id: i + 1,
-  //   judul: `Judul Berita ${i + 1}`,
-  //   ringkasan: `Ringkasan isi berita singkat lorem ipsum dolor sit amet...`,
-  //   img: berita1,
-  // }));
-
-  // const [currentPage, setCurrentPage] = useState(1);
-  // const beritaPerPage = 6;
-  // const indexOfLast = currentPage * beritaPerPage;
-  // const indexOfFirst = indexOfLast - beritaPerPage;
-  // const currentBerita = allBerita.slice(indexOfFirst, indexOfLast);
-  // const totalPages = Math.ceil(allBerita.length / beritaPerPage);
-
   const [news, setNews] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -27,22 +13,26 @@ export default function Berita() {
     const response = await NewsApi.getNews(currentPage);
     if (response.status === 200) {
       const responseBody = await response.json();
-      console.log(responseBody);
-      console.log(responseBody.news);
       setTotalPages(responseBody.total_page);
       setCurrentPage(responseBody.page);
       setNews(responseBody.news);
     } else {
-      await alertError("Gagal mengambil data news. Silakan coba lagi nanti.");
+      alert("Gagal mengambil data berita. Silakan coba lagi nanti.");
     }
   };
 
   const formatTanggal = (isoString) => {
     const date = new Date(isoString);
     const day = date.getDate();
-    const month = date.getMonth() + 1; // Bulan dimulai dari 0
+    const month = date.getMonth() + 1;
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
+  };
+
+  // ✅ Batasi deskripsi berita
+  const truncateText = (text, maxLength = 100) => {
+    if (!text) return "";
+    return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
   };
 
   useEffect(() => {
@@ -58,25 +48,33 @@ export default function Berita() {
             Berita Desa Babakan Asem
           </h1>
 
-          {/* Grid berita */}
+          {/* Grid daftar berita */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {news.map((n) => (
-              <Link to={`/news/${n.news.id}`} key={n.news.id}>
+              <Link to={`/berita/${n.news.id}`} key={n.news.id}>
                 <div className="bg-white rounded-xl shadow hover:shadow-md transition p-4 h-full flex flex-col">
+                  {/* Gambar Berita */}
                   <img
-                    src={`${import.meta.env.VITE_BASE_URL}/news/images/${
-                      n.news.featured_image
-                    }`}
+                    src={`${import.meta.env.VITE_BASE_URL}/news/images/${n.news.featured_image}`}
                     alt="Berita"
                     className="w-full h-48 object-cover rounded-lg mb-4"
                   />
+
+                  {/* Judul */}
                   <h2 className="text-lg font-bold mb-2">{n.news.title}</h2>
+
+                  {/* Deskripsi singkat + lihat detail */}
                   <p className="text-sm text-gray-700 flex-grow">
-                    {n.news.content}
+                    {truncateText(n.news.content, 100)}{" "}
+                    <span className="text-green-600 font-semibold">
+                      Lihat detail →
+                    </span>
                   </p>
+
+                  {/* Info tanggal & view */}
                   <p className="text-xs text-gray-400 mt-2">
-                    🗓 {formatTanggal(n.news.created_at)} | 👁 Dilihat{" "}
-                    {n.news.view_count} Kali
+                    🗓 {formatTanggal(n.news.created_at)} | 👁{" "}
+                    {n.news.view_count} kali
                   </p>
                 </div>
               </Link>
@@ -90,8 +88,8 @@ export default function Berita() {
             onPageChange={setCurrentPage}
           />
         </div>
-        {/* SIDEBAR */}
 
+        {/* SIDEBAR */}
         <aside>
           <SidebarInfo />
         </aside>
