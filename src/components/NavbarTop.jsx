@@ -3,6 +3,7 @@ import { useLocation, NavLink, Link } from "react-router-dom";
 import { FiMenu, FiX } from "react-icons/fi";
 import logo from "../assets/logo.png";
 import { useAuth } from "../contexts/AuthContext";
+import { alertConfirm, alertSuccess } from "../libs/alert";
 
 export default function NavbarTop() {
   const location = useLocation();
@@ -19,6 +20,16 @@ export default function NavbarTop() {
   const activeClass = "text-[#B6F500] font-semibold";
   const normalClass = "hover:text-[#B6F500] transition";
 
+  const handleLogout = async () => {
+    const confirm = await alertConfirm("Apakah Anda yakin ingin keluar?");
+
+    if (!confirm) {
+      return;
+    }
+    await alertSuccess("Anda telah keluar.");
+    logout();
+  };
+
   const button = () => {
     if (isLoggedIn) {
       if (isAdmin) {
@@ -33,7 +44,7 @@ export default function NavbarTop() {
       }
       return (
         <button
-          onClick={logout}
+          onClick={handleLogout}
           className="bg-gradient-to-r from-green-400 to-[#B6F500] text-white px-4 py-2 rounded hover:opacity-90 transition"
         >
           Keluar
@@ -67,7 +78,7 @@ export default function NavbarTop() {
       return (
         <button
           onClick={() => {
-            logout;
+            handleLogout();
             setMobileOpen(false);
           }}
           className="bg-gradient-to-r from-green-400 to-[#B6F500] text-white px-4 py-2 rounded text-center"

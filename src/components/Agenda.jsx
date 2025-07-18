@@ -13,15 +13,13 @@ export default function Agenda() {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
 
-  const fetchAgenda = async (page = 1) => {
-    setLoading(true);
-    const response = await AgendaApi.getAgenda(page);
-
-    if (response.ok) {
-      const data = await response.json();
-      setAgenda(data.agenda || []);
-      setCurrentPage(data.page || 1);
-      setTotalPages(data.total_page || 1);
+  const fetchAgenda = async () => {
+    const response = await AgendaApi.getAgenda(currentPage);
+    if (response.status === 200) {
+      const responseBody = await response.json();
+      setTotalPages(responseBody.total_page);
+      setCurrentPage(responseBody.page);
+      setAgenda(responseBody.agenda);
     } else {
       alertError("Gagal mengambil data agenda. Silakan coba lagi nanti.");
     }

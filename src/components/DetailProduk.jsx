@@ -1,86 +1,155 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { FaWhatsapp, FaStar } from "react-icons/fa";
+import { FaWhatsapp, FaStar, FaRegStar } from "react-icons/fa";
 import SidebarProduk from "./SidebarProduk";
 import { Helper } from "../utils/Helper";
-import { HiArrowLeft } from "react-icons/hi";
+import { alertError, alertSuccess } from "../libs/alert";
+import { CommentApi } from "../libs/api/CommentApi";
+import { ProductApi } from "../libs/api/ProductApi";
 
 export default function DetailProduk() {
   const { id } = useParams();
   const navigate = useNavigate();
-
-  // ✅ Dummy produk
-  const produk = {
-    id,
-    nama: "Nama Produk Desa",
-    harga: "Rp 65.000",
-    deskripsi:
-      "Ini adalah deskripsi lengkap produk desa. Bisa mencakup bahan, proses pembuatan, manfaat, dan informasi lainnya.",
-    img: "https://picsum.photos/800/500?random=99",
-  };
-
+  const [product, setProduct] = useState({});
+  // const [userCreated, setUserCreated] = useState({});
   const [comments, setComments] = useState([]);
   const [pesan, setPesan] = useState("");
+
+  // ✅ Cek login token
+  const userToken = JSON.parse(localStorage.getItem("token"));
+
   const [rating, setRating] = useState(0);
 
-  const handleRating = (value) => {
-    setRating(value);
-  };
+    const user = JSON.parse(localStorage.getItem("token"));
+    if (!user) {
+      alert("⚠ Silakan login dulu untuk memberikan komentar!");
+      navigate("/login");
+      return;
+    }
 
-  const handleKomentar = (e) => {
-    e.preventDefault();
-    const newComment = {
-      content: pesan,
-      user: { name: "User Login" },
-      updated_at: new Date().toISOString(),
-    };
-    setComments([newComment, ...comments]);
+    const response = await CommentApi.createComment(id, "PRODUCT", pesan);
+    const responseBody = await response.json();
+    if (response.status !== 201) {
+      await alertError(
+        `Gagal mengirim komentar. Silakan coba lagi nanti. ${responseBody.error}`
+      );
+      return;
+    }
+
+    await alertSuccess("Komentar berhasil dikirim!");
+
     setPesan("");
   };
 
+  const fetchDetailProduct = async () => {
+    const response = await ProductApi.getDetailProduct(id);
+    const responseBody = await response.json();
+    if (response.status === 200) {
+      setProduct(responseBody.product);
+      // setUserCreated(responseBody.user_created);
+      setRating(responseBody.rating);
+      setComments(responseBody.comments);
+    } else {
+      await alertError(
+        `Gagal mengambil detail product. Silakan coba lagi nanti.`
+      );
+      navigate("/bumdes");
+    }
+  };
+
+  const fetchComment = async () => {
+    const response = await CommentApi.getComments(id);
+    const responseBody = await response.json();
+    if (response.status === 200) {
+      setComments(responseBody.comments);
+    } else {
+      await alertError(`Gagal mengambil comment. Silakan coba lagi nanti.`);
+    }
+  };
+
+  useEffect(() => {
+    fetchDetailProduct();
+  }, [id]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchComment();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [id]);
+
+  const handleRating = (value) => {
+    if (!userToken) {
+      alert("Silakan login dulu untuk memberi rating!");
+      navigate("/login");
+      return;
+    }
+    if (userRated) {
+      alert("Anda sudah memberi rating untuk produk ini!");
+      return;
+    }
+    setRating(value);
+    setUserRated(true);
+  };
+
   return (
-    <div className="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 md:px-8 py-8">
-      
-      {/* ✅ Tombol Back ke Halaman Bumdes */}
-      <div className="mb-6">
-        <button
-          onClick={() => navigate("/bumdes")}
-          className="flex items-center gap-2 px-4 py-2 rounded-full text-white font-semibold 
-          bg-gradient-to-r from-[#9BEC00] to-[#D2FF72] shadow hover:shadow-lg hover:scale-105 transition"
-        >
-          <HiArrowLeft className="text-lg" /> Kembali ke BUMDes
-        </button>
-      </div>
+    <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-4 gap-6">
+      {/* ✅ Konten utama */}
+      <div className="md:col-span-3">
+        <img
+          src={`${import.meta.env.VITE_BASE_URL}/products/images/${
+            product.featured_image
+          }`}
+          alt={product.title}
+          className="w-full h-96 object-cover rounded-lg mb-6"
+        />
+        <h1 className="text-2xl font-bold mb-3">{product.title}</h1>
+        <p className="text-sm text-gray-500 mb-2">
+          Oleh BUMDes Babakan Asem | Harga : {""}
+          <span className="font-semibold text-black">
+            {Helper.formatRupiah(product.price)}
+          </span>
+        </p>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-        {/* ✅ Konten utama */}
-        <div className="md:col-span-3">
-          <img
-            src={produk.img}
-            alt={produk.nama}
-            className="w-full h-96 object-cover rounded-lg mb-6 shadow"
-          />
-          <h1 className="text-3xl font-bold mb-3">{produk.nama}</h1>
-          <p className="text-sm text-gray-500 mb-2">
-            Oleh BUMDes Babakan Asem | Harga:{" "}
-            <span className="font-semibold text-black">{produk.harga}</span>
-          </p>
+        {/* ✅ Rating Produk */}
+        <div className="flex items-center gap-1 mt-2">
+          {[1, 2, 3, 4, 5].map((star) => {
+            const full = Math.floor(rating);
+            const half = rating - full >= 0.5;
 
-          {/* ✅ Rating Produk */}
-          <div className="flex items-center gap-2 mb-6">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <FaStar
-                key={star}
-                className={`cursor-pointer text-2xl transition ${
-                  star <= rating ? "text-yellow-400" : "text-gray-300"
-                }`}
-                onClick={() => handleRating(star)}
-              />
-            ))}
-            {rating > 0 && (
-              <span className="text-sm text-gray-600">({rating} / 5)</span>
-            )}
-          </div>
+            let icon;
+            if (star <= full) {
+              icon = <FaStar className="text-yellow-400" />;
+            } else if (star === full + 1 && half) {
+              icon = <FaStarHalfAlt className="text-yellow-400" />;
+            } else {
+              icon = <FaRegStar className="text-gray-300" />;
+            }
+
+            return <span key={star}>{icon}</span>;
+          })}
+          <span className="text-sm text-gray-500 ml-2">
+            ({rating.toFixed(1)})
+          </span>
+        </div>
+
+        <div className="space-y-4 text-gray-800 leading-relaxed">
+          <p>{product.description}</p>
+          <p>Produk ini 100% hasil desa dan dikelola oleh masyarakat lokal.</p>
+        </div>
+
+        {/* ✅ Tombol WA Pesan */}
+        <div className="mt-6">
+          <a
+            href={product.link_whatsapp}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition"
+          >
+            <FaWhatsapp /> Pesan via WhatsApp
+          </a>
+        </div>
 
           <div className="space-y-4 text-gray-800 leading-relaxed">
             <p>{produk.deskripsi}</p>

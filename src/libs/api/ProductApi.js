@@ -11,4 +11,14 @@ export class ProductApi {
       }
     );
   }
+
+  static async getDetailProduct(id) {
+    return await fetch(`${import.meta.env.VITE_BASE_URL}/products/${id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    });
+  }
 }

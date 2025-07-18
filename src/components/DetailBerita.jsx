@@ -47,7 +47,7 @@ export default function DetailBerita() {
       setComments(responseBody.comments);
     } else {
       await alertError(
-        `Gagal mengambil detail berita. Silakan coba lagi nanti. ${responseBody.error}`
+        `Gagal mengambil detail berita. Silakan coba lagi nanti.`
       );
       navigate("/berita");
     }
@@ -65,7 +65,7 @@ export default function DetailBerita() {
 
   useEffect(() => {
     fetchDetailBerita();
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -73,7 +73,7 @@ export default function DetailBerita() {
     }, 5000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [id]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-4 gap-6">
