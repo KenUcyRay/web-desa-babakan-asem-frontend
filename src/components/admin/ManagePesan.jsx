@@ -5,6 +5,25 @@ import { MessageApi } from "../../libs/api/MessageApi";
 import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 
 export default function ManagePesan() {
+  const [messages, setMessages] = useState([]);
+  const [filter, setFilter] = useState("all"); // all | read | unread
+  const [page, setPage] = useState(1);
+  const perPage = 5; // ✅ tampilkan 5 pesan per halaman
+
+  const fetchMessages = async () => {
+    const response = await MessageApi.getMessages();
+    const responseBody = await response.json();
+    if (!response.ok) {
+      await alertError("Gagal mengambil pesan.");
+      return;
+    }
+    setMessages(responseBody.messages);
+  };
+
+  useEffect(() => {
+    fetchMessages();
+  }, []);
+
   const handleDelete = async (id) => {
     const confirm = await alertConfirm(
       "Apakah Anda yakin ingin menghapus pesan ini?"
@@ -18,24 +37,32 @@ export default function ManagePesan() {
       return;
     }
     await alertSuccess("Pesan berhasil dihapus.");
-    setMessage(message.filter((p) => p.id !== id));
+    setMessages(messages.filter((p) => p.id !== id));
   };
 
-  const [message, setMessage] = useState([]);
+  const handleMarkRead = async (id) => {
+    const updated = messages.map((m) =>
+      m.id === id ? { ...m, read: true } : m
+    );
+    setMessages(updated);
 
-  const fetchMessage = async () => {
-    const response = await MessageApi.getMessages();
-    const responseBody = await response.json();
-    if (!response.ok) {
-      await alertError("Gagal mengambil pesan.");
-      return;
-    }
-    setMessage(responseBody.messages);
+    // Kalau ada API untuk tandai dibaca, panggil di sini
+    // await MessageApi.markAsRead(id);
   };
 
-  useEffect(() => {
-    fetchMessage();
-  }, []);
+  // ✅ Filter pesan berdasarkan status
+  const filteredMessages = messages.filter((m) => {
+    if (filter === "read") return m.read;
+    if (filter === "unread") return !m.read;
+    return true; // all
+  });
+
+  // ✅ Pagination logic
+  const totalPages = Math.ceil(filteredMessages.length / perPage);
+  const paginatedMessages = filteredMessages.slice(
+    (page - 1) * perPage,
+    page * perPage
+  );
 
   return (
     <div className="flex">
@@ -44,8 +71,8 @@ export default function ManagePesan() {
       <div className="ml-64 p-6 w-full">
         <h1 className="text-2xl font-bold mb-4">Kelola Pesan Masuk</h1>
 
-        {/* Filter */}
-        {/* <div className="flex gap-2 mb-4">
+        {/* ✅ FILTER BUTTON */}
+        <div className="flex gap-2 mb-4">
           {["all", "read", "unread"].map((f) => (
             <button
               key={f}
@@ -54,60 +81,74 @@ export default function ManagePesan() {
               }`}
               onClick={() => {
                 setFilter(f);
-                setPage(1);
+                setPage(1); // reset ke halaman pertama setelah ganti filter
               }}
             >
-              {f === "all" ? "Semua" : f === "read" ? "Sudah Dibaca" : "Belum Dibaca"}
+              {f === "all"
+                ? "Semua"
+                : f === "read"
+                ? "Sudah Dibaca"
+                : "Belum Dibaca"}
             </button>
-          ))}
-        </div> */}
-
-        {/* List Pesan */}
-        <div className="space-y-4">
-          {message.map((p) => (
-            <div
-              key={p.id}
-              className="bg-white p-4 rounded-xl shadow flex justify-between"
-            >
-              <div>
-                <h2 className="font-semibold">{p.name}</h2>
-                <p className="text-sm text-gray-500">{p.email}</p>
-                <p className="mt-2 text-gray-700">{p.message}</p>
-              </div>
-              <div className="flex flex-col gap-2 items-end">
-                {!p.read && (
-                  <button
-                    onClick={() => handleMarkRead(p.id)}
-                    className="flex items-center gap-1 text-green-500 hover:text-green-700"
-                  >
-                    <FaEnvelopeOpen /> Tandai Dibaca
-                  </button>
-                )}
-                <button
-                  onClick={() => handleDelete(p.id)}
-                  className="flex items-center gap-1 text-red-500 hover:text-red-700"
-                >
-                  <FaTrash /> Hapus
-                </button>
-              </div>
-            </div>
           ))}
         </div>
 
-        {/* Pagination */}
-        {/* <div className="flex justify-center gap-2 mt-4">
-          {Array.from({ length: totalPages }).map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setPage(i + 1)}
-              className={`px-3 py-1 rounded ${
-                page === i + 1 ? "bg-green-500 text-white" : "bg-gray-200"
-              }`}
-            >
-              {i + 1}
-            </button>
-          ))}
-        </div> */}
+        {/* ✅ LIST PESAN */}
+        <div className="space-y-4">
+          {paginatedMessages.length === 0 ? (
+            <p className="text-gray-500 italic">Tidak ada pesan</p>
+          ) : (
+            paginatedMessages.map((p) => (
+              <div
+                key={p.id}
+                className={`bg-white p-4 rounded-xl shadow flex justify-between ${
+                  p.read ? "opacity-80" : ""
+                }`}
+              >
+                <div>
+                  <h2 className="font-semibold">{p.name}</h2>
+                  <p className="text-sm text-gray-500">{p.email}</p>
+                  <p className="mt-2 text-gray-700">{p.message}</p>
+                </div>
+                <div className="flex flex-col gap-2 items-end">
+                  {!p.read && (
+                    <button
+                      onClick={() => handleMarkRead(p.id)}
+                      className="flex items-center gap-1 text-green-500 hover:text-green-700"
+                    >
+                      <FaEnvelopeOpen /> Tandai Dibaca
+                    </button>
+                  )}
+                  <button
+                    onClick={() => handleDelete(p.id)}
+                    className="flex items-center gap-1 text-red-500 hover:text-red-700"
+                  >
+                    <FaTrash /> Hapus
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* ✅ PAGINATION */}
+        {totalPages > 1 && (
+          <div className="flex justify-center gap-2 mt-6">
+            {Array.from({ length: totalPages }).map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setPage(i + 1)}
+                className={`px-3 py-1 rounded ${
+                  page === i + 1
+                    ? "bg-green-500 text-white"
+                    : "bg-gray-200 hover:bg-gray-300"
+                }`}
+              >
+                {i + 1}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

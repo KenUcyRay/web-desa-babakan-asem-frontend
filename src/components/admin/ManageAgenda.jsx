@@ -7,7 +7,7 @@ export default function ManageAgenda() {
       id: 1,
       title: "Musyawarah Desa",
       description: "Diskusi terkait pembangunan desa bersama warga.",
-      date: "2025-07-20",
+      date: "2025-07-15",
       location: "Balai Desa",
       isPublished: true,
     },
@@ -23,12 +23,17 @@ export default function ManageAgenda() {
 
   const [showForm, setShowForm] = useState(false);
 
+  // filter state
+  const [filter, setFilter] = useState("all");
+
   // form state
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState("");
   const [location, setLocation] = useState("");
   const [isPublished, setIsPublished] = useState(false);
+
+  const today = new Date().toISOString().split("T")[0];
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -37,7 +42,7 @@ export default function ManageAgenda() {
       id: Date.now(),
       title,
       description,
-      date: date || new Date().toISOString().split("T")[0], // ✅ auto tanggal kalau kosong
+      date: date || today, // ✅ auto hari ini kalau kosong
       location,
       isPublished,
     };
@@ -61,11 +66,19 @@ export default function ManageAgenda() {
     }
   };
 
+  // ✅ filter agenda berdasarkan status
+  const filteredAgenda = agendaList.filter((a) => {
+    if (filter === "past") return a.date < today;
+    if (filter === "upcoming") return a.date >= today;
+    return true; // all
+  });
+
   return (
     <div className="flex">
       <AdminSidebar />
 
       <div className="ml-64 p-6 w-full">
+        {/* ✅ Header & Tombol */}
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">Kelola Agenda</h1>
 
@@ -78,6 +91,36 @@ export default function ManageAgenda() {
             </button>
           )}
         </div>
+
+        {/* ✅ FILTER BUTTON */}
+        {!showForm && (
+          <div className="flex gap-3 mb-6">
+            <button
+              onClick={() => setFilter("all")}
+              className={`px-4 py-2 rounded ${
+                filter === "all" ? "bg-blue-500 text-white" : "bg-gray-200"
+              }`}
+            >
+              Semua
+            </button>
+            <button
+              onClick={() => setFilter("past")}
+              className={`px-4 py-2 rounded ${
+                filter === "past" ? "bg-red-500 text-white" : "bg-gray-200"
+              }`}
+            >
+              Sudah Berlangsung
+            </button>
+            <button
+              onClick={() => setFilter("upcoming")}
+              className={`px-4 py-2 rounded ${
+                filter === "upcoming" ? "bg-green-500 text-white" : "bg-gray-200"
+              }`}
+            >
+              Akan Datang
+            </button>
+          </div>
+        )}
 
         {/* ✅ FORM MUNCUL SETELAH KLIK */}
         {showForm && (
@@ -115,6 +158,9 @@ export default function ManageAgenda() {
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
               />
+              <p className="text-xs text-gray-500 mt-1">
+                *Jika kosong, otomatis tanggal hari ini
+              </p>
             </div>
 
             <div>
@@ -161,33 +207,37 @@ export default function ManageAgenda() {
 
         {/* ✅ LIST AGENDA */}
         <div className="space-y-4">
-          {agendaList.map((a) => (
-            <div
-              key={a.id}
-              className="bg-white p-4 rounded-xl shadow flex justify-between items-center"
-            >
-              <div>
-                <h2 className="text-lg font-semibold">{a.title}</h2>
-                <p className="text-gray-600 text-sm">{a.description}</p>
-                <p className="text-xs text-gray-400 mt-1">
-                  📅 {a.date} | 📍 {a.location}
-                </p>
-                <p
-                  className={`text-sm ${
-                    a.isPublished ? "text-green-500" : "text-red-500"
-                  }`}
-                >
-                  {a.isPublished ? "Published" : "Unpublished"}
-                </p>
-              </div>
-              <button
-                onClick={() => handleDelete(a.id)}
-                className="text-red-500 hover:text-red-700"
+          {filteredAgenda.length === 0 ? (
+            <p className="text-gray-500 italic">Tidak ada agenda</p>
+          ) : (
+            filteredAgenda.map((a) => (
+              <div
+                key={a.id}
+                className="bg-white p-4 rounded-xl shadow flex justify-between items-center"
               >
-                Hapus
-              </button>
-            </div>
-          ))}
+                <div>
+                  <h2 className="text-lg font-semibold">{a.title}</h2>
+                  <p className="text-gray-600 text-sm">{a.description}</p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    📅 {a.date} | 📍 {a.location}
+                  </p>
+                  <p
+                    className={`text-sm ${
+                      a.isPublished ? "text-green-500" : "text-red-500"
+                    }`}
+                  >
+                    {a.isPublished ? "Published" : "Unpublished"}
+                  </p>
+                </div>
+                <button
+                  onClick={() => handleDelete(a.id)}
+                  className="text-red-500 hover:text-red-700"
+                >
+                  Hapus
+                </button>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </div>

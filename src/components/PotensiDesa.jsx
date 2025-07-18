@@ -1,8 +1,12 @@
 import { FaSeedling, FaHorse, FaTree } from "react-icons/fa";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
+import { useNavigate } from "react-router-dom";
+import { HiHome } from "react-icons/hi";
 
 export default function PotensiDesa() {
+  const navigate = useNavigate();
+
   const carouselImages = [
     {
       src: "https://picsum.photos/1000/400?random=1",
@@ -19,8 +23,17 @@ export default function PotensiDesa() {
   ];
 
   return (
-    <div className="bg-gray-50 py-10">
+    <div className="bg-gray-50 py-10 font-poppins">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
+        {/* ✅ Tombol Back */}
+        <button
+          onClick={() => navigate("/")}
+          className="mb-6 flex items-center gap-2 px-4 py-2 rounded-full text-white font-semibold 
+          bg-gradient-to-r from-[#9BEC00] to-[#D2FF72] shadow hover:shadow-lg hover:scale-105 transition"
+        >
+          <HiHome className="text-lg" /> Kembali ke Beranda
+        </button>
+
         {/* Judul Halaman */}
         <h1 className="text-3xl font-bold text-center text-gray-900">
           Potensi Desa
@@ -31,10 +44,10 @@ export default function PotensiDesa() {
           milik sendiri.
         </p>
 
-        {/* 3 Kotak Potensi */}
-        <div className="grid md:grid-cols-2 gap-6 mb-10">
+        {/* ✅ Potensi Utama */}
+        <div className="grid gap-6 grid-cols-[repeat(auto-fit,minmax(320px,1fr))] mb-10">
           {/* Pertanian */}
-          <div className="bg-[#B6F500] p-6 rounded-lg shadow flex gap-4 items-center">
+          <div className="bg-[#B6F500] p-6 rounded-lg shadow flex gap-4 items-center hover:shadow-xl transition">
             <img
               src="https://picsum.photos/200/150?random=4"
               alt="Pertanian"
@@ -45,15 +58,14 @@ export default function PotensiDesa() {
                 <FaSeedling /> Pertanian
               </h2>
               <p className="text-sm mt-2 text-gray-800">
-                Mayoritas penduduk bekerja di sektor pertanian, baik sebagai
-                buruh tani maupun petani mandiri. Komoditas utama adalah padi,
-                jagung, ubi kayu, kacang tanah, serta berbagai sayuran.
+                Mayoritas penduduk bekerja di sektor pertanian seperti padi,
+                jagung, ubi kayu, kacang tanah, dan sayuran.
               </p>
             </div>
           </div>
 
           {/* Peternakan */}
-          <div className="bg-orange-200 p-6 rounded-lg shadow flex gap-4 items-center">
+          <div className="bg-orange-200 p-6 rounded-lg shadow flex gap-4 items-center hover:shadow-xl transition">
             <img
               src="https://picsum.photos/200/150?random=5"
               alt="Peternakan"
@@ -64,15 +76,14 @@ export default function PotensiDesa() {
                 <FaHorse /> Peternakan
               </h2>
               <p className="text-sm mt-2 text-gray-800">
-                Sektor peternakan meliputi sapi, kambing, ayam, dan domba.
-                Menyediakan kebutuhan daging & susu bagi konsumsi lokal serta
-                menjadi penunjang ekonomi warga.
+                Peternakan sapi, kambing, ayam, & domba untuk konsumsi lokal
+                serta penunjang ekonomi warga.
               </p>
             </div>
           </div>
 
           {/* Perkebunan */}
-          <div className="bg-blue-100 p-6 rounded-lg shadow flex gap-4 items-center md:col-span-2">
+          <div className="bg-blue-100 p-6 rounded-lg shadow flex gap-4 items-center hover:shadow-xl transition md:col-span-2">
             <img
               src="https://picsum.photos/200/150?random=6"
               alt="Perkebunan"
@@ -83,15 +94,14 @@ export default function PotensiDesa() {
                 <FaTree /> Perkebunan
               </h2>
               <p className="text-sm mt-2 text-gray-800">
-                Perkebunan rakyat menghasilkan tanaman keras seperti mangga,
-                pisang, dan tanaman hortikultura. Memberikan tambahan
-                penghasilan & ketahanan pangan keluarga.
+                Perkebunan mangga, pisang, dan tanaman hortikultura untuk
+                tambahan penghasilan warga.
               </p>
             </div>
           </div>
         </div>
 
-        {/* Wisata Desa (Carousel) */}
+        {/* ✅ Wisata Desa */}
         <h2 className="text-2xl font-bold text-center mb-4">Wisata Desa</h2>
         <p className="text-center text-gray-600 mb-6">
           Semua individu pasti butuh hiburan – Wisata Alam Khas Desa Babakan
