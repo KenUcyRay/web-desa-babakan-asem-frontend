@@ -13,7 +13,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [reCaptchaToken, setReCaptchaToken] = useState("");
-  const { isLoggedIn, login } = useAuth();
+  const { isLoggedIn, login, setAdminStatus } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,6 +28,12 @@ export default function Login() {
     if (response.status === 200) {
       login(responseBody.token);
       await alertSuccess("Login berhasil!");
+      if (responseBody.user.role === "ADMIN") {
+        await alertSuccess("Selamat datang, Admin!");
+        setAdminStatus(true);
+        navigate("/admin");
+        return;
+      }
       navigate("/");
     } else {
       await alertError(responseBody.error || "Login gagal, silakan coba lagi.");

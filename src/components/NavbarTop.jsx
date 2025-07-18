@@ -7,7 +7,7 @@ import { useAuth } from "../contexts/AuthContext";
 export default function NavbarTop() {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { isLoggedIn, logout } = useAuth();
+  const { isLoggedIn, logout, isAdmin } = useAuth();
 
   const isTentangActive = ["/profil", "/pemerintahan", "/potensi"].includes(
     location.pathname
@@ -18,6 +18,75 @@ export default function NavbarTop() {
 
   const activeClass = "text-[#B6F500] font-semibold";
   const normalClass = "hover:text-[#B6F500] transition";
+
+  const button = () => {
+    if (isLoggedIn) {
+      if (isAdmin) {
+        return (
+          <Link
+            to="/admin"
+            className="bg-gradient-to-r from-green-400 to-[#B6F500] text-white px-4 py-2 rounded hover:opacity-90 transition"
+          >
+            Dashboard Admin
+          </Link>
+        );
+      }
+      return (
+        <button
+          onClick={logout}
+          className="bg-gradient-to-r from-green-400 to-[#B6F500] text-white px-4 py-2 rounded hover:opacity-90 transition"
+        >
+          Keluar
+        </button>
+      );
+    } else {
+      return (
+        <NavLink
+          to="/login"
+          className="bg-gradient-to-r from-green-400 to-[#B6F500] text-white px-4 py-2 rounded hover:opacity-90 transition"
+        >
+          Masuk
+        </NavLink>
+      );
+    }
+  };
+
+  const buttomMobile = () => {
+    if (isLoggedIn) {
+      if (isAdmin) {
+        return (
+          <NavLink
+            to="/admin"
+            onClick={() => setMobileOpen(false)}
+            className="bg-gradient-to-r from-green-400 to-[#B6F500] text-white px-4 py-2 rounded text-center"
+          >
+            Dashboard Admin
+          </NavLink>
+        );
+      }
+      return (
+        <button
+          onClick={() => {
+            logout;
+            setMobileOpen(false);
+          }}
+          className="bg-gradient-to-r from-green-400 to-[#B6F500] text-white px-4 py-2 rounded text-center"
+        >
+          Keluar
+        </button>
+      );
+    } else {
+      return (
+        <NavLink
+          to="/login"
+          onClick={() => setMobileOpen(false)}
+          className="bg-gradient-to-r from-green-400 to-[#B6F500] text-white px-4 py-2 rounded text-center"
+        >
+          Masuk
+        </NavLink>
+      );
+    }
+  };
 
   return (
     <div className="w-full sticky top-0 bg-white dark:bg-black shadow z-50 font-poppins">
@@ -119,21 +188,7 @@ export default function NavbarTop() {
             Kontak Kami
           </NavLink>
 
-          {isLoggedIn ? (
-            <button
-              onClick={logout}
-              className="bg-gradient-to-r from-green-400 to-[#B6F500] text-white px-4 py-2 rounded hover:opacity-90 transition"
-            >
-              Keluar
-            </button>
-          ) : (
-            <NavLink
-              to="/login"
-              className="bg-gradient-to-r from-green-400 to-[#B6F500] text-white px-4 py-2 rounded hover:opacity-90 transition"
-            >
-              Masuk
-            </NavLink>
-          )}
+          {button()}
         </div>
 
         {/* ✅ HAMBURGER BUTTON (mobile) */}
@@ -233,13 +288,7 @@ export default function NavbarTop() {
             Kontak Kami
           </NavLink>
 
-          <NavLink
-            to="/login"
-            onClick={() => setMobileOpen(false)}
-            className="bg-gradient-to-r from-green-400 to-[#B6F500] text-white px-4 py-2 rounded text-center"
-          >
-            Masuk
-          </NavLink>
+          {buttomMobile()}
         </div>
       )}
     </div>

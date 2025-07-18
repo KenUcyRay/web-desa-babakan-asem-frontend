@@ -1,4 +1,10 @@
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+} from "react-router-dom";
 
 // ✅ Navbar + Footer hanya untuk umum
 import TopNavbar from "./components/TopNavbar";
@@ -56,7 +62,7 @@ import ManageUser from "./components/admin/ManageUser";
 import PengaturanWebsite from "./components/admin/pengaturan/PengaturanWebsite";
 import PengaturanProfil from "./components/admin/pengaturan/PengaturanProfil";
 import PengaturanHakAkses from "./components/admin/pengaturan/PengaturanHakAkses";
-
+import AdminLayout from "./components/admin/AdminLayout";
 
 // ✅ Layout untuk Halaman Umum (Navbar & Footer aktif)
 function LayoutUmum() {
@@ -118,31 +124,38 @@ function LayoutUmum() {
   );
 }
 
-
 // ✅ Layout untuk Halaman Admin (Tanpa Navbar & Footer)
 function LayoutAdmin() {
   return (
     <Routes>
       {/* ✅ Dashboard Admin */}
-      <Route path="/admin" element={<AdminDashboard />} />
 
-      {/* ✅ Menu Admin */}
-      <Route path="/admin/manage-berita" element={<ManageBerita />} />
-      <Route path="/admin/manage-agenda" element={<ManageAgenda />} />
-      <Route path="/admin/manage-pesan" element={<ManagePesan />} />
-      <Route path="/admin/manage-user" element={<ManageUser />} />
+      <Route element={<AdminLayout />}>
+        <Route path="/admin" element={<AdminDashboard />} />
 
-      {/* ✅ Pengaturan Admin */}
-      <Route path="/admin/pengaturan/website" element={<PengaturanWebsite />} />
-      <Route path="/admin/pengaturan/profil" element={<PengaturanProfil />} />
-      <Route path="/admin/pengaturan/hak-akses" element={<PengaturanHakAkses />} />
+        {/* ✅ Menu Admin */}
+        <Route path="/admin/manage-berita" element={<ManageBerita />} />
+        <Route path="/admin/manage-agenda" element={<ManageAgenda />} />
+        <Route path="/admin/manage-pesan" element={<ManagePesan />} />
+        <Route path="/admin/manage-user" element={<ManageUser />} />
 
-      {/* ✅ Redirect default jika ke /admin/ */}
-      <Route path="/admin/*" element={<Navigate to="/admin" replace />} />
+        {/* ✅ Pengaturan Admin */}
+        <Route
+          path="/admin/pengaturan/website"
+          element={<PengaturanWebsite />}
+        />
+        <Route path="/admin/pengaturan/profil" element={<PengaturanProfil />} />
+        <Route
+          path="/admin/pengaturan/hak-akses"
+          element={<PengaturanHakAkses />}
+        />
+
+        {/* ✅ Redirect default jika ke /admin/ */}
+        <Route path="/admin/*" element={<Navigate to="/admin" replace />} />
+      </Route>
     </Routes>
   );
 }
-
 
 // ✅ Tentukan Layout berdasar URL
 function AppContent() {
@@ -150,7 +163,6 @@ function AppContent() {
   const isAdminPage = location.pathname.startsWith("/admin");
   return isAdminPage ? <LayoutAdmin /> : <LayoutUmum />;
 }
-
 
 // ✅ Entry utama App
 export default function App() {

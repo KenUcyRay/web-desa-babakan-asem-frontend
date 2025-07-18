@@ -10,22 +10,55 @@ import {
   FaArrowLeft,
 } from "react-icons/fa";
 import logo from "../../assets/logo.png";
+import { useAuth } from "../../contexts/AuthContext";
+import { alertConfirm, alertSuccess } from "../../libs/alert";
 
 export default function AdminSidebar() {
   const location = useLocation();
+  const { logout } = useAuth();
+
+  const handleLogout = async () => {
+    const confirm = await alertConfirm("Apakah Anda yakin ingin keluar?");
+
+    if (!confirm) {
+      return;
+    }
+    await alertSuccess("Anda telah keluar.");
+    logout();
+  };
 
   const menu = [
     { to: "/admin", label: "Dashboard", icon: <FaTachometerAlt /> },
-    { to: "/admin/manage-berita", label: "Kelola Berita", icon: <FaNewspaper /> },
-    { to: "/admin/manage-agenda", label: "Kelola Agenda", icon: <FaCalendarAlt /> },
+    {
+      to: "/admin/manage-berita",
+      label: "Kelola Berita",
+      icon: <FaNewspaper />,
+    },
+    {
+      to: "/admin/manage-agenda",
+      label: "Kelola Agenda",
+      icon: <FaCalendarAlt />,
+    },
     { to: "/admin/manage-pesan", label: "Kelola Pesan", icon: <FaEnvelope /> },
     { to: "/admin/manage-user", label: "Kelola User", icon: <FaUsers /> },
   ];
 
   const pengaturan = [
-    { to: "/admin/pengaturan/website", label: "Website & Identitas", icon: <FaCog /> },
-    { to: "/admin/pengaturan/profil", label: "Profil Admin", icon: <FaUsers /> },
-    { to: "/admin/pengaturan/hak-akses", label: "Hak Akses", icon: <FaUsers /> },
+    {
+      to: "/admin/pengaturan/website",
+      label: "Website & Identitas",
+      icon: <FaCog />,
+    },
+    {
+      to: "/admin/pengaturan/profil",
+      label: "Profil",
+      icon: <FaUsers />,
+    },
+    {
+      to: "/admin/pengaturan/hak-akses",
+      label: "Hak Akses",
+      icon: <FaUsers />,
+    },
   ];
 
   return (
@@ -76,7 +109,7 @@ export default function AdminSidebar() {
         </Link>
 
         <button
-          onClick={() => alert("Logout berhasil")}
+          onClick={handleLogout}
           className="flex items-center gap-3 p-2 w-full text-left rounded hover:bg-red-100 text-red-500"
         >
           <FaSignOutAlt /> Logout
