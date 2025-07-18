@@ -1,29 +1,41 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import SidebarInfo from "./SidebarInfo";
 import Pagination from "./Pagination";
 import { FaCalendarAlt } from "react-icons/fa";
-import berita1 from "../assets/berita1.jpeg";
+import { AgendaApi } from "../libs/api/AgendaApi";
+import { alertError } from "../libs/alert";
+import { Helper } from "../utils/Helper";
 
 export default function Agenda() {
-  // 🔥 Maksimal hanya 10 item (2 halaman)
-  const maxItems = 10;
-
-  const allAgenda = Array.from({ length: 12 }, (_, i) => ({
-    id: i + 1,
-    judul: `Judul Agenda ${i + 1}`,
-    deskripsi: `Deskripsi agenda singkat nomor ${i + 1}, membahas kegiatan desa yang akan datang...`,
-    img: berita1,
-    kategori: i % 2 === 0 ? "Rapat" : "Gotong Royong",
-    tanggal: "14/06/2025",
-  })).slice(0, maxItems); // 👉 cuma ambil 10 data
-
+  const [agenda, setAgenda] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const agendaPerPage = 5;
-  const indexOfLast = currentPage * agendaPerPage;
-  const indexOfFirst = indexOfLast - agendaPerPage;
-  const currentAgenda = allAgenda.slice(indexOfFirst, indexOfLast);
-  const totalPages = Math.ceil(allAgenda.length / agendaPerPage);
+  const [totalPages, setTotalPages] = useState(1);
+
+  const fetchAgenda = async () => {
+    const response = await AgendaApi.getAgenda(currentPage);
+    if (response.status === 200) {
+      const responseBody = await response.json();
+      setTotalPages(responseBody.total_page);
+      setCurrentPage(responseBody.page);
+      setAgenda(responseBody.agenda);
+      console.log(responseBody.agenda);
+    } else {
+      alertError("Gagal mengambil data agenda. Silakan coba lagi nanti.");
+    }
+  };
+
+  // ✅ Batasi deskripsi berita
+  const truncateText = (text, maxLength = 100) => {
+    if (!text) return "";
+    return text.length > maxLength
+      ? text.substring(0, maxLength) + "..."
+      : text;
+  };
+
+  useEffect(() => {
+    fetchAgenda();
+  }, [currentPage]);
 
   return (
     <div className="min-h-screen bg-[#F8F8F8] py-10 px-4">
@@ -38,28 +50,32 @@ export default function Agenda() {
 
         {/* Konten agenda */}
         <div className="md:col-span-3 grid gap-y-4">
-          {currentAgenda.map((agenda) => (
-            <Link to={`/agenda/${agenda.id}`} key={agenda.id}>
+          {agenda.map((item) => (
+            <Link to={`/agenda/${item.agenda.id}`} key={item.agenda.id}>
               <div className="relative flex items-center bg-white border-l-4 border-green-500 rounded-xl p-5 shadow-sm hover:shadow-lg hover:scale-[1.01] transition duration-300">
                 <img
-                  src={agenda.img}
+                  src={`${import.meta.env.VITE_BASE_URL}/agenda/images/${
+                    item.agenda.featured_image
+                  }`}
                   alt="Agenda"
                   className="w-28 h-28 object-cover rounded-lg mr-6"
                 />
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-1">
                     <h2 className="text-xl font-semibold text-gray-800">
-                      {agenda.judul}
+                      {item.agenda.title}
                     </h2>
                     <span className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-full">
-                      {agenda.kategori}
+                      {item.agenda.type}
                     </span>
                   </div>
                   <p className="text-sm text-gray-700 mb-2 line-clamp-2">
-                    {agenda.deskripsi}
+                    {truncateText(item.agenda.content)}
                   </p>
                   <p className="text-xs text-gray-500 flex items-center gap-1">
-                    <FaCalendarAlt className="text-green-500" /> {agenda.tanggal} | 👁 Dilihat Sekian Kali
+                    <FaCalendarAlt className="text-green-500" />
+                    {Helper.formatTanggal(item.agenda.published_at)} | 👁 Dilihat{" "}
+                    {item.agenda.view_count} Kali
                   </p>
                 </div>
               </div>

@@ -5,13 +5,18 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useLocalStorage("token", null);
+  const [admin, setAdmin] = useLocalStorage("admin", false);
 
   const login = (newToken) => setToken(newToken);
   const logout = () => setToken(null);
   const isLoggedIn = !!token;
+  const isAdmin = !!admin;
+  const setAdminStatus = (status) => setAdmin(status);
 
   return (
-    <AuthContext.Provider value={{ token, login, logout, isLoggedIn }}>
+    <AuthContext.Provider
+      value={{ token, login, logout, isLoggedIn, isAdmin, setAdminStatus }}
+    >
       {children}
     </AuthContext.Provider>
   );

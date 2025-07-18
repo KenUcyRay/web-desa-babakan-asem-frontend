@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Pagination from "./Pagination";
 import { NewsApi } from "../libs/api/NewsApi";
 import { Helper } from "../utils/Helper";
+import { alertError } from "../libs/alert";
 
 export default function Berita() {
   const [news, setNews] = useState([]);
@@ -18,7 +19,7 @@ export default function Berita() {
       setCurrentPage(responseBody.page);
       setNews(responseBody.news);
     } else {
-      alert("Gagal mengambil data berita. Silakan coba lagi nanti.");
+      alertError("Gagal mengambil data berita. Silakan coba lagi nanti.");
     }
   };
 

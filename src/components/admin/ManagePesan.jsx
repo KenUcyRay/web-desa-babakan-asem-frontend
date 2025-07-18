@@ -1,38 +1,41 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaTrash, FaEnvelopeOpen } from "react-icons/fa";
 import AdminSidebar from "./AdminSidebar";
+import { MessageApi } from "../../libs/api/MessageApi";
+import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 
 export default function ManagePesan() {
-  const [pesan, setPesan] = useState([
-    { id: 1, nama: "Budi", email: "budi@mail.com", isi: "Bagaimana cara mengurus surat pengantar?", read: false },
-    { id: 2, nama: "Siti", email: "siti@mail.com", isi: "Apakah ada program bantuan bulan ini?", read: true },
-    { id: 3, nama: "Andi", email: "andi@mail.com", isi: "Jadwal agenda minggu depan?", read: false },
-  ]);
-
-  const [filter, setFilter] = useState("all");
-  const [page, setPage] = useState(1);
-  const perPage = 2;
-
-  const handleDelete = (id) => {
-    if (window.confirm("Yakin hapus pesan ini?")) {
-      setPesan(pesan.filter((p) => p.id !== id));
-    }
-  };
-
-  const handleMarkRead = (id) => {
-    setPesan(
-      pesan.map((p) => (p.id === id ? { ...p, read: true } : p))
+  const handleDelete = async (id) => {
+    const confirm = await alertConfirm(
+      "Apakah Anda yakin ingin menghapus pesan ini?"
     );
+
+    if (!confirm) return;
+
+    const response = await MessageApi.deleteMessage(id);
+    if (!response.ok) {
+      await alertError("Gagal menghapus pesan.");
+      return;
+    }
+    await alertSuccess("Pesan berhasil dihapus.");
+    setMessage(message.filter((p) => p.id !== id));
   };
 
-  const filtered = pesan.filter((p) => {
-    if (filter === "read") return p.read;
-    if (filter === "unread") return !p.read;
-    return true;
-  });
+  const [message, setMessage] = useState([]);
 
-  const paginated = filtered.slice((page - 1) * perPage, page * perPage);
-  const totalPages = Math.ceil(filtered.length / perPage);
+  const fetchMessage = async () => {
+    const response = await MessageApi.getMessages();
+    const responseBody = await response.json();
+    if (!response.ok) {
+      await alertError("Gagal mengambil pesan.");
+      return;
+    }
+    setMessage(responseBody.messages);
+  };
+
+  useEffect(() => {
+    fetchMessage();
+  }, []);
 
   return (
     <div className="flex">
@@ -61,15 +64,15 @@ export default function ManagePesan() {
 
         {/* List Pesan */}
         <div className="space-y-4">
-          {paginated.map((p) => (
+          {message.map((p) => (
             <div
               key={p.id}
               className="bg-white p-4 rounded-xl shadow flex justify-between"
             >
               <div>
-                <h2 className="font-semibold">{p.nama}</h2>
+                <h2 className="font-semibold">{p.name}</h2>
                 <p className="text-sm text-gray-500">{p.email}</p>
-                <p className="mt-2 text-gray-700">{p.isi}</p>
+                <p className="mt-2 text-gray-700">{p.message}</p>
               </div>
               <div className="flex flex-col gap-2 items-end">
                 {!p.read && (

@@ -1,4 +1,10 @@
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+} from "react-router-dom";
 
 // ✅ Navbar + Footer hanya untuk umum
 import TopNavbar from "./components/TopNavbar";
@@ -56,7 +62,7 @@ import ManageUser from "./components/admin/ManageUser";
 import PengaturanWebsite from "./components/admin/settings/PengaturanWebsite";
 import PengaturanProfil from "./components/admin/settings/PengaturanProfil";
 import PengaturanHakAkses from "./components/admin/settings/PengaturanHakAkses";
-
+import AdminLayout from "./components/admin/AdminLayout";
 import StPkk from "./components/StPkk";
 
 // ✅ Layout untuk Halaman Umum (Navbar & Footer aktif)
@@ -124,15 +130,31 @@ function LayoutUmum() {
 function LayoutAdmin() {
   return (
     <Routes>
-      <Route path="/admin" element={<AdminDashboard />} />
-      <Route path="/admin/manage-berita" element={<ManageBerita />} />
-      <Route path="/admin/manage-agenda" element={<ManageAgenda />} />
-      <Route path="/admin/manage-pesan" element={<ManagePesan />} />
-      <Route path="/admin/manage-user" element={<ManageUser />} />
-      <Route path="/admin/pengaturan/website" element={<PengaturanWebsite />} />
-      <Route path="/admin/pengaturan/profil" element={<PengaturanProfil />} />
-      <Route path="/admin/pengaturan/hak-akses" element={<PengaturanHakAkses />} />
-      <Route path="/admin/*" element={<Navigate to="/admin" replace />} />
+      {/* ✅ Dashboard Admin */}
+
+      <Route element={<AdminLayout />}>
+        <Route path="/admin" element={<AdminDashboard />} />
+
+        {/* ✅ Menu Admin */}
+        <Route path="/admin/manage-berita" element={<ManageBerita />} />
+        <Route path="/admin/manage-agenda" element={<ManageAgenda />} />
+        <Route path="/admin/manage-pesan" element={<ManagePesan />} />
+        <Route path="/admin/manage-user" element={<ManageUser />} />
+
+        {/* ✅ Pengaturan Admin */}
+        <Route
+          path="/admin/pengaturan/website"
+          element={<PengaturanWebsite />}
+        />
+        <Route path="/admin/pengaturan/profil" element={<PengaturanProfil />} />
+        <Route
+          path="/admin/pengaturan/hak-akses"
+          element={<PengaturanHakAkses />}
+        />
+
+        {/* ✅ Redirect default jika ke /admin/ */}
+        <Route path="/admin/*" element={<Navigate to="/admin" replace />} />
+      </Route>
     </Routes>
   );
 }
