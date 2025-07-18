@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Pagination from "./Pagination";
 import { NewsApi } from "../libs/api/NewsApi";
+import { Helper } from "../utils/Helper";
 
 export default function Berita() {
   const [news, setNews] = useState([]);
@@ -19,14 +20,6 @@ export default function Berita() {
     } else {
       alert("Gagal mengambil data berita. Silakan coba lagi nanti.");
     }
-  };
-
-  const formatTanggal = (isoString) => {
-    const date = new Date(isoString);
-    const day = date.getDate();
-    const month = date.getMonth() + 1;
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
   };
 
   // ✅ Batasi deskripsi berita
@@ -73,8 +66,8 @@ export default function Berita() {
 
                   {/* Info tanggal & view */}
                   <p className="text-xs text-gray-400 mt-2">
-                    🗓 {formatTanggal(n.news.created_at)} | 👁{" "}
-                    {n.news.view_count} kali
+                    🗓 {Helper.formatTanggal(n.news.created_at)} | 👁 Dilihat{" "}
+                    {n.news.view_count} Kali
                   </p>
                 </div>
               </Link>
