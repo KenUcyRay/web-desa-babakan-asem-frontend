@@ -1,14 +1,17 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FaWhatsapp, FaStar } from "react-icons/fa";
 import SidebarProduk from "./SidebarProduk";
+import { Helper } from "../utils/Helper"; 
+import { alertError, alertSuccess } from "../libs/alert";
+import { CommentApi } from "../libs/api/CommentApi"; 
 
 export default function DetailProduk() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  // ✅ Cek login (simulasi)
-  const isLoggedIn = localStorage.getItem("user");
+  // ✅ Cek login token
+  const userToken = JSON.parse(localStorage.getItem("token"));
 
   const produk = {
     id,
@@ -20,58 +23,71 @@ export default function DetailProduk() {
   };
 
   const [comments, setComments] = useState([]);
-  const [newComment, setNewComment] = useState("");
-  const [newName, setNewName] = useState("");
+  const [pesan, setPesan] = useState("");
+  const [rating, setRating] = useState(0);
+  const [userRated, setUserRated] = useState(false);
 
-  const [rating, setRating] = useState(0); // ⭐ rating yang dipilih
-  const [userRated, setUserRated] = useState(false); // ✅ agar hanya sekali rating
-
-  const handleCommentSubmit = (e) => {
+  const handleKomentar = async (e) => {
     e.preventDefault();
 
-    if (!isLoggedIn) {
-      alert("Silakan login dulu untuk memberi komentar!");
+    if (!userToken) {
+      alert("⚠ Silakan login dulu untuk memberikan komentar!");
       navigate("/login");
       return;
     }
 
-    const now = new Date();
-    const formattedDate = now.toLocaleDateString("id-ID", {
-      day: "2-digit",
-      month: "long",
-      year: "numeric",
-    });
-    const formattedTime = now.toLocaleTimeString("id-ID", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-
-    const newEntry = {
-      id: Date.now(),
-      name: newName,
-      text: newComment,
-      date: `${formattedDate} - ${formattedTime}`,
+    // ✅ Kirim komentar (sementara dummy, nanti pakai API)
+    const newComment = {
+      content: pesan,
+      user: { name: "User Login" },
+      updated_at: new Date().toISOString(),
     };
+    setComments([newComment, ...comments]);
+    setPesan("");
 
-    setComments([newEntry, ...comments]);
-    setNewComment("");
-    setNewName("");
+    // nanti ganti dengan:
+    // const response = await CommentApi.createComment(id, "PRODUCT", pesan);
+    // const responseBody = await response.json();
+    // if (response.status !== 201) {
+    //   await alertError(`Gagal mengirim komentar. ${responseBody.error}`);
+    //   return;
+    // }
+    // await alertSuccess("Komentar berhasil dikirim!");
   };
 
+  const fetchComments = async () => {
+    // nanti ganti API produk
+    // const response = await CommentApi.getComments(id);
+    // const responseBody = await response.json();
+    // if (response.status === 200) {
+    //   setComments(responseBody.comments);
+    // } else {
+    //   await alertError("Gagal mengambil komentar produk.");
+    // }
+  };
+
+  useEffect(() => {
+    fetchComments();
+
+    const interval = setInterval(() => {
+      fetchComments();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   const handleRating = (value) => {
-    if (!isLoggedIn) {
+    if (!userToken) {
       alert("Silakan login dulu untuk memberi rating!");
       navigate("/login");
       return;
     }
-
     if (userRated) {
       alert("Anda sudah memberi rating untuk produk ini!");
       return;
     }
-
     setRating(value);
-    setUserRated(true); // ✅ hanya boleh sekali
+    setUserRated(true);
   };
 
   return (
@@ -128,20 +144,12 @@ export default function DetailProduk() {
         <div className="mt-10 p-6 bg-gray-50 rounded-lg shadow">
           <h2 className="text-xl font-semibold mb-4">💬 Tinggalkan Komentar</h2>
 
-          <form onSubmit={handleCommentSubmit} className="space-y-4">
-            <input
-              type="text"
-              placeholder="Nama"
-              value={newName}
-              onChange={(e) => setNewName(e.target.value)}
-              className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-300"
-              required
-            />
+          <form onSubmit={handleKomentar} className="space-y-4">
             <textarea
               placeholder="Tulis komentar kamu..."
               rows="4"
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
+              value={pesan}
+              onChange={(e) => setPesan(e.target.value)}
               className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-300"
               required
             />
@@ -154,20 +162,16 @@ export default function DetailProduk() {
           </form>
 
           {/* ✅ List Komentar */}
-          {comments.length > 0 && (
-            <div className="mt-6 space-y-4">
-              {comments.map((c) => (
-                <div
-                  key={c.id}
-                  className="p-4 border rounded-lg bg-white shadow-sm"
-                >
-                  <p className="font-semibold">{c.name}</p>
-                  <p className="text-sm text-gray-500">{c.date}</p>
-                  <p className="mt-2 text-gray-700">{c.text}</p>
-                </div>
-              ))}
-            </div>
-          )}
+          <div className="mt-6 space-y-4">
+            {comments.map((c, i) => (
+              <div key={i} className="p-4 bg-white rounded-lg shadow">
+                <p className="text-sm text-gray-700">{c.content}</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  ✍ {c.user.name} • {Helper.formatTanggal(c.updated_at)}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 

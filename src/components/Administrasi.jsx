@@ -5,7 +5,6 @@ import { FaWpforms, FaUsers, FaGlobe } from "react-icons/fa";
 export default function Administrasi() {
   const navigate = useNavigate();
 
-  // mapping langsung dengan target route
   const services = [
     {
       title: "Surat Pengantar",
@@ -26,7 +25,7 @@ export default function Administrasi() {
       desc: "Detail Penduduk",
       button: "Lihat Data",
       icon: <FaUsers className="text-4xl" />,
-      route: "/infografis/penduduk", // langsung ke infografis penduduk
+      route: "/infografis/penduduk",
     },
     {
       title: "Layanan Online",
@@ -63,7 +62,7 @@ export default function Administrasi() {
               key={index}
               className="bg-white rounded-2xl p-6 shadow-md flex flex-col items-center text-center hover:shadow-lg transition"
             >
-              {/* ✅ Icon bulat */}
+              {/* Icon bulat */}
               <div className="w-16 h-16 flex items-center justify-center rounded-full bg-lime-100 text-green-600 mb-4">
                 {service.icon}
               </div>
