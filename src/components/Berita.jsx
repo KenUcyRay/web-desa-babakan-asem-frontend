@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Pagination from "./Pagination";
 import { NewsApi } from "../libs/api/NewsApi";
+import { Helper } from "../utils/Helper";
 
 export default function Berita() {
   // const allBerita = Array.from({ length: 12 }, (_, i) => ({
@@ -37,13 +38,7 @@ export default function Berita() {
     }
   };
 
-  const formatTanggal = (isoString) => {
-    const date = new Date(isoString);
-    const day = date.getDate();
-    const month = date.getMonth() + 1; // Bulan dimulai dari 0
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
-  };
+
 
   useEffect(() => {
     fetchNews();
@@ -61,7 +56,7 @@ export default function Berita() {
           {/* Grid berita */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {news.map((n) => (
-              <Link to={`/news/${n.news.id}`} key={n.news.id}>
+              <Link to={`/berita/${n.news.id}`} key={n.news.id}>
                 <div className="bg-white rounded-xl shadow hover:shadow-md transition p-4 h-full flex flex-col">
                   <img
                     src={`${import.meta.env.VITE_BASE_URL}/news/images/${
@@ -75,7 +70,7 @@ export default function Berita() {
                     {n.news.content}
                   </p>
                   <p className="text-xs text-gray-400 mt-2">
-                    🗓 {formatTanggal(n.news.created_at)} | 👁 Dilihat{" "}
+                    🗓 {Helper.formatTanggal(n.news.created_at)} | 👁 Dilihat{" "}
                     {n.news.view_count} Kali
                   </p>
                 </div>

@@ -11,4 +11,17 @@ export class NewsApi {
       }
     );
   }
+
+  static async getDetailNews(id) {
+    return await fetch(
+      `${import.meta.env.VITE_BASE_URL}/news/${id}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      }
+    );
+  }
 }
