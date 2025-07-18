@@ -17,7 +17,7 @@ export default function Bansos() {
         {data.map((item, idx) => (
           <div
             key={idx}
-            className="bg-white p-6 rounded-xl shadow flex justify-between"
+            className="bg-white p-6 rounded-xl shadow flex justify-between hover:shadow-md hover:-translate-y-1 transition"
           >
             <div>
               <p className="font-semibold text-gray-800">{item.nama}</p>

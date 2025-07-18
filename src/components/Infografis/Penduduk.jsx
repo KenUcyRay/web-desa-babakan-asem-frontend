@@ -8,7 +8,7 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-} from "recharts"; // ✅ Tambah Recharts
+} from "recharts";
 
 export default function Penduduk() {
   const data = [
@@ -18,7 +18,6 @@ export default function Penduduk() {
     { icon: <FaChild />, label: "Anak-anak", value: 210 },
   ];
 
-  // ✅ Data untuk chart (ambil dari data atas)
   const chartData = data.map((item) => ({
     name: item.label,
     jumlah: item.value,
@@ -29,9 +28,7 @@ export default function Penduduk() {
       {/* Judul + Gambar */}
       <div className="grid md:grid-cols-2 gap-6 items-center">
         <div>
-          <h2 className="text-3xl font-bold text-gray-800">
-            Demografi Penduduk
-          </h2>
+          <h2 className="text-3xl font-bold text-gray-800">Demografi Penduduk</h2>
           <p className="mt-2 text-gray-600">
             Gambaran jumlah penduduk berdasarkan kategori.
           </p>
@@ -44,7 +41,7 @@ export default function Penduduk() {
         {data.map((item, idx) => (
           <div
             key={idx}
-            className="flex flex-col items-center bg-white p-6 rounded-xl shadow"
+            className="flex flex-col items-center bg-white p-6 rounded-xl shadow hover:shadow-md hover:-translate-y-1 transition"
           >
             <div className="text-3xl text-[#B6F500]">{item.icon}</div>
             <p className="text-gray-600 mt-2">{item.label}</p>
@@ -53,7 +50,7 @@ export default function Penduduk() {
         ))}
       </div>
 
-      {/* ✅ Tambah Statistik Diagram */}
+      {/* Grafik */}
       <div className="mt-12">
         <h3 className="text-2xl font-bold text-gray-800 text-center mb-6">
           Grafik Demografi Penduduk
