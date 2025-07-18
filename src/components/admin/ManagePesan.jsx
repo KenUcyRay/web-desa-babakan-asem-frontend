@@ -42,8 +42,27 @@ export default function ManagePesan() {
       <AdminSidebar />
 
       <div className="ml-64 p-6 w-full">
-        <h1 className="text-2xl font-bold mb-6">Kelola Pesan Masuk</h1>
+        <h1 className="text-2xl font-bold mb-4">Kelola Pesan Masuk</h1>
 
+        {/* Filter */}
+        <div className="flex gap-2 mb-4">
+          {["all", "read", "unread"].map((f) => (
+            <button
+              key={f}
+              className={`px-4 py-2 rounded ${
+                filter === f ? "bg-green-500 text-white" : "bg-gray-200"
+              }`}
+              onClick={() => {
+                setFilter(f);
+                setPage(1);
+              }}
+            >
+              {f === "all" ? "Semua" : f === "read" ? "Sudah Dibaca" : "Belum Dibaca"}
+            </button>
+          ))}
+        </div>
+
+        {/* List Pesan */}
         <div className="space-y-4">
           {message.map((p) => (
             <div
@@ -56,9 +75,14 @@ export default function ManagePesan() {
                 <p className="mt-2 text-gray-700">{p.message}</p>
               </div>
               <div className="flex flex-col gap-2 items-end">
-                <button className="flex items-center gap-1 text-green-500 hover:text-green-700">
-                  <FaEnvelopeOpen /> Tandai Dibaca
-                </button>
+                {!p.read && (
+                  <button
+                    onClick={() => handleMarkRead(p.id)}
+                    className="flex items-center gap-1 text-green-500 hover:text-green-700"
+                  >
+                    <FaEnvelopeOpen /> Tandai Dibaca
+                  </button>
+                )}
                 <button
                   onClick={() => handleDelete(p.id)}
                   className="flex items-center gap-1 text-red-500 hover:text-red-700"
@@ -67,6 +91,21 @@ export default function ManagePesan() {
                 </button>
               </div>
             </div>
+          ))}
+        </div>
+
+        {/* Pagination */}
+        <div className="flex justify-center gap-2 mt-4">
+          {Array.from({ length: totalPages }).map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setPage(i + 1)}
+              className={`px-3 py-1 rounded ${
+                page === i + 1 ? "bg-green-500 text-white" : "bg-gray-200"
+              }`}
+            >
+              {i + 1}
+            </button>
           ))}
         </div>
       </div>

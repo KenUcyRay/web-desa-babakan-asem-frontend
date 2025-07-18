@@ -1,35 +1,64 @@
 import { useState } from "react";
-import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
 import AdminSidebar from "./AdminSidebar";
-import ModalAgendaForm from "./ModalAgendaForm";
 
 export default function ManageAgenda() {
-  const [agenda, setAgenda] = useState([
+  const [agendaList, setAgendaList] = useState([
     {
       id: 1,
-      judul: "Musyawarah Desa",
-      tanggal: "2025-07-20",
-      lokasi: "Balai Desa",
+      title: "Musyawarah Desa",
+      description: "Diskusi terkait pembangunan desa bersama warga.",
+      date: "2025-07-20",
+      location: "Balai Desa",
+      isPublished: true,
     },
     {
       id: 2,
-      judul: "Gotong Royong Bersama",
-      tanggal: "2025-07-25",
-      lokasi: "Lapangan Desa",
+      title: "Gotong Royong Bersama",
+      description: "Kerja bakti membersihkan lingkungan desa.",
+      date: "2025-07-25",
+      location: "Lapangan Desa",
+      isPublished: false,
     },
   ]);
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+
+  // form state
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [date, setDate] = useState("");
+  const [location, setLocation] = useState("");
+  const [isPublished, setIsPublished] = useState(false);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const newAgenda = {
+      id: Date.now(),
+      title,
+      description,
+      date: date || new Date().toISOString().split("T")[0], // ✅ auto tanggal kalau kosong
+      location,
+      isPublished,
+    };
+
+    setAgendaList([...agendaList, newAgenda]);
+
+    // reset form
+    setTitle("");
+    setDescription("");
+    setDate("");
+    setLocation("");
+    setIsPublished(false);
+
+    // sembunyikan form setelah simpan
+    setShowForm(false);
+  };
 
   const handleDelete = (id) => {
     if (window.confirm("Yakin hapus agenda ini?")) {
-      setAgenda(agenda.filter((a) => a.id !== id));
+      setAgendaList(agendaList.filter((a) => a.id !== id));
     }
-  };
-
-  const handleAdd = (newData) => {
-    setAgenda([...agenda, { id: Date.now(), ...newData }]);
-    setIsModalOpen(false);
   };
 
   return (
@@ -39,48 +68,127 @@ export default function ManageAgenda() {
       <div className="ml-64 p-6 w-full">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">Kelola Agenda</h1>
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-          >
-            <FaPlus /> Tambah Agenda
-          </button>
+
+          {!showForm && (
+            <button
+              onClick={() => setShowForm(true)}
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+              ➕ Tambah Agenda
+            </button>
+          )}
         </div>
 
-        {/* List Agenda */}
+        {/* ✅ FORM MUNCUL SETELAH KLIK */}
+        {showForm && (
+          <form
+            onSubmit={handleSubmit}
+            className="bg-white p-4 rounded shadow mb-6 space-y-4 max-w-2xl"
+          >
+            <div>
+              <label className="block font-medium">Judul Agenda</label>
+              <input
+                className="w-full border p-2 rounded"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Masukkan judul agenda"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block font-medium">Deskripsi</label>
+              <textarea
+                className="w-full border p-2 rounded h-24"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Tuliskan deskripsi agenda..."
+                required
+              ></textarea>
+            </div>
+
+            <div>
+              <label className="block font-medium">Tanggal</label>
+              <input
+                type="date"
+                className="w-full border p-2 rounded"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+              />
+            </div>
+
+            <div>
+              <label className="block font-medium">Lokasi</label>
+              <input
+                className="w-full border p-2 rounded"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                placeholder="Lokasi acara"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block font-medium">Published?</label>
+              <button
+                type="button"
+                onClick={() => setIsPublished(!isPublished)}
+                className={`px-4 py-2 rounded ${
+                  isPublished ? "bg-green-500 text-white" : "bg-gray-300"
+                }`}
+              >
+                {isPublished ? "YES" : "NO"}
+              </button>
+            </div>
+
+            <div className="flex gap-2">
+              <button
+                type="submit"
+                className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600"
+              >
+                Simpan Agenda
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowForm(false)}
+                className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500"
+              >
+                Batal
+              </button>
+            </div>
+          </form>
+        )}
+
+        {/* ✅ LIST AGENDA */}
         <div className="space-y-4">
-          {agenda.map((a) => (
+          {agendaList.map((a) => (
             <div
               key={a.id}
               className="bg-white p-4 rounded-xl shadow flex justify-between items-center"
             >
               <div>
-                <h2 className="text-lg font-semibold">{a.judul}</h2>
-                <p className="text-gray-600 text-sm">
-                  📅 {a.tanggal} | 📍 {a.lokasi}
+                <h2 className="text-lg font-semibold">{a.title}</h2>
+                <p className="text-gray-600 text-sm">{a.description}</p>
+                <p className="text-xs text-gray-400 mt-1">
+                  📅 {a.date} | 📍 {a.location}
+                </p>
+                <p
+                  className={`text-sm ${
+                    a.isPublished ? "text-green-500" : "text-red-500"
+                  }`}
+                >
+                  {a.isPublished ? "Published" : "Unpublished"}
                 </p>
               </div>
-              <div className="flex gap-3">
-                <button className="flex items-center gap-1 text-blue-500 hover:text-blue-700">
-                  <FaEdit /> Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(a.id)}
-                  className="flex items-center gap-1 text-red-500 hover:text-red-700"
-                >
-                  <FaTrash /> Hapus
-                </button>
-              </div>
+              <button
+                onClick={() => handleDelete(a.id)}
+                className="text-red-500 hover:text-red-700"
+              >
+                Hapus
+              </button>
             </div>
           ))}
         </div>
-
-        {isModalOpen && (
-          <ModalAgendaForm
-            onClose={() => setIsModalOpen(false)}
-            onSave={handleAdd}
-          />
-        )}
       </div>
     </div>
   );

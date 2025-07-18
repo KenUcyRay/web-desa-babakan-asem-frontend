@@ -59,10 +59,11 @@ import ManagePesan from "./components/admin/ManagePesan";
 import ManageUser from "./components/admin/ManageUser";
 
 // ✅ Pengaturan Admin
-import PengaturanWebsite from "./components/admin/pengaturan/PengaturanWebsite";
-import PengaturanProfil from "./components/admin/pengaturan/PengaturanProfil";
-import PengaturanHakAkses from "./components/admin/pengaturan/PengaturanHakAkses";
+import PengaturanWebsite from "./components/admin/settings/PengaturanWebsite";
+import PengaturanProfil from "./components/admin/settings/PengaturanProfil";
+import PengaturanHakAkses from "./components/admin/settings/PengaturanHakAkses";
 import AdminLayout from "./components/admin/AdminLayout";
+import StPkk from "./components/StPkk";
 
 // ✅ Layout untuk Halaman Umum (Navbar & Footer aktif)
 function LayoutUmum() {
@@ -96,6 +97,7 @@ function LayoutUmum() {
           <Route path="/dpd" element={<Dpd />} />
           <Route path="/profil" element={<ProfilDesa />} />
           <Route path="/kontak" element={<KontakKami />} />
+          <Route path="/pkk/struktur" element={<StPkk />} />
 
           {/* ✅ Auth */}
           <Route path="/login" element={<Login />} />
@@ -157,10 +159,14 @@ function LayoutAdmin() {
   );
 }
 
-// ✅ Tentukan Layout berdasar URL
+// ✅ Tentukan Layout berdasar URL (FIX ✅)
 function AppContent() {
   const location = useLocation();
-  const isAdminPage = location.pathname.startsWith("/admin");
+
+  // ✅ hanya true kalau /admin atau /admin/xxx
+  const isAdminPage =
+    location.pathname === "/admin" || location.pathname.startsWith("/admin/");
+
   return isAdminPage ? <LayoutAdmin /> : <LayoutUmum />;
 }
 
