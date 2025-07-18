@@ -15,7 +15,6 @@ export default function Bumdes() {
     const response = await ProductApi.getProducts(currentPage);
     if (response.status === 200) {
       const responseBody = await response.json();
-      console.log(responseBody);
       setTotalPages(responseBody.total_page);
       setCurrentPage(responseBody.page);
       setProducts(responseBody.products);

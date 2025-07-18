@@ -19,7 +19,6 @@ export default function Agenda() {
       setTotalPages(responseBody.total_page);
       setCurrentPage(responseBody.page);
       setAgenda(responseBody.agenda);
-      console.log(responseBody.agenda);
     } else {
       alertError("Gagal mengambil data agenda. Silakan coba lagi nanti.");
     }

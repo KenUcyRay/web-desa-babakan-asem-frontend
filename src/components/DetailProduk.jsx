@@ -1,80 +1,87 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { FaWhatsapp, FaStar } from "react-icons/fa";
+import { FaWhatsapp, FaStar, FaRegStar } from "react-icons/fa";
 import SidebarProduk from "./SidebarProduk";
-import { Helper } from "../utils/Helper"; 
+import { Helper } from "../utils/Helper";
 import { alertError, alertSuccess } from "../libs/alert";
-import { CommentApi } from "../libs/api/CommentApi"; 
+import { CommentApi } from "../libs/api/CommentApi";
+import { ProductApi } from "../libs/api/ProductApi";
 
 export default function DetailProduk() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [product, setProduct] = useState({});
+  // const [userCreated, setUserCreated] = useState({});
+  const [comments, setComments] = useState([]);
+  const [pesan, setPesan] = useState("");
 
   // ✅ Cek login token
   const userToken = JSON.parse(localStorage.getItem("token"));
 
-  const produk = {
-    id,
-    nama: "Nama Produk Desa",
-    harga: "Rp 65.000",
-    deskripsi:
-      "Ini adalah deskripsi lengkap produk desa. Bisa mencakup bahan, proses pembuatan, manfaat, dan informasi lainnya.",
-    img: "https://picsum.photos/800/500?random=99",
-  };
-
-  const [comments, setComments] = useState([]);
-  const [pesan, setPesan] = useState("");
   const [rating, setRating] = useState(0);
   const [userRated, setUserRated] = useState(false);
 
   const handleKomentar = async (e) => {
     e.preventDefault();
 
-    if (!userToken) {
+    const user = JSON.parse(localStorage.getItem("token"));
+    if (!user) {
       alert("⚠ Silakan login dulu untuk memberikan komentar!");
       navigate("/login");
       return;
     }
 
-    // ✅ Kirim komentar (sementara dummy, nanti pakai API)
-    const newComment = {
-      content: pesan,
-      user: { name: "User Login" },
-      updated_at: new Date().toISOString(),
-    };
-    setComments([newComment, ...comments]);
-    setPesan("");
+    const response = await CommentApi.createComment(id, "PRODUCT", pesan);
+    const responseBody = await response.json();
+    if (response.status !== 201) {
+      await alertError(
+        `Gagal mengirim komentar. Silakan coba lagi nanti. ${responseBody.error}`
+      );
+      return;
+    }
 
-    // nanti ganti dengan:
-    // const response = await CommentApi.createComment(id, "PRODUCT", pesan);
-    // const responseBody = await response.json();
-    // if (response.status !== 201) {
-    //   await alertError(`Gagal mengirim komentar. ${responseBody.error}`);
-    //   return;
-    // }
-    // await alertSuccess("Komentar berhasil dikirim!");
+    await alertSuccess("Komentar berhasil dikirim!");
+
+    setPesan("");
   };
 
-  const fetchComments = async () => {
-    // nanti ganti API produk
-    // const response = await CommentApi.getComments(id);
-    // const responseBody = await response.json();
-    // if (response.status === 200) {
-    //   setComments(responseBody.comments);
-    // } else {
-    //   await alertError("Gagal mengambil komentar produk.");
-    // }
+  const fetchDetailProduct = async () => {
+    const response = await ProductApi.getDetailProduct(id);
+    const responseBody = await response.json();
+    if (response.status === 200) {
+      setProduct(responseBody.product);
+      // setUserCreated(responseBody.user_created);
+      setRating(responseBody.rating);
+      setComments(responseBody.comments);
+    } else {
+      await alertError(
+        `Gagal mengambil detail product. Silakan coba lagi nanti.`
+      );
+      navigate("/bumdes");
+    }
+  };
+
+  const fetchComment = async () => {
+    const response = await CommentApi.getComments(id);
+    const responseBody = await response.json();
+    if (response.status === 200) {
+      setComments(responseBody.comments);
+    } else {
+      await alertError(`Gagal mengambil comment. Silakan coba lagi nanti.`);
+    }
   };
 
   useEffect(() => {
-    fetchComments();
+    fetchDetailProduct();
+  }, [id]);
 
+  useEffect(() => {
     const interval = setInterval(() => {
-      fetchComments();
+      fetchComment();
     }, 5000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [id]);
 
   const handleRating = (value) => {
     if (!userToken) {
@@ -95,43 +102,51 @@ export default function DetailProduk() {
       {/* ✅ Konten utama */}
       <div className="md:col-span-3">
         <img
-          src={produk.img}
-          alt={produk.nama}
+          src={`${import.meta.env.VITE_BASE_URL}/products/images/${
+            product.featured_image
+          }`}
+          alt={product.title}
           className="w-full h-96 object-cover rounded-lg mb-6"
         />
-        <h1 className="text-2xl font-bold mb-3">{produk.nama}</h1>
+        <h1 className="text-2xl font-bold mb-3">{product.title}</h1>
         <p className="text-sm text-gray-500 mb-2">
-          Oleh BUMDes Babakan Asem | Harga:{" "}
-          <span className="font-semibold text-black">{produk.harga}</span>
+          Oleh BUMDes Babakan Asem | Harga : {""}
+          <span className="font-semibold text-black">
+            {Helper.formatRupiah(product.price)}
+          </span>
         </p>
 
         {/* ✅ Rating Produk */}
-        <div className="flex items-center gap-2 mb-6">
-          {[1, 2, 3, 4, 5].map((star) => (
-            <FaStar
-              key={star}
-              className={`cursor-pointer text-2xl transition ${
-                star <= rating ? "text-yellow-400" : "text-gray-300"
-              }`}
-              onClick={() => handleRating(star)}
-            />
-          ))}
-          {rating > 0 && (
-            <span className="text-sm text-gray-600">({rating} / 5)</span>
-          )}
+        <div className="flex items-center gap-1 mt-2">
+          {[1, 2, 3, 4, 5].map((star) => {
+            const full = Math.floor(rating);
+            const half = rating - full >= 0.5;
+
+            let icon;
+            if (star <= full) {
+              icon = <FaStar className="text-yellow-400" />;
+            } else if (star === full + 1 && half) {
+              icon = <FaStarHalfAlt className="text-yellow-400" />;
+            } else {
+              icon = <FaRegStar className="text-gray-300" />;
+            }
+
+            return <span key={star}>{icon}</span>;
+          })}
+          <span className="text-sm text-gray-500 ml-2">
+            ({rating.toFixed(1)})
+          </span>
         </div>
 
         <div className="space-y-4 text-gray-800 leading-relaxed">
-          <p>{produk.deskripsi}</p>
+          <p>{product.description}</p>
           <p>Produk ini 100% hasil desa dan dikelola oleh masyarakat lokal.</p>
         </div>
 
         {/* ✅ Tombol WA Pesan */}
         <div className="mt-6">
           <a
-            href={`https://wa.me/6281234567890?text=Halo%20saya%20mau%20pesan%20${encodeURIComponent(
-              produk.nama
-            )}`}
+            href={product.link_whatsapp}
             target="_blank"
             rel="noreferrer"
             className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition"

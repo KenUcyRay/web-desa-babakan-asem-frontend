@@ -60,7 +60,7 @@ export default function DetailAgenda() {
       setComments(responseBody.comments);
     } else {
       await alertError(
-        `Gagal mengambil detail agenda. Silakan coba lagi nanti. ${responseBody.error}`
+        `Gagal mengambil detail agenda. Silakan coba lagi nanti.`
       );
       navigate("/agenda");
     }
@@ -78,7 +78,7 @@ export default function DetailAgenda() {
 
   useEffect(() => {
     fetchDetailAgenda();
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -86,7 +86,7 @@ export default function DetailAgenda() {
     }, 5000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [id]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-4 gap-6">

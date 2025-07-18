@@ -1,10 +1,10 @@
 import React from "react";
-import { 
-  FaFacebook, 
-  FaInstagram, 
-  FaWhatsapp, 
-  FaEnvelope, 
-  FaTiktok 
+import {
+  FaFacebook,
+  FaInstagram,
+  FaWhatsapp,
+  FaEnvelope,
+  FaTiktok,
 } from "react-icons/fa";
 import kumpul from "../assets/kumpul.jpg";
 
@@ -19,10 +19,10 @@ export default function ProfilDesa() {
           </h1>
           <p className="text-gray-700 text-lg leading-relaxed">
             Desa Babakan Asem adalah desa yang kaya akan sejarah, budaya, dan
-            potensi masyarakatnya. Dengan semangat kebersamaan dan gotong royong,
-            desa ini terus berkembang menuju masa depan yang lebih baik, tetap
-            menjaga nilai-nilai tradisi namun beradaptasi dengan perkembangan
-            zaman.
+            potensi masyarakatnya. Dengan semangat kebersamaan dan gotong
+            royong, desa ini terus berkembang menuju masa depan yang lebih baik,
+            tetap menjaga nilai-nilai tradisi namun beradaptasi dengan
+            perkembangan zaman.
           </p>
         </div>
         <div className="flex justify-center">
@@ -43,10 +43,11 @@ export default function ProfilDesa() {
           <p className="text-gray-700 leading-relaxed text-justify">
             Menurut sejarahnya, Desa Babakan Asem pada awalnya termasuk wilayah
             Desa Bongkok dan Desa Conggeang. Nama Desa Babakan Asem sendiri
-            berasal dari satu kampung atau babakan dan ada pohon asem yang besar,
-            maka diberi nama Desa Babakan Asem. Babakan Asem juga merupakan
-            singkatan dari <strong>Bareng Bakti Negara Anu Sempurna</strong>.
-            Sementara moto Desa Babakan Asem adalah{" "}
+            berasal dari satu kampung atau babakan dan ada pohon asem yang
+            besar, maka diberi nama Desa Babakan Asem. Babakan Asem juga
+            merupakan singkatan dari{" "}
+            <strong>Bareng Bakti Negara Anu Sempurna</strong>. Sementara moto
+            Desa Babakan Asem adalah{" "}
             <strong>"Ayem Tengrtrem Kerta Raharja"</strong>.
           </p>
         </div>
@@ -58,13 +59,17 @@ export default function ProfilDesa() {
           <h3 className="text-2xl font-bold text-green-700 mb-4">Visi</h3>
           <p className="text-gray-700 leading-relaxed">
             “Mewujudkan Desa Babakan Asem yang mandiri, maju, dan berdaya saing
-            dengan tetap menjaga nilai-nilai budaya dan gotong royong masyarakat.”
+            dengan tetap menjaga nilai-nilai budaya dan gotong royong
+            masyarakat.”
           </p>
         </div>
         <div className="bg-gradient-to-br from-green-50 to-white shadow-md rounded-xl p-6">
           <h3 className="text-2xl font-bold text-green-700 mb-4">Misi</h3>
           <ul className="list-disc list-inside text-gray-700 space-y-2">
-            <li>Meningkatkan kesejahteraan masyarakat melalui pembangunan berkelanjutan.</li>
+            <li>
+              Meningkatkan kesejahteraan masyarakat melalui pembangunan
+              berkelanjutan.
+            </li>
             <li>Memberdayakan potensi desa untuk mendukung ekonomi kreatif.</li>
             <li>Meningkatkan kualitas pendidikan & kesehatan masyarakat.</li>
             <li>Menjaga kelestarian lingkungan & budaya lokal.</li>
@@ -80,16 +85,28 @@ export default function ProfilDesa() {
           </h2>
           <div className="grid md:grid-cols-3 gap-6">
             <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition">
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">Kepala Desa</h3>
-              <p className="text-gray-500">Memimpin & mengatur kebijakan desa</p>
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                Kepala Desa
+              </h3>
+              <p className="text-gray-500">
+                Memimpin & mengatur kebijakan desa
+              </p>
             </div>
             <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition">
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">Perangkat Desa</h3>
-              <p className="text-gray-500">Pelayanan administrasi & pembangunan</p>
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                Perangkat Desa
+              </h3>
+              <p className="text-gray-500">
+                Pelayanan administrasi & pembangunan
+              </p>
             </div>
             <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition">
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">BPD & Lembaga Desa</h3>
-              <p className="text-gray-500">Mengawasi & menyalurkan aspirasi warga</p>
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                BPD & Lembaga Desa
+              </h3>
+              <p className="text-gray-500">
+                Mengawasi & menyalurkan aspirasi warga
+              </p>
             </div>
           </div>
         </div>
@@ -111,8 +128,12 @@ export default function ProfilDesa() {
             >
               <FaFacebook className="text-blue-600 text-5xl" />
               <div>
-                <h3 className="text-xl font-semibold text-blue-700">Facebook</h3>
-                <p className="text-gray-600 text-sm">Dapatkan berita terbaru desa</p>
+                <h3 className="text-xl font-semibold text-blue-700">
+                  Facebook
+                </h3>
+                <p className="text-gray-600 text-sm">
+                  Dapatkan berita terbaru desa
+                </p>
               </div>
             </a>
 
@@ -125,8 +146,12 @@ export default function ProfilDesa() {
             >
               <FaInstagram className="text-pink-500 text-5xl" />
               <div>
-                <h3 className="text-xl font-semibold text-pink-600">Instagram</h3>
-                <p className="text-gray-600 text-sm">Lihat momen & kegiatan desa</p>
+                <h3 className="text-xl font-semibold text-pink-600">
+                  Instagram
+                </h3>
+                <p className="text-gray-600 text-sm">
+                  Lihat momen & kegiatan desa
+                </p>
               </div>
             </a>
 
@@ -139,7 +164,9 @@ export default function ProfilDesa() {
             >
               <FaWhatsapp className="text-green-500 text-5xl" />
               <div>
-                <h3 className="text-xl font-semibold text-green-600">WhatsApp</h3>
+                <h3 className="text-xl font-semibold text-green-600">
+                  WhatsApp
+                </h3>
                 <p className="text-gray-600 text-sm">Hubungi kami langsung</p>
               </div>
             </a>
@@ -166,7 +193,9 @@ export default function ProfilDesa() {
               <FaEnvelope className="text-red-500 text-5xl" />
               <div>
                 <h3 className="text-xl font-semibold text-red-600">Gmail</h3>
-                <p className="text-gray-600 text-sm">Kirimkan pertanyaan & masukan</p>
+                <p className="text-gray-600 text-sm">
+                  Kirimkan pertanyaan & masukan
+                </p>
               </div>
             </a>
           </div>
@@ -180,16 +209,24 @@ export default function ProfilDesa() {
             Batas Wilayah Desa
           </h3>
           <ul className="space-y-2 text-gray-800">
-            <li><strong>Utara:</strong> Desa Ungkal</li>
-            <li><strong>Selatan:</strong> Desa Bugel</li>
-            <li><strong>Barat:</strong> Desa Cacaban & Desa Prasih</li>
-            <li><strong>Timur:</strong> Desa Cipelang & kawasan BPM Taman</li>
+            <li>
+              <strong>Utara:</strong> Desa Ungkal
+            </li>
+            <li>
+              <strong>Selatan:</strong> Desa Bugel
+            </li>
+            <li>
+              <strong>Barat:</strong> Desa Cacaban & Desa Prasih
+            </li>
+            <li>
+              <strong>Timur:</strong> Desa Cipelang & kawasan BPM Taman
+            </li>
           </ul>
         </div>
         <div className="rounded-xl overflow-hidden shadow-md">
           <iframe
             title="Lokasi Desa Babakan Asem"
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3958.704903283145!2d107.59031737499678!3d-7.161007992841409!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e68f0dfadceb4e7%3A0xaaaaaa!2sDesa%20Babakan%20Asem!5e0!3m2!1sid!2sid!4v1680000000000"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7934.664371412895!2d106.65160769694418!3d-6.085869757207361!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e6a03b93c27479f%3A0xd8f1dcf4227df064!2sBabakan%20Asem%2C%20Kec.%20Teluknaga%2C%20Kabupaten%20Tangerang%2C%20Banten!5e0!3m2!1sid!2sid!4v1752824632488!5m2!1sid!2sid"
             width="100%"
             height="350"
             allowFullScreen=""
