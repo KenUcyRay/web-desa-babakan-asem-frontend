@@ -1,100 +1,131 @@
 import { useEffect, useState } from "react";
 import AdminSidebar from "../AdminSidebar";
-import { FaUser, FaLock, FaSave, FaIdBadge, FaCopy } from "react-icons/fa";
-import { alertSuccess } from "../../../libs/alert";
+import { FaUser, FaLock, FaSave } from "react-icons/fa";
+import { UserApi } from "../../../libs/api/UserApi";
+import { alertConfirm, alertError, alertSuccess } from "../../../libs/alert";
 
 export default function PengaturanProfil() {
-  // ✅ Dummy awal
-  const [profile, setProfile] = useState({
-    id: "ADM-20250719-XYZ",
-    name: "Admin Desa",
-    email: "admin@desa.id",
-  });
-
+  const [profile, setProfile] = useState({});
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleSubmit = (e) => {
+  const fetchProfile = async () => {
+    const response = await UserApi.getUserProfile();
+    if (!response.ok) {
+      alertError("Gagal mengambil profil.");
+      return;
+    }
+    const responseBody = await response.json();
+    setProfile(responseBody.user);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (name === "" && email === "" && password === "") {
-      alert("⚠️ Isi minimal salah satu field!");
+    if (name.trim() === "" && email.trim() === "" && password.trim() === "") {
+      alertError(
+        "Harap isi minimal salah satu field (Nama, Email, atau Password)."
+      );
+      return;
+    }
+
+    const confirm = await alertConfirm(
+      "Apakah Anda yakin ingin menyimpan perubahan?"
+    );
+    if (!confirm) return;
+
+    if (password.trim() !== "" && confirmPassword.trim() === "") {
+      alertError("Harap isi konfirmasi password.");
       return;
     }
 
     if (password !== confirmPassword) {
-      alert("❌ Password tidak cocok!");
+      alertError("Password dan konfirmasi password tidak cocok.");
       return;
     }
 
-    setProfile((prev) => ({
-      ...prev,
-      name: name || prev.name,
-      email: email || prev.email,
-    }));
+    const updatedName = name === "" ? undefined : name;
+    const updatedEmail = email === "" ? undefined : email;
+    const updatedPassword = password === "" ? undefined : password;
+    const updatedConfirmPassword =
+      confirmPassword === "" ? undefined : confirmPassword;
+
+    const response = await UserApi.updateUser(
+      updatedName,
+      updatedEmail,
+      updatedPassword,
+      updatedConfirmPassword
+    );
+    const responseBody = await response.json();
 
     setName("");
     setEmail("");
     setPassword("");
     setConfirmPassword("");
 
-    alertSuccess("✅ Dummy perubahan disimpan!");
-  };
+    if (!response.ok) {
+      let errorMessage = "Gagal menyimpan perubahan.";
 
-  const copyId = () => {
-    navigator.clipboard.writeText(profile.id);
-    alertSuccess("📋 ID berhasil disalin!");
+      if (responseBody.error && Array.isArray(responseBody.error)) {
+        const errorMessages = responseBody.error.map((err) => {
+          if (err.path && err.path.length > 0) {
+            return `${err.path[0]}: ${err.message}`;
+          }
+          return err.message;
+        });
+        errorMessage = errorMessages.join(", ");
+      } else if (responseBody.error && typeof responseBody.error === "string") {
+        errorMessage = responseBody.error;
+      }
+
+      alertError(errorMessage);
+      return;
+    }
+    setProfile(responseBody.user);
+    alertSuccess("Perubahan berhasil disimpan!");
   };
 
   useEffect(() => {
-    // dummy fetch
+    fetchProfile();
   }, []);
 
   return (
-    <div className="flex flex-col md:flex-row">
-      {/* ✅ Sidebar tetap */}
+    <div className="flex">
       <AdminSidebar />
 
-      {/* ✅ Konten utama */}
-      <div className="md:ml-64 flex-1 p-4 sm:p-6">
-        <h1 className="text-2xl sm:text-3xl font-bold mb-6">
-          Pengaturan Profil Admin
-        </h1>
+      <div className="ml-64 p-6 w-full">
+        <h1 className="text-3xl font-bold mb-6">Pengaturan Profil Admin</h1>
 
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-6 max-w-2xl mx-auto w-full"
-        >
-          {/* ✅ ID Admin (Read-only + copy) */}
-          <div className="bg-white p-4 sm:p-6 rounded-xl shadow mb-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* ✅ ID Admin (tidak bisa diubah + tombol salin) */}
+          <div className="bg-white p-6 rounded-xl shadow mb-6">
             <label className="font-semibold mb-2 flex items-center gap-2">
-              <FaIdBadge />
-              ID Admin
+              <FaUser /> ID Admin
             </label>
             <div className="flex items-center gap-2">
               <input
                 type="text"
-                value={profile.id}
+                value={profile.id || ""}
                 readOnly
-                className="border rounded w-full p-2 bg-gray-100 text-gray-600 cursor-not-allowed"
+                className="border rounded w-full p-2 bg-gray-100 cursor-not-allowed"
               />
               <button
                 type="button"
-                onClick={copyId}
-                className="px-3 py-2 bg-green-500 text-white rounded hover:opacity-80"
+                onClick={() => {
+                  navigator.clipboard.writeText(profile.id);
+                  alertSuccess("ID berhasil disalin ke clipboard");
+                }}
+                className="bg-green-500 text-white px-3 py-2 rounded hover:bg-green-600 text-sm"
               >
-                <FaCopy />
+                Salin
               </button>
             </div>
-            <p className="text-xs text-gray-500 mt-1">
-              ID ini dibuat otomatis dan tidak bisa diubah.
-            </p>
           </div>
 
-          {/* ✅ Ganti Nama Admin */}
-          <div className="bg-white p-4 sm:p-6 rounded-xl shadow mb-6">
+          {/* Ganti Nama Admin */}
+          <div className="bg-white p-6 rounded-xl shadow mb-6">
             <label className="font-semibold mb-2 flex items-center gap-2">
               <FaUser />
               Nama
@@ -108,8 +139,7 @@ export default function PengaturanProfil() {
             />
           </div>
 
-          {/* ✅ Ganti Email */}
-          <div className="bg-white p-4 sm:p-6 rounded-xl shadow mb-6">
+          <div className="bg-white p-6 rounded-xl shadow mb-6">
             <label className="font-semibold mb-2 flex items-center gap-2">
               <FaUser />
               Email
@@ -123,8 +153,8 @@ export default function PengaturanProfil() {
             />
           </div>
 
-          {/* ✅ Ganti Password */}
-          <div className="bg-white p-4 sm:p-6 rounded-xl shadow mb-6">
+          {/* Ganti Password */}
+          <div className="bg-white p-6 rounded-xl shadow mb-6">
             <label className="font-semibold mb-2 flex items-center gap-2">
               <FaLock /> Password Baru
             </label>
@@ -137,7 +167,7 @@ export default function PengaturanProfil() {
             />
           </div>
 
-          <div className="bg-white p-4 sm:p-6 rounded-xl shadow mb-6">
+          <div className="bg-white p-6 rounded-xl shadow mb-6">
             <label className="font-semibold mb-2 flex items-center gap-2">
               <FaLock /> Konfirmasi Password Baru
             </label>
@@ -150,10 +180,10 @@ export default function PengaturanProfil() {
             />
           </div>
 
-          {/* ✅ Tombol Simpan */}
+          {/* Tombol Simpan */}
           <button
             type="submit"
-            className="bg-green-600 text-white px-4 py-3 rounded flex items-center justify-center gap-2 w-full sm:w-auto"
+            className="bg-green-600 text-white px-4 py-2 rounded flex items-center gap-2"
           >
             <FaSave /> Simpan Perubahan
           </button>
