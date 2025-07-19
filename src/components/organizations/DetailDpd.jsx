@@ -1,24 +1,41 @@
-import React from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { HiArrowLeft } from "react-icons/hi";
+import { AgendaApi } from "../../libs/api/AgendaApi";
+import { alertError } from "../../libs/alert";
+import { Helper } from "../../utils/Helper";
+import { GaleryApi } from "../../libs/api/GaleryApi";
 
 export default function DetailDpd() {
   const navigate = useNavigate();
 
-  const agendaLengkap = [
-    { judul: "Musyawarah Desa Bahas Pembangunan Jalan", tanggal: "20 Juli 2025", gambar: "https://images.unsplash.com/photo-1521791136064-7986c2920216?w=800" },
-    { judul: "Rapat Koordinasi Program Kesejahteraan", tanggal: "05 Agustus 2025", gambar: "https://images.unsplash.com/photo-1600880292089-90a7e086ee0c?w=800" },
-    { judul: "Pengawasan Dana Desa Tahap II", tanggal: "15 Agustus 2025", gambar: "https://images.unsplash.com/photo-1581091215360-680f58a4576e?w=800" },
-    { judul: "Dialog Aspirasi Warga Tahunan", tanggal: "30 Agustus 2025", gambar: "https://images.unsplash.com/photo-1551836022-4c4c79ecde16?w=800" },
-    { judul: "Evaluasi Pembangunan Desa Semester II", tanggal: "15 September 2025", gambar: "https://images.unsplash.com/photo-1515165562835-c3b8fcf1d7c8?w=800" },
-  ];
+  const [agenda, setAgenda] = useState([]);
+  const [galery, setGalery] = useState([]);
 
-  const galeri = [
-    { img: "https://images.unsplash.com/photo-1493815793585-d94ccbc86df8?w=800", desc: "Rapat koordinasi bersama warga desa membahas aspirasi pembangunan." },
-    { img: "https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?w=800", desc: "Pengawasan realisasi dana desa tahap pertama." },
-    { img: "https://images.unsplash.com/photo-1521790361557-168344a6f163?w=800", desc: "Kunjungan lapangan untuk memantau proyek jalan desa." },
-    { img: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800", desc: "Dialog interaktif bersama warga di balai desa." },
-  ];
+  const fetchGalery = async () => {
+    const response = await GaleryApi.getGaleri(1, 100, "DPD");
+    if (response.status === 200) {
+      const responseBody = await response.json();
+      setGalery(responseBody.galeri);
+    } else {
+      await alertError("Gagal mengambil data galeri. Silakan coba lagi nanti.");
+    }
+  };
+
+  const fetchAgenda = async () => {
+    const response = await AgendaApi.getAgenda(1, 100, "DPD");
+    if (response.status === 200) {
+      const responseBody = await response.json();
+      setAgenda(responseBody.agenda);
+    } else {
+      alertError("Gagal mengambil data agenda. Silakan coba lagi nanti.");
+    }
+  };
+
+  useEffect(() => {
+    fetchAgenda();
+    fetchGalery();
+  }, []);
 
   return (
     <div className="font-poppins text-gray-800 w-full">
@@ -29,7 +46,8 @@ export default function DetailDpd() {
             Agenda Lengkap & Galeri <span className="text-green-700">DPD</span>
           </h1>
           <p className="mt-4 text-base sm:text-lg text-gray-600 max-w-3xl mx-auto">
-            Semua agenda mendatang serta dokumentasi kegiatan Dewan Perwakilan Desa Babakan Asem.
+            Semua agenda mendatang serta dokumentasi kegiatan Dewan Perwakilan
+            Desa Babakan Asem.
           </p>
         </div>
       </section>
@@ -47,22 +65,36 @@ export default function DetailDpd() {
 
       {/* ✅ Semua Agenda */}
       <section className="w-full max-w-screen-2xl mx-auto px-4 md:px-8 py-12">
-        <h2 className="text-2xl md:text-3xl font-bold text-center mb-8">Daftar Agenda Lengkap</h2>
+        <h2 className="text-2xl md:text-3xl font-bold text-center mb-8">
+          Daftar Agenda Lengkap
+        </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {agendaLengkap.map((ag, i) => (
+          {agenda.map((item) => (
             <div
-              key={i}
+              key={item.agenda.id}
               className="group relative rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition w-full"
             >
               <img
-                src={ag.gambar}
-                alt={ag.judul}
+                src={`${import.meta.env.VITE_BASE_URL}/agenda/images/${
+                  item.agenda.featured_image
+                }`}
+                alt={item.agenda.title}
                 className="h-40 sm:h-48 md:h-56 w-full object-cover group-hover:scale-105 transition"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
               <div className="absolute bottom-4 left-4 text-left text-white">
-                <h3 className="font-bold text-sm sm:text-base md:text-lg">{ag.judul}</h3>
-                <p className="text-xs sm:text-sm opacity-80">{ag.tanggal}</p>
+                <h3 className="font-bold text-sm sm:text-base md:text-lg">
+                  {item.agenda.title}
+                </h3>
+                {(() => {
+                  const { tanggal } = Helper.formatAgendaDateTime(
+                    item.agenda.start_time,
+                    item.agenda.end_time
+                  );
+                  return (
+                    <p className="text-xs sm:text-sm opacity-80">{tanggal}</p>
+                  );
+                })()}
               </div>
             </div>
           ))}
@@ -71,21 +103,27 @@ export default function DetailDpd() {
 
       {/* ✅ Galeri Kegiatan DPD */}
       <section className="w-full max-w-screen-2xl mx-auto px-4 md:px-8 py-12">
-        <h2 className="text-2xl md:text-3xl font-bold text-center mb-8">Galeri Kegiatan DPD</h2>
+        <h2 className="text-2xl md:text-3xl font-bold text-center mb-8">
+          Galeri Kegiatan DPD
+        </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {galeri.map((g, i) => (
+          {galery.map((item) => (
             <div
-              key={i}
+              key={item.id}
               className="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden w-full"
             >
               <img
-                src={g.img}
+                src={`${import.meta.env.VITE_BASE_URL}/galeri/images/${
+                  item.image
+                }`}
                 alt="Galeri DPD"
                 className="w-full h-40 sm:h-48 md:h-56 object-cover"
               />
-              <div className="p-4">
-                <p className="text-sm md:text-base text-gray-700 leading-relaxed">{g.desc}</p>
-              </div>
+              {/* <div className="p-4">
+                <p className="text-sm md:text-base text-gray-700 leading-relaxed">
+                  {item.desc}
+                </p>
+              </div> */}
             </div>
           ))}
         </div>

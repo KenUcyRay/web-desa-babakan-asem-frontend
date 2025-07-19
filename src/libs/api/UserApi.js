@@ -109,4 +109,20 @@ export class UserApi {
       }),
     });
   }
+  static async createAdmin(name, email, password, confirmPassword) {
+    return await fetch(`${import.meta.env.VITE_BASE_URL}/users/admin`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
+      },
+      body: JSON.stringify({
+        name: name,
+        email: email,
+        password: password,
+        confirm_password: confirmPassword,
+      }),
+    });
+  }
 }

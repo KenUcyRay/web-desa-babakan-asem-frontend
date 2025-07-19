@@ -1,7 +1,9 @@
 export class AgendaApi {
-  static async getAgenda(page = 1, limit = 10) {
+  static async getAgenda(page = 1, limit = 10, type = "") {
     return await fetch(
-      `${import.meta.env.VITE_BASE_URL}/agenda/?page=${page}&limit=${limit}`,
+      `${
+        import.meta.env.VITE_BASE_URL
+      }/agenda/?page=${page}&limit=${limit}&type=${type}`,
       {
         method: "GET",
         headers: {
