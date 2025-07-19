@@ -131,7 +131,6 @@ export default function ManageBerita() {
 
     if (!response.ok) {
       alertError("Gagal mengambil berita. Silakan coba lagi.");
-      setLoading(false);
       return;
     }
     const responseBody = await response.json();
