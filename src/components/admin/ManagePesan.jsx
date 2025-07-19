@@ -40,7 +40,7 @@ export default function ManagePesan() {
       return;
     }
 
-    await alertSuccess("Pesan berhasil dihapus.");
+    await alertSuccess("Pesan berhasil dihapus.");p
     setMessages(messages.filter((p) => p.id !== id));
   };
 

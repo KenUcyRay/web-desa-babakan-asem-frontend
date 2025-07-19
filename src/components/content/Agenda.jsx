@@ -34,7 +34,7 @@ export default function Agenda() {
   };
 
   useEffect(() => {
-    fetchAgenda(currentPage);
+    fetchAgenda();
   }, [currentPage]);
 
   return (
