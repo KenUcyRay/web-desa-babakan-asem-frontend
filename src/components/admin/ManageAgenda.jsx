@@ -8,6 +8,7 @@ import {
 } from "react-icons/fi";
 import AdminSidebar from "./AdminSidebar";
 import { AgendaApi } from "../../libs/api/AgendaApi";
+import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 
 export default function ManageAgenda() {
   const [agenda, setAgenda] = useState([]);
@@ -36,19 +37,81 @@ export default function ManageAgenda() {
     setShowForm(false);
   };
 
+  const handleDelete = async (id) => {
+    if (!(await alertConfirm("Yakin ingin menghapus agenda ini?"))) {
+      return;
+    }
+    const response = await AgendaApi.deleteAgenda(id);
+    if (!response.ok) {
+      alertError("Gagal menghapus agenda. Silakan coba lagi.");
+      return;
+    }
+    setAgenda(agenda.filter((a) => a.id !== id));
+  };
+
+  const handleEdit = (id) => {
+    const item = agenda.find((a) => a.id === id);
+    if (!item) return;
+
+    setTitle(item.title);
+    setContent(item.content);
+    setStartTime(item.start_time);
+    setEndTime(item.end_time);
+    setLocation(item.location);
+    setFeaturedImage(null);
+    setIsPublished(item.isPublished);
+    setEditingId(id);
+    setShowForm(true);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const rawData = {
       title,
       content,
-      start_time: startTime,
-      end_time: endTime || startTime,
+      start_time: new Date(startTime).toISOString(),
+      end_time: new Date(endTime).toISOString(),
       location,
       featured_image: featuredImage,
       is_published: isPublished,
       type: "REGULAR",
     };
+
+    if (editingId) {
+      if (!(await alertConfirm("Yakin ingin mengedit agenda ini?"))) {
+        return;
+      }
+
+      const response = await AgendaApi.updateAgenda(editingId, rawData);
+      const responseBody = await response.json();
+
+      if (!response.ok) {
+        let errorMessage = "Gagal menyimpan perubahan.";
+
+        if (responseBody.error && Array.isArray(responseBody.error)) {
+          const errorMessages = responseBody.error.map((err) => {
+            if (err.path && err.path.length > 0) {
+              return `${err.path[0]}: ${err.message}`;
+            }
+            return err.message;
+          });
+          errorMessage = errorMessages.join(", ");
+        } else if (
+          responseBody.error &&
+          typeof responseBody.error === "string"
+        ) {
+          errorMessage = responseBody.error;
+        }
+        await alertError(errorMessage);
+        return;
+      }
+
+      await alertSuccess("Agenda berhasil diperbarui!");
+      resetForm();
+
+      return;
+    }
 
     const response = await AgendaApi.createAgenda(rawData);
     const responseBody = await response.json();
@@ -75,58 +138,6 @@ export default function ManageAgenda() {
     }
 
     resetForm();
-  };
-
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-
-  //   const imagePreview = featuredImage
-  //     ? URL.createObjectURL(featuredImage)
-  //     : editingId
-  //     ? agenda.find((a) => a.id === editingId).featuredImage
-  //     : "https://source.unsplash.com/400x250/?village";
-
-  //   const newData = {
-  //     id: editingId || Date.now(),
-  //     title,
-  //     content,
-  //     start_time: startTime,
-  //     end_time: endTime || startTime,
-  //     location,
-  //     featuredImage: imagePreview,
-  //     isPublished,
-  //   };
-
-  //   if (editingId) {
-  //     setAgendaList((prev) =>
-  //       prev.map((a) => (a.id === editingId ? newData : a))
-  //     );
-  //   } else {
-  //     setAgendaList([...agenda, newData]);
-  //   }
-
-  //   resetForm();
-  // };
-
-  const handleDelete = (id) => {
-    if (window.confirm("Yakin hapus agenda ini?")) {
-      setAgendaList(agenda.filter((a) => a.id !== id));
-    }
-  };
-
-  const handleEdit = (id) => {
-    const agenda = agenda.find((a) => a.id === id);
-    if (!agenda) return;
-
-    setTitle(agenda.title);
-    setContent(agenda.content);
-    setStartTime(agenda.start_time);
-    setEndTime(agenda.end_time);
-    setLocation(agenda.location);
-    setFeaturedImage(null);
-    setIsPublished(agenda.isPublished);
-    setEditingId(id);
-    setShowForm(true);
   };
 
   const formatDateTime = (datetime) => {
@@ -220,9 +231,6 @@ export default function ManageAgenda() {
                 value={endTime}
                 onChange={(e) => setEndTime(e.target.value)}
               />
-              <p className="text-xs text-gray-500 mt-1">
-                *Jika kosong, akan sama seperti start time
-              </p>
             </div>
 
             <div>
@@ -310,13 +318,14 @@ export default function ManageAgenda() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {agenda.map((a) => (
             <div key={a.id} className="bg-white rounded-xl shadow">
-              {a.featuredImage && (
-                <img
-                  src={a.featuredImage}
-                  alt={a.title}
-                  className="rounded-t-xl w-full h-40 object-cover"
-                />
-              )}
+              <img
+                src={`${import.meta.env.VITE_BASE_URL}/agenda/images/${
+                  a.featured_image
+                }`}
+                alt={a.title}
+                className="rounded-t-xl w-full h-40 object-cover"
+              />
+
               <div className="p-4">
                 <h2 className="text-lg font-semibold text-gray-800">
                   {a.title}
@@ -335,10 +344,10 @@ export default function ManageAgenda() {
 
                 <p
                   className={`mt-2 font-medium ${
-                    a.isPublished ? "text-green-500" : "text-red-500"
+                    a.is_published ? "text-green-500" : "text-red-500"
                   }`}
                 >
-                  {a.isPublished ? "✅ Published" : "❌ Unpublished"}
+                  {a.is_published ? "✅ Published" : "❌ Unpublished"}
                 </p>
 
                 <div className="flex gap-3 mt-3">

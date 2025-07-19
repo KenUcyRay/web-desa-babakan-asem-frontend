@@ -36,7 +36,7 @@ export class NewsApi {
       },
     });
   }
-  
+
   static async getOwnNews(page = 1, limit = 10) {
     return await fetch(
       `${

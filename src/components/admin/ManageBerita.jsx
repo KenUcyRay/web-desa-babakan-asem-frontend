@@ -52,6 +52,12 @@ export default function ManageBerita() {
           errorMessage = responseBody.error;
         }
         await alertError(errorMessage);
+        setTitle("");
+        setContent("");
+        setFeaturedImage(null);
+        setIsPublished(false);
+        setEditingId(null);
+        setShowForm(false);
         return;
       }
 
@@ -61,7 +67,7 @@ export default function ManageBerita() {
 
     const response = await NewsApi.createNews(rawData);
     const responseBody = await response.json();
-    
+
     if (response.ok) {
       await alertSuccess("Berita berhasil ditambahkan!");
       setNews([...news, responseBody.news]);

@@ -24,12 +24,11 @@ export class AgendaApi {
     });
   }
 
-  async getOwnAgenda(page = 1, limit = 10) {
-    console.log(`Fetching own agenda with page=${page} and limit=${limit}`);
+  static async getOwnAgenda(page = 1, limit = 10) {
     return await fetch(
       `${
         import.meta.env.VITE_BASE_URL
-      }/agenda/admin?page=${page}&limit=${limit}`,
+      }/agenda/admin/me?page=${page}&limit=${limit}`,
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
@@ -38,7 +37,7 @@ export class AgendaApi {
     );
   }
 
-  async createAgenda(data) {
+  static async createAgenda(data) {
     const formData = new FormData();
     formData.append("title", data.title);
     formData.append("content", data.content);
@@ -58,16 +57,20 @@ export class AgendaApi {
     });
   }
 
-  async updateAgenda(id, data) {
+  static async updateAgenda(id, data) {
+    console.log("Updating agenda with ID:", data.start_time, data.end_time);
     const formData = new FormData();
-    formData.append("title", data.title);
-    formData.append("description", data.description);
-    formData.append("start_time", data.start_time);
-    formData.append("end_time", data.end_time);
-    formData.append("location", data.location);
-    formData.append("is_published", data.is_published ? "true" : "false");
-    formData.append("featured_image", data.featured_image);
-    formData.append("type", data.type ?? "REGULAR");
+    formData.append("title", data.title) ?? null;
+    formData.append("description", data.description ?? null);
+    formData.append("start_time", data.start_time ?? null);
+    formData.append("end_time", data.end_time ?? null);
+    formData.append("location", data.location ?? null);
+    formData.append(
+      "is_published",
+      data.is_published ? "true" : "false" ?? null
+    );
+    formData.append("featured_image", data.featured_image ?? null);
+    formData.append("type", data.type ?? "REGULAR" ?? null);
 
     return await fetch(
       `${import.meta.env.VITE_BASE_URL}/agenda/admin/update-by-agenda/${id}`,
@@ -81,9 +84,9 @@ export class AgendaApi {
     );
   }
 
-  async deleteAgenda(id) {
+  static async deleteAgenda(id) {
     return await fetch(
-      `${import.meta.env.VITE_BASE_URL}/agenda/admin/delete-by-news/${id}`,
+      `${import.meta.env.VITE_BASE_URL}/agenda/admin/delete-by-agenda/${id}`,
       {
         method: "DELETE",
         headers: {
