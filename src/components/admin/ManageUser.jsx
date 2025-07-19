@@ -1,5 +1,11 @@
 import { useState } from "react";
-import { FaUserPlus, FaEdit, FaTrash, FaUserShield, FaUser } from "react-icons/fa";
+import {
+  FaUserPlus,
+  FaEdit,
+  FaTrash,
+  FaUserShield,
+  FaUser,
+} from "react-icons/fa";
 import AdminSidebar from "./AdminSidebar";
 import ModalUserForm from "./ModalUserForm";
 
@@ -11,21 +17,18 @@ export default function ManageUser() {
       nama: "Admin Utama",
       email: "admin@desa.id",
       role: "admin",
-      foto: "https://randomuser.me/api/portraits/men/11.jpg",
     },
     {
       id: 2,
       nama: "Petugas Agenda",
       email: "petugas@desa.id",
       role: "admin",
-      foto: "https://randomuser.me/api/portraits/women/12.jpg",
     },
     {
       id: 3,
       nama: "Warga Babakan",
       email: "warga@desa.id",
       role: "user",
-      foto: "https://randomuser.me/api/portraits/men/13.jpg",
     },
   ]);
 
@@ -36,7 +39,9 @@ export default function ManageUser() {
   const handleSaveUser = (data) => {
     if (editData) {
       // Edit existing user
-      setUsers(users.map((u) => (u.id === editData.id ? { ...data, id: u.id } : u)));
+      setUsers(
+        users.map((u) => (u.id === editData.id ? { ...data, id: u.id } : u))
+      );
     } else {
       // Tambah user baru
       const newUser = { ...data, id: Date.now() };
@@ -82,7 +87,6 @@ export default function ManageUser() {
           <table className="w-full text-left border-collapse">
             <thead className="bg-gray-100 text-gray-700">
               <tr>
-                <th className="p-4">Foto</th>
                 <th className="p-4">Nama</th>
                 <th className="p-4">Email</th>
                 <th className="p-4">Role</th>
@@ -92,13 +96,6 @@ export default function ManageUser() {
             <tbody>
               {users.map((user) => (
                 <tr key={user.id} className="border-b hover:bg-gray-50">
-                  <td className="p-4">
-                    <img
-                      src={user.foto}
-                      alt={user.nama}
-                      className="w-12 h-12 rounded-full object-cover"
-                    />
-                  </td>
                   <td className="p-4 font-medium text-gray-800">{user.nama}</td>
                   <td className="p-4 text-gray-600">{user.email}</td>
                   <td className="p-4">
