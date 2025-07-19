@@ -169,11 +169,12 @@ export default function ManageBumdes() {
   };
 
   const handleEdit = (p) => {
-    const product = products.find((b) => b.id === id);
+    const product = products.find((b) => b.id === p.id);
     if (!product) return;
 
-    setTitle(product.title);
-    setDescription(product.description);
+    console.log(product);
+    setTitle(product.product.title);
+    setDescription(product.product.description);
     // setFeaturedImage(null);
     // setIsPublished(product.isPublished);
     setEditingId(p);
@@ -427,7 +428,7 @@ export default function ManageBumdes() {
         )}
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {paginatedProducts.length === 0 ? (
+          {products.length === 0 ? (
             <p className="text-gray-500 italic">Belum ada produk</p>
           ) : (
             products.map((product) => (
@@ -482,9 +483,9 @@ export default function ManageBumdes() {
         {products.length > 0 && (
           <div className="mt-6 flex justify-center">
             <Pagination
-              currentPage={page}
+              currentPage={currentPage}
               totalPages={totalPages}
-              onPageChange={setPage}
+              onPageChange={setCurrentPage}
             />
           </div>
         )}
