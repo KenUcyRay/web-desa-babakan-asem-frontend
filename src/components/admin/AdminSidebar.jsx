@@ -14,7 +14,7 @@ import { alertConfirm, alertSuccess } from "../../libs/alert";
 
 export default function AdminSidebar() {
   const location = useLocation();
-  const { logout } = useAuth();
+  const { logout, setAdminStatus } = useAuth();
 
   const handleLogout = async () => {
     const confirm = await alertConfirm("Apakah Anda yakin ingin keluar?");
@@ -23,6 +23,7 @@ export default function AdminSidebar() {
       return;
     }
     await alertSuccess("Anda telah keluar.");
+    setAdminStatus(false);
     logout();
   };
 

@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { HiArrowLeft } from "react-icons/hi";
 import { Helper } from "../../utils/Helper";
 import { AgendaApi } from "../../libs/api/AgendaApi";
 

@@ -1,11 +1,25 @@
 import { FaUsers, FaSitemap, FaArrowLeft } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { alertError } from "../../libs/alert";
+import { useEffect, useState } from "react";
+import { GaleryApi } from "../../libs/api/GaleryApi";
 
 export default function StPkk() {
-  const galeri = Array.from({ length: 8 }, (_, i) => ({
-    id: i + 1,
-    img: `https://images.unsplash.com/photo-1551434678-e076c223a692?w=800&random=${i}`,
-  }));
+  const [galery, setGalery] = useState([]);
+
+  const fetchGalery = async () => {
+    const response = await GaleryApi.getGaleri(1, 8, "PKK");
+    if (response.status === 200) {
+      const responseBody = await response.json();
+      setGalery(responseBody.galeri);
+    } else {
+      await alertError("Gagal mengambil data galeri. Silakan coba lagi nanti.");
+    }
+  };
+
+  useEffect(() => {
+    fetchGalery();
+  }, []);
 
   return (
     <div className="font-poppins">
@@ -18,8 +32,8 @@ export default function StPkk() {
               Struktur & Galeri PKK Desa Babakan Asem
             </h1>
             <p className="text-gray-700 text-lg leading-relaxed">
-              Mengenal lebih dekat susunan organisasi PKK dan dokumentasi kegiatan
-              pemberdayaan keluarga di Desa Babakan Asem.
+              Mengenal lebih dekat susunan organisasi PKK dan dokumentasi
+              kegiatan pemberdayaan keluarga di Desa Babakan Asem.
             </p>
 
             <Link
@@ -76,15 +90,17 @@ export default function StPkk() {
 
           {/* Pokja */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-            {["Pokja I", "Pokja II", "Pokja III", "Pokja IV"].map((pokja, i) => (
-              <div
-                key={i}
-                className="bg-white border p-4 rounded-lg shadow hover:shadow-md transition text-center"
-              >
-                <h5 className="font-bold text-green-700">{pokja}</h5>
-                <p className="text-xs text-gray-600 mt-1">Ketua {pokja}</p>
-              </div>
-            ))}
+            {["Pokja I", "Pokja II", "Pokja III", "Pokja IV"].map(
+              (pokja, i) => (
+                <div
+                  key={i}
+                  className="bg-white border p-4 rounded-lg shadow hover:shadow-md transition text-center"
+                >
+                  <h5 className="font-bold text-green-700">{pokja}</h5>
+                  <p className="text-xs text-gray-600 mt-1">Ketua {pokja}</p>
+                </div>
+              )
+            )}
           </div>
         </div>
       </section>
@@ -101,15 +117,17 @@ export default function StPkk() {
 
         {/* Grid Galeri */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {galeri.map((g) => (
-            <div key={g.id} className="relative group">
+          {galery.map((item) => (
+            <div key={item.id} className="relative group">
               <img
-                src={g.img}
+                src={`${import.meta.env.VITE_BASE_URL}/galeri/images/${
+                  item.image
+                }`}
                 alt="Galeri PKK"
                 className="rounded-xl shadow-md w-full h-48 object-cover group-hover:opacity-80 transition"
               />
               <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition bg-black/40 text-white text-sm font-medium rounded-xl">
-                Kegiatan PKK #{g.id}
+                Kegiatan PKK
               </div>
             </div>
           ))}

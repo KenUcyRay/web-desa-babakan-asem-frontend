@@ -1,13 +1,11 @@
-import { useState } from "react";
-import { HiOutlineMail } from "react-icons/hi";
+import { useEffect, useState } from "react";
 import { FaWpforms, FaUsers, FaPhotoVideo } from "react-icons/fa";
-import { Link, useNavigate } from "react-router-dom";
-import Pagination from "../ui/Pagination";
-import { HiHome } from "react-icons/hi";
+import { Link } from "react-router-dom";
+import { Helper } from "../../utils/Helper";
+import { AgendaApi } from "../../libs/api/AgendaApi";
+import { alertError } from "../../libs/alert";
 
 export default function Pkk() {
-  const navigate = useNavigate();
-
   const allGaleri = Array.from({ length: 12 }, (_, i) => ({
     id: i + 1,
     img: `https://images.unsplash.com/photo-1493815793585-d94ccbc86df8?w=600&random=${i}`,
@@ -17,8 +15,22 @@ export default function Pkk() {
   const galeriPerPage = 4;
   const indexOfLast = currentPage * galeriPerPage;
   const indexOfFirst = indexOfLast - galeriPerPage;
-  const currentGaleri = allGaleri.slice(indexOfFirst, indexOfLast);
-  const totalPages = Math.ceil(allGaleri.length / galeriPerPage);
+
+  const [agenda, setAgenda] = useState([]);
+
+  const fetchAgenda = async () => {
+    const response = await AgendaApi.getAgenda(1, 3, "PKK");
+    if (response.status === 200) {
+      const responseBody = await response.json();
+      setAgenda(responseBody.agenda);
+    } else {
+      alertError("Gagal mengambil data agenda. Silakan coba lagi nanti.");
+    }
+  };
+
+  useEffect(() => {
+    fetchAgenda();
+  }, []);
 
   return (
     <div className="font-poppins text-gray-800">
@@ -106,22 +118,24 @@ export default function Pkk() {
           Agenda Penting PKK
         </h2>
         <div className="grid gap-6 grid-cols-[repeat(auto-fit,minmax(280px,1fr))]">
-          {[1, 2, 3].map((item) => (
+          {agenda.map((item) => (
             <div
-              key={item}
+              key={item.agenda.id}
               className="border rounded-xl shadow hover:shadow-lg transition"
             >
               <img
-                src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=600"
-                alt="Kegiatan PKK"
+                src={`${import.meta.env.VITE_BASE_URL}/agenda/images/${
+                  item.agenda.featured_image
+                }`}
+                alt={item.agenda.title}
                 className="rounded-t-xl h-48 w-full object-cover"
               />
               <div className="p-4">
                 <h3 className="font-bold flex items-center gap-2 text-green-700">
-                  <FaUsers /> Judul Agenda
+                  <FaUsers /> {item.agenda.title}
                 </h3>
                 <p className="text-sm text-gray-600 mt-1">
-                  Deskripsi singkat agenda penting PKK.
+                  {Helper.truncateText(item.agenda.content)}
                 </p>
               </div>
             </div>
