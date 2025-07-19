@@ -22,6 +22,7 @@ export default function ManageBerita() {
   ]);
 
   const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState(null);
 
   // form state
   const [title, setTitle] = useState("");
@@ -32,24 +33,37 @@ export default function ManageBerita() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const newBerita = {
-      id: Date.now(),
+    const newData = {
+      id: editingId || Date.now(),
       title,
       content,
-      featuredImage: featuredImage ? URL.createObjectURL(featuredImage) : null,
+      featuredImage: featuredImage
+        ? URL.createObjectURL(featuredImage)
+        : editingId
+        ? beritaList.find((b) => b.id === editingId).featuredImage
+        : null,
       isPublished,
-      date: new Date().toISOString().split("T")[0], // ✅ auto tanggal hari ini
+      date: editingId
+        ? beritaList.find((b) => b.id === editingId).date
+        : new Date().toISOString().split("T")[0],
     };
 
-    setBeritaList([...beritaList, newBerita]);
+    if (editingId) {
+      // ✅ UPDATE berita
+      setBeritaList((prev) =>
+        prev.map((b) => (b.id === editingId ? newData : b))
+      );
+    } else {
+      // ✅ TAMBAH berita baru
+      setBeritaList([...beritaList, newData]);
+    }
 
     // reset form
     setTitle("");
     setContent("");
     setFeaturedImage(null);
     setIsPublished(false);
-
-    // sembunyikan form setelah simpan
+    setEditingId(null);
     setShowForm(false);
   };
 
@@ -57,6 +71,18 @@ export default function ManageBerita() {
     if (window.confirm("Yakin hapus berita ini?")) {
       setBeritaList(beritaList.filter((b) => b.id !== id));
     }
+  };
+
+  const handleEdit = (id) => {
+    const berita = beritaList.find((b) => b.id === id);
+    if (!berita) return;
+
+    setTitle(berita.title);
+    setContent(berita.content);
+    setFeaturedImage(null); // file lama tidak bisa langsung di-load sebagai File
+    setIsPublished(berita.isPublished);
+    setEditingId(id);
+    setShowForm(true);
   };
 
   return (
@@ -70,7 +96,10 @@ export default function ManageBerita() {
           {/* ✅ Tombol hanya muncul kalau form belum dibuka */}
           {!showForm && (
             <button
-              onClick={() => setShowForm(true)}
+              onClick={() => {
+                setEditingId(null);
+                setShowForm(true);
+              }}
               className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
             >
               ➕ Tambah Berita
@@ -78,7 +107,7 @@ export default function ManageBerita() {
           )}
         </div>
 
-        {/* ✅ FORM MUNCUL SETELAH KLIK */}
+        {/* ✅ FORM TAMBAH / EDIT */}
         {showForm && (
           <form
             onSubmit={handleSubmit}
@@ -114,26 +143,49 @@ export default function ManageBerita() {
                 onChange={(e) => setFeaturedImage(e.target.files[0])}
                 className="w-full border p-2 rounded"
               />
-              {featuredImage && (
+              {(featuredImage ||
+                (editingId &&
+                  beritaList.find((b) => b.id === editingId)?.featuredImage)) && (
                 <img
-                  src={URL.createObjectURL(featuredImage)}
+                  src={
+                    featuredImage
+                      ? URL.createObjectURL(featuredImage)
+                      : beritaList.find((b) => b.id === editingId)
+                          ?.featuredImage
+                  }
                   alt="preview"
                   className="mt-2 w-40 rounded"
                 />
               )}
             </div>
 
+            {/* ✅ Published Yes/No */}
             <div>
-              <label className="block font-medium">Published?</label>
-              <button
-                type="button"
-                onClick={() => setIsPublished(!isPublished)}
-                className={`px-4 py-2 rounded ${
-                  isPublished ? "bg-green-500 text-white" : "bg-gray-300"
-                }`}
-              >
-                {isPublished ? "YES" : "NO"}
-              </button>
+              <label className="block font-medium mb-1">Published?</label>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsPublished(true)}
+                  className={`px-4 py-2 rounded ${
+                    isPublished
+                      ? "bg-green-500 text-white shadow"
+                      : "bg-gray-200 text-gray-600 hover:bg-gray-300"
+                  }`}
+                >
+                  Yes
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsPublished(false)}
+                  className={`px-4 py-2 rounded ${
+                    !isPublished
+                      ? "bg-red-500 text-white shadow"
+                      : "bg-gray-200 text-gray-600 hover:bg-gray-300"
+                  }`}
+                >
+                  No
+                </button>
+              </div>
             </div>
 
             <div className="flex gap-2">
@@ -141,11 +193,18 @@ export default function ManageBerita() {
                 type="submit"
                 className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600"
               >
-                Simpan Berita
+                {editingId ? "✅ Update Berita" : "💾 Simpan Berita"}
               </button>
               <button
                 type="button"
-                onClick={() => setShowForm(false)}
+                onClick={() => {
+                  setShowForm(false);
+                  setEditingId(null);
+                  setTitle("");
+                  setContent("");
+                  setFeaturedImage(null);
+                  setIsPublished(false);
+                }}
                 className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500"
               >
                 Batal
@@ -176,14 +235,23 @@ export default function ManageBerita() {
                     b.isPublished ? "text-green-500" : "text-red-500"
                   }`}
                 >
-                  {b.isPublished ? "Published" : "Unpublished"}
+                  {b.isPublished ? "Published ✅" : "Unpublished ❌"}
                 </p>
-                <button
-                  onClick={() => handleDelete(b.id)}
-                  className="mt-3 text-red-500 hover:text-red-700"
-                >
-                  Hapus
-                </button>
+
+                <div className="flex gap-3 mt-3">
+                  <button
+                    onClick={() => handleEdit(b.id)}
+                    className="text-blue-500 hover:text-blue-700"
+                  >
+                    ✏ Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(b.id)}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    🗑 Hapus
+                  </button>
+                </div>
               </div>
             </div>
           ))}
