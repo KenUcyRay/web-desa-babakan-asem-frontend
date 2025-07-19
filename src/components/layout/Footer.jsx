@@ -21,7 +21,7 @@ export default function Footer() {
         "
       >
         {/* ✅ Logo + Teks */}
-        <div className="flex flex-col md:flex-row md:items-start gap-4 items-center md:items-start">
+        <div className="flex flex-col md:flex-row gap-4 items-center md:items-start">
           <Link to="/" className="group flex-shrink-0">
             <img
               src={logo}
