@@ -8,7 +8,7 @@ import { alertConfirm, alertSuccess } from "../../libs/alert";
 export default function NavbarTop() {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { isLoggedIn, logout, isAdmin } = useAuth();
+  const { isLoggedIn, logout, isAdmin, setAdminStatus } = useAuth();
 
   const isTentangActive = ["/profil", "/pemerintahan", "/potensi"].includes(
     location.pathname
@@ -26,10 +26,9 @@ export default function NavbarTop() {
     if (!confirm) {
       return;
     }
-    await alertSuccess("Anda telah keluar.");
     setAdminStatus(false);
-
     logout();
+    await alertSuccess("Anda telah keluar.");
   };
 
   const button = () => {

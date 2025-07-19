@@ -19,10 +19,13 @@ export default function AdminSidebar() {
 
   const handleLogout = async () => {
     const confirm = await alertConfirm("Apakah Anda yakin ingin keluar?");
-    if (!confirm) return;
-    await alertSuccess("Anda telah keluar.");
+
+    if (!confirm) {
+      return;
+    }
     setAdminStatus(false);
     logout();
+    await alertSuccess("Anda telah keluar.");
   };
 
   const menu = [
