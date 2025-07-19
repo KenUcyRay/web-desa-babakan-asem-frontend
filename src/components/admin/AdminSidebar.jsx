@@ -8,7 +8,8 @@ import {
   FaSignOutAlt,
   FaArrowLeft,
   FaStore,
-  FaImage, // ✅ icon untuk Galeri
+  FaImage,
+  FaSitemap, // ✅ icon untuk Struktur Organisasi
 } from "react-icons/fa";
 import logo from "../../assets/logo.png";
 import { useAuth } from "../../contexts/AuthContext";
@@ -35,6 +36,13 @@ export default function AdminSidebar() {
     { to: "/admin/manage-user", label: "Kelola User", icon: <FaUsers /> },
     { to: "/admin/manage-bumdes", label: "Kelola Produk BUMDes", icon: <FaStore /> },
     { to: "/admin/manage-galery", label: "Kelola Galeri Desa", icon: <FaImage /> },
+
+    // ✅ Tambahan menu baru untuk struktur organisasi
+    {
+      to: "/admin/manage-anggota",
+      label: "Struktur Organisasi",
+      icon: <FaSitemap />,
+    },
   ];
 
   const pengaturan = [

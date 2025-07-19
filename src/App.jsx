@@ -63,12 +63,16 @@ import ManagePesan from "./components/admin/ManagePesan";
 import ManageUser from "./components/admin/ManageUser";
 import ManageBumdes from "./components/admin/ManageBumdes";
 import ManageGalery from "./components/admin/ManageGalery";
+import ManageAnggota from "./components/admin/ManageAnggota";
 
 // ✅ Pengaturan Admin
 import PengaturanProfil from "./components/admin/settings/PengaturanProfil";
 import PengaturanHakAkses from "./components/admin/settings/PengaturanHakAkses";
 import AdminLayout from "./components/admin/AdminLayout";
 import StPkk from "./components/organizations/StPkk";
+ 
+// ✅ Profil User
+import Profile from "./components/pages/Profile";
 
 import ScrollToTop from "./components/layout/ScrollToTop";
 
@@ -106,6 +110,9 @@ function LayoutUmum() {
           <Route path="/kontak" element={<KontakKami />} />
           <Route path="/pkk/struktur" element={<StPkk />} />
           <Route path="/detail-dpd" element={<DetailDpd />} />
+
+          {/* ✅ Profil User (PINDAH KE SINI, bukan di admin) */}
+          <Route path="/profile" element={<Profile />} />
 
           {/* ✅ Auth */}
           <Route path="/login" element={<Login />} />
@@ -149,6 +156,7 @@ function LayoutAdmin() {
         <Route path="/admin/manage-user" element={<ManageUser />} />
         <Route path="/admin/manage-bumdes" element={<ManageBumdes />} />
         <Route path="/admin/manage-galery" element={<ManageGalery />} />
+        <Route path="/admin/manage-anggota" element={<ManageAnggota />} />
 
         {/* ✅ Pengaturan Admin */}
         <Route path="/admin/pengaturan/profil" element={<PengaturanProfil />} />

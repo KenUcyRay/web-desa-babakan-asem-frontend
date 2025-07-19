@@ -1,9 +1,9 @@
 import { useState } from "react";
 import AdminSidebar from "./AdminSidebar";
 import { FaPlus, FaTrash, FaEdit, FaFolderPlus } from "react-icons/fa";
+import Pagination from "../ui/Pagination"; // ✅ Tambah pagination
 
 export default function ManageBumdes() {
-  // ✅ State kategori
   const [categories, setCategories] = useState([
     { id: 1, name: "Makanan & Minuman" },
     { id: 2, name: "Kerajinan" },
@@ -22,16 +22,11 @@ export default function ManageBumdes() {
   };
 
   const handleDeleteCategory = (id) => {
-    if (
-      confirm(
-        "Hapus kategori ini? Produk dengan kategori ini tetap ada tapi kategorinya kosong."
-      )
-    ) {
+    if (confirm("Hapus kategori ini?")) {
       setCategories((prev) => prev.filter((c) => c.id !== id));
     }
   };
 
-  // ✅ State produk
   const [products, setProducts] = useState([
     {
       id: 1,
@@ -51,9 +46,17 @@ export default function ManageBumdes() {
       link_whatsapp: "https://wa.me/628987654321",
       image: "https://picsum.photos/300/200?random=2",
     },
+    {
+      id: 3,
+      title: "Jasa Pembuatan Website",
+      description: "Layanan jasa IT untuk desa",
+      price: 1000000,
+      category_id: 3,
+      link_whatsapp: "https://wa.me/628567890123",
+      image: "https://picsum.photos/300/200?random=3",
+    },
   ]);
 
-  // ✅ State Form produk
   const [form, setForm] = useState({
     id: null,
     title: "",
@@ -61,49 +64,39 @@ export default function ManageBumdes() {
     price: "",
     category_id: "",
     link_whatsapp: "",
-    image: "", // ⬅️ Tambah image di form
+    image: "",
   });
 
   const [showForm, setShowForm] = useState(false);
 
-  // ✅ Konversi gambar ke base64
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
     const reader = new FileReader();
-    reader.onloadend = () => {
-      setForm((prev) => ({ ...prev, image: reader.result }));
-    };
+    reader.onloadend = () => setForm((prev) => ({ ...prev, image: reader.result }));
     reader.readAsDataURL(file);
   };
 
-  // ✅ Tambah/Edit Produk
   const handleSave = () => {
     if (!form.title || !form.price || !form.category_id || !form.image) {
       alert("Lengkapi semua data termasuk foto!");
       return;
     }
-
     if (form.id) {
-      // Update
       setProducts((prev) =>
         prev.map((p) =>
           p.id === form.id ? { ...form, price: parseInt(form.price) } : p
         )
       );
     } else {
-      // Tambah
       setProducts((prev) => [
         ...prev,
         { ...form, id: Date.now(), price: parseInt(form.price) },
       ]);
     }
-
     resetForm();
   };
 
-  // ✅ Hapus produk
   const handleDelete = (id) => {
     if (confirm("Yakin hapus produk ini?")) {
       setProducts((prev) => prev.filter((p) => p.id !== id));
@@ -128,6 +121,13 @@ export default function ManageBumdes() {
     setShowForm(false);
   };
 
+  // ✅ Pagination untuk produk
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 6;
+  const totalPages = Math.ceil(products.length / itemsPerPage);
+  const startIndex = (page - 1) * itemsPerPage;
+  const paginatedProducts = products.slice(startIndex, startIndex + itemsPerPage);
+
   return (
     <div className="flex">
       <AdminSidebar />
@@ -141,7 +141,6 @@ export default function ManageBumdes() {
             <FaFolderPlus /> Kelola Kategori Produk
           </h2>
 
-          {/* List kategori */}
           <div className="flex flex-wrap gap-2 mb-3">
             {categories.length === 0 ? (
               <p className="text-gray-500 italic">Belum ada kategori</p>
@@ -163,7 +162,6 @@ export default function ManageBumdes() {
             )}
           </div>
 
-          {/* Tambah kategori */}
           <div className="flex gap-2">
             <input
               type="text"
@@ -181,7 +179,6 @@ export default function ManageBumdes() {
           </div>
         </div>
 
-        {/* ✅ Tombol Tambah Produk */}
         {!showForm && (
           <button
             onClick={() => setShowForm(true)}
@@ -191,7 +188,6 @@ export default function ManageBumdes() {
           </button>
         )}
 
-        {/* ✅ Form Tambah/Edit Produk */}
         {showForm && (
           <div className="bg-white p-4 rounded shadow mb-6">
             <h2 className="text-lg font-semibold mb-3">
@@ -259,7 +255,6 @@ export default function ManageBumdes() {
                 />
               </div>
 
-              {/* ✅ Upload Foto Produk */}
               <div>
                 <label className="block text-sm">Foto Produk</label>
                 <input
@@ -278,7 +273,6 @@ export default function ManageBumdes() {
               </div>
             </div>
 
-            {/* ✅ Tombol Simpan / Batal */}
             <div className="flex gap-2 mt-4">
               <button
                 onClick={handleSave}
@@ -296,17 +290,12 @@ export default function ManageBumdes() {
           </div>
         )}
 
-        {/* ✅ List Produk */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {products.length === 0 ? (
+          {paginatedProducts.length === 0 ? (
             <p className="text-gray-500 italic">Belum ada produk</p>
           ) : (
-            products.map((p) => (
-              <div
-                key={p.id}
-                className="bg-white p-4 rounded shadow flex flex-col justify-between"
-              >
-                {/* ✅ Tampilkan Foto Produk */}
+            paginatedProducts.map((p) => (
+              <div key={p.id} className="bg-white p-4 rounded shadow flex flex-col justify-between">
                 {p.image && (
                   <img
                     src={p.image}
@@ -317,10 +306,8 @@ export default function ManageBumdes() {
                 <div>
                   <h3 className="font-bold text-lg">{p.title}</h3>
                   <p className="text-gray-500 text-sm">
-                    {
-                      categories.find((c) => c.id === p.category_id)?.name ||
-                      "Kategori dihapus"
-                    }
+                    {categories.find((c) => c.id === p.category_id)?.name ||
+                      "Kategori dihapus"}
                   </p>
                   <p className="text-green-600 font-semibold mt-1">
                     Rp {p.price.toLocaleString()}
@@ -346,6 +333,13 @@ export default function ManageBumdes() {
             ))
           )}
         </div>
+
+        {/* ✅ Pagination */}
+        {products.length > 0 && (
+          <div className="mt-6 flex justify-center">
+            <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
+          </div>
+        )}
       </div>
     </div>
   );

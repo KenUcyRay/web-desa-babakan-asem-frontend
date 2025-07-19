@@ -3,7 +3,7 @@ import AdminSidebar from "./AdminSidebar";
 import { NewsApi } from "../../libs/api/NewsApi";
 import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 import { Helper } from "../../utils/Helper";
-import Pagination from "../ui/Pagination"; // ✅ pastikan path benar
+import Pagination from "../ui/Pagination";
 
 export default function ManageBerita() {
   const [news, setNews] = useState([]);
