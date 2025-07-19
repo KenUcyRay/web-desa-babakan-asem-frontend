@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
-import { HiHome } from "react-icons/hi";
 import Pagination from "../ui/Pagination";
-import { useNavigate } from "react-router-dom";
 import { AgendaApi } from "../../libs/api/AgendaApi";
 import { Helper } from "../../utils/Helper";
 

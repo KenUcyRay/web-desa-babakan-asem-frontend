@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Carousel } from "react-responsive-carousel";
 import AOS from "aos";
 import "aos/dist/aos.css";
@@ -13,6 +13,10 @@ import { Link, useLocation } from "react-router-dom";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 
 import LogoDesa from "../../assets/logo.png"; // ✅ logo lokal
+import { NewsApi } from "../../libs/api/NewsApi";
+import { Helper } from "../../utils/Helper";
+import { alertError } from "../../libs/alert";
+import { ProductApi } from "../../libs/api/ProductApi";
 
 export default function Home() {
   const location = useLocation();
@@ -21,11 +25,6 @@ export default function Home() {
     AOS.init({ duration: 800, once: true });
     AOS.refresh();
   }, []);
-
-  // ✅ Scroll ke atas tiap pindah halaman
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [location.pathname]);
 
   const quickMenu = [
     {
@@ -47,33 +46,6 @@ export default function Home() {
       title: "Infografis",
       desc: "Data statistik desa",
       icon: <FaChartBar className="text-purple-600 text-4xl" />,
-    },
-  ];
-
-  const latestNews = [
-    {
-      id: 1,
-      title: "Perbaikan Jalan Desa Selesai",
-      date: "18 Juli 2025",
-      img: "https://images.unsplash.com/photo-1594897030264-5b9c538c1cc0?auto=format&fit=crop&w=1000&q=80",
-    },
-    {
-      id: 2,
-      title: "Gotong Royong Bersih Desa",
-      date: "15 Juli 2025",
-      img: "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?auto=format&fit=crop&w=1000&q=80",
-    },
-    {
-      id: 3,
-      title: "Pelatihan UMKM Warga",
-      date: "10 Juli 2025",
-      img: "https://images.unsplash.com/photo-1573497490850-15d4980c8d9a?auto=format&fit=crop&w=1000&q=80",
-    },
-    {
-      id: 4,
-      title: "Peringatan Hari Kemerdekaan",
-      date: "1 Juli 2025",
-      img: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1000&q=80",
     },
   ];
 
@@ -101,6 +73,38 @@ export default function Home() {
     { name: "Belanja", value: 950000000, color: "#f87171" }, // merah
     { name: "Sisa Anggaran", value: 250000000, color: "#60a5fa" }, // biru
   ];
+
+  const [products, setProducts] = useState([]);
+
+  const fetchProduct = async () => {
+    const response = await ProductApi.getProducts(1, 3);
+    if (response.status === 200) {
+      const responseBody = await response.json();
+      setProducts(responseBody.products);
+    } else {
+      await alertError(
+        "Gagal mengambil data product. Silakan coba lagi nanti."
+      );
+    }
+  };
+
+  const [news, setNews] = useState([]);
+
+  const fetchNews = async () => {
+    const response = await NewsApi.getNews(1, 4);
+    if (response.status === 200) {
+      const responseBody = await response.json();
+
+      setNews(responseBody.news);
+    } else {
+      alertError("Gagal mengambil data berita. Silakan coba lagi nanti.");
+    }
+  };
+
+  useEffect(() => {
+    fetchNews();
+    fetchProduct();
+  }, []);
 
   return (
     <div className="font-poppins">
@@ -196,9 +200,8 @@ export default function Home() {
               dikelola oleh Badan Usaha Milik Desa (BUMDes).{" "}
             </p>
             <p className="mt-3 text-gray-700 leading-relaxed">
-              Kami terus berkomitmen untuk membangun desa yang mandiri,
-              berdaya saing, dan sejahtera melalui pemberdayaan masyarakat
-              lokal.
+              Kami terus berkomitmen untuk membangun desa yang mandiri, berdaya
+              saing, dan sejahtera melalui pemberdayaan masyarakat lokal.
             </p>
           </div>
           <div className="flex justify-center">
@@ -221,21 +224,27 @@ export default function Home() {
         </div>
 
         <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {latestNews.map((news) => (
+          {news.map((item) => (
             <Link
-              key={news.id}
-              to={`/berita/${news.id}`}
+              key={item.news.id}
+              to={`/berita/${item.news.id}`}
               className="bg-white shadow rounded-xl overflow-hidden hover:shadow-xl hover:scale-[1.03] transition-transform"
               data-aos="zoom-in"
             >
               <img
-                src={news.img}
-                alt={news.title}
+                src={`${import.meta.env.VITE_BASE_URL}/news/images/${
+                  item.news.featured_image
+                }`}
+                alt={item.news.title}
                 className="w-full h-40 object-cover"
               />
               <div className="p-4">
-                <p className="text-xs text-gray-500">{news.date}</p>
-                <h3 className="font-semibold text-lg mt-1">{news.title}</h3>
+                <p className="text-xs text-gray-500">
+                  {Helper.formatTanggal(item.news.created_at)}
+                </p>
+                <h3 className="font-semibold text-lg mt-1">
+                  {item.news.title}
+                </h3>
               </div>
             </Link>
           ))}
@@ -252,19 +261,25 @@ export default function Home() {
             </Link>
           </div>
           <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {bumdesPreview.map((prod, idx) => (
+            {products.map((product) => (
               <div
-                key={idx}
+                key={product.product.id}
                 className="bg-white rounded-xl shadow hover:shadow-xl hover:scale-105 transition-transform"
               >
                 <img
-                  src={prod.img}
-                  alt={prod.title}
+                  src={`${import.meta.env.VITE_BASE_URL}/products/images/${
+                    product.product.featured_image
+                  }`}
+                  alt={product.product.title}
                   className="w-full h-40 md:h-48 object-cover rounded-t-xl"
                 />
                 <div className="p-4">
-                  <h3 className="font-semibold text-lg">{prod.title}</h3>
-                  <p className="text-green-700 font-bold mt-1">{prod.price}</p>
+                  <h3 className="font-semibold text-lg">
+                    {product.product.title}
+                  </h3>
+                  <p className="text-green-700 font-bold mt-1">
+                    {Helper.formatRupiah(product.product.price)}
+                  </p>
                 </div>
               </div>
             ))}

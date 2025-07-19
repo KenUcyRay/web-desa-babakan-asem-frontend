@@ -27,6 +27,8 @@ export default function NavbarTop() {
       return;
     }
     await alertSuccess("Anda telah keluar.");
+    setAdminStatus(false);
+
     logout();
   };
 
