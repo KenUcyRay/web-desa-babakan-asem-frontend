@@ -1,61 +1,38 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { HiHome } from "react-icons/hi";
 import Pagination from "../ui/Pagination";
 import { useNavigate } from "react-router-dom";
+import { AgendaApi } from "../../libs/api/AgendaApi";
+import { Helper } from "../../utils/Helper";
 
 export default function KarangTaruna() {
-  const navigate = useNavigate();
-
-  const kegiatanDummy = [
-    {
-      id: 1,
-      title: "Pelatihan Kepemudaan",
-      lokasi: "Balai Desa",
-      tanggal: "7 Juni 2025",
-      waktu: "10:00 - 12:00",
-      img: "https://picsum.photos/400/250?random=1",
-    },
-    {
-      id: 2,
-      title: "Bakti Sosial Desa",
-      lokasi: "Lapangan Utama",
-      tanggal: "14 Juni 2025",
-      waktu: "08:00 - 11:00",
-      img: "https://picsum.photos/400/250?random=2",
-    },
-    {
-      id: 3,
-      title: "Lomba Olahraga Pemuda",
-      lokasi: "Lapangan Bola",
-      tanggal: "21 Juni 2025",
-      waktu: "13:00 - 16:00",
-      img: "https://picsum.photos/400/250?random=3",
-    },
-    {
-      id: 4,
-      title: "Pelatihan UMKM",
-      lokasi: "Aula Kantor Desa",
-      tanggal: "28 Juni 2025",
-      waktu: "09:00 - 12:00",
-      img: "https://picsum.photos/400/250?random=4",
-    },
-    {
-      id: 5,
-      title: "Pentas Seni Pemuda",
-      lokasi: "Lapangan Desa",
-      tanggal: "5 Juli 2025",
-      waktu: "19:00 - 22:00",
-      img: "https://picsum.photos/400/250?random=5",
-    },
-  ];
-
-  // ✅ State pagination
+  const [agenda, setAgenda] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const kegiatanPerPage = 3;
-  const indexOfLast = currentPage * kegiatanPerPage;
-  const indexOfFirst = indexOfLast - kegiatanPerPage;
-  const currentKegiatan = kegiatanDummy.slice(indexOfFirst, indexOfLast);
-  const totalPages = Math.ceil(kegiatanDummy.length / kegiatanPerPage);
+  const [totalPages, setTotalPages] = useState(1);
+
+  const fetchAgenda = async () => {
+    const response = await AgendaApi.getAgenda(currentPage, 3, "KARANG_TARUNA");
+    if (response.status === 200) {
+      const responseBody = await response.json();
+      setTotalPages(responseBody.total_page);
+      setCurrentPage(responseBody.page);
+      setAgenda(responseBody.agenda);
+    } else {
+      alertError("Gagal mengambil data agenda. Silakan coba lagi nanti.");
+    }
+    setLoading(false);
+  };
+
+  const truncateText = (text, maxLength = 100) => {
+    if (!text) return "";
+    return text.length > maxLength
+      ? text.substring(0, maxLength) + "..."
+      : text;
+  };
+
+  useEffect(() => {
+    fetchAgenda(currentPage);
+  }, [currentPage]);
 
   return (
     <div className="bg-gray-50 py-10 w-full max-w-screen-2xl mx-auto px-4 sm:px-6 md:px-8">
@@ -131,27 +108,36 @@ export default function KarangTaruna() {
 
         {/* ✅ Card Kegiatan */}
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {currentKegiatan.map((item) => (
+          {agenda.map((item) => (
             <div
-              key={item.id}
+              key={item.agenda.id}
               className="bg-white shadow-md rounded-xl overflow-hidden hover:shadow-lg transition"
             >
               <div className="w-full aspect-[4/3] overflow-hidden">
                 <img
-                  src={item.img}
-                  alt={item.title}
+                  src={`${import.meta.env.VITE_BASE_URL}/agenda/images/${
+                    item.agenda.featured_image
+                  }`}
+                  alt={item.agenda.title}
                   className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                 />
               </div>
               <div className="p-5">
-                <h3 className="font-semibold text-lg">{item.title}</h3>
-                <p className="text-sm text-gray-500 mt-1">
-                  📍 {item.lokasi} <br />
-                  📅 {item.tanggal} | ⏰ {item.waktu}
-                </p>
+                <h3 className="font-semibold text-lg">{item.agenda.title}</h3>
+                {(() => {
+                  const { tanggal, waktu } = Helper.formatAgendaDateTime(
+                    item.agenda.start_time,
+                    item.agenda.end_time
+                  );
+                  return (
+                    <p className="text-sm text-gray-500 mt-1">
+                      📍 {item.agenda.location} <br />
+                      📅 {tanggal} | ⏰ {waktu}
+                    </p>
+                  );
+                })()}
                 <p className="text-gray-600 text-sm mt-3">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae
-                  ullam vel est non lorem.
+                  {truncateText(item.agenda.content, 100)}
                 </p>
               </div>
             </div>

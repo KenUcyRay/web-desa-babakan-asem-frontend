@@ -2,13 +2,14 @@ import { useState } from "react";
 import { FaTimes, FaSave } from "react-icons/fa";
 
 export default function ModalUserForm({ onClose, onSave }) {
-  const [nama, setNama] = useState("");
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSave({ nama, email, role: "Admin" });
+    onSave({ name, email, password, confirmPassword });
   };
 
   return (
@@ -28,9 +29,10 @@ export default function ModalUserForm({ onClose, onSave }) {
             <label className="block text-sm font-medium">Nama</label>
             <input
               type="text"
+              placeholder="Masukkan nama lengkap"
               className="w-full p-2 border rounded mt-1"
-              value={nama}
-              onChange={(e) => setNama(e.target.value)}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               required
             />
           </div>
@@ -39,6 +41,7 @@ export default function ModalUserForm({ onClose, onSave }) {
             <label className="block text-sm font-medium">Email</label>
             <input
               type="email"
+              placeholder="Masukkan email"
               className="w-full p-2 border rounded mt-1"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -50,9 +53,24 @@ export default function ModalUserForm({ onClose, onSave }) {
             <label className="block text-sm font-medium">Password</label>
             <input
               type="password"
+              placeholder="Buat password"
               className="w-full p-2 border rounded mt-1"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium">
+              Konfirmasi Password
+            </label>
+            <input
+              type="password"
+              placeholder="Ulangi password"
+              className="w-full p-2 border rounded mt-1"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
               required
             />
           </div>

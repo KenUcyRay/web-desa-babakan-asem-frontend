@@ -3,17 +3,14 @@ import { useEffect, useState } from "react";
 import Pagination from "../ui/Pagination";
 import { GaleryApi } from "../../libs/api/GaleryApi";
 import { alertError } from "../../libs/alert";
-import { HiHome } from "react-icons/hi";
-import { useNavigate } from "react-router-dom";
 
 export default function Galery() {
   const [galery, setGalery] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const navigate = useNavigate();
 
   const fetchGalery = async () => {
-    const response = await GaleryApi.getGaleri(currentPage);
+    const response = await GaleryApi.getGaleri(currentPage,12);
     if (response.status === 200) {
       const responseBody = await response.json();
       setTotalPages(responseBody.total_page);
@@ -39,9 +36,9 @@ export default function Galery() {
 
           {/* ✅ Grid Galeri Auto-fit */}
           <div className="grid gap-6 grid-cols-[repeat(auto-fit,minmax(220px,1fr))]">
-            {galery.map((img, i) => (
+            {galery.map((img) => (
               <div
-                key={i}
+                key={img.image}
                 className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition duration-300"
               >
                 <div className="w-full aspect-[4/3] overflow-hidden">
@@ -49,7 +46,7 @@ export default function Galery() {
                     src={`${import.meta.env.VITE_BASE_URL}/galeri/images/${
                       img.image
                     }`}
-                    alt={`Galeri ${i + 1}`}
+                    alt={`Galeri ${img + 1}`}
                     className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                   />
                 </div>

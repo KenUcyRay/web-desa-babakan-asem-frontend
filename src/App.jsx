@@ -65,6 +65,8 @@ import PengaturanHakAkses from "./components/admin/settings/PengaturanHakAkses";
 import AdminLayout from "./components/admin/AdminLayout";
 import StPkk from "./components/organizations/StPkk";
 
+import ScrollToTop from "./components/layout/ScrollToTop";
+
 // ✅ Layout untuk Halaman Umum (Navbar & Footer aktif)
 function LayoutUmum() {
   return (
@@ -171,6 +173,7 @@ function AppContent() {
 export default function App() {
   return (
     <Router>
+      <ScrollToTop />
       <AppContent />
     </Router>
   );

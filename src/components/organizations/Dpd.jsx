@@ -1,22 +1,50 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { HiArrowLeft } from "react-icons/hi";
+import { Helper } from "../../utils/Helper";
+import { AgendaApi } from "../../libs/api/AgendaApi";
 
 export default function Dpd() {
   const navigate = useNavigate();
 
   const anggota = [
-    { nama: "Budi Santoso", jabatan: "Ketua DPD", foto: "https://images.unsplash.com/photo-1607746882042-944635dfe10e?w=400" },
-    { nama: "Siti Aminah", jabatan: "Wakil Ketua", foto: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400" },
-    { nama: "Rudi Hartono", jabatan: "Sekretaris", foto: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400" },
-    { nama: "Dewi Lestari", jabatan: "Bendahara", foto: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400" },
+    {
+      nama: "Budi Santoso",
+      jabatan: "Ketua DPD",
+      foto: "https://images.unsplash.com/photo-1607746882042-944635dfe10e?w=400",
+    },
+    {
+      nama: "Siti Aminah",
+      jabatan: "Wakil Ketua",
+      foto: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400",
+    },
+    {
+      nama: "Rudi Hartono",
+      jabatan: "Sekretaris",
+      foto: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400",
+    },
+    {
+      nama: "Dewi Lestari",
+      jabatan: "Bendahara",
+      foto: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400",
+    },
   ];
 
-  const agenda = [
-    { judul: "Musyawarah Desa Bahas Pembangunan Jalan", tanggal: "20 Juli 2025", gambar: "https://images.unsplash.com/photo-1521791136064-7986c2920216?w=800" },
-    { judul: "Rapat Koordinasi Program Kesejahteraan", tanggal: "05 Agustus 2025", gambar: "https://images.unsplash.com/photo-1600880292089-90a7e086ee0c?w=800" },
-    { judul: "Pengawasan Dana Desa Tahap II", tanggal: "15 Agustus 2025", gambar: "https://images.unsplash.com/photo-1581091215360-680f58a4576e?w=800" },
-  ];
+  const [agenda, setAgenda] = useState([]);
+
+  const fetchAgenda = async () => {
+    const response = await AgendaApi.getAgenda(1, 3, "DPD");
+    if (response.status === 200) {
+      const responseBody = await response.json();
+      setAgenda(responseBody.agenda);
+    } else {
+      alertError("Gagal mengambil data agenda. Silakan coba lagi nanti.");
+    }
+  };
+
+  useEffect(() => {
+    fetchAgenda();
+  }, []);
 
   return (
     <div className="font-poppins text-gray-800 w-full">
@@ -25,7 +53,8 @@ export default function Dpd() {
         <div className="w-full max-w-screen-2xl mx-auto px-4 md:px-8 py-12 flex flex-col md:flex-row items-center gap-10">
           <div className="flex-1 min-w-0">
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold leading-tight text-gray-900">
-              Dewan Perwakilan Desa <span className="text-green-700">Babakan Asem</span>
+              Dewan Perwakilan Desa{" "}
+              <span className="text-green-700">Babakan Asem</span>
             </h1>
             <p className="mt-4 text-base sm:text-lg text-gray-600 max-w-xl">
               Menampung aspirasi warga, mengawasi jalannya pemerintahan desa,
@@ -83,22 +112,36 @@ export default function Dpd() {
 
       {/* ✅ Agenda Preview */}
       <section className="w-full max-w-screen-2xl mx-auto px-4 md:px-8 py-12 text-center">
-        <h2 className="text-2xl md:text-3xl font-bold mb-8">Agenda Mendatang</h2>
+        <h2 className="text-2xl md:text-3xl font-bold mb-8">
+          Agenda Mendatang
+        </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-8">
-          {agenda.map((ag, i) => (
+          {agenda.map((item) => (
             <div
-              key={i}
+              key={item.agenda.id}
               className="group relative rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition w-full"
             >
               <img
-                src={ag.gambar}
-                alt={ag.judul}
+                src={`${import.meta.env.VITE_BASE_URL}/agenda/images/${
+                  item.agenda.featured_image
+                }`}
+                alt={item.agenda.title}
                 className="h-40 sm:h-48 md:h-56 w-full object-cover group-hover:scale-105 transition"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
               <div className="absolute bottom-4 left-4 text-left text-white">
-                <h3 className="font-bold text-sm sm:text-base md:text-lg">{ag.judul}</h3>
-                <p className="text-xs sm:text-sm opacity-80">{ag.tanggal}</p>
+                <h3 className="font-bold text-sm sm:text-base md:text-lg">
+                  {item.agenda.title}
+                </h3>
+                {(() => {
+                  const { tanggal } = Helper.formatAgendaDateTime(
+                    item.agenda.start_time,
+                    item.agenda.end_time
+                  );
+                  return (
+                    <p className="text-xs sm:text-sm opacity-80">{tanggal}</p>
+                  );
+                })()}
               </div>
             </div>
           ))}

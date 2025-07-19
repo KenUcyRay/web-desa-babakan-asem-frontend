@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FaUserPlus,
   FaEdit,
@@ -19,14 +19,14 @@ export default function ManageUser() {
   const [showModal, setShowModal] = useState(false);
   const [editData, setEditData] = useState(null);
 
-  const handleSaveUser = (data) => {
+  const handleSaveUser = async (data) => {
     if (editData) {
       // ✅ Edit user lama
-      setUsers(users.map((u) => (u.id === editData.id ? { ...data, id: u.id } : u)));
+      // setUsers(users.map((u) => (u.id === editData.id ? { ...data, id: u.id } : u)));
     } else {
       // ✅ Tambah user baru
-      const newUser = { ...data, id: Date.now() };
-      setUsers([...users, newUser]);
+      // const newUser = { ...data, id: Date.now() };
+      // setUsers([...users, newUser]);
     }
     setShowModal(false);
     setEditData(null);
