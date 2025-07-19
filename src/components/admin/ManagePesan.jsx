@@ -3,6 +3,7 @@ import { FaTrash, FaEnvelopeOpen } from "react-icons/fa";
 import AdminSidebar from "./AdminSidebar";
 import { MessageApi } from "../../libs/api/MessageApi";
 import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
+import Pagination from "../ui/Pagination"; // ✅ Tambah Pagination
 
 export default function ManagePesan() {
   const [messages, setMessages] = useState([]);
@@ -40,7 +41,7 @@ export default function ManagePesan() {
       return;
     }
 
-    await alertSuccess("Pesan berhasil dihapus.");p
+    await alertSuccess("Pesan berhasil dihapus.");
     setMessages(messages.filter((p) => p.id !== id));
   };
 
@@ -94,7 +95,7 @@ export default function ManagePesan() {
           ))}
         </div>
 
-        {/* LIST */}
+        {/* LIST PESAN */}
         <div className="space-y-4">
           {paginatedMessages.length === 0 ? (
             <p className="text-gray-500 italic">Tidak ada pesan</p>
@@ -132,24 +133,12 @@ export default function ManagePesan() {
           )}
         </div>
 
-        {/* PAGINATION */}
-        {totalPages > 1 && (
-          <div className="flex justify-center gap-2 mt-6">
-            {Array.from({ length: totalPages }).map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setPage(i + 1)}
-                className={`px-3 py-1 rounded ${
-                  page === i + 1
-                    ? "bg-green-500 text-white"
-                    : "bg-gray-200 hover:bg-gray-300"
-                }`}
-              >
-                {i + 1}
-              </button>
-            ))}
-          </div>
-        )}
+        {/* ✅ PAGINATION PAKAI KOMPONEN */}
+        <Pagination
+          currentPage={page}
+          totalPages={totalPages}
+          onPageChange={setPage}
+        />
       </div>
     </div>
   );

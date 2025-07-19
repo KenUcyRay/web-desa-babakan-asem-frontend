@@ -61,7 +61,8 @@ import ManageBerita from "./components/admin/ManageBerita";
 import ManageAgenda from "./components/admin/ManageAgenda";
 import ManagePesan from "./components/admin/ManagePesan";
 import ManageUser from "./components/admin/ManageUser";
-import ManageBumdes from "./components/admin/ManageBumdes"; // ✅ Tambahan untuk BUMDes
+import ManageBumdes from "./components/admin/ManageBumdes";
+import ManageGalery from "./components/admin/ManageGalery";
 
 // ✅ Pengaturan Admin
 import PengaturanProfil from "./components/admin/settings/PengaturanProfil";
@@ -146,7 +147,8 @@ function LayoutAdmin() {
         <Route path="/admin/manage-agenda" element={<ManageAgenda />} />
         <Route path="/admin/manage-pesan" element={<ManagePesan />} />
         <Route path="/admin/manage-user" element={<ManageUser />} />
-        <Route path="/admin/manage-bumdes" element={<ManageBumdes />} /> {/* ✅ Baru */}
+        <Route path="/admin/manage-bumdes" element={<ManageBumdes />} />
+        <Route path="/admin/manage-galery" element={<ManageGalery />} />
 
         {/* ✅ Pengaturan Admin */}
         <Route path="/admin/pengaturan/profil" element={<PengaturanProfil />} />
