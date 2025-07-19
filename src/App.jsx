@@ -5,6 +5,9 @@ import {
   Navigate,
   useLocation,
 } from "react-router-dom";
+import { useEffect, useState } from "react";
+import NProgress from "nprogress";
+import "nprogress/nprogress.css";
 
 // ✅ Navbar + Footer hanya untuk umum
 import TopNavbar from "./components/layout/TopNavbar";
@@ -65,12 +68,12 @@ import PengaturanHakAkses from "./components/admin/settings/PengaturanHakAkses";
 import AdminLayout from "./components/admin/AdminLayout";
 import StPkk from "./components/organizations/StPkk";
 
-// ✅ Layout untuk Halaman Umum (Navbar & Footer aktif)
+// ✅ Layout Umum (Navbar & Footer aktif)
 function LayoutUmum() {
   return (
     <>
       <TopNavbar />
-      <div className="pt-[36px]">
+      <div className="pt-[36px] animate-fade">
         <NavbarTop />
         <Routes>
           {/* ✅ Halaman Utama */}
@@ -127,12 +130,11 @@ function LayoutUmum() {
   );
 }
 
-// ✅ Layout untuk Halaman Admin (Tanpa Navbar & Footer)
+// ✅ Layout Admin (tanpa Navbar & Footer)
 function LayoutAdmin() {
   return (
     <Routes>
       {/* ✅ Dashboard Admin */}
-
       <Route element={<AdminLayout />}>
         <Route path="/admin" element={<AdminDashboard />} />
 
@@ -149,22 +151,50 @@ function LayoutAdmin() {
           element={<PengaturanHakAkses />}
         />
 
-        {/* ✅ Redirect default jika ke /admin/ */}
+        {/* ✅ Redirect default */}
         <Route path="/admin/*" element={<Navigate to="/admin" replace />} />
       </Route>
     </Routes>
   );
 }
 
-// ✅ Tentukan Layout berdasar URL (FIX ✅)
+// ✅ Loader + Progress + Fade Animasi saat pindah halaman
 function AppContent() {
   const location = useLocation();
+  const [loading, setLoading] = useState(false);
 
-  // ✅ hanya true kalau /admin atau /admin/xxx
+  useEffect(() => {
+    // Mulai progress bar
+    NProgress.start();
+
+    // Tampilkan spinner
+    setLoading(true);
+
+    // Selesai setelah 500ms
+    const timer = setTimeout(() => {
+      setLoading(false);
+      NProgress.done();
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [location.pathname]);
+
   const isAdminPage =
     location.pathname === "/admin" || location.pathname.startsWith("/admin/");
 
-  return isAdminPage ? <LayoutAdmin /> : <LayoutUmum />;
+  return (
+    <>
+      {/* ✅ Fullscreen Spinner */}
+      {loading && (
+        <div className="fixed inset-0 bg-white/80 flex items-center justify-center z-[9999]">
+          <div className="w-12 h-12 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      )}
+
+      {/* ✅ Layout sesuai halaman */}
+      {isAdminPage ? <LayoutAdmin /> : <LayoutUmum />}
+    </>
+  );
 }
 
 // ✅ Entry utama App
