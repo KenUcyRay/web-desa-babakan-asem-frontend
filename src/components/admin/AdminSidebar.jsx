@@ -7,6 +7,7 @@ import {
   FaUsers,
   FaSignOutAlt,
   FaArrowLeft,
+  FaStore, // ✅ icon untuk BUMDes
 } from "react-icons/fa";
 import logo from "../../assets/logo.png";
 import { useAuth } from "../../contexts/AuthContext";
@@ -18,10 +19,7 @@ export default function AdminSidebar() {
 
   const handleLogout = async () => {
     const confirm = await alertConfirm("Apakah Anda yakin ingin keluar?");
-
-    if (!confirm) {
-      return;
-    }
+    if (!confirm) return;
     await alertSuccess("Anda telah keluar.");
     setAdminStatus(false);
     logout();
@@ -29,31 +27,18 @@ export default function AdminSidebar() {
 
   const menu = [
     { to: "/admin", label: "Dashboard", icon: <FaTachometerAlt /> },
-    {
-      to: "/admin/manage-berita",
-      label: "Kelola Berita",
-      icon: <FaNewspaper />,
-    },
-    {
-      to: "/admin/manage-agenda",
-      label: "Kelola Agenda",
-      icon: <FaCalendarAlt />,
-    },
+    { to: "/admin/manage-berita", label: "Kelola Berita", icon: <FaNewspaper /> },
+    { to: "/admin/manage-agenda", label: "Kelola Agenda", icon: <FaCalendarAlt /> },
     { to: "/admin/manage-pesan", label: "Kelola Pesan", icon: <FaEnvelope /> },
     { to: "/admin/manage-user", label: "Kelola User", icon: <FaUsers /> },
+
+    // ✅ Tambahan menu baru
+    { to: "/admin/manage-bumdes", label: "Kelola Produk BUMDes", icon: <FaStore /> },
   ];
 
   const pengaturan = [
-    {
-      to: "/admin/pengaturan/profil",
-      label: "Profil",
-      icon: <FaUsers />,
-    },
-    {
-      to: "/admin/pengaturan/hak-akses",
-      label: "Hak Akses",
-      icon: <FaUsers />,
-    },
+    { to: "/admin/pengaturan/profil", label: "Profil", icon: <FaUsers /> },
+    { to: "/admin/pengaturan/hak-akses", label: "Hak Akses", icon: <FaUsers /> },
   ];
 
   return (

@@ -7,6 +7,7 @@ import {
   FiMapPin,
 } from "react-icons/fi";
 import AdminSidebar from "./AdminSidebar";
+import Pagination from "../ui/Pagination"; // ✅ Tambahkan komponen pagination
 
 export default function ManageAgenda() {
   const [agendaList, setAgendaList] = useState([
@@ -43,6 +44,10 @@ export default function ManageAgenda() {
   const [location, setLocation] = useState("");
   const [featuredImage, setFeaturedImage] = useState(null);
   const [isPublished, setIsPublished] = useState(false);
+
+  // ✅ Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
 
   const resetForm = () => {
     setTitle("");
@@ -114,6 +119,13 @@ export default function ManageAgenda() {
       timeStyle: "short",
     });
   };
+
+  // ✅ Hitung agenda per halaman
+  const totalItems = agendaList.length;
+  const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage)); // minimal 1
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentItems = agendaList.slice(startIndex, endIndex);
 
   return (
     <div className="flex">
@@ -272,9 +284,9 @@ export default function ManageAgenda() {
           </form>
         )}
 
-        {/* ✅ LIST AGENDA */}
+        {/* ✅ LIST AGENDA (per halaman) */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {agendaList.map((a) => (
+          {currentItems.map((a) => (
             <div key={a.id} className="bg-white rounded-xl shadow">
               {a.featuredImage && (
                 <img
@@ -324,6 +336,15 @@ export default function ManageAgenda() {
               </div>
             </div>
           ))}
+        </div>
+
+        {/* ✅ Pagination selalu muncul meski sedikit agenda */}
+        <div className="mt-6 flex justify-center">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
         </div>
       </div>
     </div>

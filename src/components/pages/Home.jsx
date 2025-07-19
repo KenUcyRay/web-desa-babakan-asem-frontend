@@ -12,7 +12,7 @@ import {
 import { Link, useLocation } from "react-router-dom";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 
-import LogoDesa from "../../assets/logo.png"; // ✅ logo lokal
+import LogoDesa from "../../assets/logo.png"; 
 import { NewsApi } from "../../libs/api/NewsApi";
 import { Helper } from "../../utils/Helper";
 import { alertError } from "../../libs/alert";
@@ -31,50 +31,36 @@ export default function Home() {
       title: "Profil Desa",
       desc: "Sejarah, visi & misi desa",
       icon: <FaMapMarkerAlt className="text-green-600 text-4xl" />,
+      link: "/profil",
     },
     {
       title: "Berita Desa",
       desc: "Informasi terkini",
       icon: <FaNewspaper className="text-blue-600 text-4xl" />,
+      link: "/berita",
     },
     {
       title: "Layanan Publik",
       desc: "Pengajuan surat & layanan",
       icon: <FaHandsHelping className="text-yellow-600 text-4xl" />,
+      link: "/administrasi",
     },
     {
       title: "Infografis",
       desc: "Data statistik desa",
       icon: <FaChartBar className="text-purple-600 text-4xl" />,
+      link: "/infografis/penduduk",
     },
   ];
 
-  const bumdesPreview = [
-    {
-      title: "Beras Organik Premium",
-      price: "Rp 50.000",
-      img: "https://images.unsplash.com/photo-1606787366850-de6330128bfc?auto=format&fit=crop&w=1000&q=80",
-    },
-    {
-      title: "Kerajinan Bambu",
-      price: "Rp 75.000",
-      img: "https://images.unsplash.com/photo-1607083206968-13611e1d9b8b?auto=format&fit=crop&w=1000&q=80",
-    },
-    {
-      title: "Madu Hutan Asli",
-      price: "Rp 120.000",
-      img: "https://images.unsplash.com/photo-1505575967455-40e256f73376?auto=format&fit=crop&w=1000&q=80",
-    },
-  ];
-
-  // ✅ Data APB Desa untuk Pie Chart
   const apbData = [
-    { name: "Pendapatan", value: 1200000000, color: "#4ade80" }, // hijau
-    { name: "Belanja", value: 950000000, color: "#f87171" }, // merah
-    { name: "Sisa Anggaran", value: 250000000, color: "#60a5fa" }, // biru
+    { name: "Pendapatan", value: 1200000000, color: "#4ade80" },
+    { name: "Belanja", value: 950000000, color: "#f87171" },
+    { name: "Sisa Anggaran", value: 250000000, color: "#60a5fa" },
   ];
 
   const [products, setProducts] = useState([]);
+  const [news, setNews] = useState([]);
 
   const fetchProduct = async () => {
     const response = await ProductApi.getProducts(1, 3);
@@ -88,13 +74,10 @@ export default function Home() {
     }
   };
 
-  const [news, setNews] = useState([]);
-
   const fetchNews = async () => {
     const response = await NewsApi.getNews(1, 4);
     if (response.status === 200) {
       const responseBody = await response.json();
-
       setNews(responseBody.news);
     } else {
       alertError("Gagal mengambil data berita. Silakan coba lagi nanti.");
@@ -152,8 +135,6 @@ export default function Home() {
                   className="w-full h-full object-cover"
                 />
               </div>
-
-              {/* ✅ Overlay teks */}
               <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-center text-white px-6">
                 <h2
                   className="text-2xl md:text-4xl font-bold mb-2"
@@ -173,15 +154,16 @@ export default function Home() {
       {/* ✅ QUICK MENU */}
       <div className="max-w-7xl mx-auto px-4 py-10 grid sm:grid-cols-2 md:grid-cols-4 gap-6">
         {quickMenu.map((item, idx) => (
-          <div
+          <Link
             key={idx}
+            to={item.link}
             className="bg-white shadow rounded-xl p-6 hover:shadow-2xl hover:scale-105 transition-transform"
             data-aos="fade-up"
           >
             <div>{item.icon}</div>
             <h3 className="font-bold text-lg mt-3">{item.title}</h3>
             <p className="text-gray-600 text-sm mt-1">{item.desc}</p>
-          </div>
+          </Link>
         ))}
       </div>
 
@@ -197,7 +179,7 @@ export default function Home() {
               dengan mayoritas penduduk bermata pencaharian sebagai petani dan
               pengrajin. Desa ini memiliki potensi alam yang melimpah, budaya
               gotong royong yang kuat, serta berbagai produk unggulan yang
-              dikelola oleh Badan Usaha Milik Desa (BUMDes).{" "}
+              dikelola oleh Badan Usaha Milik Desa (BUMDes).
             </p>
             <p className="mt-3 text-gray-700 leading-relaxed">
               Kami terus berkomitmen untuk membangun desa yang mandiri, berdaya
@@ -232,9 +214,7 @@ export default function Home() {
               data-aos="zoom-in"
             >
               <img
-                src={`${import.meta.env.VITE_BASE_URL}/news/images/${
-                  item.news.featured_image
-                }`}
+                src={`${import.meta.env.VITE_BASE_URL}/news/images/${item.news.featured_image}`}
                 alt={item.news.title}
                 className="w-full h-40 object-cover"
               />
@@ -262,14 +242,13 @@ export default function Home() {
           </div>
           <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
             {products.map((product) => (
-              <div
+              <Link
                 key={product.product.id}
+                to={`/bumdes/${product.product.id}`} // ✅ sekarang ke detail
                 className="bg-white rounded-xl shadow hover:shadow-xl hover:scale-105 transition-transform"
               >
                 <img
-                  src={`${import.meta.env.VITE_BASE_URL}/products/images/${
-                    product.product.featured_image
-                  }`}
+                  src={`${import.meta.env.VITE_BASE_URL}/products/images/${product.product.featured_image}`}
                   alt={product.product.title}
                   className="w-full h-40 md:h-48 object-cover rounded-t-xl"
                 />
@@ -281,7 +260,7 @@ export default function Home() {
                     {Helper.formatRupiah(product.product.price)}
                   </p>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -293,7 +272,6 @@ export default function Home() {
           APB Desa Tahun 2025
         </h2>
         <div className="flex flex-col md:flex-row items-center justify-center gap-8">
-          {/* Pie Chart */}
           <div className="w-full md:w-1/2 h-64">
             <ResponsiveContainer>
               <PieChart>
@@ -312,7 +290,6 @@ export default function Home() {
               </PieChart>
             </ResponsiveContainer>
           </div>
-          {/* Statistik angka */}
           <div className="grid gap-4">
             {apbData.map((item, idx) => (
               <div key={idx} className="flex items-center gap-3">

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import AdminSidebar from "./AdminSidebar";
+import Pagination from "../ui/Pagination"; // ✅ pastikan path benar
 
 export default function ManageBerita() {
   const [beritaList, setBeritaList] = useState([
@@ -29,6 +30,10 @@ export default function ManageBerita() {
   const [content, setContent] = useState("");
   const [featuredImage, setFeaturedImage] = useState(null);
   const [isPublished, setIsPublished] = useState(false);
+
+  // ✅ Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -84,6 +89,13 @@ export default function ManageBerita() {
     setEditingId(id);
     setShowForm(true);
   };
+
+  // ✅ Hitung berita untuk halaman saat ini
+  const totalItems = beritaList.length;
+  const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage)); // minimal 1 halaman
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentItems = beritaList.slice(startIndex, endIndex);
 
   return (
     <div className="flex">
@@ -213,9 +225,9 @@ export default function ManageBerita() {
           </form>
         )}
 
-        {/* ✅ LIST BERITA */}
+        {/* ✅ LIST BERITA (hanya untuk halaman ini) */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {beritaList.map((b) => (
+          {currentItems.map((b) => (
             <div key={b.id} className="bg-white rounded-xl shadow">
               {b.featuredImage && (
                 <img
@@ -255,6 +267,15 @@ export default function ManageBerita() {
               </div>
             </div>
           ))}
+        </div>
+
+        {/* ✅ Pagination selalu muncul meski sedikit berita */}
+        <div className="mt-6 flex justify-center">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages} // minimal 1
+            onPageChange={setCurrentPage}
+          />
         </div>
       </div>
     </div>
