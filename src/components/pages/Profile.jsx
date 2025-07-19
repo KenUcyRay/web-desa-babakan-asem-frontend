@@ -1,18 +1,49 @@
+import { useEffect, useState } from "react";
+import { UserApi } from "../../libs/api/UserApi";
+import { alertError, alertSuccess, alertConfirm } from "../../libs/alert";
+
 export default function Profile() {
-  // ✅ Dummy user biar bisa lihat tampilan dulu
-  const user = {
-    name: "Aufa Fa",
-    email: "aufa@example.com",
-    joined: "1 Januari 2024",
+  const [user, setUser] = useState(null);
+
+  const fetchProfile = async () => {
+    const response = await UserApi.getUserProfile();
+    if (!response.ok) {
+      alertError("Gagal mengambil profil pengguna.");
+      return;
+    }
+    const responseBody = await response.json();
+    setUser(responseBody.user);
   };
 
-  const handleLogout = () => {
-    alert("🚀 Logout dummy! (belum terhubung auth)");
+  const handleLogout = async () => {
+    const confirm = await alertConfirm("Yakin ingin logout?");
+    if (!confirm) return;
+
+    // TODO: Tambahkan API logout kalau sudah ada
+    alertSuccess("🚀 Logout berhasil (dummy, belum API logout)");
   };
 
-  const handleDelete = () => {
-    alert("❌ Hapus akun dummy! (belum terhubung API)");
+  const handleDelete = async () => {
+    const confirm = await alertConfirm(
+      "❌ Apakah Anda yakin ingin menghapus akun ini? Tindakan ini tidak dapat dibatalkan!"
+    );
+    if (!confirm) return;
+
+    // TODO: Tambahkan API delete user kalau sudah tersedia
+    alertError("Fitur hapus akun belum terhubung ke API.");
   };
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex justify-center items-center text-gray-500">
+        Memuat profil...
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex justify-center items-center px-4 py-12">
@@ -29,6 +60,21 @@ export default function Profile() {
         {/* ✅ Info Detail */}
         <div className="space-y-3 text-sm text-gray-600">
           <div className="flex justify-between">
+            <span>ID Pengguna</span>
+            <div className="flex gap-2 items-center">
+              <span className="font-medium text-gray-800">{user.id}</span>
+              <button
+                className="text-xs text-green-600 underline"
+                onClick={() => {
+                  navigator.clipboard.writeText(user.id);
+                  alertSuccess("ID berhasil disalin ke clipboard");
+                }}
+              >
+                Salin
+              </button>
+            </div>
+          </div>
+          <div className="flex justify-between">
             <span>Nama Lengkap</span>
             <span className="font-medium text-gray-800">{user.name}</span>
           </div>
@@ -38,7 +84,9 @@ export default function Profile() {
           </div>
           <div className="flex justify-between">
             <span>Bergabung</span>
-            <span className="font-medium text-gray-800">{user.joined}</span>
+            <span className="font-medium text-gray-800">
+              {user.joined_at || "Tanggal tidak tersedia"}
+            </span>
           </div>
         </div>
 
