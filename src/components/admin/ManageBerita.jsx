@@ -1,25 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AdminSidebar from "./AdminSidebar";
+import { NewsApi } from "../../libs/api/NewsApi";
+import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
+import { Helper } from "../../utils/Helper";
 
 export default function ManageBerita() {
-  const [beritaList, setBeritaList] = useState([
-    {
-      id: 1,
-      title: "Perbaikan Jalan Desa Selesai",
-      content: "Jalan desa sudah selesai diperbaiki demi kenyamanan warga.",
-      featuredImage: "https://source.unsplash.com/400x250/?village",
-      isPublished: true,
-      date: "2025-07-15",
-    },
-    {
-      id: 2,
-      title: "Gotong Royong Bersama Warga",
-      content: "Warga desa mengadakan gotong royong membersihkan lingkungan.",
-      featuredImage: "https://source.unsplash.com/400x250/?community",
-      isPublished: false,
-      date: "2025-07-16",
-    },
-  ]);
+  const [news, setNews] = useState([]);
 
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -30,35 +16,73 @@ export default function ManageBerita() {
   const [featuredImage, setFeaturedImage] = useState(null);
   const [isPublished, setIsPublished] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const newData = {
-      id: editingId || Date.now(),
+    const rawData = {
       title,
       content,
-      featuredImage: featuredImage
-        ? URL.createObjectURL(featuredImage)
-        : editingId
-        ? beritaList.find((b) => b.id === editingId).featuredImage
-        : null,
-      isPublished,
-      date: editingId
-        ? beritaList.find((b) => b.id === editingId).date
-        : new Date().toISOString().split("T")[0],
+      is_published: isPublished,
+      featured_image: featuredImage,
     };
 
     if (editingId) {
-      // ✅ UPDATE berita
-      setBeritaList((prev) =>
-        prev.map((b) => (b.id === editingId ? newData : b))
-      );
-    } else {
-      // ✅ TAMBAH berita baru
-      setBeritaList([...beritaList, newData]);
+      if (!(await alertConfirm("Yakin ingin mengedit berita ini?"))) {
+        return;
+      }
+
+      const response = await NewsApi.updateNews(editingId, rawData);
+      const responseBody = await response.json();
+
+      if (!response.ok) {
+        let errorMessage = "Gagal menyimpan perubahan.";
+
+        if (responseBody.error && Array.isArray(responseBody.error)) {
+          const errorMessages = responseBody.error.map((err) => {
+            if (err.path && err.path.length > 0) {
+              return `${err.path[0]}: ${err.message}`;
+            }
+            return err.message;
+          });
+          errorMessage = errorMessages.join(", ");
+        } else if (
+          responseBody.error &&
+          typeof responseBody.error === "string"
+        ) {
+          errorMessage = responseBody.error;
+        }
+        await alertError(errorMessage);
+        return;
+      }
+
+      await alertSuccess("Berita berhasil diperbarui!");
+      return;
     }
 
-    // reset form
+    const response = await NewsApi.createNews(rawData);
+    const responseBody = await response.json();
+    
+    if (response.ok) {
+      await alertSuccess("Berita berhasil ditambahkan!");
+      setNews([...news, responseBody.news]);
+    } else {
+      let errorMessage = "Gagal menyimpan perubahan.";
+
+      if (responseBody.error && Array.isArray(responseBody.error)) {
+        const errorMessages = responseBody.error.map((err) => {
+          if (err.path && err.path.length > 0) {
+            return `${err.path[0]}: ${err.message}`;
+          }
+          return err.message;
+        });
+        errorMessage = errorMessages.join(", ");
+      } else if (responseBody.error && typeof responseBody.error === "string") {
+        errorMessage = responseBody.error;
+      }
+
+      alertError(errorMessage);
+    }
+
     setTitle("");
     setContent("");
     setFeaturedImage(null);
@@ -67,23 +91,46 @@ export default function ManageBerita() {
     setShowForm(false);
   };
 
-  const handleDelete = (id) => {
-    if (window.confirm("Yakin hapus berita ini?")) {
-      setBeritaList(beritaList.filter((b) => b.id !== id));
+  const handleDelete = async (id) => {
+    if (await alertConfirm("Yakin hapus berita ini?")) {
+      const response = await NewsApi.deleteNews(id);
+      if (!response.ok) {
+        const responseBody = await response.json();
+        alertError(
+          `Gagal menghapus berita. Silakan coba lagi nanti. ${responseBody.error}`
+        );
+        return;
+      }
+      setNews(news.filter((b) => b.id !== id));
     }
   };
 
-  const handleEdit = (id) => {
-    const berita = beritaList.find((b) => b.id === id);
+  const handleEdit = async (id) => {
+    const berita = news.find((b) => b.id === id);
     if (!berita) return;
 
     setTitle(berita.title);
     setContent(berita.content);
-    setFeaturedImage(null); // file lama tidak bisa langsung di-load sebagai File
+    setFeaturedImage(null);
     setIsPublished(berita.isPublished);
     setEditingId(id);
     setShowForm(true);
   };
+
+  const fetchNews = async () => {
+    const response = await NewsApi.getOwnNews(1, 9);
+    if (response.status === 200) {
+      const responseBody = await response.json();
+      console.log("Berhasil mengambil berita:", responseBody);
+      setNews(responseBody.news);
+    } else {
+      alertError("Gagal mengambil data berita. Silakan coba lagi nanti.");
+    }
+  };
+
+  useEffect(() => {
+    fetchNews();
+  }, [showForm]);
 
   return (
     <div className="flex">
@@ -145,13 +192,12 @@ export default function ManageBerita() {
               />
               {(featuredImage ||
                 (editingId &&
-                  beritaList.find((b) => b.id === editingId)?.featuredImage)) && (
+                  news.find((b) => b.id === editingId)?.featuredImage)) && (
                 <img
                   src={
                     featuredImage
                       ? URL.createObjectURL(featuredImage)
-                      : beritaList.find((b) => b.id === editingId)
-                          ?.featuredImage
+                      : news.find((b) => b.id === editingId)?.featuredImage
                   }
                   alt="preview"
                   className="mt-2 w-40 rounded"
@@ -215,38 +261,41 @@ export default function ManageBerita() {
 
         {/* ✅ LIST BERITA */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {beritaList.map((b) => (
-            <div key={b.id} className="bg-white rounded-xl shadow">
-              {b.featuredImage && (
-                <img
-                  src={b.featuredImage}
-                  alt={b.title}
-                  className="rounded-t-xl w-full h-40 object-cover"
-                />
-              )}
+          {news.map((item) => (
+            <div key={item.id} className="bg-white rounded-xl shadow">
+              <img
+                src={`${import.meta.env.VITE_BASE_URL}/news/images/${
+                  item.featured_image
+                }`}
+                alt={item.title}
+                className="rounded-t-xl w-full h-40 object-cover"
+              />
+
               <div className="p-4">
-                <h2 className="text-lg font-semibold">{b.title}</h2>
+                <h2 className="text-lg font-semibold">{item.title}</h2>
                 <p className="text-gray-600 text-sm line-clamp-3">
-                  {b.content}
+                  {Helper.truncateText(item.content)}
                 </p>
-                <p className="text-xs text-gray-400 mt-1">📅 {b.date}</p>
+                <p className="text-xs text-gray-400 mt-1">
+                  📅 {Helper.formatTanggal(item.created_at)}
+                </p>
                 <p
                   className={`mt-2 text-sm ${
-                    b.isPublished ? "text-green-500" : "text-red-500"
+                    item.is_published ? "text-green-500" : "text-red-500"
                   }`}
                 >
-                  {b.isPublished ? "Published ✅" : "Unpublished ❌"}
+                  {item.is_published ? "Published ✅" : "Unpublished ❌"}
                 </p>
 
                 <div className="flex gap-3 mt-3">
                   <button
-                    onClick={() => handleEdit(b.id)}
+                    onClick={() => handleEdit(item.id)}
                     className="text-blue-500 hover:text-blue-700"
                   >
                     ✏ Edit
                   </button>
                   <button
-                    onClick={() => handleDelete(b.id)}
+                    onClick={() => handleDelete(item.id)}
                     className="text-red-500 hover:text-red-700"
                   >
                     🗑 Hapus

@@ -22,9 +22,9 @@ export default function AdminSidebar() {
     if (!confirm) {
       return;
     }
-    await alertSuccess("Anda telah keluar.");
     setAdminStatus(false);
     logout();
+    await alertSuccess("Anda telah keluar.");
   };
 
   const menu = [
