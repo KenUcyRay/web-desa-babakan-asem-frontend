@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaMapMarkerAlt, FaClock, FaCalendarAlt, FaTag } from "react-icons/fa";
-import berita1 from "../assets/berita1.jpeg";
-import SidebarInfo from "./SidebarInfo";
-import { AgendaApi } from "../libs/api/AgendaApi";
-import { CommentApi } from "../libs/api/CommentApi";
-import { Helper } from "../utils/Helper";
-import { alertError, alertSuccess } from "../libs/alert";
+import berita1 from "../../assets/berita1.jpeg";
+import SidebarInfo from "../layout/SidebarInfo";
+import { AgendaApi } from "../../libs/api/AgendaApi";
+import { CommentApi } from "../../libs/api/CommentApi";
+import { Helper } from "../../utils/Helper";
+import { alertError, alertSuccess } from "../../libs/alert";
 
 export default function DetailAgenda() {
   const { id } = useParams();

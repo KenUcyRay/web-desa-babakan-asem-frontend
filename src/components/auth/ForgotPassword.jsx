@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import forgotImage from "../assets/forgot.png";
-import { UserApi } from "../libs/api/UserApi";
-import { alertError, alertSuccess } from "../libs/alert";
-import { useAuth } from "../contexts/AuthContext";
+import forgotImage from "../../assets/forgot.png";
+import { UserApi } from "../../libs/api/UserApi";
+import { alertError, alertSuccess } from "../../libs/alert";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function ForgotPassword() {
   const navigate = useNavigate();

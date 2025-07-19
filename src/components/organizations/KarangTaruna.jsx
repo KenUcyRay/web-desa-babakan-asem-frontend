@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { HiHome } from "react-icons/hi";
-import Pagination from "./Pagination";
+import Pagination from "../ui/Pagination";
 import { useNavigate } from "react-router-dom";
 
 export default function KarangTaruna() {
@@ -59,9 +59,6 @@ export default function KarangTaruna() {
 
   return (
     <div className="bg-gray-50 py-10 w-full max-w-screen-2xl mx-auto px-4 sm:px-6 md:px-8">
-      
-
-
       {/* ✅ Judul + Hero */}
       <div className="grid md:grid-cols-2 gap-8 items-center mb-12">
         <div>
@@ -69,9 +66,9 @@ export default function KarangTaruna() {
             Karang Taruna Desa Babakan Asem
           </h1>
           <p className="text-gray-600 mt-3 leading-relaxed">
-            Pemuda Berkarya, Desa Berjaya. Karang Taruna Desa Babakan Asem adalah wadah pembinaan dan
-            pengembangan generasi muda yang bergerak di bidang kesejahteraan sosial,
-            kepemudaan, dan kemasyarakatan.
+            Pemuda Berkarya, Desa Berjaya. Karang Taruna Desa Babakan Asem
+            adalah wadah pembinaan dan pengembangan generasi muda yang bergerak
+            di bidang kesejahteraan sosial, kepemudaan, dan kemasyarakatan.
           </p>
         </div>
         <img
@@ -86,7 +83,8 @@ export default function KarangTaruna() {
         <div className="bg-[#B6F500] p-6 rounded-xl shadow hover:shadow-md transition">
           <h2 className="text-xl font-bold text-black">Visi</h2>
           <p className="mt-2 text-black">
-            Menjadi pemuda yang aktif, kreatif, dan peduli terhadap pembangunan desa.
+            Menjadi pemuda yang aktif, kreatif, dan peduli terhadap pembangunan
+            desa.
           </p>
         </div>
         <div className="bg-orange-200 p-6 rounded-xl shadow hover:shadow-md transition">
@@ -152,7 +150,8 @@ export default function KarangTaruna() {
                   📅 {item.tanggal} | ⏰ {item.waktu}
                 </p>
                 <p className="text-gray-600 text-sm mt-3">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae ullam vel est non lorem.
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae
+                  ullam vel est non lorem.
                 </p>
               </div>
             </div>

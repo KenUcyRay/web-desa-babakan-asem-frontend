@@ -1,7 +1,7 @@
-import berita1 from "../assets/berita1.jpeg";
+import berita1 from "../../assets/berita1.jpeg";
 import { useEffect, useState } from "react";
-import { ProductApi } from "../libs/api/ProductApi";
-import { Helper } from "../utils/Helper";
+import { ProductApi } from "../../libs/api/ProductApi";
+import { Helper } from "../../utils/Helper";
 import { Link } from "react-router";
 
 export default function SidebarProduk() {

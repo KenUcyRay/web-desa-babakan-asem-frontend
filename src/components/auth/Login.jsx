@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import ReCAPTCHA from "react-google-recaptcha";
-import loginImage from "../assets/login.png";
-import { UserApi } from "../libs/api/UserApi";
-import { useAuth } from "../contexts/AuthContext";
-import { alertError, alertSuccess } from "../libs/alert";
+import loginImage from "../../assets/login.png";
+import { UserApi } from "../../libs/api/UserApi";
+import { useAuth } from "../../contexts/AuthContext";
+import { alertError, alertSuccess } from "../../libs/alert";
 
 export default function Login() {
   const navigate = useNavigate();

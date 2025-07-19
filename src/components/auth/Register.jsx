@@ -1,10 +1,10 @@
 import { Link, useNavigate } from "react-router-dom";
-import registerImage from "../assets/register.png";
+import registerImage from "../../assets/register.png";
 import { useEffect, useRef, useState } from "react";
-import { UserApi } from "../libs/api/UserApi";
-import { useAuth } from "../contexts/AuthContext";
+import { UserApi } from "../../libs/api/UserApi";
+import { useAuth } from "../../contexts/AuthContext";
 import ReCAPTCHA from "react-google-recaptcha";
-import { alertError, alertSuccess } from "../libs/alert";
+import { alertError, alertSuccess } from "../../libs/alert";
 
 export default function Register() {
   const navigate = useNavigate();

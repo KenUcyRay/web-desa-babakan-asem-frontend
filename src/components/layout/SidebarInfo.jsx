@@ -1,14 +1,13 @@
-import berita1 from "../assets/berita1.jpeg";
+import berita1 from "../../assets/berita1.jpeg";
 import { Link } from "react-router-dom";
 import { HiOutlineMail } from "react-icons/hi";
 import { FaUsers, FaWhatsapp } from "react-icons/fa";
 import { useEffect, useState } from "react";
-import { NewsApi } from "../libs/api/NewsApi";
-import { Helper } from "../utils/Helper";
-import { AgendaApi } from "../libs/api/AgendaApi";
+import { NewsApi } from "../../libs/api/NewsApi";
+import { Helper } from "../../utils/Helper";
+import { AgendaApi } from "../../libs/api/AgendaApi";
 
 export default function SidebarInfo() {
-
   const [news, setNews] = useState([]);
   const [agenda, setAgenda] = useState([]);
 

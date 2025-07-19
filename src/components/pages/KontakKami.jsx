@@ -6,8 +6,8 @@ import {
   FaEnvelope,
 } from "react-icons/fa";
 import "@fontsource/poppins";
-import { MessageApi } from "../libs/api/MessageApi";
-import { alertSuccess, alertError } from "../libs/alert";
+import { MessageApi } from "../../libs/api/MessageApi";
+import { alertSuccess, alertError } from "../../libs/alert";
 
 export default function KontakKami() {
   const [name, setName] = React.useState("");

@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useLocation, NavLink, Link } from "react-router-dom";
 import { FiMenu, FiX } from "react-icons/fi";
-import logo from "../assets/logo.png";
-import { useAuth } from "../contexts/AuthContext";
-import { alertConfirm, alertSuccess } from "../libs/alert";
+import logo from "../../assets/logo.png";
+import { useAuth } from "../../contexts/AuthContext";
+import { alertConfirm, alertSuccess } from "../../libs/alert";
 
 export default function NavbarTop() {
   const location = useLocation();

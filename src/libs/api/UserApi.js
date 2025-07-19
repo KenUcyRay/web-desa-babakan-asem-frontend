@@ -1,6 +1,5 @@
 export class UserApi {
   static async userLogin(email, password, rememberMe, reCaptchaToken) {
-    console.log(reCaptchaToken);
     return await fetch(`${import.meta.env.VITE_BASE_URL}/users/login`, {
       method: "POST",
       headers: {

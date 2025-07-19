@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import SidebarInfo from "./SidebarInfo";
-import { NewsApi } from "../libs/api/NewsApi";
-import { alertError, alertSuccess } from "../libs/alert";
-import { Helper } from "../utils/Helper";
-import { CommentApi } from "../libs/api/CommentApi";
+import SidebarInfo from "../layout/SidebarInfo";
+import { NewsApi } from "../../libs/api/NewsApi";
+import { alertError, alertSuccess } from "../../libs/alert";
+import { Helper } from "../../utils/Helper";
+import { CommentApi } from "../../libs/api/CommentApi";
 
 export default function DetailBerita() {
   const { id } = useParams();

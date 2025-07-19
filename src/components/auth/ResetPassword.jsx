@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import resetImage from "../assets/reset.png";
-import { alertError, alertSuccess } from "../libs/alert";
-import { UserApi } from "../libs/api/UserApi";
+import resetImage from "../../assets/reset.png";
+import { alertError, alertSuccess } from "../../libs/alert";
+import { UserApi } from "../../libs/api/UserApi";
 
 export default function ResetPassword() {
   const navigate = useNavigate();

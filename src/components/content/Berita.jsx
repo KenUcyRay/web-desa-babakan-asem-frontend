@@ -1,10 +1,10 @@
-import SidebarInfo from "./SidebarInfo";
+import SidebarInfo from "../layout/SidebarInfo";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import Pagination from "./Pagination";
-import { NewsApi } from "../libs/api/NewsApi";
-import { Helper } from "../utils/Helper";
-import { alertError } from "../libs/alert";
+import Pagination from "../ui/Pagination";
+import { NewsApi } from "../../libs/api/NewsApi";
+import { Helper } from "../../utils/Helper";
+import { alertError } from "../../libs/alert";
 
 export default function Berita() {
   const [news, setNews] = useState([]);
@@ -26,7 +26,9 @@ export default function Berita() {
   // ✅ Batasi deskripsi berita
   const truncateText = (text, maxLength = 100) => {
     if (!text) return "";
-    return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
+    return text.length > maxLength
+      ? text.substring(0, maxLength) + "..."
+      : text;
   };
 
   useEffect(() => {
@@ -49,7 +51,9 @@ export default function Berita() {
                 <div className="bg-white rounded-xl shadow hover:shadow-md transition p-4 h-full flex flex-col">
                   {/* Gambar Berita */}
                   <img
-                    src={`${import.meta.env.VITE_BASE_URL}/news/images/${n.news.featured_image}`}
+                    src={`${import.meta.env.VITE_BASE_URL}/news/images/${
+                      n.news.featured_image
+                    }`}
                     alt="Berita"
                     className="w-full h-48 object-cover rounded-lg mb-4"
                   />

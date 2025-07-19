@@ -8,14 +8,13 @@ import {
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { HiHome } from "react-icons/hi";
-import kumpul from "../assets/kumpul.jpg";
+import kumpul from "../../assets/kumpul.jpg";
 
 export default function ProfilDesa() {
   const navigate = useNavigate();
 
   return (
     <div className="font-poppins bg-gray-50">
-
       {/* ✅ Bagian Judul + Deskripsi Singkat */}
       <section className="max-w-6xl mx-auto px-4 py-8 grid md:grid-cols-2 gap-8 items-center">
         <div>
@@ -71,12 +70,13 @@ export default function ProfilDesa() {
         <div className="bg-gradient-to-br from-green-50 to-white shadow-md rounded-xl p-6">
           <h3 className="text-2xl font-bold text-green-700 mb-4">Misi</h3>
           <ul className="list-disc list-inside text-gray-700 space-y-2">
-        <li>
-          Meningkatkan kesejahteraan masyarakat melalui pembangunan berkelanjutan.
-        </li>
-        <li>Memberdayakan potensi desa untuk mendukung ekonomi kreatif.</li>
-         <li>Meningkatkan kualitas pendidikan & kesehatan masyarakat.</li>
-         <li>Menjaga kelestarian lingkungan & budaya lokal.</li>
+            <li>
+              Meningkatkan kesejahteraan masyarakat melalui pembangunan
+              berkelanjutan.
+            </li>
+            <li>Memberdayakan potensi desa untuk mendukung ekonomi kreatif.</li>
+            <li>Meningkatkan kualitas pendidikan & kesehatan masyarakat.</li>
+            <li>Menjaga kelestarian lingkungan & budaya lokal.</li>
           </ul>
         </div>
       </section>

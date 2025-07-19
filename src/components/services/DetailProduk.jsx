@@ -1,11 +1,11 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { FaWhatsapp, FaStar, FaRegStar, FaStarHalfAlt } from "react-icons/fa";
-import SidebarProduk from "./SidebarProduk";
-import { Helper } from "../utils/Helper";
-import { alertError, alertSuccess } from "../libs/alert";
-import { CommentApi } from "../libs/api/CommentApi";
-import { ProductApi } from "../libs/api/ProductApi";
+import SidebarProduk from "../layout/SidebarProduk";
+import { Helper } from "../../utils/Helper";
+import { alertError, alertSuccess } from "../../libs/alert";
+import { CommentApi } from "../../libs/api/CommentApi";
+import { ProductApi } from "../../libs/api/ProductApi";
 
 export default function DetailProduk() {
   const { id } = useParams();
@@ -27,7 +27,9 @@ export default function DetailProduk() {
       setRating(responseBody.rating ?? 0);
       setComments(responseBody.comments ?? []);
     } else {
-      await alertError("Gagal mengambil detail product. Silakan coba lagi nanti.");
+      await alertError(
+        "Gagal mengambil detail product. Silakan coba lagi nanti."
+      );
       navigate("/bumdes");
     }
   };
@@ -91,7 +93,9 @@ export default function DetailProduk() {
       {/* ✅ Konten utama */}
       <div className="md:col-span-3">
         <img
-          src={`${import.meta.env.VITE_BASE_URL}/products/images/${product.featured_image}`}
+          src={`${import.meta.env.VITE_BASE_URL}/products/images/${
+            product.featured_image
+          }`}
           alt={product.title}
           className="w-full h-96 object-cover rounded-lg mb-6"
         />
@@ -119,7 +123,11 @@ export default function DetailProduk() {
             }
 
             return (
-              <span key={star} onClick={() => handleRating(star)} className="cursor-pointer">
+              <span
+                key={star}
+                onClick={() => handleRating(star)}
+                className="cursor-pointer"
+              >
                 {icon}
               </span>
             );
@@ -174,11 +182,14 @@ export default function DetailProduk() {
               <div key={i} className="p-4 bg-white rounded-lg shadow">
                 <p className="text-sm text-gray-700">{c.content}</p>
                 <p className="text-xs text-gray-500 mt-1">
-                  ✍ {c.user?.name ?? "Anonim"} • {Helper.formatTanggal(c.updated_at)}
+                  ✍ {c.user?.name ?? "Anonim"} •{" "}
+                  {Helper.formatTanggal(c.updated_at)}
                 </p>
               </div>
             ))}
-            {comments.length === 0 && <p className="text-center text-gray-400">Belum ada komentar</p>}
+            {comments.length === 0 && (
+              <p className="text-center text-gray-400">Belum ada komentar</p>
+            )}
           </div>
         </div>
       </div>

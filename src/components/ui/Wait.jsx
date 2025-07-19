@@ -1,5 +1,5 @@
 import React from "react";
-import verifyImage from "../assets/verifikasi.png";
+import verifyImage from "../../assets/verifikasi.png";
 
 export default function Wait() {
   return (

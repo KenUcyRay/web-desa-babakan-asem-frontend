@@ -1,15 +1,14 @@
 import { useEffect, useState } from "react";
 import { FaRegStar, FaStar, FaWhatsapp } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import Pagination from "./Pagination"; // ✅ pakai komponen reusable
-import { ProductApi } from "../libs/api/ProductApi";
-import { Helper } from "../utils/Helper";
+import Pagination from "../ui/Pagination"; // ✅ pakai komponen reusable
+import { ProductApi } from "../../libs/api/ProductApi";
+import { Helper } from "../../utils/Helper";
 
 export default function Bumdes() {
   const [products, setProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-
 
   const fetchProduct = async () => {
     const response = await ProductApi.getProducts(currentPage);

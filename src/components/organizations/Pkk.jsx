@@ -2,7 +2,7 @@ import { useState } from "react";
 import { HiOutlineMail } from "react-icons/hi";
 import { FaWpforms, FaUsers, FaPhotoVideo } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
-import Pagination from "./Pagination";
+import Pagination from "../ui/Pagination";
 import { HiHome } from "react-icons/hi";
 
 export default function Pkk() {
@@ -22,8 +22,6 @@ export default function Pkk() {
 
   return (
     <div className="font-poppins text-gray-800">
-
-
       {/* ✅ HERO SECTION */}
       <section className="max-w-7xl mx-auto px-4 py-10 flex flex-col md:flex-row items-center gap-8">
         <div className="flex-1 text-center md:text-left">

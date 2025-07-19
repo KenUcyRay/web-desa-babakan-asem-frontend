@@ -7,34 +7,34 @@ import {
 } from "react-router-dom";
 
 // ✅ Navbar + Footer hanya untuk umum
-import TopNavbar from "./components/TopNavbar";
-import NavbarTop from "./components/NavbarTop";
-import Footer from "./components/Footer";
+import TopNavbar from "./components/layout/TopNavbar";
+import NavbarTop from "./components/layout/NavbarTop";
+import Footer from "./components/layout/Footer";
 
 // ✅ Halaman Umum
-import Home from "./components/Home";
-import Administrasi from "./components/Administrasi";
-import Agenda from "./components/Agenda";
-import Berita from "./components/Berita";
-import DetailBerita from "./components/DetailBerita";
-import DetailAgenda from "./components/DetailAgenda";
-import DetailProduk from "./components/DetailProduk";
-import Panduan from "./components/Panduan";
-import Galery from "./components/Galery";
-import Bumdes from "./components/Bumdes";
-import KarangTaruna from "./components/KarangTaruna";
-import Pkk from "./components/Pkk";
-import PotensiDesa from "./components/PotensiDesa";
-import Pemerintahan from "./components/Pemerintahan";
-import KontakKami from "./components/KontakKami";
-import ProfilDesa from "./components/ProfilDesa";
+import Home from "./components/pages/Home";
+import Administrasi from "./components/services/Administrasi";
+import Agenda from "./components/content/Agenda";
+import Berita from "./components/content/Berita";
+import DetailBerita from "./components/content/DetailBerita";
+import DetailAgenda from "./components/content/DetailAgenda";
+import DetailProduk from "./components/services/DetailProduk";
+import Panduan from "./components/pages/Panduan";
+import Galery from "./components/content/Galery";
+import Bumdes from "./components/organizations/Bumdes";
+import KarangTaruna from "./components/organizations/KarangTaruna";
+import Pkk from "./components/organizations/Pkk";
+import PotensiDesa from "./components/pages/PotensiDesa";
+import Pemerintahan from "./components/pages/Pemerintahan";
+import KontakKami from "./components/pages/KontakKami";
+import ProfilDesa from "./components/pages/ProfilDesa";
 
 // ✅ Autentikasi
-import Login from "./components/Login";
-import Register from "./components/Register";
-import ForgotPassword from "./components/ForgotPassword";
-import ResetPassword from "./components/ResetPassword";
-import Wait from "./components/Wait";
+import Login from "./components/auth/Login";
+import Register from "./components/auth/Register";
+import ForgotPassword from "./components/auth/ForgotPassword";
+import ResetPassword from "./components/auth/ResetPassword";
+import Wait from "./components/ui/Wait";
 
 // ✅ Infografis Nested
 import InfografisLayout from "./components/Infografis/InfografisLayout";
@@ -44,8 +44,8 @@ import Bansos from "./components/Infografis/Bansos";
 import SDGs from "./components/Infografis/SDGs";
 
 // ✅ Halaman DPD
-import Dpd from "./components/Dpd";
-import DetailDpd from "./components/DetailDpd";
+import Dpd from "./components/organizations/Dpd";
+import DetailDpd from "./components/organizations/DetailDpd";
 
 // ✅ Form Administrasi
 import SuratPengantar from "./components/forms/SuratPengantar";
@@ -64,7 +64,7 @@ import PengaturanWebsite from "./components/admin/settings/PengaturanWebsite";
 import PengaturanProfil from "./components/admin/settings/PengaturanProfil";
 import PengaturanHakAkses from "./components/admin/settings/PengaturanHakAkses";
 import AdminLayout from "./components/admin/AdminLayout";
-import StPkk from "./components/StPkk";
+import StPkk from "./components/organizations/StPkk";
 
 // ✅ Layout untuk Halaman Umum (Navbar & Footer aktif)
 function LayoutUmum() {

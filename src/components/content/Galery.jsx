@@ -1,8 +1,8 @@
-import SidebarInfo from "./SidebarInfo";
+import SidebarInfo from "../layout/SidebarInfo";
 import { useEffect, useState } from "react";
-import Pagination from "./Pagination";
-import { GaleryApi } from "../libs/api/GaleryApi";
-import { alertError } from "../libs/alert";
+import Pagination from "../ui/Pagination";
+import { GaleryApi } from "../../libs/api/GaleryApi";
+import { alertError } from "../../libs/alert";
 import { HiHome } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
 
@@ -30,10 +30,7 @@ export default function Galery() {
 
   return (
     <div className="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 md:px-8 py-10">
-    
-
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 w-full">
-        
         {/* ✅ Galeri Utama */}
         <div className="lg:col-span-3 w-full">
           <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-6 text-center md:text-left">
@@ -49,7 +46,9 @@ export default function Galery() {
               >
                 <div className="w-full aspect-[4/3] overflow-hidden">
                   <img
-                    src={`${import.meta.env.VITE_BASE_URL}/galeri/images/${img.image}`}
+                    src={`${import.meta.env.VITE_BASE_URL}/galeri/images/${
+                      img.image
+                    }`}
                     alt={`Galeri ${i + 1}`}
                     className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                   />

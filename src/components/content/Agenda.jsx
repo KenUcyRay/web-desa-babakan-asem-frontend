@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import SidebarInfo from "./SidebarInfo";
-import Pagination from "./Pagination";
+import SidebarInfo from "../layout/SidebarInfo";
+import Pagination from "../ui/Pagination";
 import { FaCalendarAlt } from "react-icons/fa";
-import { AgendaApi } from "../libs/api/AgendaApi";
-import { alertError } from "../libs/alert";
-import { Helper } from "../utils/Helper";
+import { AgendaApi } from "../../libs/api/AgendaApi";
+import { alertError } from "../../libs/alert";
+import { Helper } from "../../utils/Helper";
 
 export default function Agenda() {
   const [agenda, setAgenda] = useState([]);
@@ -28,7 +28,9 @@ export default function Agenda() {
 
   const truncateText = (text, maxLength = 100) => {
     if (!text) return "";
-    return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
+    return text.length > maxLength
+      ? text.substring(0, maxLength) + "..."
+      : text;
   };
 
   useEffect(() => {
@@ -64,7 +66,9 @@ export default function Agenda() {
                 <div className="flex items-center bg-white border-l-4 border-green-500 rounded-lg p-3 shadow hover:shadow-md transition-all duration-200">
                   {/* Gambar agenda */}
                   <img
-                    src={`${import.meta.env.VITE_BASE_URL}/agenda/images/${item.agenda.featured_image}`}
+                    src={`${import.meta.env.VITE_BASE_URL}/agenda/images/${
+                      item.agenda.featured_image
+                    }`}
                     alt={item.agenda.title}
                     className="w-24 h-24 object-cover rounded-md mr-4"
                   />
