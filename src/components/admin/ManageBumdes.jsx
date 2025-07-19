@@ -6,6 +6,7 @@ import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 import { Helper } from "../../utils/Helper";
 import { CategoryApi } from "../../libs/api/CategoryApi";
 import Pagination from "../ui/Pagination";
+import { set } from "nprogress";
 
 export default function ManageBumdes() {
   const [newCategory, setNewCategory] = useState("");
@@ -138,7 +139,7 @@ export default function ManageBumdes() {
         return;
       }
       resetForm();
-      await alertSuccess("Prodok berhasil diperbarui!");
+      await alertSuccess("Produk berhasil diperbarui!");
       return;
     }
 
@@ -168,16 +169,16 @@ export default function ManageBumdes() {
     resetForm();
   };
 
-  const handleEdit = (p) => {
-    const product = products.find((b) => b.id === p.id);
+  const handleEdit = (id) => {
+    const product = products.find((b) => b.product.id === id);
     if (!product) return;
 
-    console.log(product);
     setTitle(product.product.title);
     setDescription(product.product.description);
-    // setFeaturedImage(null);
-    // setIsPublished(product.isPublished);
-    setEditingId(p);
+    setPrice(product.product.price);
+    setLinkWhatsapp(product.product.link_whatsapp);
+    setCategoryId(product.product.category_id);
+    setEditingId(id);
     setShowForm(true);
   };
 

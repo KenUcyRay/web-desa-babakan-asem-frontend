@@ -74,7 +74,7 @@ export class ProductApi {
     return await fetch(
       `${import.meta.env.VITE_BASE_URL}/products/admin/update-by-product/${id}`,
       {
-        method: "patch",
+        method: "PATCH",
         body: formData,
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
