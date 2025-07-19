@@ -12,6 +12,13 @@ import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 import Pagination from "../ui/Pagination"; // ✅ Tambahkan komponen pagination
 
 export default function ManageAgenda() {
+  const type = [
+    { id: 1, name: "Regular", value: "REGULAR" },
+    { id: 2, name: "Pkk", value: "PKK" },
+    { id: 3, name: "Karang Taruna", value: "KARANG_TARUNA" },
+    { id: 4, name: "DPD", value: "DPD" },
+  ];
+
   const [agenda, setAgenda] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -28,6 +35,7 @@ export default function ManageAgenda() {
   const [location, setLocation] = useState("");
   const [featuredImage, setFeaturedImage] = useState(null);
   const [isPublished, setIsPublished] = useState(false);
+  const [typeSelected, setTypeSelected] = useState("REGULAR");
 
   const resetForm = () => {
     setTitle("");
@@ -79,7 +87,7 @@ export default function ManageAgenda() {
       location,
       featured_image: featuredImage,
       is_published: isPublished,
-      type: "REGULAR",
+      type: typeSelected,
     };
 
     if (editingId) {
@@ -152,7 +160,7 @@ export default function ManageAgenda() {
   };
 
   const fetchAgenda = async () => {
-    const response = await AgendaApi.getOwnAgenda(currentPage,6);
+    const response = await AgendaApi.getOwnAgenda(currentPage, 6);
 
     if (!response.ok) {
       alertError("Gagal mengambil agenda. Silakan coba lagi.");
@@ -227,7 +235,6 @@ export default function ManageAgenda() {
                 className="w-full border p-2 rounded focus:ring focus:ring-blue-200"
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
-                required
               />
             </div>
 
@@ -250,6 +257,21 @@ export default function ManageAgenda() {
                 placeholder="Lokasi acara"
                 required
               />
+            </div>
+
+            <div>
+              <label className="block font-medium">Type</label>
+              <select
+                className="w-full border p-2 rounded"
+                value={typeSelected}
+                onChange={(e) => setTypeSelected(e.target.value)}
+              >
+                {type.map((c) => (
+                  <option key={c.id} value={c.value}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div>
