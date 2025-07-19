@@ -5,7 +5,6 @@ import {
   FaCalendarAlt,
   FaEnvelope,
   FaUsers,
-  FaCog,
   FaSignOutAlt,
   FaArrowLeft,
 } from "react-icons/fa";
@@ -44,11 +43,6 @@ export default function AdminSidebar() {
   ];
 
   const pengaturan = [
-    {
-      to: "/admin/pengaturan/website",
-      label: "Website & Identitas",
-      icon: <FaCog />,
-    },
     {
       to: "/admin/pengaturan/profil",
       label: "Profil",

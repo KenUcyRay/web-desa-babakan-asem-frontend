@@ -14,9 +14,9 @@ export class MessageApi {
     });
   }
 
-  static async getMessages(page = 1, limit = 100) {
+  static async getMessages(query = "") {
     return await fetch(
-      `${import.meta.env.VITE_BASE_URL}/messages/?page=${page}&limit=${limit}`,
+      `${import.meta.env.VITE_BASE_URL}/messages/${query}`,
       {
         method: "GET",
         headers: {
@@ -26,6 +26,17 @@ export class MessageApi {
         },
       }
     );
+  }
+
+  static async markAsRead(id) {
+    return await fetch(`${import.meta.env.VITE_BASE_URL}/messages/${id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
+      },
+    });
   }
 
   static async deleteMessage(id) {

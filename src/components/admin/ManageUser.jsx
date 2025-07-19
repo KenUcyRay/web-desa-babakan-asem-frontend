@@ -1,5 +1,11 @@
 import { useState } from "react";
-import { FaUserPlus, FaEdit, FaTrash, FaUserShield, FaUser } from "react-icons/fa";
+import {
+  FaUserPlus,
+  FaEdit,
+  FaTrash,
+  FaUserShield,
+  FaUser,
+} from "react-icons/fa";
 import AdminSidebar from "./AdminSidebar";
 import ModalUserForm from "./ModalUserForm";
 

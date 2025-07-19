@@ -8,27 +8,30 @@ export default function ManagePesan() {
   const [messages, setMessages] = useState([]);
   const [filter, setFilter] = useState("all"); // all | read | unread
   const [page, setPage] = useState(1);
-  const perPage = 5; // ✅ tampilkan 5 pesan per halaman
+  const perPage = 5;
 
   const fetchMessages = async () => {
+    let query = `?page=${page}&limit=${perPage}`;
+    if (filter === "read") query += `&is_read=true`;
+    if (filter === "unread") query += `&is_read=false`;
+
     const response = await MessageApi.getMessages();
     const responseBody = await response.json();
     if (!response.ok) {
       await alertError("Gagal mengambil pesan.");
       return;
     }
-    setMessages(responseBody.messages);
+    setMessages(responseBody.messages || []);
   };
 
   useEffect(() => {
     fetchMessages();
-  }, []);
+  }, [filter, page]);
 
   const handleDelete = async (id) => {
     const confirm = await alertConfirm(
       "Apakah Anda yakin ingin menghapus pesan ini?"
     );
-
     if (!confirm) return;
 
     const response = await MessageApi.deleteMessage(id);
@@ -36,28 +39,27 @@ export default function ManagePesan() {
       await alertError("Gagal menghapus pesan.");
       return;
     }
+
     await alertSuccess("Pesan berhasil dihapus.");
     setMessages(messages.filter((p) => p.id !== id));
   };
 
   const handleMarkRead = async (id) => {
     const updated = messages.map((m) =>
-      m.id === id ? { ...m, read: true } : m
+      m.id === id ? { ...m, is_read: true } : m
     );
     setMessages(updated);
 
-    // Kalau ada API untuk tandai dibaca, panggil di sini
-    // await MessageApi.markAsRead(id);
+    // Jika ada API mark as read, jalankan di sini
+    await MessageApi.markAsRead(id);
   };
 
-  // ✅ Filter pesan berdasarkan status
   const filteredMessages = messages.filter((m) => {
-    if (filter === "read") return m.read;
-    if (filter === "unread") return !m.read;
-    return true; // all
+    if (filter === "read") return m.is_read;
+    if (filter === "unread") return !m.is_read;
+    return true;
   });
 
-  // ✅ Pagination logic
   const totalPages = Math.ceil(filteredMessages.length / perPage);
   const paginatedMessages = filteredMessages.slice(
     (page - 1) * perPage,
@@ -67,11 +69,10 @@ export default function ManagePesan() {
   return (
     <div className="flex">
       <AdminSidebar />
-
       <div className="ml-64 p-6 w-full">
         <h1 className="text-2xl font-bold mb-4">Kelola Pesan Masuk</h1>
 
-        {/* ✅ FILTER BUTTON */}
+        {/* FILTER */}
         <div className="flex gap-2 mb-4">
           {["all", "read", "unread"].map((f) => (
             <button
@@ -81,7 +82,7 @@ export default function ManagePesan() {
               }`}
               onClick={() => {
                 setFilter(f);
-                setPage(1); // reset ke halaman pertama setelah ganti filter
+                setPage(1);
               }}
             >
               {f === "all"
@@ -93,7 +94,7 @@ export default function ManagePesan() {
           ))}
         </div>
 
-        {/* ✅ LIST PESAN */}
+        {/* LIST */}
         <div className="space-y-4">
           {paginatedMessages.length === 0 ? (
             <p className="text-gray-500 italic">Tidak ada pesan</p>
@@ -102,7 +103,7 @@ export default function ManagePesan() {
               <div
                 key={p.id}
                 className={`bg-white p-4 rounded-xl shadow flex justify-between ${
-                  p.read ? "opacity-80" : ""
+                  p.is_read ? "opacity-80" : ""
                 }`}
               >
                 <div>
@@ -111,7 +112,7 @@ export default function ManagePesan() {
                   <p className="mt-2 text-gray-700">{p.message}</p>
                 </div>
                 <div className="flex flex-col gap-2 items-end">
-                  {!p.read && (
+                  {!p.is_read && (
                     <button
                       onClick={() => handleMarkRead(p.id)}
                       className="flex items-center gap-1 text-green-500 hover:text-green-700"
@@ -131,7 +132,7 @@ export default function ManagePesan() {
           )}
         </div>
 
-        {/* ✅ PAGINATION */}
+        {/* PAGINATION */}
         {totalPages > 1 && (
           <div className="flex justify-center gap-2 mt-6">
             {Array.from({ length: totalPages }).map((_, i) => (

@@ -60,7 +60,6 @@ import ManagePesan from "./components/admin/ManagePesan";
 import ManageUser from "./components/admin/ManageUser";
 
 // ✅ Pengaturan Admin
-import PengaturanWebsite from "./components/admin/settings/PengaturanWebsite";
 import PengaturanProfil from "./components/admin/settings/PengaturanProfil";
 import PengaturanHakAkses from "./components/admin/settings/PengaturanHakAkses";
 import AdminLayout from "./components/admin/AdminLayout";
@@ -144,10 +143,6 @@ function LayoutAdmin() {
         <Route path="/admin/manage-user" element={<ManageUser />} />
 
         {/* ✅ Pengaturan Admin */}
-        <Route
-          path="/admin/pengaturan/website"
-          element={<PengaturanWebsite />}
-        />
         <Route path="/admin/pengaturan/profil" element={<PengaturanProfil />} />
         <Route
           path="/admin/pengaturan/hak-akses"
