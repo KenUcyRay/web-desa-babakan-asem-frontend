@@ -1,87 +1,93 @@
 import { useState } from "react";
-import { FiPlus, FiEdit2, FiTrash2 } from "react-icons/fi";
 import AdminSidebar from "./AdminSidebar";
+import { FaPlus, FaTrash, FaEdit } from "react-icons/fa";
 
 export default function ManageBumdes() {
-  const [produkList, setProdukList] = useState([
+  // ✅ Dummy kategori
+  const categories = [
+    { id: 1, name: "Makanan & Minuman" },
+    { id: 2, name: "Kerajinan" },
+    { id: 3, name: "Jasa" },
+    { id: 4, name: "Pertanian" },
+  ];
+
+  // ✅ Dummy produk
+  const [products, setProducts] = useState([
     {
       id: 1,
-      name: "Beras Organik Premium",
-      description: "Beras organik berkualitas tinggi langsung dari petani desa.",
-      price: 65000,
-      image: "https://source.unsplash.com/400x250/?rice",
+      title: "Keripik Singkong",
+      description: "Keripik singkong renyah dan gurih",
+      price: 15000,
+      category_id: 1,
+      link_whatsapp: "https://wa.me/628123456789",
     },
     {
       id: 2,
-      name: "Keripik Singkong Pedas",
-      description: "Keripik singkong renyah dengan bumbu pedas khas desa.",
-      price: 15000,
-      image: "https://source.unsplash.com/400x250/?snack",
+      title: "Anyaman Bambu",
+      description: "Kerajinan tangan dari bambu",
+      price: 50000,
+      category_id: 2,
+      link_whatsapp: "https://wa.me/628987654321",
     },
   ]);
 
+  // ✅ State Form
+  const [form, setForm] = useState({
+    id: null,
+    title: "",
+    description: "",
+    price: "",
+    category_id: "",
+    link_whatsapp: "",
+  });
+
   const [showForm, setShowForm] = useState(false);
-  const [editingId, setEditingId] = useState(null);
 
-  // ✅ Form State
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [price, setPrice] = useState("");
-  const [image, setImage] = useState(null);
+  // ✅ Tambah/Edit Produk
+  const handleSave = () => {
+    if (!form.title || !form.price || !form.category_id) {
+      alert("Lengkapi data dulu!");
+      return;
+    }
 
-  const resetForm = () => {
-    setName("");
-    setDescription("");
-    setPrice("");
-    setImage(null);
-    setEditingId(null);
-    setShowForm(false);
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    const imagePreview = image
-      ? URL.createObjectURL(image)
-      : editingId
-      ? produkList.find((p) => p.id === editingId).image
-      : "https://source.unsplash.com/400x250/?product";
-
-    const newData = {
-      id: editingId || Date.now(),
-      name,
-      description,
-      price: parseFloat(price),
-      image: imagePreview,
-    };
-
-    if (editingId) {
-      setProdukList((prev) =>
-        prev.map((p) => (p.id === editingId ? newData : p))
+    if (form.id) {
+      // Update
+      setProducts((prev) =>
+        prev.map((p) => (p.id === form.id ? { ...form } : p))
       );
     } else {
-      setProdukList([...produkList, newData]);
+      // Tambah
+      setProducts((prev) => [
+        ...prev,
+        { ...form, id: Date.now(), price: parseInt(form.price) },
+      ]);
     }
 
     resetForm();
   };
 
+  // ✅ Hapus produk
   const handleDelete = (id) => {
-    if (window.confirm("Yakin hapus produk ini?")) {
-      setProdukList(produkList.filter((p) => p.id !== id));
+    if (confirm("Yakin hapus produk ini?")) {
+      setProducts((prev) => prev.filter((p) => p.id !== id));
     }
   };
 
-  const handleEdit = (id) => {
-    const produk = produkList.find((p) => p.id === id);
-    if (!produk) return;
-
-    setName(produk.name);
-    setDescription(produk.description);
-    setPrice(produk.price);
-    setImage(null);
-    setEditingId(id);
+  const handleEdit = (p) => {
+    setForm(p);
     setShowForm(true);
+  };
+
+  const resetForm = () => {
+    setForm({
+      id: null,
+      title: "",
+      description: "",
+      price: "",
+      category_id: "",
+      link_whatsapp: "",
+    });
+    setShowForm(false);
   };
 
   return (
@@ -89,139 +95,143 @@ export default function ManageBumdes() {
       <AdminSidebar />
 
       <div className="ml-64 p-6 w-full">
-        {/* ✅ Header & Tombol */}
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-800">Kelola Produk BUMDes</h1>
+        <h1 className="text-2xl font-bold mb-4">Kelola Produk BUMDes</h1>
 
-          {!showForm && (
-            <button
-              onClick={() => {
-                setEditingId(null);
-                setShowForm(true);
-              }}
-              className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-lg shadow hover:bg-green-600 transition"
-            >
-              <FiPlus /> Tambah Produk
-            </button>
-          )}
-        </div>
-
-        {/* ✅ FORM TAMBAH / EDIT */}
-        {showForm && (
-          <form
-            onSubmit={handleSubmit}
-            className="bg-white p-6 rounded-xl shadow mb-6 space-y-4 max-w-2xl"
+        {/* ✅ Tombol Tambah */}
+        {!showForm && (
+          <button
+            onClick={() => setShowForm(true)}
+            className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded flex items-center gap-2 mb-4"
           >
-            <div>
-              <label className="block font-medium">Nama Produk</label>
-              <input
-                className="w-full border p-2 rounded focus:ring focus:ring-green-200"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Masukkan nama produk"
-                required
-              />
-            </div>
+            <FaPlus /> Tambah Produk
+          </button>
+        )}
 
-            <div>
-              <label className="block font-medium">Deskripsi</label>
-              <textarea
-                className="w-full border p-2 rounded h-24 focus:ring focus:ring-green-200"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Tuliskan deskripsi produk..."
-                required
-              ></textarea>
-            </div>
-
-            <div>
-              <label className="block font-medium">Harga (Rp)</label>
-              <input
-                type="number"
-                className="w-full border p-2 rounded focus:ring focus:ring-green-200"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                placeholder="Contoh: 50000"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block font-medium">Upload Gambar Produk</label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => setImage(e.target.files[0])}
-                className="w-full border p-2 rounded"
-              />
-              {(image ||
-                (editingId &&
-                  produkList.find((p) => p.id === editingId)?.image)) && (
-                <img
-                  src={
-                    image
-                      ? URL.createObjectURL(image)
-                      : produkList.find((p) => p.id === editingId)?.image
-                  }
-                  alt="preview"
-                  className="mt-2 w-40 rounded"
+        {/* ✅ Form Tambah/Edit */}
+        {showForm && (
+          <div className="bg-white p-4 rounded shadow mb-6">
+            <h2 className="text-lg font-semibold mb-3">
+              {form.id ? "Edit Produk" : "Tambah Produk"}
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-sm">Nama Produk</label>
+                <input
+                  type="text"
+                  className="w-full border p-2 rounded"
+                  value={form.title}
+                  onChange={(e) => setForm({ ...form, title: e.target.value })}
                 />
-              )}
+              </div>
+
+              <div>
+                <label className="block text-sm">Harga</label>
+                <input
+                  type="number"
+                  className="w-full border p-2 rounded"
+                  value={form.price}
+                  onChange={(e) => setForm({ ...form, price: e.target.value })}
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="block text-sm">Deskripsi</label>
+                <textarea
+                  className="w-full border p-2 rounded"
+                  value={form.description}
+                  onChange={(e) =>
+                    setForm({ ...form, description: e.target.value })
+                  }
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm">Kategori</label>
+                <select
+                  className="w-full border p-2 rounded"
+                  value={form.category_id}
+                  onChange={(e) =>
+                    setForm({ ...form, category_id: e.target.value })
+                  }
+                >
+                  <option value="">Pilih Kategori</option>
+                  {categories.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm">Link WhatsApp</label>
+                <input
+                  type="text"
+                  className="w-full border p-2 rounded"
+                  value={form.link_whatsapp}
+                  onChange={(e) =>
+                    setForm({ ...form, link_whatsapp: e.target.value })
+                  }
+                />
+              </div>
             </div>
 
-            <div className="flex gap-2">
+            {/* ✅ Tombol Simpan / Batal */}
+            <div className="flex gap-2 mt-4">
               <button
-                type="submit"
-                className="bg-green-500 text-white px-6 py-2 rounded-lg shadow hover:bg-green-600"
+                onClick={handleSave}
+                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
               >
-                {editingId ? "✅ Update Produk" : "💾 Simpan Produk"}
+                Simpan
               </button>
               <button
-                type="button"
                 onClick={resetForm}
-                className="bg-gray-400 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-500"
+                className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
               >
                 Batal
               </button>
             </div>
-          </form>
+          </div>
         )}
 
-        {/* ✅ LIST PRODUK */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {produkList.map((p) => (
-            <div key={p.id} className="bg-white rounded-xl shadow">
-              {p.image && (
-                <img
-                  src={p.image}
-                  alt={p.name}
-                  className="rounded-t-xl w-full h-40 object-cover"
-                />
-              )}
-              <div className="p-4">
-                <h2 className="text-lg font-semibold text-gray-800">{p.name}</h2>
-                <p className="text-gray-600 text-sm">{p.description}</p>
-                <p className="mt-2 font-medium text-green-600">
-                  Rp {p.price.toLocaleString("id-ID")}
-                </p>
+        {/* ✅ List Produk */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {products.length === 0 ? (
+            <p className="text-gray-500 italic">Belum ada produk</p>
+          ) : (
+            products.map((p) => (
+              <div
+                key={p.id}
+                className="bg-white p-4 rounded shadow flex flex-col justify-between"
+              >
+                <div>
+                  <h3 className="font-bold text-lg">{p.title}</h3>
+                  <p className="text-gray-500 text-sm">
+                    {categories.find((c) => c.id === p.category_id)?.name}
+                  </p>
+                  <p className="text-green-600 font-semibold mt-1">
+                    Rp {p.price.toLocaleString()}
+                  </p>
+                  <p className="text-sm text-gray-700 mt-2">{p.description}</p>
+                </div>
 
-                <div className="flex gap-3 mt-3">
+                <div className="flex justify-between mt-3">
                   <button
-                    onClick={() => handleEdit(p.id)}
-                    className="flex items-center gap-1 text-blue-500 hover:text-blue-700"
+                    onClick={() => handleEdit(p)}
+                    className="text-blue-500 hover:text-blue-700 flex items-center gap-1"
                   >
-                    <FiEdit2 /> Edit
+                    <FaEdit /> Edit
                   </button>
                   <button
                     onClick={() => handleDelete(p.id)}
-                    className="flex items-center gap-1 text-red-500 hover:text-red-700"
+                    className="text-red-500 hover:text-red-700 flex items-center gap-1"
                   >
-                    <FiTrash2 /> Hapus
+                    <FaTrash /> Hapus
                   </button>
                 </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
     </div>
