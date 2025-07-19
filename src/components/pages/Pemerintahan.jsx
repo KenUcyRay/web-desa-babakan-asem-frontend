@@ -1,7 +1,6 @@
 import React from "react";
 import { FaFlag, FaUsers, FaHome, FaDownload } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { HiHome } from "react-icons/hi";
 
 export default function Pemerintahan() {
   const navigate = useNavigate();
@@ -18,6 +17,20 @@ export default function Pemerintahan() {
     { judul: "Perdes Rencana Pembangunan", tahun: "02/2023" },
   ];
 
+  // ✅ Lembaga Desa dengan path
+  const lembagaDesa = [
+    { nama: "BUMDes", icon: <FaFlag />, path: "/bumdes" },
+    { nama: "Dpd", icon: <FaUsers />, path: "/dpd" },
+    { nama: "Karang Taruna", icon: <FaHome />, path: "/karang-taruna" }
+  ];
+
+  // ✅ Layanan Administrasi dengan path
+  const layananAdmin = [
+    { nama: "Surat Pengantar", path: "/surat-pengantar" },
+    { nama: "Formulir Layanan", path: "/formulir-layanan" },
+    { nama: "Layanan Online", path: "/layanan-online" }
+  ];
+
   return (
     <div className="bg-gray-50 py-10 font-poppins">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
@@ -27,8 +40,7 @@ export default function Pemerintahan() {
           Pemerintah Desa
         </h1>
         <p className="text-center text-gray-600 mt-2 mb-10">
-          Pemerintah Desa Babakan Asem berkomitmen pada transparansi &
-          partisipasi masyarakat demi kesejahteraan bersama.
+          Pemerintah Desa Babakan Asem berkomitmen pada transparansi & partisipasi masyarakat demi kesejahteraan bersama.
         </p>
 
         {/* Struktur Organisasi */}
@@ -57,36 +69,36 @@ export default function Pemerintahan() {
           Lembaga Kemasyarakatan & Layanan Administrasi
         </h2>
         <div className="grid md:grid-cols-2 gap-8 mb-12">
-          {/* Lembaga */}
+          
+          {/* ✅ Lembaga Desa */}
           <div className="bg-white rounded-lg shadow p-6">
             <h3 className="text-lg font-semibold mb-4">Lembaga Desa</h3>
-            {["BUMDes", "Dpd", "Karang Taruna"].map((nama, i) => (
+            {lembagaDesa.map((item, i) => (
               <button
                 key={i}
+                onClick={() => navigate(item.path)}
                 className="w-full flex items-center justify-between bg-gray-100 p-3 rounded hover:bg-gray-200 mb-2"
               >
                 <span className="flex items-center gap-2">
-                  {i === 0 ? <FaFlag /> : i === 1 ? <FaUsers /> : <FaHome />}
-                  {nama}
+                  {item.icon} {item.nama}
                 </span>
                 <span>{">"}</span>
               </button>
             ))}
           </div>
 
-          {/* Layanan */}
+          {/* ✅ Layanan Administrasi */}
           <div className="bg-white rounded-lg shadow p-6">
             <h3 className="text-lg font-semibold mb-4">Layanan Administrasi</h3>
-            {["Surat Pengantar", "Formulir Layanan", "Layanan Online"].map(
-              (layanan, i) => (
-                <button
-                  key={i}
-                  className="w-full bg-gray-100 p-3 rounded hover:bg-gray-200 mb-2"
-                >
-                  {layanan}
-                </button>
-              )
-            )}
+            {layananAdmin.map((layanan, i) => (
+              <button
+                key={i}
+                onClick={() => navigate(layanan.path)}
+                className="w-full bg-gray-100 p-3 rounded hover:bg-gray-200 mb-2 text-left"
+              >
+                {layanan.nama}
+              </button>
+            ))}
           </div>
         </div>
 
