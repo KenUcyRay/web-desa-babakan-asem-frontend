@@ -1,9 +1,14 @@
 import { useEffect, useState } from "react";
 import { UserApi } from "../../libs/api/UserApi";
 import { alertError, alertSuccess, alertConfirm } from "../../libs/alert";
+import { useAuth } from "../../contexts/AuthContext";
+import { useNavigate } from "react-router";
+import { Helper } from "../../utils/Helper";
 
 export default function Profile() {
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const { logout, setAdminStatus } = useAuth();
 
   const fetchProfile = async () => {
     const response = await UserApi.getUserProfile();
@@ -16,11 +21,13 @@ export default function Profile() {
   };
 
   const handleLogout = async () => {
-    const confirm = await alertConfirm("Yakin ingin logout?");
+    const confirm = await alertConfirm("Apakah Anda yakin ingin keluar?");
     if (!confirm) return;
 
-    // TODO: Tambahkan API logout kalau sudah ada
-    alertSuccess("🚀 Logout berhasil (dummy, belum API logout)");
+    setAdminStatus(false);
+    logout();
+    await alertSuccess("Anda telah keluar.");
+    navigate("/login");
   };
 
   const handleDelete = async () => {
@@ -29,8 +36,31 @@ export default function Profile() {
     );
     if (!confirm) return;
 
-    // TODO: Tambahkan API delete user kalau sudah tersedia
-    alertError("Fitur hapus akun belum terhubung ke API.");
+    const response = await UserApi.deleteUser(user.id);
+    if (!response.ok) {
+      const responseBody = await response.json();
+      let errorMessage = "Gagal Menghapus.";
+
+      if (responseBody.error && Array.isArray(responseBody.error)) {
+        const errorMessages = responseBody.error.map((err) => {
+          if (err.path && err.path.length > 0) {
+            return `${err.path[0]}: ${err.message}`;
+          }
+          return err.message;
+        });
+        errorMessage = errorMessages.join(", ");
+      } else if (responseBody.error && typeof responseBody.error === "string") {
+        errorMessage = responseBody.error;
+      }
+
+      alertError(errorMessage);
+    }
+
+    console.log(response);
+    setAdminStatus(false);
+    logout();
+    await alertSuccess("Akun berhasil dihapus.");
+    navigate("/");
   };
 
   useEffect(() => {
@@ -85,7 +115,7 @@ export default function Profile() {
           <div className="flex justify-between">
             <span>Bergabung</span>
             <span className="font-medium text-gray-800">
-              {user.joined_at || "Tanggal tidak tersedia"}
+              {Helper.formatTanggal(user.created_at)}
             </span>
           </div>
         </div>

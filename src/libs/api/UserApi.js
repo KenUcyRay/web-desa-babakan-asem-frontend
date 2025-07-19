@@ -125,4 +125,14 @@ export class UserApi {
       }),
     });
   }
+  static async deleteUser() {
+    return await fetch(`${import.meta.env.VITE_BASE_URL}/users/`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
+      },
+    });
+  }
 }

@@ -32,7 +32,7 @@ export default function NavbarTop() {
     logout();
     await alertSuccess("Anda telah keluar.");
     setAvatarMenuOpen(false);
-    navigate("/"); // setelah logout balik ke home
+    navigate("/login"); // setelah logout balik ke home
   };
 
   const goProfile = () => {
