@@ -1,68 +1,158 @@
-import { useState } from "react";
+import { use, useEffect, useState } from "react";
 import AdminSidebar from "./AdminSidebar";
 import { FaPlus, FaTrash } from "react-icons/fa";
-import Pagination from "../ui/Pagination"; // ✅ Pastikan sudah punya komponen Pagination
+import Pagination from "../ui/Pagination"; // ✅ pakai komponen Pagination kamu
+import { GaleryApi } from "../../libs/api/GaleryApi";
+import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 
 export default function ManageGalery() {
+  const [galeries, setGaleries] = useState([]);
   const [showForm, setShowForm] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
   const [title, setTitle] = useState("");
   const [image, setImage] = useState(null);
   const [editingId, setEditingId] = useState(null);
+  const handleSave = async () => {
+    if (editingId) {
+      if (!(await alertConfirm("Yakin ingin mengedit Galeri ini?"))) {
+        return;
+      }
 
-  const kategoriList = ["Semua", "Pemerintah", "PKK", "Karang Taruna", "DPD"];
-  const [kategoriFilter, setKategoriFilter] = useState("Semua");
+      const response = await GaleryApi.updateGaleri(editingId, {
+        title,
+        image,
+      });
+      const responseBody = await response.json();
 
-  // ✅ Pagination State
-  const [currentPage, setCurrentPage] = useState(1);
-  const perPage = 6; // jumlah foto per halaman
+      if (!response.ok) {
+        let errorMessage = "Gagal menyimpan perubahan.";
 
-  // ✅ Filter berdasarkan kategori
-  const filteredGaleries =
-    kategoriFilter === "Semua"
-      ? galeries
-      : galeries.filter((g) => g.category === kategoriFilter);
+        if (responseBody.error && Array.isArray(responseBody.error)) {
+          const errorMessages = responseBody.error.map((err) => {
+            if (err.path && err.path.length > 0) {
+              return `${err.path[0]}: ${err.message}`;
+            }
+            return err.message;
+          });
+          errorMessage = errorMessages.join(", ");
+        } else if (
+          responseBody.error &&
+          typeof responseBody.error === "string"
+        ) {
+          errorMessage = responseBody.error;
+        }
+        await alertError(errorMessage);
+        return;
+      }
+      resetForm();
 
-  // ✅ Hitung data untuk halaman sekarang
-  const totalPages = Math.ceil(filteredGaleries.length / perPage);
-  const indexOfLast = currentPage * perPage;
-  const indexOfFirst = indexOfLast - perPage;
-  const currentGaleries = filteredGaleries.slice(indexOfFirst, indexOfLast);
+      setGaleries((prev) =>
+        prev.map((g) => (g.id === editingId ? responseBody.galeri : g))
+      );
 
-  const handleDelete = (id) => {
+      await alertSuccess("Produk berhasil diperbarui!");
+      return;
+    }
+    if (!title || !image) return alertError("Lengkapi judul & pilih gambar!");
+
+    const response = await GaleryApi.createGaleri({ title, image });
+    const responseBody = await response.json();
+
+    if (response.ok) {
+      await alertSuccess("Galleri berhasil ditambahkan!");
+      setGaleries([responseBody.galeri, ...galeries]);
+    } else {
+      let errorMessage = "Gagal menyimpan perubahan.";
+
+      if (responseBody.error && Array.isArray(responseBody.error)) {
+        const errorMessages = responseBody.error.map((err) => {
+          if (err.path && err.path.length > 0) {
+            return `${err.path[0]}: ${err.message}`;
+          }
+          return err.message;
+        });
+        errorMessage = errorMessages.join(", ");
+      } else if (responseBody.error && typeof responseBody.error === "string") {
+        errorMessage = responseBody.error;
+      }
+
+      alertError(errorMessage);
+    }
+    resetForm();
+  };
+
+  const handleDelete = async (id) => {
+    if (!(await alertConfirm("Yakin hapus foto ini?"))) {
+      return;
+    }
+
+    const response = await GaleryApi.deleteGaleri(id);
+    if (!response.ok) {
+      const responseBody = await response.json();
+
+      let errorMessage = "Gagal menghapus";
+
+      if (responseBody.error && Array.isArray(responseBody.error)) {
+        const errorMessages = responseBody.error.map((err) => {
+          if (err.path && err.path.length > 0) {
+            return `${err.path[0]}: ${err.message}`;
+          }
+          return err.message;
+        });
+        errorMessage = errorMessages.join(", ");
+      } else if (responseBody.error && typeof responseBody.error === "string") {
+        errorMessage = responseBody.error;
+      }
+    }
+
+    await alertSuccess("Foto berhasil dihapus!");
     setGaleries((prev) => prev.filter((g) => g.id !== id));
   };
 
-  const handleSave = () => {
-    if (!title || !image) return alert("Isi judul & upload gambar dulu!");
-
-    if (editingId) {
-      setGaleries((prev) =>
-        prev.map((g) =>
-          g.id === editingId ? { ...g, title, image: URL.createObjectURL(image) } : g
-        )
-      );
-    } else {
-      setGaleries((prev) => [
-        {
-          id: Date.now(),
-          title,
-          image: URL.createObjectURL(image),
-          category: "Pemerintah",
-        },
-        ...prev,
-      ]);
-    }
-    setTitle("");
-    setImage(null);
-    setShowForm(false);
-    setEditingId(null);
-  };
-
-  const handleEdit = (galeri) => {
+  const handleEdit = (id) => {
+    const galeri = galeries.find((g) => g.id === id);
+    if (!galeri) return;
     setEditingId(galeri.id);
     setTitle(galeri.title);
+    setImage(null); // Reset image to allow re-upload
     setShowForm(true);
   };
+
+  const resetForm = () => {
+    setEditingId(null);
+    setShowForm(false);
+  };
+
+  const fetchGaleries = async () => {
+    const response = await GaleryApi.getGaleri(currentPage, 9);
+    const responseBody = await response.json();
+    if (!response.ok) {
+      let errorMessage = "Gagal menyimpan perubahan.";
+
+      if (responseBody.error && Array.isArray(responseBody.error)) {
+        const errorMessages = responseBody.error.map((err) => {
+          if (err.path && err.path.length > 0) {
+            return `${err.path[0]}: ${err.message}`;
+          }
+          return err.message;
+        });
+        errorMessage = errorMessages.join(", ");
+      } else if (responseBody.error && typeof responseBody.error === "string") {
+        errorMessage = responseBody.error;
+      }
+      await alertError(errorMessage);
+      return;
+    }
+    setGaleries(responseBody.galeri);
+    setTotalPages(responseBody.total_page);
+    setCurrentPage(responseBody.page);
+  };
+
+  useEffect(() => {
+    fetchGaleries();
+  }, [currentPage]);
 
   return (
     <div className="flex">
@@ -83,7 +173,7 @@ export default function ManageGalery() {
               }`}
               onClick={() => {
                 setKategoriFilter(k);
-                setCurrentPage(1); // reset ke halaman pertama
+                setPage(1); // reset ke halaman pertama
               }}
             >
               {k}
@@ -124,7 +214,9 @@ export default function ManageGalery() {
                   type="file"
                   accept="image/*"
                   className="w-full border p-2 rounded"
-                  onChange={(e) => setImage(e.target.files[0])}
+                  onChange={(e) => {
+                    setImage(e.target.files[0]);
+                  }}
                 />
                 {(image ||
                   (editingId &&
@@ -167,7 +259,7 @@ export default function ManageGalery() {
                 Simpan
               </button>
               <button
-                onClick={() => setShowForm(false)}
+                onClick={resetForm}
                 className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
               >
                 Batal
@@ -176,27 +268,28 @@ export default function ManageGalery() {
           </div>
         )}
 
-        {/* ✅ List Foto */}
+        {/* List Foto */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {currentGaleries.length === 0 ? (
+          {galeries.length === 0 ? (
             <p className="text-gray-500 italic">Belum ada foto</p>
           ) : (
-            currentGaleries.map((galeri) => (
+            galeries.map((galeri) => (
               <div
                 key={galeri.id}
                 className="bg-white rounded shadow overflow-hidden flex flex-col"
               >
                 <img
-                  src={galeri.image}
+                  src={`${import.meta.env.VITE_BASE_URL}/galeri/images/${
+                    galeri.image
+                  }`}
                   alt={galeri.title}
                   className="w-full h-48 object-cover"
                 />
                 <div className="p-3 flex flex-col flex-1 justify-between">
                   <h3 className="font-semibold text-lg">{galeri.title}</h3>
-                  <p className="text-sm text-gray-500">{galeri.category}</p>
                   <div className="flex justify-between mt-3">
                     <button
-                      onClick={() => handleEdit(galeri)}
+                      onClick={() => handleEdit(galeri.id)}
                       className="text-blue-500 hover:text-blue-700"
                     >
                       Edit
