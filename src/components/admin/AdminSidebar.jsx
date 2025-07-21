@@ -9,7 +9,8 @@ import {
   FaArrowLeft,
   FaStore,
   FaImage,
-  FaSitemap, // ✅ icon untuk Struktur Organisasi
+  FaSitemap, 
+  FaClipboardList // ✅ icon untuk Administrasi
 } from "react-icons/fa";
 import logo from "../../assets/logo.png";
 import { useAuth } from "../../contexts/AuthContext";
@@ -36,6 +37,14 @@ export default function AdminSidebar() {
     { to: "/admin/manage-user", label: "Kelola User", icon: <FaUsers /> },
     { to: "/admin/manage-bumdes", label: "Kelola Produk BUMDes", icon: <FaStore /> },
     { to: "/admin/manage-galery", label: "Kelola Galeri Desa", icon: <FaImage /> },
+    { to: "/admin/manage-form", label: "Kelola Form Diterima", icon: <FaImage /> },
+
+    // ✅ Menu baru untuk Administrasi (Form Online, Formulir Layanan, Surat Pengantar)
+    {
+      to: "/admin/manage-administrasi",
+      label: "Kelola Administrasi",
+      icon: <FaClipboardList />,
+    },
 
     // ✅ Tambahan menu baru untuk struktur organisasi
     {
@@ -47,7 +56,6 @@ export default function AdminSidebar() {
 
   const pengaturan = [
     { to: "/admin/pengaturan/profil", label: "Profil", icon: <FaUsers /> },
-    { to: "/admin/pengaturan/hak-akses", label: "Hak Akses", icon: <FaUsers /> },
   ];
 
   return (

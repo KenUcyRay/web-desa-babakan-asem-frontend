@@ -10,6 +10,13 @@ export default function Profile() {
   const [user, setUser] = useState(null);
   const { logout, setAdminStatus } = useAuth();
 
+  const [editMode, setEditMode] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+
   const fetchProfile = async () => {
     const response = await UserApi.getUserProfile();
     if (!response.ok) {
@@ -18,6 +25,13 @@ export default function Profile() {
     }
     const responseBody = await response.json();
     setUser(responseBody.user);
+
+    // isi form saat pertama kali fetch
+    setFormData({
+      name: responseBody.user.name,
+      email: responseBody.user.email,
+      password: "",
+    });
   };
 
   const handleLogout = async () => {
@@ -54,13 +68,52 @@ export default function Profile() {
       }
 
       alertError(errorMessage);
+      return;
     }
 
-    console.log(response);
     setAdminStatus(false);
     logout();
     await alertSuccess("Akun berhasil dihapus.");
     navigate("/");
+  };
+
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+
+    const payload = {
+      name: formData.name,
+      email: formData.email,
+    };
+
+    // hanya kirim password kalau diisi
+    if (formData.password.trim() !== "") {
+      payload.password = formData.password;
+    }
+
+    const response = await UserApi.updateProfile(user.id, payload);
+    if (!response.ok) {
+      const responseBody = await response.json();
+      let errorMessage = "Gagal memperbarui profil.";
+
+      if (responseBody.error && Array.isArray(responseBody.error)) {
+        const errorMessages = responseBody.error.map((err) => {
+          if (err.path && err.path.length > 0) {
+            return `${err.path[0]}: ${err.message}`;
+          }
+          return err.message;
+        });
+        errorMessage = errorMessages.join(", ");
+      } else if (responseBody.error && typeof responseBody.error === "string") {
+        errorMessage = responseBody.error;
+      }
+
+      alertError(errorMessage);
+      return;
+    }
+
+    await alertSuccess("Profil berhasil diperbarui.");
+    setEditMode(false);
+    fetchProfile(); // refresh profil setelah update
   };
 
   useEffect(() => {
@@ -87,54 +140,136 @@ export default function Profile() {
           <p className="text-gray-500">{user.email}</p>
         </div>
 
-        {/* ✅ Info Detail */}
-        <div className="space-y-3 text-sm text-gray-600">
-          <div className="flex justify-between">
-            <span>ID Pengguna</span>
-            <div className="flex gap-2 items-center">
-              <span className="font-medium text-gray-800">{user.id}</span>
+        {/* ✅ Jika tidak dalam mode edit */}
+        {!editMode && (
+          <>
+            {/* ✅ Info Detail */}
+            <div className="space-y-3 text-sm text-gray-600">
+              <div className="flex justify-between">
+                <span>ID Pengguna</span>
+                <div className="flex gap-2 items-center">
+                  <span className="font-medium text-gray-800">{user.id}</span>
+                  <button
+                    className="text-xs text-green-600 underline"
+                    onClick={() => {
+                      navigator.clipboard.writeText(user.id);
+                      alertSuccess("ID berhasil disalin ke clipboard");
+                    }}
+                  >
+                    Salin
+                  </button>
+                </div>
+              </div>
+              <div className="flex justify-between">
+                <span>Nama Lengkap</span>
+                <span className="font-medium text-gray-800">{user.name}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Email</span>
+                <span className="font-medium text-gray-800">{user.email}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Bergabung</span>
+                <span className="font-medium text-gray-800">
+                  {Helper.formatTanggal(user.created_at)}
+                </span>
+              </div>
+            </div>
+
+            {/* ✅ Tombol Aksi */}
+            <div className="mt-8 flex flex-col gap-3">
               <button
-                className="text-xs text-green-600 underline"
-                onClick={() => {
-                  navigator.clipboard.writeText(user.id);
-                  alertSuccess("ID berhasil disalin ke clipboard");
-                }}
+                onClick={() => setEditMode(true)}
+                className="w-full py-3 rounded-lg bg-blue-500 text-white font-semibold hover:opacity-90 transition"
               >
-                Salin
+                Edit Profil
+              </button>
+              <button
+                onClick={handleLogout}
+                className="w-full py-3 rounded-lg bg-gradient-to-r from-green-400 to-[#B6F500] text-white font-semibold hover:opacity-90 transition"
+              >
+                Logout
+              </button>
+              <button
+                onClick={handleDelete}
+                className="w-full py-3 rounded-lg border border-red-400 text-red-500 font-semibold hover:bg-red-50 transition"
+              >
+                Hapus Akun
               </button>
             </div>
-          </div>
-          <div className="flex justify-between">
-            <span>Nama Lengkap</span>
-            <span className="font-medium text-gray-800">{user.name}</span>
-          </div>
-          <div className="flex justify-between">
-            <span>Email</span>
-            <span className="font-medium text-gray-800">{user.email}</span>
-          </div>
-          <div className="flex justify-between">
-            <span>Bergabung</span>
-            <span className="font-medium text-gray-800">
-              {Helper.formatTanggal(user.created_at)}
-            </span>
-          </div>
-        </div>
+          </>
+        )}
 
-        {/* ✅ Tombol Aksi */}
-        <div className="mt-8 flex flex-col gap-3">
-          <button
-            onClick={handleLogout}
-            className="w-full py-3 rounded-lg bg-gradient-to-r from-green-400 to-[#B6F500] text-white font-semibold hover:opacity-90 transition"
-          >
-            Logout
-          </button>
-          <button
-            onClick={handleDelete}
-            className="w-full py-3 rounded-lg border border-red-400 text-red-500 font-semibold hover:bg-red-50 transition"
-          >
-            Hapus Akun
-          </button>
-        </div>
+        {/* ✅ Jika dalam mode edit */}
+        {editMode && (
+          <form onSubmit={handleUpdate} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-600">
+                Nama Lengkap
+              </label>
+              <input
+                type="text"
+                value={formData.name}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
+                className="w-full border rounded-lg p-2 mt-1"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-600">
+                Email
+              </label>
+              <input
+                type="email"
+                value={formData.email}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
+                className="w-full border rounded-lg p-2 mt-1"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-600">
+                Password Baru (opsional)
+              </label>
+              <input
+                type="password"
+                value={formData.password}
+                onChange={(e) =>
+                  setFormData({ ...formData, password: e.target.value })
+                }
+                className="w-full border rounded-lg p-2 mt-1"
+                placeholder="Biarkan kosong jika tidak ingin ganti password"
+              />
+            </div>
+
+            <div className="flex justify-between gap-3 mt-6">
+              <button
+                type="button"
+                onClick={() => {
+                  setEditMode(false);
+                  setFormData({
+                    name: user.name,
+                    email: user.email,
+                    password: "",
+                  });
+                }}
+                className="w-1/2 py-3 rounded-lg bg-gray-300 hover:bg-gray-400"
+              >
+                Batal
+              </button>
+              <button
+                type="submit"
+                className="w-1/2 py-3 rounded-lg bg-green-500 text-white font-semibold hover:opacity-90 transition"
+              >
+                Simpan Perubahan
+              </button>
+            </div>
+          </form>
+        )}
       </div>
     </div>
   );

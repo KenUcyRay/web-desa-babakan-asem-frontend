@@ -161,6 +161,26 @@ export default function ManageGalery() {
       <div className="ml-64 p-6 w-full">
         <h1 className="text-2xl font-bold mb-4">Kelola Galeri Desa</h1>
 
+        {/* ✅ Tombol filter kategori */}
+        <div className="flex flex-wrap gap-2 mb-4">
+          {kategoriList.map((k) => (
+            <button
+              key={k}
+              className={`px-4 py-2 rounded transition ${
+                kategoriFilter === k
+                  ? "bg-green-500 text-white"
+                  : "bg-gray-200 hover:bg-gray-300"
+              }`}
+              onClick={() => {
+                setKategoriFilter(k);
+                setPage(1); // reset ke halaman pertama
+              }}
+            >
+              {k}
+            </button>
+          ))}
+        </div>
+
         {/* Tombol Tambah */}
         {!showForm && (
           <button
@@ -187,6 +207,7 @@ export default function ManageGalery() {
                   onChange={(e) => setTitle(e.target.value)}
                 />
               </div>
+
               <div>
                 <label className="block text-sm">Upload Gambar</label>
                 <input
@@ -211,7 +232,23 @@ export default function ManageGalery() {
                   />
                 )}
               </div>
+
+              {/* ✅ Pilih kategori */}
+              <div>
+                <label className="block text-sm">Kategori</label>
+                <select
+                  className="w-full border p-2 rounded"
+                  value={form.category}
+                  onChange={(e) => setForm({ ...form, category: e.target.value })}
+                >
+                  <option value="Pemerintah">Pemerintah</option>
+                  <option value="PKK">PKK</option>
+                  <option value="Karang Taruna">Karang Taruna</option>
+                  <option value="DPD">DPD</option>
+                </select>
+              </div>
             </div>
+
             <div className="flex gap-2 mt-4">
               <button
                 onClick={handleSave}
@@ -269,7 +306,7 @@ export default function ManageGalery() {
         </div>
 
         {/* ✅ Pagination */}
-        {galeries.length > 0 && (
+        {filteredGaleries.length > 0 && (
           <div className="mt-6 flex justify-center">
             <Pagination
               currentPage={currentPage}
