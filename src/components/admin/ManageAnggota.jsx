@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { use, useEffect, useState } from "react";
 import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
 import AdminSidebar from "./AdminSidebar";
 import Pagination from "../ui/Pagination";
-
-const BASE_URL = "http://192.168.1.8:3001/api"; // URL API kamu
+import { MemberApi } from "../../libs/api/MemberApi";
+import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 
 export default function ManageAnggota() {
   // ✅ Dummy awal supaya ada data untuk tes edit
@@ -33,7 +33,7 @@ export default function ManageAnggota() {
   ]);
 
   const [showModal, setShowModal] = useState(false);
-  const [editMode, setEditMode] = useState(false);
+  const [editingId, setEditingId] = useState(null);
   const [selectedMember, setSelectedMember] = useState(null);
 
   // ✅ Form state
@@ -50,13 +50,13 @@ export default function ManageAnggota() {
 
   // ✅ Tambah anggota
   const handleAdd = () => {
-    setEditMode(false);
+    setEditingId(null);
     setFormData({
       name: "",
       position: "",
       term_start: "",
       term_end: "",
-      organization_type: "Pemerintah",
+      organization_type: "PEMERINTAH",
       profile_photo: null,
       is_term: true,
       important_level: 1,
@@ -65,9 +65,10 @@ export default function ManageAnggota() {
   };
 
   // ✅ Edit anggota (isi form)
-  const handleEdit = (member) => {
-    setEditMode(true);
-    setSelectedMember(member);
+  const handleEdit = (id) => {
+    const member = members.find((a) => a.id === id);
+    if (!member) return;
+    setEditingId(id);
     setFormData({
       name: member.name,
       position: member.position,
@@ -82,59 +83,119 @@ export default function ManageAnggota() {
   };
 
   // ✅ Hapus anggota
-  const handleDelete = (id) => {
-    const confirmDelete = window.confirm("Yakin ingin menghapus anggota ini?");
+  const handleDelete = async (id) => {
+    const confirmDelete = await alertConfirm(
+      "Yakin ingin menghapus anggota ini?"
+    );
     if (!confirmDelete) return;
-    setAnggota(anggota.filter((a) => a.id !== id));
-    window.alert("✅ Anggota dihapus dari dummy");
+    const response = await MemberApi.deleteMember(id);
+    if (!response.ok) {
+      alertError("Gagal menghapus anggota.");
+      return;
+    }
+    setMembers(members.filter((a) => a.id !== id));
+    await alertSuccess("Anggota berhasil dihapus.");
   };
 
   // ✅ Submit form tambah / edit
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (editMode && selectedMember) {
-      // Update dummy (sementara)
-      setAnggota((prev) =>
-        prev.map((m) =>
-          m.id === selectedMember.id ? { ...m, ...formData } : m
-        )
+    if (editingId) {
+      const response = await MemberApi.updateMember(editingId, formData);
+      const responseBody = await response.json();
+      if (!response.ok) {
+        console.error("Error creating member:", responseBody);
+        let errorMessage = "Gagal menyimpan perubahan.";
+
+        if (responseBody.error && Array.isArray(responseBody.error)) {
+          const errorMessages = responseBody.error.map((err) => {
+            if (err.path && err.path.length > 0) {
+              return `${err.path[0]}: ${err.message}`;
+            }
+            return err.message;
+          });
+          errorMessage = errorMessages.join(", ");
+        } else if (
+          responseBody.error &&
+          typeof responseBody.error === "string"
+        ) {
+          errorMessage = responseBody.error;
+        }
+
+        alertError(errorMessage);
+        return;
+      }
+      setMembers((prev) =>
+        prev
+          .map((m) =>
+            m.id === editingId ? { ...m, ...responseBody.member } : m
+          )
+          .sort((a, b) => b.important_level - a.important_level)
       );
-      window.alert("✅ Dummy anggota diupdate");
-    } else {
-      // Tambah dummy baru (sementara)
-      const newMember = {
-        id: Date.now(),
-        profile_photo:
-          formData.profile_photo
-            ? URL.createObjectURL(formData.profile_photo)
-            : "https://via.placeholder.com/150",
-        ...formData,
-      };
-      setAnggota((prev) => [...prev, newMember]);
-      window.alert("✅ Dummy anggota ditambahkan");
+      alertSuccess("Anggota diupdate");
+      setShowModal(false);
+
+      return;
     }
+    const response = await MemberApi.createMember(formData);
+    const responseBody = await response.json();
+    if (!response.ok) {
+      console.error("Error creating member:", responseBody);
+      let errorMessage = "Gagal menyimpan perubahan.";
+
+      if (responseBody.error && Array.isArray(responseBody.error)) {
+        const errorMessages = responseBody.error.map((err) => {
+          if (err.path && err.path.length > 0) {
+            return `${err.path[0]}: ${err.message}`;
+          }
+          return err.message;
+        });
+        errorMessage = errorMessages.join(", ");
+      } else if (responseBody.error && typeof responseBody.error === "string") {
+        errorMessage = responseBody.error;
+      }
+
+      alertError(errorMessage);
+      return;
+    }
+
+    setMembers((prev) =>
+      [...prev, responseBody.member].sort(
+        (a, b) => b.important_level - a.important_level
+      )
+    );
 
     setShowModal(false);
   };
 
-  // ✅ Pagination & filter
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
   const [kategori, setKategori] = useState("Semua");
   const kategoriList = ["Semua", "PKK", "Karang Taruna", "DPD", "Pemerintah"];
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [members, setMembers] = useState([]);
 
-  const filteredAnggota =
-    kategori === "Semua"
-      ? anggota
-      : anggota.filter((a) => a.organization_type === kategori);
+  const fetchMembers = async () => {
+    let kategoriValue = kategori;
+    if (kategoriValue === "Karang Taruna") {
+      kategoriValue = "KARANG_TARUNA";
+    } else if (kategoriValue === "PEMERINTAH") {
+      kategoriValue = "PEMERINTAH";
+    }
+    const response = await MemberApi.getMembers(kategoriValue, currentPage, 9);
+    const responseBody = await response.json();
+    if (!response.ok) {
+      alertError("Gagal mengambil produk. Silakan coba lagi.");
+      return;
+    }
+    setMembers(responseBody.members);
+    setTotalPages(responseBody.total_page);
+    setCurrentPage(responseBody.page);
+  };
 
-  const totalPages = Math.ceil(filteredAnggota.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedData = filteredAnggota.slice(
-    startIndex,
-    startIndex + itemsPerPage
-  );
+  useEffect(() => {
+    fetchMembers();
+  }, [currentPage, kategori]);
 
   return (
     <div className="flex flex-col md:flex-row">
@@ -143,7 +204,9 @@ export default function ManageAnggota() {
       <div className="md:ml-64 flex-1 p-4 sm:p-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-6">
-          <h1 className="text-2xl sm:text-3xl font-bold">Struktur Organisasi</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold">
+            Struktur Organisasi
+          </h1>
 
           <button
             onClick={handleAdd}
@@ -175,40 +238,45 @@ export default function ManageAnggota() {
 
         {/* Grid anggota */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {paginatedData.map((a) => (
+          {members.map((member) => (
             <div
-              key={a.id}
+              key={member.id}
               className="bg-white rounded-lg shadow-md overflow-hidden"
             >
               <img
-                src={a.profile_photo}
-                alt={a.name}
+                src={`${import.meta.env.VITE_BASE_URL}/organizations/images/${
+                  member.profile_photo
+                }`}
+                alt={member.name}
                 className="w-full h-40 object-cover"
               />
 
               <div className="p-4 space-y-1">
-                <h2 className="text-lg font-bold">{a.name}</h2>
-                <p className="text-sm text-gray-600">{a.position}</p>
+                <h2 className="text-lg font-bold">{member.name}</h2>
+                <p className="text-sm text-gray-600">{member.position}</p>
                 <p className="text-xs text-gray-500">
-                  Masa Jabatan: <b>{a.term_start} - {a.term_end}</b>
+                  Masa Jabatan:{" "}
+                  <b>
+                    {member.term_start} - {member.term_end}
+                  </b>
                 </p>
                 <span className="inline-block mt-2 text-xs bg-green-100 text-green-700 px-2 py-1 rounded">
-                  {a.organization_type}
+                  {member.organization_type}
                 </span>
                 <p className="text-xs mt-1">
-                  {a.is_term ? "✅ Masih menjabat" : "❌ Tidak menjabat"}
+                  {member.is_term ? "✅ Masih menjabat" : "❌ Tidak menjabat"}
                 </p>
               </div>
 
               <div className="flex justify-between p-4 border-t text-sm">
                 <button
-                  onClick={() => handleEdit(a)}
+                  onClick={() => handleEdit(member.id)}
                   className="flex items-center gap-1 text-blue-600 hover:underline"
                 >
                   <FaEdit /> Edit
                 </button>
                 <button
-                  onClick={() => handleDelete(a.id)}
+                  onClick={() => handleDelete(member.id)}
                   className="flex items-center gap-1 text-red-600 hover:underline"
                 >
                   <FaTrash /> Hapus
@@ -219,14 +287,14 @@ export default function ManageAnggota() {
         </div>
 
         {/* Jika kosong */}
-        {filteredAnggota.length === 0 && (
+        {members.length === 0 && (
           <p className="text-center text-gray-500 mt-6">
             Tidak ada anggota untuk kategori ini.
           </p>
         )}
 
         {/* Pagination */}
-        {filteredAnggota.length > 0 && (
+        {members.length > 0 && (
           <div className="mt-6 flex justify-center">
             <Pagination
               currentPage={currentPage}
@@ -242,7 +310,7 @@ export default function ManageAnggota() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-lg">
             <h2 className="text-xl font-bold mb-4">
-              {editMode ? "Edit Anggota" : "Tambah Anggota"}
+              {editingId ? "Edit Anggota" : "Tambah Anggota"}
             </h2>
 
             <form onSubmit={handleSubmit} className="space-y-3">
@@ -294,20 +362,21 @@ export default function ManageAnggota() {
               <select
                 value={formData.organization_type}
                 onChange={(e) =>
-                  setFormData({ ...formData, organization_type: e.target.value })
+                  setFormData({
+                    ...formData,
+                    organization_type: e.target.value,
+                  })
                 }
                 className="w-full border p-2 rounded"
               >
-                <option value="Pemerintah">Pemerintah</option>
+                <option value="PEMERINTAH">Pemerintah</option>
                 <option value="PKK">PKK</option>
-                <option value="Karang Taruna">Karang Taruna</option>
+                <option value="KARANG_TARUNA">Karang Taruna</option>
                 <option value="DPD">DPD</option>
               </select>
 
               <div>
-                <label className="block text-sm font-medium">
-                  Foto Profil
-                </label>
+                <label className="block text-sm font-medium">Foto Profil</label>
                 <input
                   type="file"
                   accept="image/*"
@@ -318,7 +387,7 @@ export default function ManageAnggota() {
                     })
                   }
                   className="w-full border p-2 rounded"
-                  {...(editMode ? {} : { required: true })}
+                  {...(editingId ? {} : { required: true })}
                 />
               </div>
 
@@ -359,7 +428,7 @@ export default function ManageAnggota() {
                   type="submit"
                   className="px-4 py-2 bg-green-600 text-white rounded"
                 >
-                  {editMode ? "Update" : "Tambah"}
+                  {editingId ? "Update" : "Tambah"}
                 </button>
               </div>
             </form>

@@ -162,7 +162,7 @@ export default function ManageGalery() {
         <h1 className="text-2xl font-bold mb-4">Kelola Galeri Desa</h1>
 
         {/* ✅ Tombol filter kategori */}
-        <div className="flex flex-wrap gap-2 mb-4">
+        {/* <div className="flex flex-wrap gap-2 mb-4">
           {kategoriList.map((k) => (
             <button
               key={k}
@@ -179,7 +179,7 @@ export default function ManageGalery() {
               {k}
             </button>
           ))}
-        </div>
+        </div> */}
 
         {/* Tombol Tambah */}
         {!showForm && (
@@ -239,7 +239,9 @@ export default function ManageGalery() {
                 <select
                   className="w-full border p-2 rounded"
                   value={form.category}
-                  onChange={(e) => setForm({ ...form, category: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, category: e.target.value })
+                  }
                 >
                   <option value="Pemerintah">Pemerintah</option>
                   <option value="PKK">PKK</option>
@@ -306,15 +308,15 @@ export default function ManageGalery() {
         </div>
 
         {/* ✅ Pagination */}
-        {filteredGaleries.length > 0 && (
-          <div className="mt-6 flex justify-center">
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-            />
-          </div>
-        )}
+        {/* {filteredGaleries.length > 0 && ( */}
+        <div className="mt-6 flex justify-center">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+        </div>
+        {/* )} */}
       </div>
     </div>
   );
