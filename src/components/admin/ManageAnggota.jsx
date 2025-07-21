@@ -1,4 +1,4 @@
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
 import AdminSidebar from "./AdminSidebar";
 import Pagination from "../ui/Pagination";
@@ -6,8 +6,8 @@ import { MemberApi } from "../../libs/api/MemberApi";
 import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 
 export default function ManageAnggota() {
-  // ✅ Dummy awal supaya ada data untuk tes edit
-  const [anggota, setAnggota] = useState([
+  // Dummy data awal supaya ada tampilan sebelum fetch dari API
+  const [members, setMembers] = useState([
     {
       id: 1,
       profile_photo: "https://via.placeholder.com/150",
@@ -15,7 +15,7 @@ export default function ManageAnggota() {
       position: "Kepala Desa",
       term_start: "2023",
       term_end: "2028",
-      organization_type: "Pemerintah",
+      organization_type: "PEMERINTAH",
       is_term: true,
       important_level: 5,
     },
@@ -34,21 +34,20 @@ export default function ManageAnggota() {
 
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState(null);
-  const [selectedMember, setSelectedMember] = useState(null);
 
-  // ✅ Form state
+  // Form state
   const [formData, setFormData] = useState({
     name: "",
     position: "",
     term_start: "",
     term_end: "",
-    organization_type: "Pemerintah",
+    organization_type: "PEMERINTAH",
     profile_photo: null,
     is_term: true,
     important_level: 1,
   });
 
-  // ✅ Tambah anggota
+  // Tambah anggota
   const handleAdd = () => {
     setEditingId(null);
     setFormData({
@@ -64,7 +63,7 @@ export default function ManageAnggota() {
     setShowModal(true);
   };
 
-  // ✅ Edit anggota (isi form)
+  // Edit anggota (isi form)
   const handleEdit = (id) => {
     const member = members.find((a) => a.id === id);
     if (!member) return;
@@ -82,22 +81,23 @@ export default function ManageAnggota() {
     setShowModal(true);
   };
 
-  // ✅ Hapus anggota
+  // Hapus anggota
   const handleDelete = async (id) => {
     const confirmDelete = await alertConfirm(
       "Yakin ingin menghapus anggota ini?"
     );
     if (!confirmDelete) return;
+
     const response = await MemberApi.deleteMember(id);
     if (!response.ok) {
       alertError("Gagal menghapus anggota.");
       return;
     }
-    setMembers(members.filter((a) => a.id !== id));
+    setMembers((prev) => prev.filter((a) => a.id !== id));
     await alertSuccess("Anggota berhasil dihapus.");
   };
 
-  // ✅ Submit form tambah / edit
+  // Submit form tambah / edit
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -105,9 +105,7 @@ export default function ManageAnggota() {
       const response = await MemberApi.updateMember(editingId, formData);
       const responseBody = await response.json();
       if (!response.ok) {
-        console.error("Error creating member:", responseBody);
         let errorMessage = "Gagal menyimpan perubahan.";
-
         if (responseBody.error && Array.isArray(responseBody.error)) {
           const errorMessages = responseBody.error.map((err) => {
             if (err.path && err.path.length > 0) {
@@ -122,10 +120,10 @@ export default function ManageAnggota() {
         ) {
           errorMessage = responseBody.error;
         }
-
         alertError(errorMessage);
         return;
       }
+
       setMembers((prev) =>
         prev
           .map((m) =>
@@ -135,15 +133,15 @@ export default function ManageAnggota() {
       );
       alertSuccess("Anggota diupdate");
       setShowModal(false);
-
       return;
     }
+
+    // Tambah anggota baru
     const response = await MemberApi.createMember(formData);
     const responseBody = await response.json();
-    if (!response.ok) {
-      console.error("Error creating member:", responseBody);
-      let errorMessage = "Gagal menyimpan perubahan.";
 
+    if (!response.ok) {
+      let errorMessage = "Gagal menyimpan perubahan.";
       if (responseBody.error && Array.isArray(responseBody.error)) {
         const errorMessages = responseBody.error.map((err) => {
           if (err.path && err.path.length > 0) {
@@ -155,7 +153,6 @@ export default function ManageAnggota() {
       } else if (responseBody.error && typeof responseBody.error === "string") {
         errorMessage = responseBody.error;
       }
-
       alertError(errorMessage);
       return;
     }
@@ -165,29 +162,32 @@ export default function ManageAnggota() {
         (a, b) => b.important_level - a.important_level
       )
     );
-
     setShowModal(false);
   };
 
+  // Filter kategori
   const [kategori, setKategori] = useState("Semua");
-  const kategoriList = ["Semua", "PKK", "Karang Taruna", "DPD", "Pemerintah"];
+  const kategoriList = ["Semua", "PKK", "Karang Taruna", "DPD", "PEMERINTAH"];
+
+  // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [members, setMembers] = useState([]);
 
+  // Fetch anggota dari API
   const fetchMembers = async () => {
     let kategoriValue = kategori;
-    if (kategoriValue === "Karang Taruna") {
-      kategoriValue = "KARANG_TARUNA";
-    } else if (kategoriValue === "PEMERINTAH") {
-      kategoriValue = "PEMERINTAH";
-    }
+    if (kategoriValue === "Karang Taruna") kategoriValue = "KARANG_TARUNA";
+    if (kategoriValue === "PEMERINTAH") kategoriValue = "PEMERINTAH";
+    if (kategoriValue === "Semua") kategoriValue = ""; // jika backend support filter kosong = semua
+
     const response = await MemberApi.getMembers(kategoriValue, currentPage, 9);
     const responseBody = await response.json();
+
     if (!response.ok) {
-      alertError("Gagal mengambil produk. Silakan coba lagi.");
+      alertError("Gagal mengambil data anggota. Silakan coba lagi.");
       return;
     }
+
     setMembers(responseBody.members);
     setTotalPages(responseBody.total_page);
     setCurrentPage(responseBody.page);
@@ -204,9 +204,7 @@ export default function ManageAnggota() {
       <div className="md:ml-64 flex-1 p-4 sm:p-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-6">
-          <h1 className="text-2xl sm:text-3xl font-bold">
-            Struktur Organisasi
-          </h1>
+          <h1 className="text-2xl sm:text-3xl font-bold">Struktur Organisasi</h1>
 
           <button
             onClick={handleAdd}
@@ -238,15 +236,23 @@ export default function ManageAnggota() {
 
         {/* Grid anggota */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {members.length === 0 && (
+            <p className="text-center text-gray-500 mt-6">
+              Tidak ada anggota untuk kategori ini.
+            </p>
+          )}
+
           {members.map((member) => (
             <div
               key={member.id}
               className="bg-white rounded-lg shadow-md overflow-hidden"
             >
               <img
-                src={`${import.meta.env.VITE_BASE_URL}/organizations/images/${
-                  member.profile_photo
-                }`}
+                src={
+                  member.profile_photo.startsWith("http")
+                    ? member.profile_photo
+                    : `${import.meta.env.VITE_BASE_URL}/organizations/images/${member.profile_photo}`
+                }
                 alt={member.name}
                 className="w-full h-40 object-cover"
               />
@@ -286,13 +292,6 @@ export default function ManageAnggota() {
           ))}
         </div>
 
-        {/* Jika kosong */}
-        {members.length === 0 && (
-          <p className="text-center text-gray-500 mt-6">
-            Tidak ada anggota untuk kategori ini.
-          </p>
-        )}
-
         {/* Pagination */}
         {members.length > 0 && (
           <div className="mt-6 flex justify-center">
@@ -305,7 +304,7 @@ export default function ManageAnggota() {
         )}
       </div>
 
-      {/* ✅ Modal Tambah/Edit Anggota */}
+      {/* Modal Tambah/Edit */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-lg">
@@ -414,6 +413,8 @@ export default function ManageAnggota() {
                 }
                 className="w-full border p-2 rounded"
                 required
+                min={1}
+                max={10}
               />
 
               <div className="flex justify-end gap-2 mt-4">
