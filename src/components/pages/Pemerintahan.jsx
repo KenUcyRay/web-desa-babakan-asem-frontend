@@ -1,16 +1,11 @@
-import React from "react";
+import { useEffect, useState } from "react";
 import { FaFlag, FaUsers, FaHome, FaDownload } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { alertError } from "../../libs/alert";
+import { MemberApi } from "../../libs/api/MemberApi";
 
 export default function Pemerintahan() {
   const navigate = useNavigate();
-
-  const struktur = [
-    { nama: "H. Daryanto Sasmita", jabatan: "Kepala Desa", periode: "2020 - 2026" },
-    { nama: "Siti Aminah", jabatan: "Sekretaris Desa", periode: "2020 - 2026" },
-    { nama: "Rudi Hartono", jabatan: "Kaur Keuangan", periode: "2020 - 2026" },
-    { nama: "Dewi Lestari", jabatan: "Kaur Perencanaan", periode: "2020 - 2026" },
-  ];
 
   const regulasi = [
     { judul: "Perdes Tentang Desa", tahun: "01/2021" },
@@ -21,44 +16,77 @@ export default function Pemerintahan() {
   const lembagaDesa = [
     { nama: "BUMDes", icon: <FaFlag />, path: "/bumdes" },
     { nama: "Dpd", icon: <FaUsers />, path: "/dpd" },
-    { nama: "Karang Taruna", icon: <FaHome />, path: "/karang-taruna" }
+    { nama: "Karang Taruna", icon: <FaHome />, path: "/karang-taruna" },
   ];
 
   // ✅ Layanan Administrasi dengan path
   const layananAdmin = [
     { nama: "Surat Pengantar", path: "/surat-pengantar" },
     { nama: "Formulir Layanan", path: "/formulir-layanan" },
-    { nama: "Layanan Online", path: "/layanan-online" }
+    { nama: "Layanan Online", path: "/layanan-online" },
   ];
+
+  const [members, setMembers] = useState([]);
+
+  const fetchMembers = async () => {
+    const response = await MemberApi.getMembers("PEMERINTAHAN");
+    const responseBody = await response.json();
+    if (!response.ok) {
+      let errorMessage = "Gagal menyimpan perubahan.";
+
+      if (responseBody.error && Array.isArray(responseBody.error)) {
+        const errorMessages = responseBody.error.map((err) => {
+          if (err.path && err.path.length > 0) {
+            return `${err.path[0]}: ${err.message}`;
+          }
+          return err.message;
+        });
+        errorMessage = errorMessages.join(", ");
+      } else if (responseBody.error && typeof responseBody.error === "string") {
+        errorMessage = responseBody.error;
+      }
+      await alertError(errorMessage);
+      return;
+    }
+    setMembers(responseBody.members);
+  };
+
+  useEffect(() => {
+    fetchMembers();
+  }, []);
 
   return (
     <div className="bg-gray-50 py-10 font-poppins">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
-
         {/* Judul Halaman */}
         <h1 className="text-3xl font-bold text-center text-gray-900">
           Pemerintah Desa
         </h1>
         <p className="text-center text-gray-600 mt-2 mb-10">
-          Pemerintah Desa Babakan Asem berkomitmen pada transparansi & partisipasi masyarakat demi kesejahteraan bersama.
+          Pemerintah Desa Babakan Asem berkomitmen pada transparansi &
+          partisipasi masyarakat demi kesejahteraan bersama.
         </p>
 
         {/* Struktur Organisasi */}
         <div className="bg-white rounded-xl shadow p-6 mb-12">
           <div className="grid gap-6 grid-cols-[repeat(auto-fit,minmax(180px,1fr))] text-center">
-            {struktur.map((item, index) => (
+            {members.map((member) => (
               <div
-                key={index}
+                key={member.id}
                 className="flex flex-col items-center hover:scale-105 transition"
               >
                 <img
-                  src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
-                  alt={item.nama}
+                  src={`${import.meta.env.VITE_BASE_URL}/organizations/images/${
+                    member.profile_photo
+                  }`}
+                  alt={member.name}
                   className="w-20 h-20 rounded-full border mb-3"
                 />
-                <h3 className="font-semibold text-gray-800">{item.nama}</h3>
-                <p className="text-sm text-gray-500">{item.jabatan}</p>
-                <p className="text-xs text-gray-400">{item.periode}</p>
+                <h3 className="font-semibold text-gray-800">{member.name}</h3>
+                <p className="text-sm text-gray-500">{member.position}</p>
+                <p className="text-xs text-gray-400">
+                  {member.term_start} - {member.term_end}
+                </p>
               </div>
             ))}
           </div>
@@ -69,7 +97,6 @@ export default function Pemerintahan() {
           Lembaga Kemasyarakatan & Layanan Administrasi
         </h2>
         <div className="grid md:grid-cols-2 gap-8 mb-12">
-          
           {/* ✅ Lembaga Desa */}
           <div className="bg-white rounded-lg shadow p-6">
             <h3 className="text-lg font-semibold mb-4">Lembaga Desa</h3>

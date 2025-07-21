@@ -34,8 +34,6 @@ export class Helper {
       timeZone: "Asia/Jakarta",
     });
 
-    console.log("Start Time:", formatterWaktu.format(start));
-
     const tanggal = formatterTanggal.format(start);
     const waktu = `${formatterWaktu.format(start)} - ${formatterWaktu.format(
       end

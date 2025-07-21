@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Pagination from "../ui/Pagination";
 import { AgendaApi } from "../../libs/api/AgendaApi";
 import { Helper } from "../../utils/Helper";
+import { MemberApi } from "../../libs/api/MemberApi";
 
 export default function KarangTaruna() {
   const [agenda, setAgenda] = useState([]);
@@ -18,7 +19,6 @@ export default function KarangTaruna() {
     } else {
       alertError("Gagal mengambil data agenda. Silakan coba lagi nanti.");
     }
-    setLoading(false);
   };
 
   const truncateText = (text, maxLength = 100) => {
@@ -31,6 +31,35 @@ export default function KarangTaruna() {
   useEffect(() => {
     fetchAgenda(currentPage);
   }, [currentPage]);
+
+  const [members, setMembers] = useState([]);
+
+  const fetchMembers = async () => {
+    const response = await MemberApi.getMembers("KARANG_TARUNA");
+    const responseBody = await response.json();
+    if (!response.ok) {
+      let errorMessage = "Gagal menyimpan perubahan.";
+
+      if (responseBody.error && Array.isArray(responseBody.error)) {
+        const errorMessages = responseBody.error.map((err) => {
+          if (err.path && err.path.length > 0) {
+            return `${err.path[0]}: ${err.message}`;
+          }
+          return err.message;
+        });
+        errorMessage = errorMessages.join(", ");
+      } else if (responseBody.error && typeof responseBody.error === "string") {
+        errorMessage = responseBody.error;
+      }
+      await alertError(errorMessage);
+      return;
+    }
+    setMembers(responseBody.members);
+  };
+
+  useEffect(() => {
+    fetchMembers();
+  }, []);
 
   return (
     <div className="bg-gray-50 py-10 w-full max-w-screen-2xl mx-auto px-4 sm:px-6 md:px-8">
@@ -78,18 +107,20 @@ export default function KarangTaruna() {
           Struktur Organisasi Karang Taruna
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-8 text-center">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="flex flex-col items-center">
+          {members.map((member) => (
+            <div key={member.id} className="flex flex-col items-center">
               <img
-                src="https://cdn-icons-png.flaticon.com/512/847/847969.png"
-                alt="Profil"
+                src={`${import.meta.env.VITE_BASE_URL}/organizations/images/${
+                  member.profile_photo
+                }`}
+                alt={member.name}
                 className="w-20 h-20 rounded-full border-4 border-[#B6F500] shadow-md"
               />
-              <p className="font-semibold mt-3">
-                {i === 1 ? "H. Daryanto Sasmita" : "Nama Pengurus"}
+              <p className="font-semibold mt-3">{member.name}</p>
+              <p className="text-sm text-gray-500">{member.position}</p>
+              <p className="text-xs text-gray-400">
+                {member.term_start} - {member.term_end}
               </p>
-              <p className="text-sm text-gray-500">Jabatan</p>
-              <p className="text-xs text-gray-400">2020 - 2026</p>
             </div>
           ))}
         </div>

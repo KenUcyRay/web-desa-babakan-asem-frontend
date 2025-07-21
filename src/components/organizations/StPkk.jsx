@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { alertError } from "../../libs/alert";
 import { useEffect, useState } from "react";
 import { GaleryApi } from "../../libs/api/GaleryApi";
+import { MemberApi } from "../../libs/api/MemberApi";
 
 export default function StPkk() {
   const [galery, setGalery] = useState([]);
@@ -16,9 +17,36 @@ export default function StPkk() {
       await alertError("Gagal mengambil data galeri. Silakan coba lagi nanti.");
     }
   };
+  
+  const [members, setMembers] = useState([]);
+
+  const fetchMembers = async () => {
+    const response = await MemberApi.getMembers("PKK");
+    const responseBody = await response.json();
+    if (!response.ok) {
+      let errorMessage = "Gagal menyimpan perubahan.";
+
+      if (responseBody.error && Array.isArray(responseBody.error)) {
+        const errorMessages = responseBody.error.map((err) => {
+          if (err.path && err.path.length > 0) {
+            return `${err.path[0]}: ${err.message}`;
+          }
+          return err.message;
+        });
+        errorMessage = errorMessages.join(", ");
+      } else if (responseBody.error && typeof responseBody.error === "string") {
+        errorMessage = responseBody.error;
+      }
+      await alertError(errorMessage);
+      return;
+    }
+    console.log(responseBody.members);
+    setMembers(responseBody.members);
+  };
 
   useEffect(() => {
     fetchGalery();
+    fetchMembers();
   }, []);
 
   return (

@@ -40,6 +40,7 @@ export default function ManageBumdes() {
   };
 
   const handleDeleteCategory = async (id) => {
+    console.log(products)
     if (
       !(await alertConfirm(
         "Hapus kategori ini? Produk dengan kategori ini akan terhapus."
@@ -69,6 +70,7 @@ export default function ManageBumdes() {
     }
     await alertSuccess("Kategori berhasil dihapus.");
     setCategories((prev) => prev.filter((c) => c.id !== id));
+    setProducts((prev) => prev.filter((p) => p.product.category_id !== id));
   };
 
   const [products, setProducts] = useState([]);

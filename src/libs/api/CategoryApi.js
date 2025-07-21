@@ -27,6 +27,7 @@ export class CategoryApi {
     );
   }
   static async deleteCategory(id) {
+    console.log(id);
     return await fetch(
       `${import.meta.env.VITE_BASE_URL}/products/admin/categories/${id}`,
       {

@@ -1,7 +1,8 @@
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Helper } from "../../utils/Helper";
 import { AgendaApi } from "../../libs/api/AgendaApi";
+import { MemberApi } from "../../libs/api/MemberApi";
 
 export default function Dpd() {
   const navigate = useNavigate();
@@ -41,8 +42,34 @@ export default function Dpd() {
     }
   };
 
+  const [members, setMembers] = useState([]);
+
+  const fetchMembers = async () => {
+    const response = await MemberApi.getMembers("DPD");
+    const responseBody = await response.json();
+    if (!response.ok) {
+      let errorMessage = "Gagal menyimpan perubahan.";
+
+      if (responseBody.error && Array.isArray(responseBody.error)) {
+        const errorMessages = responseBody.error.map((err) => {
+          if (err.path && err.path.length > 0) {
+            return `${err.path[0]}: ${err.message}`;
+          }
+          return err.message;
+        });
+        errorMessage = errorMessages.join(", ");
+      } else if (responseBody.error && typeof responseBody.error === "string") {
+        errorMessage = responseBody.error;
+      }
+      await alertError(errorMessage);
+      return;
+    }
+    setMembers(responseBody.members);
+  };
+
   useEffect(() => {
     fetchAgenda();
+    fetchMembers();
   }, []);
 
   return (
@@ -91,19 +118,27 @@ export default function Dpd() {
           Struktur Organisasi
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
-          {anggota.map((a, i) => (
+          {members.map((member) => (
             <div
-              key={i}
+              key={member.id}
               className="bg-white rounded-2xl shadow-md hover:shadow-xl transition text-center p-6 w-full"
             >
               <img
-                src={a.foto}
-                alt={a.nama}
+                src={`${import.meta.env.VITE_BASE_URL}/organizations/images/${
+                  member.profile_photo
+                }`}
+                alt={member.title}
                 className="w-24 h-24 md:w-28 md:h-28 rounded-full mx-auto object-cover mb-4"
               />
-              <h3 className="text-base md:text-lg font-semibold">{a.nama}</h3>
-              <p className="text-xs md:text-sm text-gray-500">{a.jabatan}</p>
-              <p className="text-xs text-gray-400">Masa Jabatan 2023-2028</p>
+              <h3 className="text-base md:text-lg font-semibold">
+                {member.title}
+              </h3>
+              <p className="text-xs md:text-sm text-gray-500">
+                {member.position}
+              </p>
+              <p className="text-xs text-gray-400">
+                {member.term_start} - {member.term_end}
+              </p>
             </div>
           ))}
         </div>
