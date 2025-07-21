@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FaUserPlus,
   FaUserShield,
@@ -7,96 +7,137 @@ import {
 } from "react-icons/fa";
 import AdminSidebar from "./AdminSidebar";
 import Pagination from "../ui/Pagination";
+import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
+import { UserApi } from "../../libs/api/UserApi";
 
 export default function ManageUser() {
-  const defaultUsers = [
-    { id: 1, nama: "Admin Utama", email: "admin@desa.id", role: "admin" },
-    { id: 2, nama: "Petugas Agenda", email: "petugas@desa.id", role: "admin" },
-    { id: 3, nama: "Sekretaris", email: "sekretaris@desa.id", role: "admin" },
-    { id: 4, nama: "Budi User", email: "budi@desa.id", role: "user" },
-    { id: 5, nama: "Sinta User", email: "sinta@desa.id", role: "user" },
-  ];
+  const [users, setUsers] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
-  const [users, setUsers] = useState(defaultUsers);
   const [showAddForm, setShowAddForm] = useState(false);
   const [showPromoteForm, setShowPromoteForm] = useState(false);
-
-  // ✅ Hanya tampilkan admin
-  const adminsOnly = users.filter((u) => u.role === "admin");
-
-  // ✅ Pagination khusus admin
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentAdmins = adminsOnly.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(adminsOnly.length / itemsPerPage);
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirm_password: "",
+  });
 
   // ✅ Tambah Admin Baru
-  const handleAddAdmin = (e) => {
+  const handleAddAdmin = async (e) => {
     e.preventDefault();
-    const form = e.target;
-    const password = form.password.value;
-    const confirm = form.confirm_password.value;
-
-    if (password !== confirm) {
-      alert("Konfirmasi password tidak cocok!");
+    if (!(await alertConfirm("Yakin tambah admin baru?"))) {
       return;
     }
 
-    const newUser = {
-      id: Date.now(),
-      nama: form.name.value,
-      email: form.email.value,
-      password: password,
-      role: "admin",
-    };
+    if (form.confirm_password !== form.password) {
+      alertError("Konfirmasi password tidak cocok!");
+      return;
+    }
 
-    setUsers([...users, newUser]);
+    const response = await UserApi.createAdmin(form);
+    const responseBody = await response.json();
+    if (!response.ok) {
+      let errorMessage = "Gagal menyimpan perubahan.";
+      if (responseBody.error && Array.isArray(responseBody.error)) {
+        const errorMessages = responseBody.error.map((err) =>
+          err.path?.length ? `${err.path[0]}: ${err.message}` : err.message
+        );
+        errorMessage = errorMessages.join(", ");
+      } else if (typeof responseBody.error === "string") {
+        errorMessage = responseBody.error;
+      }
+      await alertError(errorMessage);
+      return;
+    }
+    setUsers([...users, responseBody.user]);
     setShowAddForm(false);
-    form.reset();
+    setForm({
+      name: "",
+      email: "",
+      password: "",
+      confirm_password: "",
+    });
+    await alertSuccess("Admin berhasil ditambahkan!");
   };
 
   // ✅ Turunkan Admin → User (langsung hilang dari tabel)
-  const adminToUser = (admin) => {
-    if (window.confirm(`Ubah ${admin.nama} dari Admin menjadi User?`)) {
-      setUsers(
-        users.map((u) =>
-          u.id === admin.id ? { ...u, role: "user" } : u
-        )
-      );
+  const adminToUser = async (admin) => {  
+    if (
+      !(await alertConfirm(
+        `Ubah ${admin.name} dari admin menjadi user regular?`
+      ))
+    ) {
+      return;
     }
+    const response = await UserApi.updateRoleById(admin.id, "REGULAR");
+    const responseBody = await response.json();
+    if (!response.ok) {
+      let errorMessage = "Gagal menyimpan perubahan.";
+      if (responseBody.error && Array.isArray(responseBody.error)) {
+        const errorMessages = responseBody.error.map((err) =>
+          err.path?.length ? `${err.path[0]}: ${err.message}` : err.message
+        );
+        errorMessage = errorMessages.join(", ");
+      } else if (typeof responseBody.error === "string") {
+        errorMessage = responseBody.error;
+      }
+      await alertError(errorMessage);
+      return;
+    }
+    setUsers((user) => user.filter((c) => c.id !== admin.id));
+    alertSuccess(
+      `${responseBody.user.name} berhasil diubah menjadi user regukat.`
+    );
   };
 
   // ✅ Naikkan User → Admin (pakai form ID)
-  const handlePromoteUser = (e) => {
+  const handlePromoteUser = async (e) => {
     e.preventDefault();
+    if (!(await alertConfirm("Yakin ubah user ini menjadi admin?"))) {
+      return;
+    }
     const form = e.target;
-    const targetId = parseInt(form.userId.value, 10);
+    const targetId = form.userId.value;
 
-    const target = users.find((u) => u.id === targetId);
-
-    if (!target) {
-      alert("User dengan ID tersebut tidak ditemukan!");
+    const response = await UserApi.updateRoleById(targetId, "ADMIN");
+    const responseBody = await response.json();
+    if (!response.ok) {
+      let errorMessage = "Gagal menyimpan perubahan.";
+      if (responseBody.error && Array.isArray(responseBody.error)) {
+        const errorMessages = responseBody.error.map((err) =>
+          err.path?.length ? `${err.path[0]}: ${err.message}` : err.message
+        );
+        errorMessage = errorMessages.join(", ");
+      } else if (typeof responseBody.error === "string") {
+        errorMessage = responseBody.error;
+      }
+      await alertError(errorMessage);
       return;
     }
-
-    if (target.role === "admin") {
-      alert(`${target.nama} sudah admin.`);
-      return;
-    }
-
-    // Ubah jadi admin
-    setUsers(
-      users.map((u) =>
-        u.id === target.id ? { ...u, role: "admin" } : u
-      )
-    );
-    alert(`${target.nama} berhasil diubah menjadi Admin.`);
-
+    setUsers([...users, responseBody.user]);
+    alertSuccess(`${responseBody.user.name} berhasil diubah menjadi admin.`);
     setShowPromoteForm(false);
     form.reset();
   };
+
+  const fetchUsers = async () => {
+    const response = await UserApi.getAllUsers(currentPage, 10);
+    const responseBody = await response.json();
+    if (!response.ok) {
+      alertError("Gagal mengambil data pengguna.");
+      return;
+    }
+    console.log(responseBody.users);
+    setUsers(responseBody.users);
+    setCurrentPage(responseBody.page);
+    setTotalPages(responseBody.total_page);
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, [currentPage]);
 
   return (
     <div className="flex">
@@ -150,6 +191,8 @@ export default function ManageUser() {
                 placeholder="Nama"
                 className="border p-2 rounded"
                 required
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
               />
               <input
                 type="email"
@@ -157,6 +200,8 @@ export default function ManageUser() {
                 placeholder="Email"
                 className="border p-2 rounded"
                 required
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
               />
               <input
                 type="password"
@@ -164,6 +209,8 @@ export default function ManageUser() {
                 placeholder="Password"
                 className="border p-2 rounded"
                 required
+                value={form.password}
+                onChange={(e) => setForm({ ...form, password: e.target.value })}
               />
               <input
                 type="password"
@@ -171,6 +218,10 @@ export default function ManageUser() {
                 placeholder="Konfirmasi Password"
                 className="border p-2 rounded"
                 required
+                value={form.confirm_password}
+                onChange={(e) =>
+                  setForm({ ...form, confirm_password: e.target.value })
+                }
               />
             </div>
             <div className="flex justify-end gap-2 mt-3">
@@ -202,7 +253,7 @@ export default function ManageUser() {
             </h2>
             <div>
               <input
-                type="number"
+                type="text"
                 name="userId"
                 placeholder="Masukkan ID User"
                 className="border p-2 rounded w-full"
@@ -240,13 +291,11 @@ export default function ManageUser() {
               </tr>
             </thead>
             <tbody>
-              {currentAdmins.map((admin) => (
-                <tr key={admin.id} className="border-b hover:bg-gray-50">
-                  <td className="p-4">{admin.id}</td>
-                  <td className="p-4 font-medium text-gray-800">
-                    {admin.nama}
-                  </td>
-                  <td className="p-4 text-gray-600">{admin.email}</td>
+              {users.map((user, index) => (
+                <tr key={user.id} className="border-b hover:bg-gray-50">
+                  <td className="p-4">{index + 1}</td>
+                  <td className="p-4 font-medium text-gray-800">{user.name}</td>
+                  <td className="p-4 text-gray-600">{user.email}</td>
                   <td className="p-4">
                     <span className="flex items-center gap-1 text-green-600 font-semibold">
                       <FaUserShield /> Admin
@@ -254,7 +303,7 @@ export default function ManageUser() {
                   </td>
                   <td className="p-4 text-center">
                     <button
-                      onClick={() => adminToUser(admin)}
+                      onClick={() => adminToUser(user)}
                       className="px-3 py-2 rounded bg-yellow-500 hover:bg-yellow-600 text-white"
                       title="Ubah ke User"
                     >
@@ -263,7 +312,7 @@ export default function ManageUser() {
                   </td>
                 </tr>
               ))}
-              {adminsOnly.length === 0 && (
+              {users.length === 0 && (
                 <tr>
                   <td colSpan="5" className="text-center p-6 text-gray-500">
                     Belum ada admin.
