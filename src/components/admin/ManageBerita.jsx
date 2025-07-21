@@ -4,6 +4,7 @@ import { NewsApi } from "../../libs/api/NewsApi";
 import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 import { Helper } from "../../utils/Helper";
 import Pagination from "../ui/Pagination";
+import { FaPlus, FaSave, FaTimes, FaEdit, FaTrash, FaCheck, FaTimesCircle } from "react-icons/fa";
 
 export default function ManageBerita() {
   const [news, setNews] = useState([]);
@@ -19,9 +20,32 @@ export default function ManageBerita() {
   const [featuredImage, setFeaturedImage] = useState(null);
   const [isPublished, setIsPublished] = useState(false);
 
+  const fetchNews = async () => {
+    const response = await NewsApi.getOwnNews(1, 6);
+    if (!response.ok) {
+      alertError("Gagal mengambil berita. Silakan coba lagi.");
+      return;
+    }
+    const responseBody = await response.json();
+    setTotalPages(responseBody.total_page);
+    setCurrentPage(responseBody.page);
+    setNews(responseBody.news);
+  };
+
+  useEffect(() => {
+    fetchNews();
+  }, [showForm, currentPage]);
+
+  const resetForm = () => {
+    setTitle("");
+    setContent("");
+    setFeaturedImage(null);
+    setIsPublished(false);
+    setEditingId(null);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const rawData = {
       title,
       content,
@@ -30,41 +54,20 @@ export default function ManageBerita() {
     };
 
     if (editingId) {
-      if (!(await alertConfirm("Yakin ingin mengedit berita ini?"))) {
-        return;
-      }
+      if (!(await alertConfirm("Yakin ingin mengedit berita ini?"))) return;
 
       const response = await NewsApi.updateNews(editingId, rawData);
       const responseBody = await response.json();
-
       if (!response.ok) {
-        let errorMessage = "Gagal menyimpan perubahan.";
-
-        if (responseBody.error && Array.isArray(responseBody.error)) {
-          const errorMessages = responseBody.error.map((err) => {
-            if (err.path && err.path.length > 0) {
-              return `${err.path[0]}: ${err.message}`;
-            }
-            return err.message;
-          });
-          errorMessage = errorMessages.join(", ");
-        } else if (
-          responseBody.error &&
-          typeof responseBody.error === "string"
-        ) {
-          errorMessage = responseBody.error;
-        }
+        let errorMessage = Helper.parseError(responseBody);
         await alertError(errorMessage);
         return;
       }
 
-      setTitle("");
-      setContent("");
-      setFeaturedImage(null);
-      setIsPublished(false);
-      setEditingId(null);
+      resetForm();
       setShowForm(false);
       await alertSuccess("Berita berhasil diperbarui!");
+      fetchNews();
       return;
     }
 
@@ -73,30 +76,13 @@ export default function ManageBerita() {
 
     if (response.ok) {
       await alertSuccess("Berita berhasil ditambahkan!");
-      setNews([...news, responseBody.news]);
+      fetchNews();
     } else {
-      let errorMessage = "Gagal menyimpan perubahan.";
-
-      if (responseBody.error && Array.isArray(responseBody.error)) {
-        const errorMessages = responseBody.error.map((err) => {
-          if (err.path && err.path.length > 0) {
-            return `${err.path[0]}: ${err.message}`;
-          }
-          return err.message;
-        });
-        errorMessage = errorMessages.join(", ");
-      } else if (responseBody.error && typeof responseBody.error === "string") {
-        errorMessage = responseBody.error;
-      }
-
+      let errorMessage = Helper.parseError(responseBody);
       alertError(errorMessage);
     }
 
-    setTitle("");
-    setContent("");
-    setFeaturedImage(null);
-    setIsPublished(false);
-    setEditingId(null);
+    resetForm();
     setShowForm(false);
   };
 
@@ -114,10 +100,9 @@ export default function ManageBerita() {
     }
   };
 
-  const handleEdit = async (id) => {
+  const handleEdit = (id) => {
     const berita = news.find((b) => b.id === id);
     if (!berita) return;
-
     setTitle(berita.title);
     setContent(berita.content);
     setFeaturedImage(null);
@@ -126,55 +111,40 @@ export default function ManageBerita() {
     setShowForm(true);
   };
 
-  const fetchNews = async () => {
-    const response = await NewsApi.getOwnNews(1, 6);
-
-    if (!response.ok) {
-      alertError("Gagal mengambil berita. Silakan coba lagi.");
-      return;
-    }
-    const responseBody = await response.json();
-    setTotalPages(responseBody.total_page);
-    setCurrentPage(responseBody.page);
-    setNews(responseBody.news);
-  };
-
-  useEffect(() => {
-    fetchNews();
-  }, [showForm, currentPage]);
-
   return (
-    <div className="flex">
+    <div className="flex font-[Poppins,sans-serif]">
       <AdminSidebar />
 
       <div className="ml-64 p-6 w-full">
+        {/* HEADER */}
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">Kelola Berita</h1>
+          <h1 className="text-2xl font-bold text-green-700">Kelola Berita</h1>
 
-          {/* ✅ Tombol hanya muncul kalau form belum dibuka */}
           {!showForm && (
             <button
               onClick={() => {
-                setEditingId(null);
+                resetForm();
                 setShowForm(true);
               }}
-              className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+              className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded shadow hover:bg-green-600 transition"
             >
-              ➕ Tambah Berita
+              <FaPlus /> Tambah Berita
             </button>
           )}
         </div>
 
-        {/* ✅ FORM TAMBAH / EDIT */}
+        {/* FORM TAMBAH / EDIT */}
         {showForm && (
           <form
             onSubmit={handleSubmit}
-            className="bg-white p-4 rounded shadow mb-6 space-y-4 max-w-2xl"
+            className="bg-white p-6 rounded-xl shadow-md mb-6 space-y-4 max-w-2xl border"
           >
             <div>
-              <label className="block font-medium">Judul</label>
+              <label className="block font-medium text-gray-700 mb-1">
+                Judul
+              </label>
               <input
-                className="w-full border p-2 rounded"
+                className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-green-300 outline-none"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Masukkan judul berita"
@@ -183,9 +153,11 @@ export default function ManageBerita() {
             </div>
 
             <div>
-              <label className="block font-medium">Konten</label>
+              <label className="block font-medium text-gray-700 mb-1">
+                Konten
+              </label>
               <textarea
-                className="w-full border p-2 rounded h-28"
+                className="w-full border rounded-lg p-3 h-32 resize-none focus:ring-2 focus:ring-green-300 outline-none"
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 placeholder="Tuliskan isi berita..."
@@ -194,7 +166,9 @@ export default function ManageBerita() {
             </div>
 
             <div>
-              <label className="block font-medium">Upload Gambar Utama</label>
+              <label className="block font-medium text-gray-700 mb-1">
+                Upload Gambar Utama
+              </label>
               <input
                 type="file"
                 accept="image/*"
@@ -211,105 +185,110 @@ export default function ManageBerita() {
                       : news.find((b) => b.id === editingId)?.featuredImage
                   }
                   alt="preview"
-                  className="mt-2 w-40 rounded"
+                  className="mt-3 w-40 rounded-lg shadow-sm"
                 />
               )}
             </div>
 
-            {/* ✅ Published Yes/No */}
+            {/* STATUS */}
             <div>
-              <label className="block font-medium mb-1">Published?</label>
-              <div className="flex gap-2">
+              <label className="block font-medium text-gray-700 mb-2">
+                Status Publish
+              </label>
+              <div className="flex gap-3">
                 <button
                   type="button"
                   onClick={() => setIsPublished(true)}
-                  className={`px-4 py-2 rounded ${
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${
                     isPublished
                       ? "bg-green-500 text-white shadow"
                       : "bg-gray-200 text-gray-600 hover:bg-gray-300"
                   }`}
                 >
-                  Yes
+                  <FaCheck /> Yes
                 </button>
                 <button
                   type="button"
                   onClick={() => setIsPublished(false)}
-                  className={`px-4 py-2 rounded ${
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${
                     !isPublished
                       ? "bg-red-500 text-white shadow"
                       : "bg-gray-200 text-gray-600 hover:bg-gray-300"
                   }`}
                 >
-                  No
+                  <FaTimes /> No
                 </button>
               </div>
             </div>
 
-            <div className="flex gap-2">
+            {/* BUTTONS */}
+            <div className="flex gap-3">
               <button
                 type="submit"
-                className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600"
+                className="flex items-center gap-2 bg-green-500 text-white px-5 py-2 rounded-lg shadow hover:bg-green-600 transition"
               >
-                {editingId ? "✅ Update Berita" : "💾 Simpan Berita"}
+                <FaSave /> {editingId ? "Update Berita" : "Simpan Berita"}
               </button>
               <button
                 type="button"
                 onClick={() => {
+                  resetForm();
                   setShowForm(false);
-                  setEditingId(null);
-                  setTitle("");
-                  setContent("");
-                  setFeaturedImage(null);
-                  setIsPublished(false);
                 }}
-                className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500"
+                className="flex items-center gap-2 bg-gray-400 text-white px-4 py-2 rounded-lg hover:bg-gray-500 transition"
               >
-                Batal
+                <FaTimes /> Batal
               </button>
             </div>
           </form>
         )}
 
-        {/* ✅ LIST BERITA (hanya untuk halaman ini) */}
+        {/* LIST BERITA */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {news.map((item) => (
-            <div key={item.id} className="bg-white rounded-xl shadow">
+            <div
+              key={item.id}
+              className="bg-white rounded-xl shadow-md border hover:shadow-lg transition"
+            >
               <img
-                src={`${import.meta.env.VITE_BASE_URL}/news/images/${
-                  item.featured_image
-                }`}
+                src={`${import.meta.env.VITE_BASE_URL}/news/images/${item.featured_image}`}
                 alt={item.title}
                 className="rounded-t-xl w-full h-40 object-cover"
               />
 
               <div className="p-4">
-                <h2 className="text-lg font-semibold">{item.title}</h2>
-                <p className="text-gray-600 text-sm line-clamp-3">
+                <h2 className="text-lg font-semibold text-gray-800 line-clamp-2">
+                  {item.title}
+                </h2>
+                <p className="text-gray-600 text-sm line-clamp-3 mt-1">
                   {Helper.truncateText(item.content)}
                 </p>
-                <p className="text-xs text-gray-400 mt-1">
-                  📅 {Helper.formatTanggal(item.created_at)}
-                </p>
-                <p
-                  className={`mt-2 text-sm ${
-                    item.is_published ? "text-green-500" : "text-red-500"
-                  }`}
-                >
-                  {item.is_published ? "Published ✅" : "Unpublished ❌"}
-                </p>
 
-                <div className="flex gap-3 mt-3">
+                <div className="flex justify-between items-center mt-3 text-xs text-gray-400">
+                  <span>{Helper.formatTanggal(item.created_at)}</span>
+                  {item.is_published ? (
+                    <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs flex items-center gap-1">
+                      <FaCheck /> Published
+                    </span>
+                  ) : (
+                    <span className="bg-red-100 text-red-600 px-2 py-0.5 rounded-full text-xs flex items-center gap-1">
+                      <FaTimesCircle /> Unpublished
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex gap-4 mt-4">
                   <button
                     onClick={() => handleEdit(item.id)}
-                    className="text-blue-500 hover:text-blue-700"
+                    className="flex items-center gap-1 text-blue-500 hover:text-blue-700 transition text-sm"
                   >
-                    ✏ Edit
+                    <FaEdit /> Edit
                   </button>
                   <button
                     onClick={() => handleDelete(item.id)}
-                    className="text-red-500 hover:text-red-700"
+                    className="flex items-center gap-1 text-red-500 hover:text-red-700 transition text-sm"
                   >
-                    🗑 Hapus
+                    <FaTrash /> Hapus
                   </button>
                 </div>
               </div>
@@ -317,11 +296,11 @@ export default function ManageBerita() {
           ))}
         </div>
 
-        {/* ✅ Pagination selalu muncul meski sedikit berita */}
+        {/* PAGINATION */}
         <div className="mt-6 flex justify-center">
           <Pagination
             currentPage={currentPage}
-            totalPages={totalPages} // minimal 1
+            totalPages={totalPages}
             onPageChange={setCurrentPage}
           />
         </div>
