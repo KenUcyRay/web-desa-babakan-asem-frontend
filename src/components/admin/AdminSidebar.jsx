@@ -19,15 +19,23 @@ import {
   FaPeopleCarry,
 } from "react-icons/fa";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import logo from "../../assets/logo.png";
 import { useAuth } from "../../contexts/AuthContext";
 import { alertConfirm, alertSuccess } from "../../libs/alert";
 
-export default function AdminSidebar() {
+export default function AdminSidebar({ isOpen, onClose }) {
   const location = useLocation();
   const { logout, setAdminStatus } = useAuth();
   const [openInfografis, setOpenInfografis] = useState(false);
+
+  // ✅ supaya sidebar mobile gak langsung hilang
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) setIsVisible(true);
+    else setTimeout(() => setIsVisible(false), 300); // sesuai durasi animasi
+  }, [isOpen]);
 
   const handleLogout = async () => {
     const confirm = await alertConfirm("Apakah Anda yakin ingin keluar?");
@@ -61,8 +69,8 @@ export default function AdminSidebar() {
     { to: "/admin/pengaturan/profil", label: "Profil", icon: <FaUsers /> },
   ];
 
-  return (
-    <div className="fixed top-0 left-0 h-screen w-64 bg-white shadow-lg flex flex-col border-r z-50 font-[Poppins,sans-serif]">
+  const renderSidebarContent = () => (
+    <>
       {/* LOGO + JUDUL */}
       <div className="flex items-center gap-3 px-4 py-5 border-b">
         <img src={logo} alt="Logo Desa" className="w-11 h-11 object-contain" />
@@ -82,6 +90,7 @@ export default function AdminSidebar() {
             <Link
               key={item.to}
               to={item.to}
+              onClick={onClose}
               className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-all duration-200 ${
                 isActive
                   ? "bg-green-100 text-green-700 font-semibold border-l-4 border-green-500"
@@ -115,7 +124,6 @@ export default function AdminSidebar() {
             )}
           </button>
 
-          {/* SUBMENU */}
           {openInfografis && (
             <div className="ml-6 mt-1 space-y-1 border-l pl-3">
               {infografisSubmenu.map((sub) => {
@@ -124,6 +132,7 @@ export default function AdminSidebar() {
                   <Link
                     key={sub.to}
                     to={sub.to}
+                    onClick={onClose}
                     className={`flex items-center gap-2 px-2 py-1 rounded-md text-xs transition ${
                       isActive
                         ? "bg-green-50 text-green-700 font-semibold"
@@ -149,6 +158,7 @@ export default function AdminSidebar() {
             <Link
               key={item.to}
               to={item.to}
+              onClick={onClose}
               className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm transition ${
                 isActive
                   ? "bg-green-100 text-green-700 font-semibold border-l-4 border-green-500"
@@ -166,6 +176,7 @@ export default function AdminSidebar() {
         {/* KEMBALI & LOGOUT */}
         <Link
           to="/"
+          onClick={onClose}
           className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 text-gray-700 text-sm"
         >
           <FaArrowLeft /> Kembali ke Website
@@ -178,6 +189,40 @@ export default function AdminSidebar() {
           <FaSignOutAlt /> Logout
         </button>
       </nav>
-    </div>
+    </>
+  );
+
+  return (
+    <>
+      {/* CSS animasi langsung di 1 file */}
+      <style>{`
+        .sidebar-mobile {
+          transform: translateX(-100%);
+          transition: transform 0.3s ease-in-out;
+        }
+        .sidebar-mobile.open {
+          transform: translateX(0);
+        }
+        .sidebar-mobile.close {
+          transform: translateX(-100%);
+        }
+      `}</style>
+
+      {/* ✅ Sidebar versi desktop */}
+      <div className="hidden md:flex fixed top-0 left-0 h-screen w-64 bg-white shadow-lg flex-col border-r z-50">
+        {renderSidebarContent()}
+      </div>
+
+      {/* ✅ Sidebar versi mobile */}
+      {isVisible && (
+        <div
+          className={`fixed top-0 left-0 h-screen w-64 bg-white shadow-lg flex flex-col border-r z-50 md:hidden sidebar-mobile ${
+            isOpen ? "open" : "close"
+          }`}
+        >
+          {renderSidebarContent()}
+        </div>
+      )}
+    </>
   );
 }

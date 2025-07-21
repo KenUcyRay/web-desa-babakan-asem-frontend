@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import AdminSidebar from "./AdminSidebar";
 import Pagination from "../ui/Pagination";
 
 export default function ManageAdministrasi() {
@@ -90,193 +89,184 @@ export default function ManageAdministrasi() {
   };
 
   return (
-    <div className="flex">
-      <AdminSidebar />
+    <div className="w-full">
+      <h1 className="text-2xl md:text-3xl font-bold mb-6 flex items-center gap-2 text-gray-800">
+        📋 Permohonan Layanan & Surat
+      </h1>
 
-      <div className="ml-64 p-6 w-full bg-gray-50 min-h-screen">
-        <h1 className="text-3xl font-bold mb-6 flex items-center gap-2 text-gray-800">
-          📋 Permohonan Layanan & Surat
-        </h1>
-
-        {/* ✅ Filter kategori seperti tab */}
-        <div className="flex flex-wrap gap-2 mb-4">
-          {[
-            { key: "Form Online", label: "Form Online" },
-            { key: "Formulir Layanan", label: "Formulir Layanan" },
-            { key: "Surat Pengantar", label: "Surat Pengantar" },
-          ].map((btn) => (
-            <button
-              key={btn.key}
-              onClick={() => {
-                setFilterKategori(btn.key);
-                setCurrentPage(1);
-                setExpandedRow(null);
-              }}
-              className={`px-4 py-2 rounded-lg text-sm font-medium shadow-sm transition-all ${
-                filterKategori === btn.key
-                  ? "bg-green-500 text-white shadow-md"
-                  : "bg-white text-gray-700 hover:bg-green-50 border border-gray-200"
-              }`}
-            >
-              {btn.label}
-            </button>
-          ))}
-        </div>
-
-        {/* ✅ Filter status dropdown lebih stylish */}
-        <div className="mb-6 flex items-center gap-3">
-          <label className="text-gray-700 font-medium">Filter Status:</label>
-          <select
-            value={filterStatus}
-            onChange={(e) => {
-              setFilterStatus(e.target.value);
+      {/* ✅ Filter kategori */}
+      <div className="flex flex-wrap gap-2 mb-4">
+        {[
+          { key: "Form Online", label: "Form Online" },
+          { key: "Formulir Layanan", label: "Formulir Layanan" },
+          { key: "Surat Pengantar", label: "Surat Pengantar" },
+        ].map((btn) => (
+          <button
+            key={btn.key}
+            onClick={() => {
+              setFilterKategori(btn.key);
               setCurrentPage(1);
               setExpandedRow(null);
             }}
-            className="px-4 py-2 rounded-lg border border-gray-300 bg-white shadow-sm focus:ring-2 focus:ring-green-400 transition"
+            className={`px-3 sm:px-4 py-2 rounded-lg text-sm font-medium shadow-sm transition-all ${
+              filterKategori === btn.key
+                ? "bg-green-500 text-white shadow-md"
+                : "bg-white text-gray-700 hover:bg-green-50 border border-gray-200"
+            }`}
           >
-            <option value="Semua">Semua</option>
-            <option value="pending">Pending</option>
-            <option value="diterima">Sudah Diterima</option>
-          </select>
-        </div>
+            {btn.label}
+          </button>
+        ))}
+      </div>
 
-        {/* ✅ Tabel dengan striping & hover lebih halus */}
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-          <table className="w-full text-left">
-            <thead className="bg-gray-100 text-gray-700 text-sm uppercase">
-              <tr>
-                <th className="p-4">Nama</th>
-                <th className="p-4">Kontak</th>
-                <th className="p-4">Layanan / Surat</th>
-                <th className="p-4">Waktu</th>
-                <th className="p-4 text-center">Status</th>
-                <th className="p-4 text-center">Aksi</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentData.map((item, idx) => {
-                const isExpanded = expandedRow === idx;
+      {/* ✅ Filter status */}
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-center gap-3">
+        <label className="text-gray-700 font-medium">Filter Status:</label>
+        <select
+          value={filterStatus}
+          onChange={(e) => {
+            setFilterStatus(e.target.value);
+            setCurrentPage(1);
+            setExpandedRow(null);
+          }}
+          className="px-4 py-2 rounded-lg border border-gray-300 bg-white shadow-sm focus:ring-2 focus:ring-green-400 transition w-full sm:w-auto"
+        >
+          <option value="Semua">Semua</option>
+          <option value="pending">Pending</option>
+          <option value="diterima">Sudah Diterima</option>
+        </select>
+      </div>
 
-                return (
-                  <>
-                    {/* ✅ Baris utama dengan striping */}
-                    <tr
-                      key={idx}
-                      className={`border-b transition hover:bg-green-50 ${
-                        idx % 2 === 0 ? "bg-white" : "bg-gray-50"
-                      } cursor-pointer`}
-                      onClick={() => toggleExpand(idx)}
-                    >
-                      <td className="p-4 font-medium text-gray-800">
-                        {item.nama}
-                      </td>
-                      <td className="p-4 text-gray-600">
-                        {item.email || item.nomor || item.nik || "-"}
-                      </td>
-                      <td className="p-4 text-gray-700">
-                        {item.layanan || item.jenisSurat || "-"}
-                      </td>
-                      <td className="p-4 text-gray-500 text-sm">
-                        {new Date(item.created_at).toLocaleString("id-ID")}
-                      </td>
-                      {/* ✅ Kolom Status dengan badge lebih modern */}
-                      <td className="p-4 text-center">
-                        {item.status === "pending" ? (
-                          <span className="inline-block px-3 py-1 text-xs rounded-full bg-yellow-100 text-yellow-700 font-semibold">
-                            ⏳ Pending
-                          </span>
-                        ) : (
-                          <span className="inline-block px-3 py-1 text-xs rounded-full bg-green-100 text-green-700 font-semibold">
-                            ✅ Sudah Diterima
-                          </span>
-                        )}
-                      </td>
-                      {/* ✅ Kolom Aksi */}
-                      <td className="p-4 text-center">
-                        {item.status === "pending" && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleTerima(idx);
-                            }}
-                            className="px-4 py-1 text-sm rounded-lg bg-blue-500 hover:bg-blue-600 text-white shadow transition"
-                          >
-                            Terima
-                          </button>
-                        )}
+      {/* ✅ Table scrollable di HP */}
+      <div className="bg-white rounded-xl shadow-lg overflow-x-auto">
+        <table className="w-full min-w-[800px] text-left">
+          <thead className="bg-gray-100 text-gray-700 text-sm uppercase">
+            <tr>
+              <th className="p-3 sm:p-4">Nama</th>
+              <th className="p-3 sm:p-4">Kontak</th>
+              <th className="p-3 sm:p-4">Layanan / Surat</th>
+              <th className="p-3 sm:p-4">Waktu</th>
+              <th className="p-3 sm:p-4 text-center">Status</th>
+              <th className="p-3 sm:p-4 text-center">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {currentData.map((item, idx) => {
+              const isExpanded = expandedRow === idx;
+              return (
+                <>
+                  <tr
+                    key={idx}
+                    className={`border-b transition hover:bg-green-50 ${
+                      idx % 2 === 0 ? "bg-white" : "bg-gray-50"
+                    } cursor-pointer`}
+                    onClick={() => toggleExpand(idx)}
+                  >
+                    <td className="p-3 sm:p-4 font-medium text-gray-800">
+                      {item.nama}
+                    </td>
+                    <td className="p-3 sm:p-4 text-gray-600">
+                      {item.email || item.nomor || item.nik || "-"}
+                    </td>
+                    <td className="p-3 sm:p-4 text-gray-700">
+                      {item.layanan || item.jenisSurat || "-"}
+                    </td>
+                    <td className="p-3 sm:p-4 text-gray-500 text-xs sm:text-sm">
+                      {new Date(item.created_at).toLocaleString("id-ID")}
+                    </td>
+                    <td className="p-3 sm:p-4 text-center">
+                      {item.status === "pending" ? (
+                        <span className="inline-block px-3 py-1 text-xs rounded-full bg-yellow-100 text-yellow-700 font-semibold">
+                          ⏳ Pending
+                        </span>
+                      ) : (
+                        <span className="inline-block px-3 py-1 text-xs rounded-full bg-green-100 text-green-700 font-semibold">
+                          ✅ Sudah Diterima
+                        </span>
+                      )}
+                    </td>
+                    <td className="p-3 sm:p-4 text-center">
+                      {item.status === "pending" && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleTerima(idx);
+                          }}
+                          className="px-3 sm:px-4 py-1 text-xs sm:text-sm rounded-lg bg-blue-500 hover:bg-blue-600 text-white shadow transition"
+                        >
+                          Terima
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+
+                  {isExpanded && (
+                    <tr>
+                      <td colSpan={6} className="p-4 bg-green-50">
+                        <div className="text-xs sm:text-sm text-gray-700 grid gap-1">
+                          {item.email && (
+                            <p>
+                              <span className="font-medium">📧 Email:</span>{" "}
+                              {item.email}
+                            </p>
+                          )}
+                          {item.nomor && (
+                            <p>
+                              <span className="font-medium">📱 No. HP:</span>{" "}
+                              {item.nomor}
+                            </p>
+                          )}
+                          {item.nik && (
+                            <p>
+                              <span className="font-medium">🆔 NIK:</span>{" "}
+                              {item.nik}
+                            </p>
+                          )}
+                          {item.keterangan && (
+                            <p>
+                              <span className="font-medium">📝 Keterangan:</span>{" "}
+                              {item.keterangan}
+                            </p>
+                          )}
+                          {item.pesan && (
+                            <p>
+                              <span className="font-medium">💬 Pesan:</span>{" "}
+                              {item.pesan}
+                            </p>
+                          )}
+                        </div>
                       </td>
                     </tr>
+                  )}
+                </>
+              );
+            })}
 
-                    {/* ✅ Detail dropdown lebih soft */}
-                    {isExpanded && (
-                      <tr>
-                        <td colSpan={6} className="p-4 bg-green-50">
-                          <div className="text-sm text-gray-700 grid gap-1">
-                            {item.email && (
-                              <p>
-                                <span className="font-medium">📧 Email:</span>{" "}
-                                {item.email}
-                              </p>
-                            )}
-                            {item.nomor && (
-                              <p>
-                                <span className="font-medium">📱 No. HP:</span>{" "}
-                                {item.nomor}
-                              </p>
-                            )}
-                            {item.nik && (
-                              <p>
-                                <span className="font-medium">🆔 NIK:</span>{" "}
-                                {item.nik}
-                              </p>
-                            )}
-                            {item.keterangan && (
-                              <p>
-                                <span className="font-medium">📝 Keterangan:</span>{" "}
-                                {item.keterangan}
-                              </p>
-                            )}
-                            {item.pesan && (
-                              <p>
-                                <span className="font-medium">💬 Pesan:</span>{" "}
-                                {item.pesan}
-                              </p>
-                            )}
-                          </div>
-                        </td>
-                      </tr>
-                    )}
-                  </>
-                );
-              })}
-
-              {filteredData.length === 0 && (
-                <tr>
-                  <td colSpan="6" className="text-center p-6 text-gray-500">
-                    Tidak ada pengajuan sesuai filter.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* ✅ Pagination lebih rapi */}
-        {filteredData.length > perPage && (
-          <div className="mt-6">
-            <Pagination
-              currentPage={currentPage}
-              totalItems={filteredData.length}
-              itemsPerPage={perPage}
-              onPageChange={(page) => {
-                setCurrentPage(page);
-                setExpandedRow(null);
-              }}
-            />
-          </div>
-        )}
+            {filteredData.length === 0 && (
+              <tr>
+                <td colSpan="6" className="text-center p-6 text-gray-500">
+                  Tidak ada pengajuan sesuai filter.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
+
+      {/* ✅ Pagination */}
+      {filteredData.length > perPage && (
+        <div className="mt-6">
+          <Pagination
+            currentPage={currentPage}
+            totalItems={filteredData.length}
+            itemsPerPage={perPage}
+            onPageChange={(page) => {
+              setCurrentPage(page);
+              setExpandedRow(null);
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }

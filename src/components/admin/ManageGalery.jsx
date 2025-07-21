@@ -1,7 +1,6 @@
-import { use, useEffect, useState } from "react";
-import AdminSidebar from "./AdminSidebar";
-import { FaPlus, FaTrash } from "react-icons/fa";
-import Pagination from "../ui/Pagination"; // ✅ pakai komponen Pagination kamu
+import { useEffect, useState } from "react";
+import { FaPlus, FaTrash, FaSave, FaTimes } from "react-icons/fa";
+import Pagination from "../ui/Pagination";
 import { GaleryApi } from "../../libs/api/GaleryApi";
 import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 
@@ -14,101 +13,63 @@ export default function ManageGalery() {
   const [title, setTitle] = useState("");
   const [image, setImage] = useState(null);
   const [editingId, setEditingId] = useState(null);
-  const handleSave = async () => {
-    if (editingId) {
-      if (!(await alertConfirm("Yakin ingin mengedit Galeri ini?"))) {
-        return;
-      }
 
-      const response = await GaleryApi.updateGaleri(editingId, {
-        title,
-        image,
-      });
-      const responseBody = await response.json();
+  const resetForm = () => {
+    setEditingId(null);
+    setTitle("");
+    setImage(null);
+    setShowForm(false);
+  };
+
+  const handleSave = async (e) => {
+    e.preventDefault();
+
+    if (!title || (!image && !editingId)) {
+      return alertError("Lengkapi judul & pilih gambar!");
+    }
+
+    if (editingId) {
+      if (!(await alertConfirm("Yakin ingin mengedit foto ini?"))) return;
+
+      const response = await GaleryApi.updateGaleri(editingId, { title, image });
+      const body = await response.json();
 
       if (!response.ok) {
-        let errorMessage = "Gagal menyimpan perubahan.";
-
-        if (responseBody.error && Array.isArray(responseBody.error)) {
-          const errorMessages = responseBody.error.map((err) => {
-            if (err.path && err.path.length > 0) {
-              return `${err.path[0]}: ${err.message}`;
-            }
-            return err.message;
-          });
-          errorMessage = errorMessages.join(", ");
-        } else if (
-          responseBody.error &&
-          typeof responseBody.error === "string"
-        ) {
-          errorMessage = responseBody.error;
-        }
-        await alertError(errorMessage);
+        alertError(typeof body.error === "string" ? body.error : "Gagal menyimpan perubahan.");
         return;
       }
+
+      setGaleries((prev) => prev.map((g) => (g.id === editingId ? body.galeri : g)));
+      await alertSuccess("Foto berhasil diperbarui!");
       resetForm();
-
-      setGaleries((prev) =>
-        prev.map((g) => (g.id === editingId ? responseBody.galeri : g))
-      );
-
-      await alertSuccess("Produk berhasil diperbarui!");
       return;
     }
-    if (!title || !image) return alertError("Lengkapi judul & pilih gambar!");
 
     const response = await GaleryApi.createGaleri({ title, image });
-    const responseBody = await response.json();
+    const body = await response.json();
 
-    if (response.ok) {
-      await alertSuccess("Galleri berhasil ditambahkan!");
-      setGaleries([responseBody.galeri, ...galeries]);
-    } else {
-      let errorMessage = "Gagal menyimpan perubahan.";
-
-      if (responseBody.error && Array.isArray(responseBody.error)) {
-        const errorMessages = responseBody.error.map((err) => {
-          if (err.path && err.path.length > 0) {
-            return `${err.path[0]}: ${err.message}`;
-          }
-          return err.message;
-        });
-        errorMessage = errorMessages.join(", ");
-      } else if (responseBody.error && typeof responseBody.error === "string") {
-        errorMessage = responseBody.error;
-      }
-
-      alertError(errorMessage);
+    if (!response.ok) {
+      alertError(typeof body.error === "string" ? body.error : "Gagal menyimpan foto.");
+      return;
     }
+
+    setGaleries([body.galeri, ...galeries]);
+    await alertSuccess("Foto berhasil ditambahkan!");
     resetForm();
   };
 
   const handleDelete = async (id) => {
-    if (!(await alertConfirm("Yakin hapus foto ini?"))) {
-      return;
-    }
+    if (!(await alertConfirm("Yakin hapus foto ini?"))) return;
 
     const response = await GaleryApi.deleteGaleri(id);
     if (!response.ok) {
-      const responseBody = await response.json();
-
-      let errorMessage = "Gagal menghapus";
-
-      if (responseBody.error && Array.isArray(responseBody.error)) {
-        const errorMessages = responseBody.error.map((err) => {
-          if (err.path && err.path.length > 0) {
-            return `${err.path[0]}: ${err.message}`;
-          }
-          return err.message;
-        });
-        errorMessage = errorMessages.join(", ");
-      } else if (responseBody.error && typeof responseBody.error === "string") {
-        errorMessage = responseBody.error;
-      }
+      const body = await response.json();
+      alertError(typeof body.error === "string" ? body.error : "Gagal menghapus foto.");
+      return;
     }
 
-    await alertSuccess("Foto berhasil dihapus!");
     setGaleries((prev) => prev.filter((g) => g.id !== id));
+    await alertSuccess("Foto berhasil dihapus!");
   };
 
   const handleEdit = (id) => {
@@ -116,38 +77,22 @@ export default function ManageGalery() {
     if (!galeri) return;
     setEditingId(galeri.id);
     setTitle(galeri.title);
-    setImage(null); // Reset image to allow re-upload
+    setImage(null); // supaya bisa upload ulang kalau mau
     setShowForm(true);
-  };
-
-  const resetForm = () => {
-    setEditingId(null);
-    setShowForm(false);
   };
 
   const fetchGaleries = async () => {
     const response = await GaleryApi.getGaleri(currentPage, 9);
-    const responseBody = await response.json();
-    if (!response.ok) {
-      let errorMessage = "Gagal menyimpan perubahan.";
+    const body = await response.json();
 
-      if (responseBody.error && Array.isArray(responseBody.error)) {
-        const errorMessages = responseBody.error.map((err) => {
-          if (err.path && err.path.length > 0) {
-            return `${err.path[0]}: ${err.message}`;
-          }
-          return err.message;
-        });
-        errorMessage = errorMessages.join(", ");
-      } else if (responseBody.error && typeof responseBody.error === "string") {
-        errorMessage = responseBody.error;
-      }
-      await alertError(errorMessage);
+    if (!response.ok) {
+      alertError(typeof body.error === "string" ? body.error : "Gagal mengambil data.");
       return;
     }
-    setGaleries(responseBody.galeri);
-    setTotalPages(responseBody.total_page);
-    setCurrentPage(responseBody.page);
+
+    setGaleries(body.galeri);
+    setTotalPages(body.total_page);
+    setCurrentPage(body.page);
   };
 
   useEffect(() => {
@@ -155,168 +100,130 @@ export default function ManageGalery() {
   }, [currentPage]);
 
   return (
-    <div className="flex">
-      <AdminSidebar />
+    <div className="font-[Poppins,sans-serif]">
+      {/* HEADER */}
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold text-green-700">Kelola Galeri</h1>
 
-      <div className="ml-64 p-6 w-full">
-        <h1 className="text-2xl font-bold mb-4">Kelola Galeri Desa</h1>
-
-        {/* ✅ Tombol filter kategori */}
-        {/* <div className="flex flex-wrap gap-2 mb-4">
-          {kategoriList.map((k) => (
-            <button
-              key={k}
-              className={`px-4 py-2 rounded transition ${
-                kategoriFilter === k
-                  ? "bg-green-500 text-white"
-                  : "bg-gray-200 hover:bg-gray-300"
-              }`}
-              onClick={() => {
-                setKategoriFilter(k);
-                setPage(1); // reset ke halaman pertama
-              }}
-            >
-              {k}
-            </button>
-          ))}
-        </div> */}
-
-        {/* Tombol Tambah */}
         {!showForm && (
           <button
             onClick={() => setShowForm(true)}
-            className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded flex items-center gap-2 mb-4"
+            className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded shadow hover:bg-green-600 transition"
           >
             <FaPlus /> Tambah Foto
           </button>
         )}
+      </div>
 
-        {/* Form Tambah/Edit */}
-        {showForm && (
-          <div className="bg-white p-4 rounded shadow mb-6">
-            <h2 className="text-lg font-semibold mb-3">
-              {editingId ? "Edit Foto" : "Tambah Foto"}
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div>
-                <label className="block text-sm">Judul Foto</label>
-                <input
-                  type="text"
-                  className="w-full border p-2 rounded"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm">Upload Gambar</label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="w-full border p-2 rounded"
-                  onChange={(e) => {
-                    setImage(e.target.files[0]);
-                  }}
-                />
-                {(image ||
-                  (editingId &&
-                    galeries.find((b) => b.id === editingId)?.image)) && (
-                  <img
-                    src={
-                      image
-                        ? URL.createObjectURL(image)
-                        : galeries.find((b) => b.id === editingId)?.image
-                    }
-                    alt="preview"
-                    className="mt-2 h-32 object-cover rounded"
-                  />
-                )}
-              </div>
-
-              {/* ✅ Pilih kategori */}
-              <div>
-                <label className="block text-sm">Kategori</label>
-                <select
-                  className="w-full border p-2 rounded"
-                  value={form.category}
-                  onChange={(e) =>
-                    setForm({ ...form, category: e.target.value })
-                  }
-                >
-                  <option value="Pemerintah">Pemerintah</option>
-                  <option value="PKK">PKK</option>
-                  <option value="Karang Taruna">Karang Taruna</option>
-                  <option value="DPD">DPD</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="flex gap-2 mt-4">
-              <button
-                onClick={handleSave}
-                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-              >
-                Simpan
-              </button>
-              <button
-                onClick={resetForm}
-                className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
-              >
-                Batal
-              </button>
-            </div>
+      {/* FORM TAMBAH/EDIT FOTO */}
+      {showForm && (
+        <form
+          onSubmit={handleSave}
+          className="bg-white p-6 rounded-xl shadow-md mb-6 space-y-4 max-w-2xl border"
+        >
+          <div>
+            <label className="block font-medium text-gray-700 mb-1">
+              Judul Foto
+            </label>
+            <input
+              type="text"
+              className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-green-300 outline-none"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Masukkan judul foto"
+              required
+            />
           </div>
-        )}
 
-        {/* List Foto */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {galeries.length === 0 ? (
-            <p className="text-gray-500 italic">Belum ada foto</p>
-          ) : (
-            galeries.map((galeri) => (
-              <div
-                key={galeri.id}
-                className="bg-white rounded shadow overflow-hidden flex flex-col"
-              >
-                <img
-                  src={`${import.meta.env.VITE_BASE_URL}/galeri/images/${
-                    galeri.image
-                  }`}
-                  alt={galeri.title}
-                  className="w-full h-48 object-cover"
-                />
-                <div className="p-3 flex flex-col flex-1 justify-between">
-                  <h3 className="font-semibold text-lg">{galeri.title}</h3>
-                  <div className="flex justify-between mt-3">
-                    <button
-                      onClick={() => handleEdit(galeri.id)}
-                      className="text-blue-500 hover:text-blue-700"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(galeri.id)}
-                      className="text-red-500 hover:text-red-700 flex items-center gap-1"
-                    >
-                      <FaTrash /> Hapus
-                    </button>
-                  </div>
+          <div>
+            <label className="block font-medium text-gray-700 mb-1">
+              Upload Gambar
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              className="w-full border rounded-lg p-2"
+              onChange={(e) => setImage(e.target.files[0])}
+            />
+            {(image || (editingId && galeries.find((b) => b.id === editingId)?.image)) && (
+              <img
+                src={
+                  image
+                    ? URL.createObjectURL(image)
+                    : `${import.meta.env.VITE_BASE_URL}/galeri/images/${
+                        galeries.find((b) => b.id === editingId)?.image
+                      }`
+                }
+                alt="preview"
+                className="mt-3 w-full h-40 object-cover rounded-lg shadow-sm"
+              />
+            )}
+          </div>
+
+          <div className="flex gap-3">
+            <button
+              type="submit"
+              className="flex items-center gap-2 bg-green-500 text-white px-5 py-2 rounded-lg shadow hover:bg-green-600 transition"
+            >
+              <FaSave /> {editingId ? "Update Foto" : "Simpan Foto"}
+            </button>
+            <button
+              type="button"
+              onClick={resetForm}
+              className="flex items-center gap-2 bg-gray-400 text-white px-4 py-2 rounded-lg hover:bg-gray-500 transition"
+            >
+              <FaTimes /> Batal
+            </button>
+          </div>
+        </form>
+      )}
+
+      {/* LIST GALERI */}
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {galeries.length === 0 ? (
+          <p className="text-gray-500 italic">Belum ada foto</p>
+        ) : (
+          galeries.map((galeri) => (
+            <div
+              key={galeri.id}
+              className="bg-white rounded-xl shadow-md border hover:shadow-lg transition overflow-hidden"
+            >
+              <img
+                src={`${import.meta.env.VITE_BASE_URL}/galeri/images/${galeri.image}`}
+                alt={galeri.title}
+                className="w-full h-48 object-cover"
+              />
+              <div className="p-4">
+                <h3 className="font-semibold text-lg text-gray-800 line-clamp-2">
+                  {galeri.title}
+                </h3>
+                <div className="flex justify-between mt-4 text-sm">
+                  <button
+                    onClick={() => handleEdit(galeri.id)}
+                    className="text-blue-500 hover:text-blue-700 transition"
+                  >
+                    ✏️ Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(galeri.id)}
+                    className="flex items-center gap-1 text-red-500 hover:text-red-700 transition"
+                  >
+                    <FaTrash /> Hapus
+                  </button>
                 </div>
               </div>
-            ))
-          )}
-        </div>
+            </div>
+          ))
+        )}
+      </div>
 
-        {/* ✅ Pagination */}
-        {/* {filteredGaleries.length > 0 && ( */}
-        <div className="mt-6 flex justify-center">
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-          />
-        </div>
-        {/* )} */}
+      {/* PAGINATION */}
+      <div className="mt-6 flex justify-center">
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
       </div>
     </div>
   );
