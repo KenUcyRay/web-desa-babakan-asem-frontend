@@ -16,17 +16,6 @@ export default function DetailAgenda() {
   const [comments, setComments] = useState([]);
   const [pesan, setPesan] = useState("");
 
-  // ✅ Contoh detail agenda (bisa nanti diambil dari API)
-  const agendaDetail = {
-    judul: `Judul Agenda ${id}`,
-    tanggal: "20 Juli 2025",
-    jam: "09:00 - 12:00 WIB",
-    lokasi: "Balai Desa Babakan Asem",
-    status: "Akan Datang", // Bisa: Sedang Berlangsung / Selesai
-    kategori: "Gotong Royong",
-    deskripsi: `Ini adalah detail lengkap dari agenda ${id}, yang membahas kegiatan rutin warga desa untuk menjaga kebersihan lingkungan dan mempererat silaturahmi. Kegiatan ini terbuka untuk seluruh warga desa.`,
-  };
-
   const handleKomentar = async (e) => {
     e.preventDefault();
 
@@ -94,8 +83,10 @@ export default function DetailAgenda() {
       <div className="md:col-span-3">
         {/* Gambar Utama */}
         <img
-          src={berita1}
-          alt="Detail Agenda"
+          src={`${import.meta.env.VITE_BASE_URL}/agenda/images/${
+            agenda.featured_image
+          }`}
+          alt={agenda.title}
           className="w-full h-96 object-cover rounded-lg mb-6"
         />
 
@@ -104,29 +95,30 @@ export default function DetailAgenda() {
           <h1 className="text-3xl font-bold mb-3">{agenda.title}</h1>
 
           <div className="flex flex-wrap gap-4 text-sm text-gray-700">
-            <span className="flex items-center gap-2">
-              <FaCalendarAlt className="text-green-600" />{" "}
-              {agendaDetail.tanggal}
-            </span>
-            <span className="flex items-center gap-2">
-              <FaClock className="text-green-600" /> {agendaDetail.jam}
-            </span>
+            {agenda &&
+              agenda.start_time &&
+              (() => {
+                const { tanggal, waktu } = Helper.formatAgendaDateTime(
+                  agenda.start_time,
+                  agenda.end_time
+                );
+                return (
+                  <>
+                    <span className="flex items-center gap-2">
+                      <FaCalendarAlt className="text-green-600" /> {tanggal}
+                    </span>
+                    <span className="flex items-center gap-2">
+                      <FaClock className="text-green-600" /> {waktu}
+                    </span>
+                  </>
+                );
+              })()}
+
             <span className="flex items-center gap-2">
               <FaMapMarkerAlt className="text-green-600" /> {agenda.location}
             </span>
             <span className="flex items-center gap-2">
               <FaTag className="text-green-600" /> {agenda.type}
-            </span>
-            <span
-              className={`px-3 py-1 text-xs font-semibold rounded-full ${
-                agendaDetail.status === "Sedang Berlangsung"
-                  ? "bg-yellow-200 text-yellow-800"
-                  : agendaDetail.status === "Selesai"
-                  ? "bg-gray-200 text-gray-700"
-                  : "bg-green-200 text-green-700"
-              }`}
-            >
-              {agendaDetail.status}
             </span>
           </div>
         </div>

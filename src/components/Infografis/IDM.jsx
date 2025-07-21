@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   LineChart,
   Line,
@@ -7,6 +8,8 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { InfografisApi } from "../../libs/api/InfografisApi";
+import { alertError } from "../../libs/alert";
 
 export default function IDM() {
   const skorIDM = [
@@ -15,6 +18,21 @@ export default function IDM() {
     { tahun: "2023", skor: 0.75 },
     { tahun: "2024", skor: 0.8 },
   ];
+  const [idm, setIdm] = useState([]);
+
+  const fetchIdm = async () => {
+    const response = await InfografisApi.getIdm();
+    const responseBody = await response.json();
+    if (!response.ok) {
+      await alertError("Gagal mengambil data IDM.");
+      return;
+    }
+    setIdm(responseBody.idm);
+  };
+
+  useEffect(() => {
+    fetchIdm();
+  }, []);
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-8 font-poppins">
@@ -59,7 +77,12 @@ export default function IDM() {
             <XAxis dataKey="tahun" />
             <YAxis domain={[0.6, 1]} />
             <Tooltip />
-            <Line type="monotone" dataKey="skor" stroke="#B6F500" strokeWidth={3} />
+            <Line
+              type="monotone"
+              dataKey="skor"
+              stroke="#B6F500"
+              strokeWidth={3}
+            />
           </LineChart>
         </ResponsiveContainer>
       </div>

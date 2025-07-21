@@ -86,7 +86,7 @@ export default function Agenda() {
                     </p>
                     <p className="text-xs text-gray-500 flex items-center gap-1 mt-1">
                       <FaCalendarAlt className="text-green-500" />
-                      {Helper.formatTanggal(item.agenda.published_at)} | 👁{" "}
+                      {Helper.formatTanggal(item.agenda.start_time)} | 👁{" "}
                       {item.agenda.view_count} kali
                     </p>
                   </div>

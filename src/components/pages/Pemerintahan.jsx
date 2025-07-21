@@ -29,7 +29,7 @@ export default function Pemerintahan() {
   const [members, setMembers] = useState([]);
 
   const fetchMembers = async () => {
-    const response = await MemberApi.getMembers("PEMERINTAHAN");
+    const response = await MemberApi.getMembers("PEMERINTAH", 1, 4);
     const responseBody = await response.json();
     if (!response.ok) {
       let errorMessage = "Gagal menyimpan perubahan.";

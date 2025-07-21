@@ -29,7 +29,9 @@ export default function DetailProduk() {
       setAverageRating(responseBody.rating ?? 0);
       setComments(responseBody.comments ?? []);
     } else {
-      await alertError("Gagal mengambil detail product. Silakan coba lagi nanti.");
+      await alertError(
+        "Gagal mengambil detail product. Silakan coba lagi nanti."
+      );
       navigate("/bumdes");
     }
   };
@@ -95,7 +97,9 @@ export default function DetailProduk() {
     setUserRated(true);
     setShowSubmitRating(false);
 
-    await alertSuccess(`Terima kasih! Rating ${userTempRating} ⭐ telah dikirim.`);
+    await alertSuccess(
+      `Terima kasih! Rating ${userTempRating} ⭐ telah dikirim.`
+    );
   };
 
   const handleCancelRating = () => {
@@ -111,7 +115,9 @@ export default function DetailProduk() {
       {/* ✅ Konten utama */}
       <div className="md:col-span-3">
         <img
-          src={`${import.meta.env.VITE_BASE_URL}/products/images/${product.featured_image}`}
+          src={`${import.meta.env.VITE_BASE_URL}/products/images/${
+            product.featured_image
+          }`}
           alt={product.title}
           className="w-full h-96 object-cover rounded-lg mb-6"
         />
@@ -161,7 +167,9 @@ export default function DetailProduk() {
 
         {/* ✅ Bagian Rating User di bawah tombol WhatsApp */}
         <div className="mt-6 p-4 bg-gray-50 rounded-lg shadow">
-          <h2 className="text-lg font-semibold mb-2">⭐ Beri Penilaian Produk Ini</h2>
+          <h2 className="text-lg font-semibold mb-2">
+            ⭐ Beri Penilaian Produk Ini
+          </h2>
           <div className="flex items-center gap-1">
             {[1, 2, 3, 4, 5].map((star) => {
               return (

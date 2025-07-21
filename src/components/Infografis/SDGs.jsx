@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import cuate from "../../assets/cuate.png";
 import {
   FaLeaf,
@@ -10,34 +11,79 @@ import {
   FaCity,
   FaBalanceScale,
   FaGlobeAmericas,
-  FaSolarPanel,
   FaHandshake,
   FaUniversity,
   FaRecycle,
   FaSeedling,
   FaUsers,
 } from "react-icons/fa";
+import { InfografisApi } from "../../libs/api/InfografisApi";
+import { alertError } from "../../libs/alert";
 
 export default function SDGs() {
   const data = [
     { icon: <FaHeartbeat />, label: "1. Tanpa Kemiskinan", value: "75%" },
     { icon: <FaLeaf />, label: "2. Tanpa Kelaparan", value: "80%" },
-    { icon: <FaHeartbeat />, label: "3. Kesehatan & Kesejahteraan", value: "85%" },
+    {
+      icon: <FaHeartbeat />,
+      label: "3. Kesehatan & Kesejahteraan",
+      value: "85%",
+    },
     { icon: <FaBook />, label: "4. Pendidikan Berkualitas", value: "90%" },
     { icon: <FaUsers />, label: "5. Kesetaraan Gender", value: "70%" },
     { icon: <FaWater />, label: "6. Air Bersih & Sanitasi", value: "92%" },
-    { icon: <FaLightbulb />, label: "7. Energi Bersih & Terjangkau", value: "65%" },
-    { icon: <FaDollarSign />, label: "8. Pekerjaan Layak & Ekonomi", value: "78%" },
+    {
+      icon: <FaLightbulb />,
+      label: "7. Energi Bersih & Terjangkau",
+      value: "65%",
+    },
+    {
+      icon: <FaDollarSign />,
+      label: "8. Pekerjaan Layak & Ekonomi",
+      value: "78%",
+    },
     { icon: <FaIndustry />, label: "9. Infrastruktur & Inovasi", value: "68%" },
-    { icon: <FaBalanceScale />, label: "10. Mengurangi Ketimpangan", value: "60%" },
-    { icon: <FaCity />, label: "11. Kota & Komunitas Berkelanjutan", value: "74%" },
-    { icon: <FaRecycle />, label: "12. Konsumsi Bertanggung Jawab", value: "81%" },
+    {
+      icon: <FaBalanceScale />,
+      label: "10. Mengurangi Ketimpangan",
+      value: "60%",
+    },
+    {
+      icon: <FaCity />,
+      label: "11. Kota & Komunitas Berkelanjutan",
+      value: "74%",
+    },
+    {
+      icon: <FaRecycle />,
+      label: "12. Konsumsi Bertanggung Jawab",
+      value: "81%",
+    },
     { icon: <FaGlobeAmericas />, label: "13. Aksi Iklim", value: "77%" },
     { icon: <FaWater />, label: "14. Ekosistem Lautan", value: "69%" },
     { icon: <FaSeedling />, label: "15. Ekosistem Daratan", value: "83%" },
     { icon: <FaHandshake />, label: "16. Perdamaian & Keadilan", value: "88%" },
-    { icon: <FaUniversity />, label: "17. Kemitraan untuk Tujuan", value: "72%" },
+    {
+      icon: <FaUniversity />,
+      label: "17. Kemitraan untuk Tujuan",
+      value: "72%",
+    },
   ];
+
+  const [sdg, setSdg] = useState([]);
+
+  const fetchSdg = async () => {
+    const response = await InfografisApi.getSdg();
+    const responseBody = await response.json();
+    if (!response.ok) {
+      await alertError("Gagal mengambil data SDGs.");
+      return;
+    }
+    setSdg(responseBody.sdg);
+  };
+
+  useEffect(() => {
+    fetchSdg();
+  }, []);
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-8 font-poppins">

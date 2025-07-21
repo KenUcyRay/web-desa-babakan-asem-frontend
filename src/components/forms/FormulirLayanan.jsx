@@ -1,13 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { AdministrasiApi } from "../../libs/api/AdministrasiApi";
+import { alertError, alertSuccess } from "../../libs/alert";
 
 export default function FormulirLayanan() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    nama: "",
+    name: "",
     email: "",
-    layanan: "",
-    pesan: "",
+    type: "",
+    message: "",
   });
 
   const handleChange = (e) => {
@@ -15,9 +17,25 @@ export default function FormulirLayanan() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert("✅ Formulir layanan berhasil dikirim!");
+
+    const response = await AdministrasiApi.createLayanan(formData);
+    const responseBody = await response.json();
+    if (!response.ok) {
+      let errorMessage = "Gagal menyimpan perubahan.";
+      if (responseBody.error && Array.isArray(responseBody.error)) {
+        const errorMessages = responseBody.error.map((err) =>
+          err.path?.length ? `${err.path[0]}: ${err.message}` : err.message
+        );
+        errorMessage = errorMessages.join(", ");
+      } else if (typeof responseBody.error === "string") {
+        errorMessage = responseBody.error;
+      }
+      await alertError(errorMessage);
+      return;
+    }
+    await alertSuccess("Pengajuan surat layanan berhasil dikirim!");
     navigate("/administrasi");
   };
 
@@ -36,8 +54,8 @@ export default function FormulirLayanan() {
             </label>
             <input
               type="text"
-              name="nama"
-              value={formData.nama}
+              name="name"
+              value={formData.name}
               onChange={handleChange}
               required
               placeholder="Masukkan nama lengkap"
@@ -67,16 +85,16 @@ export default function FormulirLayanan() {
               Pilih Layanan
             </label>
             <select
-              name="layanan"
-              value={formData.layanan}
+              name="type"
+              value={formData.type}
               onChange={handleChange}
               required
               className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-400"
             >
               <option value="">-- Pilih Layanan --</option>
-              <option value="Pengaduan">Pengaduan</option>
-              <option value="Permohonan">Permohonan</option>
-              <option value="Lainnya">Lainnya</option>
+              <option value="PENGADUAN">Pengaduan</option>
+              <option value="PERMOHONAN">Permohonan</option>
+              <option value="LAINNYA">Lainnya</option>
             </select>
           </div>
 
@@ -86,8 +104,8 @@ export default function FormulirLayanan() {
               Pesan / Permintaan
             </label>
             <textarea
-              name="pesan"
-              value={formData.pesan}
+              name="message"
+              value={formData.message}
               onChange={handleChange}
               placeholder="Tuliskan permintaan layanan Anda..."
               rows="4"

@@ -1,13 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { AdministrasiApi } from "../../libs/api/AdministrasiApi";
+import { alertError, alertSuccess } from "../../libs/alert";
 
 export default function FormOnline() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    nama: "",
+    name: "",
     email: "",
-    nomor: "",
-    layanan: "",
+    phone: "",
+    type: "",
   });
 
   const handleChange = (e) => {
@@ -15,9 +17,24 @@ export default function FormOnline() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert("✅ Permohonan layanan online berhasil dikirim!");
+    const response = await AdministrasiApi.createOnline(formData);
+    const responseBody = await response.json();
+    if (!response.ok) {
+      let errorMessage = "Gagal menyimpan perubahan.";
+      if (responseBody.error && Array.isArray(responseBody.error)) {
+        const errorMessages = responseBody.error.map((err) =>
+          err.path?.length ? `${err.path[0]}: ${err.message}` : err.message
+        );
+        errorMessage = errorMessages.join(", ");
+      } else if (typeof responseBody.error === "string") {
+        errorMessage = responseBody.error;
+      }
+      await alertError(errorMessage);
+      return;
+    }
+    await alertSuccess("Permohonan layanan online berhasil dikirim!");
     navigate("/administrasi");
   };
 
@@ -36,8 +53,8 @@ export default function FormOnline() {
             </label>
             <input
               type="text"
-              name="nama"
-              value={formData.nama}
+              name="name"
+              value={formData.name}
               onChange={handleChange}
               required
               placeholder="Masukkan nama lengkap"
@@ -68,8 +85,8 @@ export default function FormOnline() {
             </label>
             <input
               type="text"
-              name="nomor"
-              value={formData.nomor}
+              name="phone"
+              value={formData.phone}
               onChange={handleChange}
               required
               placeholder="08xxxxxxxxxx"
@@ -83,16 +100,16 @@ export default function FormOnline() {
               Pilih Jenis Layanan Online
             </label>
             <select
-              name="layanan"
-              value={formData.layanan}
+              name="type"
+              value={formData.type}
               onChange={handleChange}
               required
               className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-400"
             >
               <option value="">-- Pilih --</option>
-              <option value="Tracking Surat">Tracking Surat</option>
-              <option value="Cek Status">Cek Status Layanan</option>
-              <option value="Buat Permohonan">Buat Permohonan</option>
+              <option value="TRACKING_SURAT">Tracking Surat</option>
+              <option value="CEK_STATUS_LAYANAN">Cek Status Layanan</option>
+              <option value="PERMOHONAN">Buat Permohonan</option>
             </select>
           </div>
 

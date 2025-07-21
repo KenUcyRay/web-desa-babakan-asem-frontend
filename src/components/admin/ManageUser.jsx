@@ -63,7 +63,7 @@ export default function ManageUser() {
   };
 
   // ✅ Turunkan Admin → User (langsung hilang dari tabel)
-  const adminToUser = async (admin) => {  
+  const adminToUser = async (admin) => {
     if (
       !(await alertConfirm(
         `Ubah ${admin.name} dari admin menjadi user regular?`
@@ -129,7 +129,6 @@ export default function ManageUser() {
       alertError("Gagal mengambil data pengguna.");
       return;
     }
-    console.log(responseBody.users);
     setUsers(responseBody.users);
     setCurrentPage(responseBody.page);
     setTotalPages(responseBody.total_page);

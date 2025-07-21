@@ -17,7 +17,7 @@ export default function StPkk() {
       await alertError("Gagal mengambil data galeri. Silakan coba lagi nanti.");
     }
   };
-  
+
   const [members, setMembers] = useState([]);
 
   const fetchMembers = async () => {
@@ -40,7 +40,6 @@ export default function StPkk() {
       await alertError(errorMessage);
       return;
     }
-    console.log(responseBody.members);
     setMembers(responseBody.members);
   };
 

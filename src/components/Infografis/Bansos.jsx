@@ -1,10 +1,21 @@
+import { useEffect, useState } from "react";
+import { InfografisApi } from "../../libs/api/InfografisApi";
+
 export default function Bansos() {
-  const data = [
-    { nama: "BLT Dana Desa", penerima: 50 },
-    { nama: "Bantuan Pangan", penerima: 70 },
-    { nama: "PKH", penerima: 40 },
-    { nama: "Rastra", penerima: 30 },
-  ];
+  const [bansos, setBansos] = useState([]);
+
+  const fetchBansos = async () => {
+    const response = await InfografisApi.getBansos();
+    const responseBody = await response.json();
+    if (!response.ok) {
+      await alertError("Gagal mengambil data Bantuan Sosial.");
+      return;
+    }
+    setBansos(responseBody.bansos);
+  };
+  useEffect(() => {
+    fetchBansos();
+  }, []);
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-8 font-poppins">
@@ -14,17 +25,17 @@ export default function Bansos() {
       </p>
 
       <div className="grid sm:grid-cols-2 md:grid-cols-2 gap-6 mt-8">
-        {data.map((item, idx) => (
+        {bansos.map((item) => (
           <div
-            key={idx}
+            key={item.id}
             className="bg-white p-6 rounded-xl shadow flex justify-between hover:shadow-md hover:-translate-y-1 transition"
           >
             <div>
-              <p className="font-semibold text-gray-800">{item.nama}</p>
+              <p className="font-semibold text-gray-800">{item.name}</p>
               <p className="text-gray-500 text-sm">Jumlah Penerima</p>
             </div>
             <span className="text-xl font-bold text-[#B6F500]">
-              {item.penerima}
+              {item.amount}
             </span>
           </div>
         ))}

@@ -15,6 +15,7 @@ export default function Profile() {
     name: "",
     email: "",
     password: "",
+    confirm_password: "",
   });
 
   const fetchProfile = async () => {
@@ -31,6 +32,7 @@ export default function Profile() {
       name: responseBody.user.name,
       email: responseBody.user.email,
       password: "",
+      confirm_password: "",
     });
   };
 
@@ -80,6 +82,9 @@ export default function Profile() {
   const handleUpdate = async (e) => {
     e.preventDefault();
 
+    const confirm = await alertConfirm("Yakin simpan perubahan ini?");
+    if (!confirm) return;
+
     const payload = {
       name: formData.name,
       email: formData.email,
@@ -87,10 +92,18 @@ export default function Profile() {
 
     // hanya kirim password kalau diisi
     if (formData.password.trim() !== "") {
-      payload.password = formData.password;
+      if (formData.password !== formData.confirm_password) {
+        payload.password = formData.password;
+        return alertError("Konfirmasi password tidak cocok.");
+      }
     }
 
-    const response = await UserApi.updateProfile(user.id, payload);
+    const response = await UserApi.updateUser(
+      payload.name,
+      payload.email,
+      payload.password,
+      payload.confirm_password
+    );
     if (!response.ok) {
       const responseBody = await response.json();
       let errorMessage = "Gagal memperbarui profil.";
@@ -113,7 +126,7 @@ export default function Profile() {
 
     await alertSuccess("Profil berhasil diperbarui.");
     setEditMode(false);
-    fetchProfile(); // refresh profil setelah update
+    await fetchProfile(); // refresh profil setelah update
   };
 
   useEffect(() => {
@@ -233,13 +246,27 @@ export default function Profile() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-600">
-                Password Baru (opsional)
+                Password Baru
               </label>
               <input
                 type="password"
                 value={formData.password}
                 onChange={(e) =>
                   setFormData({ ...formData, password: e.target.value })
+                }
+                className="w-full border rounded-lg p-2 mt-1"
+                placeholder="Biarkan kosong jika tidak ingin ganti password"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-600">
+                Konfirmasi Password Baru
+              </label>
+              <input
+                type="password"
+                value={formData.confirm_password}
+                onChange={(e) =>
+                  setFormData({ ...formData, confirm_password: e.target.value })
                 }
                 className="w-full border rounded-lg p-2 mt-1"
                 placeholder="Biarkan kosong jika tidak ingin ganti password"

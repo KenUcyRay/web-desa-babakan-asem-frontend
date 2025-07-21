@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   FaTachometerAlt,
   FaNewspaper,
@@ -25,6 +25,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { alertConfirm, alertSuccess } from "../../libs/alert";
 
 export default function AdminSidebar() {
+  const navigate = useNavigate();
   const location = useLocation();
   const { logout, setAdminStatus } = useAuth();
   const [openInfografis, setOpenInfografis] = useState(false);
@@ -35,26 +36,59 @@ export default function AdminSidebar() {
     setAdminStatus(false);
     logout();
     await alertSuccess("Anda telah keluar.");
+    navigate("/login");
   };
 
   const menu = [
     { to: "/admin", label: "Dashboard", icon: <FaTachometerAlt /> },
-    { to: "/admin/manage-berita", label: "Kelola Berita", icon: <FaNewspaper /> },
-    { to: "/admin/manage-agenda", label: "Kelola Agenda", icon: <FaCalendarAlt /> },
+    {
+      to: "/admin/manage-berita",
+      label: "Kelola Berita",
+      icon: <FaNewspaper />,
+    },
+    {
+      to: "/admin/manage-agenda",
+      label: "Kelola Agenda",
+      icon: <FaCalendarAlt />,
+    },
     { to: "/admin/manage-pesan", label: "Kelola Pesan", icon: <FaEnvelope /> },
     { to: "/admin/manage-user", label: "Kelola User", icon: <FaUsers /> },
     { to: "/admin/manage-bumdes", label: "Produk BUMDes", icon: <FaStore /> },
     { to: "/admin/manage-galery", label: "Galeri Desa", icon: <FaImage /> },
-    { to: "/admin/manage-administrasi", label: "Administrasi", icon: <FaClipboardList /> },
+    {
+      to: "/admin/manage-administrasi",
+      label: "Administrasi",
+      icon: <FaClipboardList />,
+    },
     { to: "/admin/manage-pkk", label: "Program PKK", icon: <FaUsersCog /> },
-    { to: "/admin/manage-anggota", label: "Struktur Organisasi", icon: <FaSitemap /> },
+    {
+      to: "/admin/manage-anggota",
+      label: "Struktur Organisasi",
+      icon: <FaSitemap />,
+    },
   ];
 
   const infografisSubmenu = [
-    { to: "/admin/kelola-infografis/penduduk", label: "Penduduk", icon: <FaUserFriends /> },
-    { to: "/admin/kelola-infografis/idm", label: "Indeks Desa Membangun", icon: <FaGlobeAsia /> },
-    { to: "/admin/kelola-infografis/bansos", label: "Bantuan Sosial", icon: <FaHandshake /> },
-    { to: "/admin/kelola-infografis/sdgs", label: "SDGs Desa", icon: <FaPeopleCarry /> },
+    {
+      to: "/admin/kelola-infografis/penduduk",
+      label: "Penduduk",
+      icon: <FaUserFriends />,
+    },
+    {
+      to: "/admin/kelola-infografis/idm",
+      label: "Indeks Desa Membangun",
+      icon: <FaGlobeAsia />,
+    },
+    {
+      to: "/admin/kelola-infografis/bansos",
+      label: "Bantuan Sosial",
+      icon: <FaHandshake />,
+    },
+    {
+      to: "/admin/kelola-infografis/sdgs",
+      label: "SDGs Desa",
+      icon: <FaPeopleCarry />,
+    },
   ];
 
   const pengaturan = [

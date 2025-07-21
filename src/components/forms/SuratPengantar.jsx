@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { AdministrasiApi } from "../../libs/api/AdministrasiApi";
+import { alertError, alertSuccess } from "../../libs/alert";
 
 export default function SuratPengantar() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    nama: "",
+    name: "",
     nik: "",
-    jenisSurat: "",
+    type: "",
     keterangan: "",
   });
 
@@ -15,9 +17,25 @@ export default function SuratPengantar() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert("✅ Pengajuan Surat Pengantar berhasil dikirim!");
+
+    const response = await AdministrasiApi.createPengantar(formData);
+    const responseBody = await response.json();
+    if (!response.ok) {
+      let errorMessage = "Gagal menyimpan perubahan.";
+      if (responseBody.error && Array.isArray(responseBody.error)) {
+        const errorMessages = responseBody.error.map((err) =>
+          err.path?.length ? `${err.path[0]}: ${err.message}` : err.message
+        );
+        errorMessage = errorMessages.join(", ");
+      } else if (typeof responseBody.error === "string") {
+        errorMessage = responseBody.error;
+      }
+      await alertError(errorMessage);
+      return;
+    }
+    await alertSuccess("Pengajuan surat pengantar berhasil dikirim!");
     navigate("/administrasi");
   };
 
@@ -36,8 +54,8 @@ export default function SuratPengantar() {
             </label>
             <input
               type="text"
-              name="nama"
-              value={formData.nama}
+              name="name"
+              value={formData.name}
               onChange={handleChange}
               required
               placeholder="Masukkan nama lengkap"
@@ -67,8 +85,8 @@ export default function SuratPengantar() {
               Jenis Surat
             </label>
             <select
-              name="jenisSurat"
-              value={formData.jenisSurat}
+              name="type"
+              value={formData.type}
               onChange={handleChange}
               required
               className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-400"
@@ -77,7 +95,7 @@ export default function SuratPengantar() {
               <option value="KTP">Surat Pengantar KTP</option>
               <option value="KK">Surat Pengantar KK</option>
               <option value="SKCK">Surat Pengantar SKCK</option>
-              <option value="Lainnya">Lainnya</option>
+              <option value="LAINNYA">Lainnya</option>
             </select>
           </div>
 
