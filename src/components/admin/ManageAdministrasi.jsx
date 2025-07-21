@@ -5,11 +5,11 @@ import Pagination from "../ui/Pagination";
 export default function ManageAdministrasi() {
   const [layanan, setLayanan] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [filterKategori, setFilterKategori] = useState("all");
-  const [expandedRow, setExpandedRow] = useState(null); // ✅ track baris yang dibuka
+  const [filterKategori, setFilterKategori] = useState("Form Online");
+  const [filterStatus, setFilterStatus] = useState("Semua");
+  const [expandedRow, setExpandedRow] = useState(null);
   const perPage = 5;
 
-  // ✅ Dummy data
   const dummyData = [
     {
       nama: "Budi Santoso",
@@ -18,6 +18,7 @@ export default function ManageAdministrasi() {
       jenis_form: "Form Online",
       layanan: "Tracking Surat",
       created_at: "2025-07-21T09:00:00",
+      status: "pending",
     },
     {
       nama: "Siti Aminah",
@@ -25,6 +26,7 @@ export default function ManageAdministrasi() {
       jenis_form: "Formulir Layanan",
       layanan: "Pengaduan",
       created_at: "2025-07-20T10:30:00",
+      status: "pending",
     },
     {
       nama: "Andi Pratama",
@@ -33,6 +35,7 @@ export default function ManageAdministrasi() {
       jenisSurat: "Surat Pengantar SKCK",
       keterangan: "Perlu untuk melamar kerja",
       created_at: "2025-07-19T14:15:00",
+      status: "diterima",
     },
     {
       nama: "Dewi Lestari",
@@ -41,6 +44,7 @@ export default function ManageAdministrasi() {
       jenis_form: "Form Online",
       layanan: "Buat Permohonan",
       created_at: "2025-07-18T16:45:00",
+      status: "pending",
     },
     {
       nama: "Ahmad Fauzi",
@@ -49,6 +53,7 @@ export default function ManageAdministrasi() {
       layanan: "Permohonan",
       pesan: "Mohon segera diproses sebelum minggu depan.",
       created_at: "2025-07-17T11:20:00",
+      status: "diterima",
     },
   ];
 
@@ -56,35 +61,46 @@ export default function ManageAdministrasi() {
     setLayanan(dummyData);
   }, []);
 
-  // ✅ Filter kategori
-  const filteredData =
-    filterKategori === "all"
-      ? layanan
-      : layanan.filter((item) => item.jenis_form === filterKategori);
+  const filteredData = layanan.filter((item) => {
+    const matchKategori = item.jenis_form === filterKategori;
+    const matchStatus =
+      filterStatus === "Semua" ? true : item.status === filterStatus;
+    return matchKategori && matchStatus;
+  });
 
-  // ✅ Pagination logic
   const indexOfLast = currentPage * perPage;
   const indexOfFirst = indexOfLast - perPage;
   const currentData = filteredData.slice(indexOfFirst, indexOfLast);
 
-  // ✅ Toggle expand row
   const toggleExpand = (idx) => {
     setExpandedRow(expandedRow === idx ? null : idx);
+  };
+
+  const handleTerima = (idx) => {
+    const updated = [...layanan];
+    const itemIndex = layanan.findIndex(
+      (item) =>
+        item.nama === currentData[idx].nama &&
+        item.created_at === currentData[idx].created_at
+    );
+    if (itemIndex !== -1) {
+      updated[itemIndex].status = "diterima";
+      setLayanan(updated);
+    }
   };
 
   return (
     <div className="flex">
       <AdminSidebar />
 
-      <div className="ml-64 p-6 w-full">
-        <h1 className="text-2xl font-bold mb-6 flex items-center gap-2">
+      <div className="ml-64 p-6 w-full bg-gray-50 min-h-screen">
+        <h1 className="text-3xl font-bold mb-6 flex items-center gap-2 text-gray-800">
           📋 Permohonan Layanan & Surat
         </h1>
 
-        {/* ✅ Tombol Filter */}
-        <div className="flex gap-3 mb-4 flex-wrap">
+        {/* ✅ Filter kategori seperti tab */}
+        <div className="flex flex-wrap gap-2 mb-4">
           {[
-            { key: "all", label: "Semua" },
             { key: "Form Online", label: "Form Online" },
             { key: "Formulir Layanan", label: "Formulir Layanan" },
             { key: "Surat Pengantar", label: "Surat Pengantar" },
@@ -94,12 +110,12 @@ export default function ManageAdministrasi() {
               onClick={() => {
                 setFilterKategori(btn.key);
                 setCurrentPage(1);
-                setExpandedRow(null); // tutup detail kalau ganti filter
+                setExpandedRow(null);
               }}
-              className={`px-4 py-2 rounded-lg border text-sm font-medium transition ${
+              className={`px-4 py-2 rounded-lg text-sm font-medium shadow-sm transition-all ${
                 filterKategori === btn.key
-                  ? "bg-green-500 text-white border-green-500"
-                  : "bg-white text-gray-700 border-gray-300 hover:bg-green-50"
+                  ? "bg-green-500 text-white shadow-md"
+                  : "bg-white text-gray-700 hover:bg-green-50 border border-gray-200"
               }`}
             >
               {btn.label}
@@ -107,16 +123,35 @@ export default function ManageAdministrasi() {
           ))}
         </div>
 
-        {/* ✅ Tabel */}
-        <div className="bg-white rounded-xl shadow overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead className="bg-gray-100 text-gray-700">
+        {/* ✅ Filter status dropdown lebih stylish */}
+        <div className="mb-6 flex items-center gap-3">
+          <label className="text-gray-700 font-medium">Filter Status:</label>
+          <select
+            value={filterStatus}
+            onChange={(e) => {
+              setFilterStatus(e.target.value);
+              setCurrentPage(1);
+              setExpandedRow(null);
+            }}
+            className="px-4 py-2 rounded-lg border border-gray-300 bg-white shadow-sm focus:ring-2 focus:ring-green-400 transition"
+          >
+            <option value="Semua">Semua</option>
+            <option value="pending">Pending</option>
+            <option value="diterima">Sudah Diterima</option>
+          </select>
+        </div>
+
+        {/* ✅ Tabel dengan striping & hover lebih halus */}
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+          <table className="w-full text-left">
+            <thead className="bg-gray-100 text-gray-700 text-sm uppercase">
               <tr>
                 <th className="p-4">Nama</th>
                 <th className="p-4">Kontak</th>
-                <th className="p-4">Jenis Form</th>
                 <th className="p-4">Layanan / Surat</th>
                 <th className="p-4">Waktu</th>
+                <th className="p-4 text-center">Status</th>
+                <th className="p-4 text-center">Aksi</th>
               </tr>
             </thead>
             <tbody>
@@ -125,10 +160,12 @@ export default function ManageAdministrasi() {
 
                 return (
                   <>
-                    {/* ✅ Baris utama */}
+                    {/* ✅ Baris utama dengan striping */}
                     <tr
                       key={idx}
-                      className="border-b hover:bg-green-50 cursor-pointer"
+                      className={`border-b transition hover:bg-green-50 ${
+                        idx % 2 === 0 ? "bg-white" : "bg-gray-50"
+                      } cursor-pointer`}
                       onClick={() => toggleExpand(idx)}
                     >
                       <td className="p-4 font-medium text-gray-800">
@@ -137,47 +174,72 @@ export default function ManageAdministrasi() {
                       <td className="p-4 text-gray-600">
                         {item.email || item.nomor || item.nik || "-"}
                       </td>
-                      <td className="p-4 text-gray-700">{item.jenis_form}</td>
                       <td className="p-4 text-gray-700">
                         {item.layanan || item.jenisSurat || "-"}
                       </td>
-                      <td className="p-4 text-gray-500">
+                      <td className="p-4 text-gray-500 text-sm">
                         {new Date(item.created_at).toLocaleString("id-ID")}
+                      </td>
+                      {/* ✅ Kolom Status dengan badge lebih modern */}
+                      <td className="p-4 text-center">
+                        {item.status === "pending" ? (
+                          <span className="inline-block px-3 py-1 text-xs rounded-full bg-yellow-100 text-yellow-700 font-semibold">
+                            ⏳ Pending
+                          </span>
+                        ) : (
+                          <span className="inline-block px-3 py-1 text-xs rounded-full bg-green-100 text-green-700 font-semibold">
+                            ✅ Sudah Diterima
+                          </span>
+                        )}
+                      </td>
+                      {/* ✅ Kolom Aksi */}
+                      <td className="p-4 text-center">
+                        {item.status === "pending" && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleTerima(idx);
+                            }}
+                            className="px-4 py-1 text-sm rounded-lg bg-blue-500 hover:bg-blue-600 text-white shadow transition"
+                          >
+                            Terima
+                          </button>
+                        )}
                       </td>
                     </tr>
 
-                    {/* ✅ Detail dropdown */}
+                    {/* ✅ Detail dropdown lebih soft */}
                     {isExpanded && (
-                      <tr className="bg-gray-50">
-                        <td colSpan={5} className="p-4">
-                          <div className="text-sm text-gray-700 space-y-1">
+                      <tr>
+                        <td colSpan={6} className="p-4 bg-green-50">
+                          <div className="text-sm text-gray-700 grid gap-1">
                             {item.email && (
                               <p>
-                                <span className="font-medium">Email:</span>{" "}
+                                <span className="font-medium">📧 Email:</span>{" "}
                                 {item.email}
                               </p>
                             )}
                             {item.nomor && (
                               <p>
-                                <span className="font-medium">No. HP:</span>{" "}
+                                <span className="font-medium">📱 No. HP:</span>{" "}
                                 {item.nomor}
                               </p>
                             )}
                             {item.nik && (
                               <p>
-                                <span className="font-medium">NIK:</span>{" "}
+                                <span className="font-medium">🆔 NIK:</span>{" "}
                                 {item.nik}
                               </p>
                             )}
                             {item.keterangan && (
                               <p>
-                                <span className="font-medium">Keterangan:</span>{" "}
+                                <span className="font-medium">📝 Keterangan:</span>{" "}
                                 {item.keterangan}
                               </p>
                             )}
                             {item.pesan && (
                               <p>
-                                <span className="font-medium">Pesan:</span>{" "}
+                                <span className="font-medium">💬 Pesan:</span>{" "}
                                 {item.pesan}
                               </p>
                             )}
@@ -191,8 +253,8 @@ export default function ManageAdministrasi() {
 
               {filteredData.length === 0 && (
                 <tr>
-                  <td colSpan="5" className="text-center p-6 text-gray-500">
-                    Belum ada pengajuan layanan.
+                  <td colSpan="6" className="text-center p-6 text-gray-500">
+                    Tidak ada pengajuan sesuai filter.
                   </td>
                 </tr>
               )}
@@ -200,7 +262,7 @@ export default function ManageAdministrasi() {
           </table>
         </div>
 
-        {/* ✅ Pagination */}
+        {/* ✅ Pagination lebih rapi */}
         {filteredData.length > perPage && (
           <div className="mt-6">
             <Pagination
@@ -209,7 +271,7 @@ export default function ManageAdministrasi() {
               itemsPerPage={perPage}
               onPageChange={(page) => {
                 setCurrentPage(page);
-                setExpandedRow(null); // tutup detail kalau ganti halaman
+                setExpandedRow(null);
               }}
             />
           </div>

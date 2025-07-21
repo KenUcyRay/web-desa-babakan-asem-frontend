@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
+import { FiUsers } from "react-icons/fi";
 import AdminSidebar from "./AdminSidebar";
 import Pagination from "../ui/Pagination";
 import { MemberApi } from "../../libs/api/MemberApi";
 import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 
+// Import font Poppins di global (opsional bisa taruh di index.css)
+// body { font-family: 'Poppins', sans-serif; }
+
 export default function ManageAnggota() {
-  // Dummy data awal supaya ada tampilan sebelum fetch dari API
   const [members, setMembers] = useState([
     {
       id: 1,
@@ -35,7 +38,6 @@ export default function ManageAnggota() {
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState(null);
 
-  // Form state
   const [formData, setFormData] = useState({
     name: "",
     position: "",
@@ -47,7 +49,6 @@ export default function ManageAnggota() {
     important_level: 1,
   });
 
-  // Tambah anggota
   const handleAdd = () => {
     setEditingId(null);
     setFormData({
@@ -63,7 +64,6 @@ export default function ManageAnggota() {
     setShowModal(true);
   };
 
-  // Edit anggota (isi form)
   const handleEdit = (id) => {
     const member = members.find((a) => a.id === id);
     if (!member) return;
@@ -81,11 +81,8 @@ export default function ManageAnggota() {
     setShowModal(true);
   };
 
-  // Hapus anggota
   const handleDelete = async (id) => {
-    const confirmDelete = await alertConfirm(
-      "Yakin ingin menghapus anggota ini?"
-    );
+    const confirmDelete = await alertConfirm("Yakin ingin menghapus anggota ini?");
     if (!confirmDelete) return;
 
     const response = await MemberApi.deleteMember(id);
@@ -97,97 +94,43 @@ export default function ManageAnggota() {
     await alertSuccess("Anggota berhasil dihapus.");
   };
 
-  // Submit form tambah / edit
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (editingId) {
       const response = await MemberApi.updateMember(editingId, formData);
-      const responseBody = await response.json();
       if (!response.ok) {
-        let errorMessage = "Gagal menyimpan perubahan.";
-        if (responseBody.error && Array.isArray(responseBody.error)) {
-          const errorMessages = responseBody.error.map((err) => {
-            if (err.path && err.path.length > 0) {
-              return `${err.path[0]}: ${err.message}`;
-            }
-            return err.message;
-          });
-          errorMessage = errorMessages.join(", ");
-        } else if (
-          responseBody.error &&
-          typeof responseBody.error === "string"
-        ) {
-          errorMessage = responseBody.error;
-        }
-        alertError(errorMessage);
+        alertError("Gagal menyimpan perubahan.");
         return;
       }
-
-      setMembers((prev) =>
-        prev
-          .map((m) =>
-            m.id === editingId ? { ...m, ...responseBody.member } : m
-          )
-          .sort((a, b) => b.important_level - a.important_level)
-      );
-      alertSuccess("Anggota diupdate");
+      alertSuccess("Anggota berhasil diperbarui!");
       setShowModal(false);
       return;
     }
 
-    // Tambah anggota baru
     const response = await MemberApi.createMember(formData);
-    const responseBody = await response.json();
-
     if (!response.ok) {
-      let errorMessage = "Gagal menyimpan perubahan.";
-      if (responseBody.error && Array.isArray(responseBody.error)) {
-        const errorMessages = responseBody.error.map((err) => {
-          if (err.path && err.path.length > 0) {
-            return `${err.path[0]}: ${err.message}`;
-          }
-          return err.message;
-        });
-        errorMessage = errorMessages.join(", ");
-      } else if (responseBody.error && typeof responseBody.error === "string") {
-        errorMessage = responseBody.error;
-      }
-      alertError(errorMessage);
+      alertError("Gagal menambah anggota.");
       return;
     }
-
-    setMembers((prev) =>
-      [...prev, responseBody.member].sort(
-        (a, b) => b.important_level - a.important_level
-      )
-    );
+    alertSuccess("Anggota berhasil ditambahkan!");
     setShowModal(false);
   };
 
-  // Filter kategori
   const [kategori, setKategori] = useState("Semua");
   const kategoriList = ["Semua", "PKK", "Karang Taruna", "DPD", "PEMERINTAH"];
 
-  // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  // Fetch anggota dari API
   const fetchMembers = async () => {
-    let kategoriValue = kategori;
-    if (kategoriValue === "Karang Taruna") kategoriValue = "KARANG_TARUNA";
-    if (kategoriValue === "PEMERINTAH") kategoriValue = "PEMERINTAH";
-    if (kategoriValue === "Semua") kategoriValue = ""; // jika backend support filter kosong = semua
-
+    let kategoriValue = kategori === "Semua" ? "" : kategori;
     const response = await MemberApi.getMembers(kategoriValue, currentPage, 9);
-    const responseBody = await response.json();
-
     if (!response.ok) {
-      alertError("Gagal mengambil data anggota. Silakan coba lagi.");
+      alertError("Gagal mengambil data anggota.");
       return;
     }
-
+    const responseBody = await response.json();
     setMembers(responseBody.members);
     setTotalPages(responseBody.total_page);
     setCurrentPage(responseBody.page);
@@ -198,46 +141,48 @@ export default function ManageAnggota() {
   }, [currentPage, kategori]);
 
   return (
-    <div className="flex flex-col md:flex-row">
+    <div className="flex flex-col md:flex-row font-[Poppins,sans-serif]">
       <AdminSidebar />
 
-      <div className="md:ml-64 flex-1 p-4 sm:p-6">
-        {/* Header */}
+      <div className="md:ml-64 flex-1 p-6">
+        {/* HEADER */}
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-6">
-          <h1 className="text-2xl sm:text-3xl font-bold">Struktur Organisasi</h1>
-
+          <div className="flex items-center gap-2 text-gray-800">
+            <FiUsers className="text-3xl text-green-600" />
+            <h1 className="text-3xl font-bold">Struktur Organisasi</h1>
+          </div>
           <button
             onClick={handleAdd}
-            className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+            className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-lg shadow-md transition"
           >
             <FaPlus /> Tambah Anggota
           </button>
         </div>
 
-        {/* Filter kategori */}
-        <div className="flex flex-wrap gap-2 mb-4">
+        {/* FILTER */}
+        <div className="flex flex-wrap gap-2 mb-6">
           {kategoriList.map((k) => (
             <button
               key={k}
-              className={`px-4 py-2 rounded transition ${
-                kategori === k
-                  ? "bg-green-500 text-white"
-                  : "bg-gray-200 hover:bg-gray-300"
-              }`}
               onClick={() => {
                 setKategori(k);
                 setCurrentPage(1);
               }}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition ${
+                kategori === k
+                  ? "bg-green-500 text-white shadow"
+                  : "bg-gray-100 hover:bg-green-50 text-gray-700"
+              }`}
             >
               {k}
             </button>
           ))}
         </div>
 
-        {/* Grid anggota */}
+        {/* GRID ANGGOTA */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {members.length === 0 && (
-            <p className="text-center text-gray-500 mt-6">
+            <p className="text-center text-gray-500 col-span-full">
               Tidak ada anggota untuk kategori ini.
             </p>
           )}
@@ -245,7 +190,7 @@ export default function ManageAnggota() {
           {members.map((member) => (
             <div
               key={member.id}
-              className="bg-white rounded-lg shadow-md overflow-hidden"
+              className="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden"
             >
               <img
                 src={
@@ -254,36 +199,40 @@ export default function ManageAnggota() {
                     : `${import.meta.env.VITE_BASE_URL}/organizations/images/${member.profile_photo}`
                 }
                 alt={member.name}
-                className="w-full h-40 object-cover"
+                className="w-full h-48 object-cover"
               />
 
-              <div className="p-4 space-y-1">
-                <h2 className="text-lg font-bold">{member.name}</h2>
+              <div className="p-4 space-y-2">
+                <h2 className="text-lg font-semibold text-gray-800">{member.name}</h2>
                 <p className="text-sm text-gray-600">{member.position}</p>
-                <p className="text-xs text-gray-500">
-                  Masa Jabatan:{" "}
-                  <b>
+
+                <div className="flex flex-wrap items-center gap-2 text-xs mt-2">
+                  <span className="px-2 py-1 rounded bg-green-100 text-green-700">
+                    {member.organization_type}
+                  </span>
+                  <span className="px-2 py-1 rounded bg-blue-100 text-blue-700">
                     {member.term_start} - {member.term_end}
-                  </b>
-                </p>
-                <span className="inline-block mt-2 text-xs bg-green-100 text-green-700 px-2 py-1 rounded">
-                  {member.organization_type}
-                </span>
-                <p className="text-xs mt-1">
-                  {member.is_term ? "✅ Masih menjabat" : "❌ Tidak menjabat"}
-                </p>
+                  </span>
+                  <span
+                    className={`px-2 py-1 rounded ${
+                      member.is_term ? "bg-green-200 text-green-800" : "bg-red-200 text-red-800"
+                    }`}
+                  >
+                    {member.is_term ? "Menjabat" : "Tidak Menjabat"}
+                  </span>
+                </div>
               </div>
 
-              <div className="flex justify-between p-4 border-t text-sm">
+              <div className="flex justify-between p-4 border-t">
                 <button
                   onClick={() => handleEdit(member.id)}
-                  className="flex items-center gap-1 text-blue-600 hover:underline"
+                  className="flex items-center gap-1 text-blue-600 hover:text-blue-800 transition"
                 >
                   <FaEdit /> Edit
                 </button>
                 <button
                   onClick={() => handleDelete(member.id)}
-                  className="flex items-center gap-1 text-red-600 hover:underline"
+                  className="flex items-center gap-1 text-red-600 hover:text-red-800 transition"
                 >
                   <FaTrash /> Hapus
                 </button>
@@ -292,7 +241,7 @@ export default function ManageAnggota() {
           ))}
         </div>
 
-        {/* Pagination */}
+        {/* PAGINATION */}
         {members.length > 0 && (
           <div className="mt-6 flex justify-center">
             <Pagination
@@ -304,130 +253,120 @@ export default function ManageAnggota() {
         )}
       </div>
 
-      {/* Modal Tambah/Edit */}
+      {/* MODAL */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-lg">
-            <h2 className="text-xl font-bold mb-4">
+          <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-lg">
+            <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-gray-800">
+              {editingId ? <FaEdit /> : <FaPlus />}
               {editingId ? "Edit Anggota" : "Tambah Anggota"}
             </h2>
 
-            <form onSubmit={handleSubmit} className="space-y-3">
-              <input
-                type="text"
-                placeholder="Nama"
-                value={formData.name}
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
-                className="w-full border p-2 rounded"
-                required
-              />
-
-              <input
-                type="text"
-                placeholder="Jabatan / Position"
-                value={formData.position}
-                onChange={(e) =>
-                  setFormData({ ...formData, position: e.target.value })
-                }
-                className="w-full border p-2 rounded"
-                required
-              />
-
-              <div className="flex gap-2">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-1 gap-3">
                 <input
-                  type="number"
-                  placeholder="Term Start (ex: 2025)"
-                  value={formData.term_start}
-                  onChange={(e) =>
-                    setFormData({ ...formData, term_start: e.target.value })
-                  }
-                  className="w-1/2 border p-2 rounded"
+                  type="text"
+                  placeholder="Nama Lengkap"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className="w-full border rounded-lg p-2 focus:ring focus:ring-green-200"
                   required
                 />
+
                 <input
-                  type="number"
-                  placeholder="Term End (ex: 2028)"
-                  value={formData.term_end}
-                  onChange={(e) =>
-                    setFormData({ ...formData, term_end: e.target.value })
-                  }
-                  className="w-1/2 border p-2 rounded"
+                  type="text"
+                  placeholder="Jabatan"
+                  value={formData.position}
+                  onChange={(e) => setFormData({ ...formData, position: e.target.value })}
+                  className="w-full border rounded-lg p-2 focus:ring focus:ring-green-200"
                   required
                 />
-              </div>
 
-              <select
-                value={formData.organization_type}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    organization_type: e.target.value,
-                  })
-                }
-                className="w-full border p-2 rounded"
-              >
-                <option value="PEMERINTAH">Pemerintah</option>
-                <option value="PKK">PKK</option>
-                <option value="KARANG_TARUNA">Karang Taruna</option>
-                <option value="DPD">DPD</option>
-              </select>
+                <div className="flex gap-2">
+                  <input
+                    type="number"
+                    placeholder="Mulai Jabatan"
+                    value={formData.term_start}
+                    onChange={(e) =>
+                      setFormData({ ...formData, term_start: e.target.value })
+                    }
+                    className="w-1/2 border rounded-lg p-2"
+                    required
+                  />
+                  <input
+                    type="number"
+                    placeholder="Akhir Jabatan"
+                    value={formData.term_end}
+                    onChange={(e) =>
+                      setFormData({ ...formData, term_end: e.target.value })
+                    }
+                    className="w-1/2 border rounded-lg p-2"
+                    required
+                  />
+                </div>
 
-              <div>
-                <label className="block text-sm font-medium">Foto Profil</label>
-                <input
-                  type="file"
-                  accept="image/*"
+                <select
+                  value={formData.organization_type}
                   onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      profile_photo: e.target.files[0],
-                    })
+                    setFormData({ ...formData, organization_type: e.target.value })
                   }
-                  className="w-full border p-2 rounded"
-                  {...(editingId ? {} : { required: true })}
+                  className="w-full border rounded-lg p-2"
+                >
+                  <option value="PEMERINTAH">Pemerintah</option>
+                  <option value="PKK">PKK</option>
+                  <option value="KARANG_TARUNA">Karang Taruna</option>
+                  <option value="DPD">DPD</option>
+                </select>
+
+                <div>
+                  <label className="text-sm font-medium">Foto Profil</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) =>
+                      setFormData({ ...formData, profile_photo: e.target.files[0] })
+                    }
+                    className="w-full border rounded-lg p-2"
+                    {...(editingId ? {} : { required: true })}
+                  />
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={formData.is_term}
+                    onChange={(e) =>
+                      setFormData({ ...formData, is_term: e.target.checked })
+                    }
+                  />
+                  <span>Masih menjabat?</span>
+                </div>
+
+                <input
+                  type="number"
+                  placeholder="Tingkat Penting (1-10)"
+                  value={formData.important_level}
+                  onChange={(e) =>
+                    setFormData({ ...formData, important_level: e.target.value })
+                  }
+                  className="w-full border rounded-lg p-2"
+                  required
+                  min={1}
+                  max={10}
                 />
               </div>
 
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={formData.is_term}
-                  onChange={(e) =>
-                    setFormData({ ...formData, is_term: e.target.checked })
-                  }
-                />
-                <span>Masih menjabat?</span>
-              </div>
-
-              <input
-                type="number"
-                placeholder="Important Level (contoh Kepala Desa = 5)"
-                value={formData.important_level}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    important_level: e.target.value,
-                  })
-                }
-                className="w-full border p-2 rounded"
-                required
-                min={1}
-                max={10}
-              />
-
-              <div className="flex justify-end gap-2 mt-4">
+              <div className="flex justify-end gap-3 mt-4">
                 <button
                   type="button"
-                  className="px-4 py-2 bg-gray-300 rounded"
+                  className="px-4 py-2 rounded-lg bg-gray-300 hover:bg-gray-400"
                   onClick={() => setShowModal(false)}
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-green-600 text-white rounded"
+                  className="px-5 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white"
                 >
                   {editingId ? "Update" : "Tambah"}
                 </button>

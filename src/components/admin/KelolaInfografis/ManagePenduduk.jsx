@@ -1,6 +1,6 @@
 import { useState } from "react";
 import pana from "../../../assets/pana.png";
-import { FaMale, FaFemale, FaChild, FaHome, FaEdit, FaTrash, FaPlus } from "react-icons/fa";
+import { FaMale, FaFemale, FaChild, FaHome, FaEdit } from "react-icons/fa";
 import {
   BarChart,
   Bar,
@@ -33,8 +33,7 @@ export default function ManagePenduduk() {
 
   const [showForm, setShowForm] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
-  const [isAdding, setIsAdding] = useState(false);
-  const [formData, setFormData] = useState({ label: "", value: "", iconKey: "home" });
+  const [jumlahBaru, setJumlahBaru] = useState("");
 
   const chartData = data.map((item) => ({
     name: item.label,
@@ -43,72 +42,25 @@ export default function ManagePenduduk() {
 
   const handleEdit = (index) => {
     setEditingIndex(index);
-    setFormData({
-      label: data[index].label,
-      value: data[index].value,
-      iconKey: data[index].iconKey,
-    });
-    setIsAdding(false);
+    setJumlahBaru(data[index].value);
     setShowForm(true);
-  };
-
-  const handleAdd = () => {
-    setFormData({ label: "", value: "", iconKey: "home" });
-    setEditingIndex(null);
-    setIsAdding(true);
-    setShowForm(true);
-  };
-
-  const handleDelete = (index) => {
-    if (confirm("Yakin mau hapus data ini?")) {
-      setData((prev) => prev.filter((_, i) => i !== index));
-    }
   };
 
   const handleSave = () => {
-    if (!formData.label.trim() || !formData.value) {
-      alert("Isi semua field!");
-      return;
-    }
-
-    if (isAdding) {
-      setData((prev) => [
-        ...prev,
-        {
-          iconKey: formData.iconKey,
-          label: formData.label,
-          value: parseInt(formData.value),
-        },
-      ]);
-    } else {
-      const updatedData = [...data];
-      updatedData[editingIndex] = {
-        iconKey: formData.iconKey,
-        label: formData.label,
-        value: parseInt(formData.value),
-      };
-      setData(updatedData);
-    }
-
+    const updatedData = [...data];
+    updatedData[editingIndex].value = parseInt(jumlahBaru);
+    setData(updatedData);
     setShowForm(false);
   };
 
   return (
     <div className="p-6 font-poppins md:ml-64">
-      {/* ✅ Judul + Tombol Tambah */}
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h2 className="text-3xl font-bold text-gray-800">Kelola Infografis Penduduk</h2>
-          <p className="text-gray-500 text-sm">
-            Edit atau tambahkan kategori penduduk desa.
-          </p>
-        </div>
-        <button
-          onClick={handleAdd}
-          className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg shadow hover:bg-green-600 transition"
-        >
-          <FaPlus /> Tambah Data
-        </button>
+      {/* ✅ Judul */}
+      <div className="mb-6">
+        <h2 className="text-3xl font-bold text-gray-800">Kelola Infografis Penduduk</h2>
+        <p className="text-gray-500 text-sm">
+          Anda hanya bisa mengedit jumlah penduduk untuk tiap kategori.
+        </p>
       </div>
 
       {/* ✅ Preview Info */}
@@ -118,8 +70,8 @@ export default function ManagePenduduk() {
             Demografi Penduduk Desa Babakan
           </h3>
           <p className="mt-2 text-gray-600 text-justify">
-            Data ini bersifat ilustratif. Anda bisa menambah, mengedit, atau menghapus
-            kategori penduduk sesuai kebutuhan.
+            Data ini bersifat ilustratif. Anda bisa memperbarui jumlah kategori
+            penduduk sesuai kondisi terkini.
           </p>
         </div>
         <img
@@ -145,19 +97,13 @@ export default function ManagePenduduk() {
             <p className="text-gray-600 mt-2 text-sm">{item.label}</p>
             <p className="text-2xl font-bold text-gray-800">{item.value}</p>
 
-            {/* Tombol Edit & Hapus */}
-            <div className="absolute top-2 right-2 flex gap-2">
+            {/* Tombol Edit */}
+            <div className="absolute top-2 right-2">
               <button
                 onClick={() => handleEdit(idx)}
                 className="text-blue-500 hover:text-blue-700"
               >
                 <FaEdit />
-              </button>
-              <button
-                onClick={() => handleDelete(idx)}
-                className="text-red-500 hover:text-red-700"
-              >
-                <FaTrash />
               </button>
             </div>
           </div>
@@ -180,59 +126,24 @@ export default function ManagePenduduk() {
         </ResponsiveContainer>
       </div>
 
-      {/* ✅ Modal Tambah/Edit */}
+      {/* ✅ Modal Edit Jumlah */}
       {showForm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-96">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-80">
             <h3 className="text-xl font-semibold mb-4">
-              {isAdding ? "Tambah Data" : "Edit Data"}
+              Edit Jumlah - {data[editingIndex].label}
             </h3>
 
-            {/* Nama Kategori */}
-            <label className="block text-sm font-medium text-gray-700">
-              Nama Kategori
-            </label>
-            <input
-              type="text"
-              value={formData.label}
-              onChange={(e) => setFormData({ ...formData, label: e.target.value })}
-              className="w-full p-2 border rounded mb-4"
-            />
-
             {/* Jumlah */}
-            <label className="block text-sm font-medium text-gray-700">
-              Jumlah
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Jumlah Penduduk
             </label>
             <input
               type="number"
-              value={formData.value}
-              onChange={(e) => setFormData({ ...formData, value: e.target.value })}
+              value={jumlahBaru}
+              onChange={(e) => setJumlahBaru(e.target.value)}
               className="w-full p-2 border rounded mb-4"
             />
-
-            {/* Pilih Icon */}
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Pilih Icon
-            </label>
-            <select
-              value={formData.iconKey}
-              onChange={(e) => setFormData({ ...formData, iconKey: e.target.value })}
-              className="w-full p-2 border rounded mb-4"
-            >
-              {iconOptions.map((opt) => (
-                <option key={opt.key} value={opt.key}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-
-            {/* Preview Icon */}
-            <div className="flex items-center gap-2 mb-4">
-              <span className="text-gray-600 text-sm">Preview:</span>
-              <div className="text-2xl text-green-500">
-                {getIconByKey(formData.iconKey)}
-              </div>
-            </div>
 
             {/* Tombol Modal */}
             <div className="flex justify-end gap-2">
