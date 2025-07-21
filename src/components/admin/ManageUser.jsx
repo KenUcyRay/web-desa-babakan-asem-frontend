@@ -1,10 +1,9 @@
 import { useState } from "react";
 import {
   FaUserPlus,
-  FaEdit,
-  FaTrash,
   FaUserShield,
   FaUser,
+  FaExchangeAlt,
 } from "react-icons/fa";
 import AdminSidebar from "./AdminSidebar";
 import Pagination from "../ui/Pagination";
@@ -14,96 +13,140 @@ export default function ManageUser() {
     { id: 1, nama: "Admin Utama", email: "admin@desa.id", role: "admin" },
     { id: 2, nama: "Petugas Agenda", email: "petugas@desa.id", role: "admin" },
     { id: 3, nama: "Sekretaris", email: "sekretaris@desa.id", role: "admin" },
+    { id: 4, nama: "Budi User", email: "budi@desa.id", role: "user" },
+    { id: 5, nama: "Sinta User", email: "sinta@desa.id", role: "user" },
   ];
 
   const [users, setUsers] = useState(defaultUsers);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [showEditForm, setShowEditForm] = useState(false);
-  const [editData, setEditData] = useState(null);
+  const [showPromoteForm, setShowPromoteForm] = useState(false);
 
-  // ✅ Pagination versi komponen
+  // ✅ Hanya tampilkan admin
+  const adminsOnly = users.filter((u) => u.role === "admin");
+
+  // ✅ Pagination khusus admin
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentUsers = users.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(users.length / itemsPerPage);
+  const currentAdmins = adminsOnly.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(adminsOnly.length / itemsPerPage);
 
-  const handleAddUser = (e) => {
+  // ✅ Tambah Admin Baru
+  const handleAddAdmin = (e) => {
     e.preventDefault();
     const form = e.target;
-    const newUser = {
-      id: Date.now(),
-      nama: form.nama.value,
-      email: form.email.value,
-      role: form.role.value,
-    };
-    setUsers([...users, newUser]);
-    setShowAddForm(false);
-  };
+    const password = form.password.value;
+    const confirm = form.confirm_password.value;
 
-  const handleEditUser = (e) => {
-    e.preventDefault();
-    const form = e.target;
-    const updatedUser = {
-      ...editData,
-      nama: form.nama.value,
-      email: form.email.value,
-      role: form.role.value,
-    };
-
-    setUsers(users.map((u) => (u.id === editData.id ? updatedUser : u)));
-    setEditData(null);
-    setShowEditForm(false);
-  };
-
-  const handleEditClick = (user) => {
-    setEditData(user);
-    setShowEditForm(true);
-  };
-
-  const handleDelete = (id) => {
-    const isDefault = defaultUsers.some((u) => u.id === id);
-    if (isDefault) {
-      alert("Akun bawaan tidak dapat dihapus!");
+    if (password !== confirm) {
+      alert("Konfirmasi password tidak cocok!");
       return;
     }
-    if (window.confirm("Yakin mau hapus akun ini?")) {
-      setUsers(users.filter((u) => u.id !== id));
+
+    const newUser = {
+      id: Date.now(),
+      nama: form.name.value,
+      email: form.email.value,
+      password: password,
+      role: "admin",
+    };
+
+    setUsers([...users, newUser]);
+    setShowAddForm(false);
+    form.reset();
+  };
+
+  // ✅ Turunkan Admin → User (langsung hilang dari tabel)
+  const adminToUser = (admin) => {
+    if (window.confirm(`Ubah ${admin.nama} dari Admin menjadi User?`)) {
+      setUsers(
+        users.map((u) =>
+          u.id === admin.id ? { ...u, role: "user" } : u
+        )
+      );
     }
+  };
+
+  // ✅ Naikkan User → Admin (pakai form ID)
+  const handlePromoteUser = (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const targetId = parseInt(form.userId.value, 10);
+
+    const target = users.find((u) => u.id === targetId);
+
+    if (!target) {
+      alert("User dengan ID tersebut tidak ditemukan!");
+      return;
+    }
+
+    if (target.role === "admin") {
+      alert(`${target.nama} sudah admin.`);
+      return;
+    }
+
+    // Ubah jadi admin
+    setUsers(
+      users.map((u) =>
+        u.id === target.id ? { ...u, role: "admin" } : u
+      )
+    );
+    alert(`${target.nama} berhasil diubah menjadi Admin.`);
+
+    setShowPromoteForm(false);
+    form.reset();
   };
 
   return (
     <div className="flex">
       <AdminSidebar />
 
-      {/* Konten Utama */}
       <div className="ml-64 p-6 w-full">
+        {/* Header + Tombol */}
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-            <FaUserShield className="text-green-500" /> Kelola Akun Admin & User
+            <FaUserShield className="text-green-500" /> Kelola Akun Admin
           </h1>
-          <button
-            onClick={() => setShowAddForm(!showAddForm)}
-            className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded shadow"
-          >
-            <FaUserPlus /> Tambah Akun
-          </button>
+
+          <div className="flex gap-2">
+            {/* Tombol Tambah Admin */}
+            <button
+              onClick={() => {
+                setShowAddForm(!showAddForm);
+                setShowPromoteForm(false);
+              }}
+              className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded shadow"
+            >
+              <FaUserPlus /> Tambah Admin
+            </button>
+
+            {/* Tombol Ubah User → Admin */}
+            <button
+              onClick={() => {
+                setShowPromoteForm(!showPromoteForm);
+                setShowAddForm(false);
+              }}
+              className="flex items-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded shadow"
+            >
+              <FaExchangeAlt /> Ubah User → Admin
+            </button>
+          </div>
         </div>
 
-        {/* ✅ Form Tambah User */}
+        {/* ✅ Form Tambah Admin */}
         {showAddForm && (
           <form
-            onSubmit={handleAddUser}
+            onSubmit={handleAddAdmin}
             className="bg-white p-4 mb-4 rounded-lg shadow space-y-3"
           >
             <h2 className="text-lg font-semibold text-gray-700">
-              Tambah Akun Baru
+              Tambah Admin Baru
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <input
                 type="text"
-                name="nama"
+                name="name"
                 placeholder="Nama"
                 className="border p-2 rounded"
                 required
@@ -115,12 +158,22 @@ export default function ManageUser() {
                 className="border p-2 rounded"
                 required
               />
-              <select name="role" className="border p-2 rounded" required>
-                <option value="admin">Admin</option>
-                <option value="user">User</option>
-              </select>
+              <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                className="border p-2 rounded"
+                required
+              />
+              <input
+                type="password"
+                name="confirm_password"
+                placeholder="Konfirmasi Password"
+                className="border p-2 rounded"
+                required
+              />
             </div>
-            <div className="flex justify-end gap-2">
+            <div className="flex justify-end gap-2 mt-3">
               <button
                 type="button"
                 onClick={() => setShowAddForm(false)}
@@ -138,111 +191,81 @@ export default function ManageUser() {
           </form>
         )}
 
-        {/* ✅ Form Edit User */}
-        {showEditForm && editData && (
+        {/* ✅ Form Ubah User → Admin */}
+        {showPromoteForm && (
           <form
-            onSubmit={handleEditUser}
+            onSubmit={handlePromoteUser}
             className="bg-white p-4 mb-4 rounded-lg shadow space-y-3"
           >
             <h2 className="text-lg font-semibold text-gray-700">
-              Edit Akun - {editData.nama}
+              Ubah User Menjadi Admin
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div>
               <input
-                type="text"
-                name="nama"
-                defaultValue={editData.nama}
-                className="border p-2 rounded"
+                type="number"
+                name="userId"
+                placeholder="Masukkan ID User"
+                className="border p-2 rounded w-full"
                 required
               />
-              <input
-                type="email"
-                name="email"
-                defaultValue={editData.email}
-                className="border p-2 rounded"
-                required
-              />
-              <select
-                name="role"
-                defaultValue={editData.role}
-                className="border p-2 rounded"
-                required
-              >
-                <option value="admin">Admin</option>
-                <option value="user">User</option>
-              </select>
             </div>
-            <div className="flex justify-end gap-2">
+            <div className="flex justify-end gap-2 mt-3">
               <button
                 type="button"
-                onClick={() => setShowEditForm(false)}
+                onClick={() => setShowPromoteForm(false)}
                 className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
               >
                 Batal
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 rounded bg-blue-500 hover:bg-blue-600 text-white"
+                className="px-4 py-2 rounded bg-yellow-500 hover:bg-yellow-600 text-white"
               >
-                Update
+                Ubah ke Admin
               </button>
             </div>
           </form>
         )}
 
-        {/* ✅ Tabel User */}
+        {/* ✅ Tabel hanya Admin */}
         <div className="bg-white rounded-xl shadow overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead className="bg-gray-100 text-gray-700">
               <tr>
+                <th className="p-4">ID</th>
                 <th className="p-4">Nama</th>
                 <th className="p-4">Email</th>
                 <th className="p-4">Role</th>
-                <th className="p-4 text-center w-40">Aksi</th>
+                <th className="p-4 text-center w-36">Aksi</th>
               </tr>
             </thead>
             <tbody>
-              {currentUsers
-                .filter((user) => user.role === "admin")
-                .map((user) => (
-                  <tr key={user.id} className="border-b hover:bg-gray-50">
-                    <td className="p-4 font-medium text-gray-800">
-                      {user.nama}
-                    </td>
-                    <td className="p-4 text-gray-600">{user.email}</td>
-                    <td className="p-4">
-                      {user.role === "admin" ? (
-                        <span className="flex items-center gap-1 text-green-600 font-semibold">
-                          <FaUserShield /> Admin
-                        </span>
-                      ) : (
-                        <span className="flex items-center gap-1 text-blue-600 font-semibold">
-                          <FaUser /> User
-                        </span>
-                      )}
-                    </td>
-                    <td className="p-4">
-                      <div className="flex justify-center gap-3">
-                        <button
-                          onClick={() => handleEditClick(user)}
-                          className="p-2 rounded bg-blue-500 hover:bg-blue-600 text-white"
-                        >
-                          <FaEdit />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(user.id)}
-                          className="p-2 rounded bg-red-500 hover:bg-red-600 text-white"
-                        >
-                          <FaTrash />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-
-              {users.filter((u) => u.role === "admin").length === 0 && (
+              {currentAdmins.map((admin) => (
+                <tr key={admin.id} className="border-b hover:bg-gray-50">
+                  <td className="p-4">{admin.id}</td>
+                  <td className="p-4 font-medium text-gray-800">
+                    {admin.nama}
+                  </td>
+                  <td className="p-4 text-gray-600">{admin.email}</td>
+                  <td className="p-4">
+                    <span className="flex items-center gap-1 text-green-600 font-semibold">
+                      <FaUserShield /> Admin
+                    </span>
+                  </td>
+                  <td className="p-4 text-center">
+                    <button
+                      onClick={() => adminToUser(admin)}
+                      className="px-3 py-2 rounded bg-yellow-500 hover:bg-yellow-600 text-white"
+                      title="Ubah ke User"
+                    >
+                      <FaExchangeAlt />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+              {adminsOnly.length === 0 && (
                 <tr>
-                  <td colSpan="4" className="text-center p-6 text-gray-500">
+                  <td colSpan="5" className="text-center p-6 text-gray-500">
                     Belum ada admin.
                   </td>
                 </tr>
@@ -251,7 +274,7 @@ export default function ManageUser() {
           </table>
         </div>
 
-        {/* ✅ Pagination pakai komponen yang biasa kamu pakai */}
+        {/* ✅ Pagination khusus admin */}
         <div className="mt-4">
           <Pagination
             currentPage={currentPage}

@@ -23,3 +23,5 @@ npm install -D eslint @eslint/js eslint-plugin-react-hooks eslint-plugin-react-r
 npm install vite
 
 npm install recharts
+
+npm install react-chartjs-2 chart.js
