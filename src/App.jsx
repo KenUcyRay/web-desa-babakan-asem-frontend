@@ -64,10 +64,10 @@ import ManageUser from "./components/admin/ManageUser";
 import ManageBumdes from "./components/admin/ManageBumdes";
 import ManageGalery from "./components/admin/ManageGalery";
 import ManageAnggota from "./components/admin/ManageAnggota";
+import ManageAdministrasi from "./components/admin/ManageAdministrasi";
 
 // ✅ Pengaturan Admin
 import PengaturanProfil from "./components/admin/settings/PengaturanProfil";
-import PengaturanHakAkses from "./components/admin/settings/PengaturanHakAkses";
 import AdminLayout from "./components/admin/AdminLayout";
 import StPkk from "./components/organizations/StPkk";
  
@@ -157,13 +157,11 @@ function LayoutAdmin() {
         <Route path="/admin/manage-bumdes" element={<ManageBumdes />} />
         <Route path="/admin/manage-galery" element={<ManageGalery />} />
         <Route path="/admin/manage-anggota" element={<ManageAnggota />} />
+        <Route path="/admin/manage-administrasi" element={<ManageAdministrasi />} />
 
         {/* ✅ Pengaturan Admin */}
         <Route path="/admin/pengaturan/profil" element={<PengaturanProfil />} />
-        <Route
-          path="/admin/pengaturan/hak-akses"
-          element={<PengaturanHakAkses />}
-        />
+  
 
         {/* ✅ Redirect default */}
         <Route path="/admin/*" element={<Navigate to="/admin" replace />} />

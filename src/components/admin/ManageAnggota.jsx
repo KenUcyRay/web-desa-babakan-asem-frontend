@@ -1,99 +1,134 @@
 import { useState } from "react";
 import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
 import AdminSidebar from "./AdminSidebar";
-import Pagination from "../ui/Pagination"; 
+import Pagination from "../ui/Pagination";
+
+const BASE_URL = "http://192.168.1.8:3001/api"; // URL API kamu
 
 export default function ManageAnggota() {
+  // ✅ Dummy awal supaya ada data untuk tes edit
   const [anggota, setAnggota] = useState([
     {
       id: 1,
-      foto: "https://via.placeholder.com/150",
-      nama: "Siti Aminah",
-      jabatan: "Ketua PKK",
-      masaJabatan: "2023 - 2028",
-      type: "PKK",
+      profile_photo: "https://via.placeholder.com/150",
+      name: "Ahmad Zaki",
+      position: "Kepala Desa",
+      term_start: "2023",
+      term_end: "2028",
+      organization_type: "Pemerintah",
+      is_term: true,
+      important_level: 5,
     },
     {
       id: 2,
-      foto: "https://via.placeholder.com/150",
-      nama: "Budi Santoso",
-      jabatan: "Ketua Karang Taruna",
-      masaJabatan: "2022 - 2027",
-      type: "Karang Taruna",
-    },
-    {
-      id: 3,
-      foto: "https://via.placeholder.com/150",
-      nama: "Dewi Lestari",
-      jabatan: "Sekretaris BPD",
-      masaJabatan: "2024 - 2029",
-      type: "BPD",
-    },
-    {
-      id: 4,
-      foto: "https://via.placeholder.com/150",
-      nama: "Ahmad Zaki",
-      jabatan: "Kepala Desa",
-      masaJabatan: "2023 - 2029",
-      type: "Pemerintahan",
-    },
-    {
-      id: 5,
-      foto: "https://via.placeholder.com/150",
-      nama: "Rina Marlina",
-      jabatan: "Bendahara PKK",
-      masaJabatan: "2023 - 2028",
-      type: "PKK",
-    },
-    {
-      id: 6,
-      foto: "https://via.placeholder.com/150",
-      nama: "Fajar Nugraha",
-      jabatan: "Wakil Karang Taruna",
-      masaJabatan: "2022 - 2027",
-      type: "Karang Taruna",
-    },
-    {
-      id: 7,
-      foto: "https://via.placeholder.com/150",
-      nama: "Yuni Safitri",
-      jabatan: "Anggota BPD",
-      masaJabatan: "2024 - 2029",
-      type: "BPD",
+      profile_photo: "https://via.placeholder.com/150",
+      name: "Siti Aminah",
+      position: "Ketua PKK",
+      term_start: "2024",
+      term_end: "2029",
+      organization_type: "PKK",
+      is_term: true,
+      important_level: 4,
     },
   ]);
 
+  const [showModal, setShowModal] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [selectedMember, setSelectedMember] = useState(null);
+
+  // ✅ Form state
+  const [formData, setFormData] = useState({
+    name: "",
+    position: "",
+    term_start: "",
+    term_end: "",
+    organization_type: "Pemerintah",
+    profile_photo: null,
+    is_term: true,
+    important_level: 1,
+  });
+
+  // ✅ Tambah anggota
+  const handleAdd = () => {
+    setEditMode(false);
+    setFormData({
+      name: "",
+      position: "",
+      term_start: "",
+      term_end: "",
+      organization_type: "Pemerintah",
+      profile_photo: null,
+      is_term: true,
+      important_level: 1,
+    });
+    setShowModal(true);
+  };
+
+  // ✅ Edit anggota (isi form)
+  const handleEdit = (member) => {
+    setEditMode(true);
+    setSelectedMember(member);
+    setFormData({
+      name: member.name,
+      position: member.position,
+      term_start: member.term_start,
+      term_end: member.term_end,
+      organization_type: member.organization_type,
+      profile_photo: null,
+      is_term: member.is_term,
+      important_level: member.important_level,
+    });
+    setShowModal(true);
+  };
+
+  // ✅ Hapus anggota
   const handleDelete = (id) => {
     const confirmDelete = window.confirm("Yakin ingin menghapus anggota ini?");
     if (!confirmDelete) return;
     setAnggota(anggota.filter((a) => a.id !== id));
-    window.alert("✅ Anggota berhasil dihapus (dummy)");
+    window.alert("✅ Anggota dihapus dari dummy");
   };
 
-  const handleEdit = (id) => {
-    window.alert(`✏️ Dummy edit anggota dengan ID: ${id}`);
+  // ✅ Submit form tambah / edit
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (editMode && selectedMember) {
+      // Update dummy (sementara)
+      setAnggota((prev) =>
+        prev.map((m) =>
+          m.id === selectedMember.id ? { ...m, ...formData } : m
+        )
+      );
+      window.alert("✅ Dummy anggota diupdate");
+    } else {
+      // Tambah dummy baru (sementara)
+      const newMember = {
+        id: Date.now(),
+        profile_photo:
+          formData.profile_photo
+            ? URL.createObjectURL(formData.profile_photo)
+            : "https://via.placeholder.com/150",
+        ...formData,
+      };
+      setAnggota((prev) => [...prev, newMember]);
+      window.alert("✅ Dummy anggota ditambahkan");
+    }
+
+    setShowModal(false);
   };
 
-  const handleAdd = () => {
-    window.alert("➕ Dummy tambah anggota (nanti pakai modal form)");
-  };
-
-  // ✅ Pagination
+  // ✅ Pagination & filter
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
-
-  // ✅ Kategori filter (mirip filter pesan)
   const [kategori, setKategori] = useState("Semua");
+  const kategoriList = ["Semua", "PKK", "Karang Taruna", "DPD", "Pemerintah"];
 
-  const kategoriList = ["Semua", "PKK", "Karang Taruna", "BPD", "Pemerintahan"];
-
-  // ✅ Filter data sesuai kategori
   const filteredAnggota =
     kategori === "Semua"
       ? anggota
-      : anggota.filter((a) => a.type === kategori);
+      : anggota.filter((a) => a.organization_type === kategori);
 
-  // ✅ Pagination setelah difilter
   const totalPages = Math.ceil(filteredAnggota.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedData = filteredAnggota.slice(
@@ -118,7 +153,7 @@ export default function ManageAnggota() {
           </button>
         </div>
 
-        {/* ✅ Filter kategori style tombol horizontal mirip ManagePesan */}
+        {/* Filter kategori */}
         <div className="flex flex-wrap gap-2 mb-4">
           {kategoriList.map((k) => (
             <button
@@ -130,7 +165,7 @@ export default function ManageAnggota() {
               }`}
               onClick={() => {
                 setKategori(k);
-                setCurrentPage(1); // reset halaman ke 1
+                setCurrentPage(1);
               }}
             >
               {k}
@@ -138,7 +173,7 @@ export default function ManageAnggota() {
           ))}
         </div>
 
-        {/* ✅ Grid anggota */}
+        {/* Grid anggota */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {paginatedData.map((a) => (
             <div
@@ -146,25 +181,28 @@ export default function ManageAnggota() {
               className="bg-white rounded-lg shadow-md overflow-hidden"
             >
               <img
-                src={a.foto}
-                alt={a.nama}
+                src={a.profile_photo}
+                alt={a.name}
                 className="w-full h-40 object-cover"
               />
 
               <div className="p-4 space-y-1">
-                <h2 className="text-lg font-bold">{a.nama}</h2>
-                <p className="text-sm text-gray-600">{a.jabatan}</p>
+                <h2 className="text-lg font-bold">{a.name}</h2>
+                <p className="text-sm text-gray-600">{a.position}</p>
                 <p className="text-xs text-gray-500">
-                  Masa Jabatan: <b>{a.masaJabatan}</b>
+                  Masa Jabatan: <b>{a.term_start} - {a.term_end}</b>
                 </p>
                 <span className="inline-block mt-2 text-xs bg-green-100 text-green-700 px-2 py-1 rounded">
-                  {a.type}
+                  {a.organization_type}
                 </span>
+                <p className="text-xs mt-1">
+                  {a.is_term ? "✅ Masih menjabat" : "❌ Tidak menjabat"}
+                </p>
               </div>
 
               <div className="flex justify-between p-4 border-t text-sm">
                 <button
-                  onClick={() => handleEdit(a.id)}
+                  onClick={() => handleEdit(a)}
                   className="flex items-center gap-1 text-blue-600 hover:underline"
                 >
                   <FaEdit /> Edit
@@ -187,7 +225,7 @@ export default function ManageAnggota() {
           </p>
         )}
 
-        {/* ✅ Pagination */}
+        {/* Pagination */}
         {filteredAnggota.length > 0 && (
           <div className="mt-6 flex justify-center">
             <Pagination
@@ -198,6 +236,136 @@ export default function ManageAnggota() {
           </div>
         )}
       </div>
+
+      {/* ✅ Modal Tambah/Edit Anggota */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-lg">
+            <h2 className="text-xl font-bold mb-4">
+              {editMode ? "Edit Anggota" : "Tambah Anggota"}
+            </h2>
+
+            <form onSubmit={handleSubmit} className="space-y-3">
+              <input
+                type="text"
+                placeholder="Nama"
+                value={formData.name}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
+                className="w-full border p-2 rounded"
+                required
+              />
+
+              <input
+                type="text"
+                placeholder="Jabatan / Position"
+                value={formData.position}
+                onChange={(e) =>
+                  setFormData({ ...formData, position: e.target.value })
+                }
+                className="w-full border p-2 rounded"
+                required
+              />
+
+              <div className="flex gap-2">
+                <input
+                  type="number"
+                  placeholder="Term Start (ex: 2025)"
+                  value={formData.term_start}
+                  onChange={(e) =>
+                    setFormData({ ...formData, term_start: e.target.value })
+                  }
+                  className="w-1/2 border p-2 rounded"
+                  required
+                />
+                <input
+                  type="number"
+                  placeholder="Term End (ex: 2028)"
+                  value={formData.term_end}
+                  onChange={(e) =>
+                    setFormData({ ...formData, term_end: e.target.value })
+                  }
+                  className="w-1/2 border p-2 rounded"
+                  required
+                />
+              </div>
+
+              <select
+                value={formData.organization_type}
+                onChange={(e) =>
+                  setFormData({ ...formData, organization_type: e.target.value })
+                }
+                className="w-full border p-2 rounded"
+              >
+                <option value="Pemerintah">Pemerintah</option>
+                <option value="PKK">PKK</option>
+                <option value="Karang Taruna">Karang Taruna</option>
+                <option value="DPD">DPD</option>
+              </select>
+
+              <div>
+                <label className="block text-sm font-medium">
+                  Foto Profil
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      profile_photo: e.target.files[0],
+                    })
+                  }
+                  className="w-full border p-2 rounded"
+                  {...(editMode ? {} : { required: true })}
+                />
+              </div>
+
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={formData.is_term}
+                  onChange={(e) =>
+                    setFormData({ ...formData, is_term: e.target.checked })
+                  }
+                />
+                <span>Masih menjabat?</span>
+              </div>
+
+              <input
+                type="number"
+                placeholder="Important Level (contoh Kepala Desa = 5)"
+                value={formData.important_level}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    important_level: e.target.value,
+                  })
+                }
+                className="w-full border p-2 rounded"
+                required
+              />
+
+              <div className="flex justify-end gap-2 mt-4">
+                <button
+                  type="button"
+                  className="px-4 py-2 bg-gray-300 rounded"
+                  onClick={() => setShowModal(false)}
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-green-600 text-white rounded"
+                >
+                  {editMode ? "Update" : "Tambah"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
