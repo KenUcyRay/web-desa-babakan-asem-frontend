@@ -13,27 +13,23 @@ export default function DetailProduk() {
   const [product, setProduct] = useState({});
   const [comments, setComments] = useState([]);
   const [pesan, setPesan] = useState("");
-  const [rating, setRating] = useState(0);
-  const [userRated, setUserRated] = useState(false);
 
-  // ✅ tambahan state untuk konfirmasi rating
-  const [tempRating, setTempRating] = useState(0);
+  const [averageRating, setAverageRating] = useState(0); // ✅ rata-rata untuk rekap
+  const [userTempRating, setUserTempRating] = useState(0); // ✅ rating sementara user
+  const [userRated, setUserRated] = useState(false);
   const [showSubmitRating, setShowSubmitRating] = useState(false);
 
   const userToken = JSON.parse(localStorage.getItem("token"));
 
-  // ✅ Ambil detail produk + komentar pertama kali
   const fetchDetailProduct = async () => {
     const response = await ProductApi.getDetailProduct(id);
     const responseBody = await response.json();
     if (response.status === 200) {
       setProduct(responseBody.product);
-      setRating(responseBody.rating ?? 0);
+      setAverageRating(responseBody.rating ?? 0);
       setComments(responseBody.comments ?? []);
     } else {
-      await alertError(
-        "Gagal mengambil detail product. Silakan coba lagi nanti."
-      );
+      await alertError("Gagal mengambil detail product. Silakan coba lagi nanti.");
       navigate("/bumdes");
     }
   };
@@ -55,7 +51,6 @@ export default function DetailProduk() {
     return () => clearInterval(interval);
   }, [id]);
 
-  // ✅ Kirim Komentar
   const handleKomentar = async (e) => {
     e.preventDefault();
     if (!userToken) {
@@ -77,7 +72,7 @@ export default function DetailProduk() {
     fetchComment();
   };
 
-  // ✅ Saat user klik bintang → simpan sementara
+  // ✅ Bagian klik bintang (untuk rating)
   const handleSelectStar = (value) => {
     if (!userToken) {
       alert("Silakan login dulu untuk memberi rating!");
@@ -88,38 +83,35 @@ export default function DetailProduk() {
       alert("Anda sudah memberi rating untuk produk ini!");
       return;
     }
-    setTempRating(value);
-    setShowSubmitRating(true); // munculkan tombol kirim/batal
+    setUserTempRating(value);
+    setShowSubmitRating(true);
   };
 
-  // ✅ Saat user konfirmasi kirim rating
   const handleSubmitRating = async () => {
-    setRating(tempRating);
+    // Simulasi kirim ke backend & update rata-rata
+    const newAverage = (averageRating + userTempRating) / 2; // contoh kalkulasi lokal
+    setAverageRating(newAverage);
+
     setUserRated(true);
     setShowSubmitRating(false);
 
-    // TODO: jika ingin simpan ke backend, bisa panggil ProductApi di sini
-
-    await alertSuccess(`Terima kasih! Rating ${tempRating} ⭐ telah dikirim.`);
+    await alertSuccess(`Terima kasih! Rating ${userTempRating} ⭐ telah dikirim.`);
   };
 
-  // ✅ Jika user batal
   const handleCancelRating = () => {
-    setTempRating(0);
+    setUserTempRating(0);
     setShowSubmitRating(false);
   };
 
-  const full = Math.floor(rating);
-  const half = rating - full >= 0.5;
+  const full = Math.floor(averageRating);
+  const half = averageRating - full >= 0.5;
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-4 gap-6">
       {/* ✅ Konten utama */}
       <div className="md:col-span-3">
         <img
-          src={`${import.meta.env.VITE_BASE_URL}/products/images/${
-            product.featured_image
-          }`}
+          src={`${import.meta.env.VITE_BASE_URL}/products/images/${product.featured_image}`}
           alt={product.title}
           className="w-full h-96 object-cover rounded-lg mb-6"
         />
@@ -131,51 +123,22 @@ export default function DetailProduk() {
           </span>
         </p>
 
-        {/* ✅ Rating Produk */}
-        <div className="flex flex-col gap-2 mt-2">
-          <div className="flex items-center gap-1">
-            {[1, 2, 3, 4, 5].map((star) => {
-              let icon;
-              if (star <= full) {
-                icon = <FaStar className="text-yellow-400" />;
-              } else if (star === full + 1 && half) {
-                icon = <FaStarHalfAlt className="text-yellow-400" />;
-              } else {
-                icon = <FaRegStar className="text-gray-300" />;
-              }
-
-              return (
-                <span
-                  key={star}
-                  onClick={() => handleSelectStar(star)}
-                  className="cursor-pointer hover:scale-110 transition"
-                >
-                  {icon}
-                </span>
-              );
-            })}
-            <span className="text-sm text-gray-500 ml-2">
-              ({rating?.toFixed(1) ?? "0.0"})
-            </span>
-          </div>
-
-          {/* ✅ muncul tombol jika user pilih bintang */}
-          {showSubmitRating && (
-            <div className="flex gap-2 mt-1">
-              <button
-                onClick={handleSubmitRating}
-                className="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600"
-              >
-                ✅ Kirim Rating {tempRating} ⭐
-              </button>
-              <button
-                onClick={handleCancelRating}
-                className="bg-gray-400 text-white px-4 py-1 rounded hover:bg-gray-500"
-              >
-                Batal
-              </button>
-            </div>
-          )}
+        {/* ✅ Rekap Rating (read-only, rata-rata) */}
+        <div className="flex items-center gap-1 mt-2">
+          {[1, 2, 3, 4, 5].map((star) => {
+            let icon;
+            if (star <= full) {
+              icon = <FaStar className="text-yellow-400" />;
+            } else if (star === full + 1 && half) {
+              icon = <FaStarHalfAlt className="text-yellow-400" />;
+            } else {
+              icon = <FaRegStar className="text-gray-300" />;
+            }
+            return <span key={star}>{icon}</span>;
+          })}
+          <span className="text-sm text-gray-500 ml-2">
+            ({averageRating?.toFixed(1) ?? "0.0"})
+          </span>
         </div>
 
         {/* ✅ Deskripsi */}
@@ -194,6 +157,45 @@ export default function DetailProduk() {
           >
             <FaWhatsapp /> Pesan via WhatsApp
           </a>
+        </div>
+
+        {/* ✅ Bagian Rating User di bawah tombol WhatsApp */}
+        <div className="mt-6 p-4 bg-gray-50 rounded-lg shadow">
+          <h2 className="text-lg font-semibold mb-2">⭐ Beri Penilaian Produk Ini</h2>
+          <div className="flex items-center gap-1">
+            {[1, 2, 3, 4, 5].map((star) => {
+              return (
+                <span
+                  key={star}
+                  onClick={() => handleSelectStar(star)}
+                  className="cursor-pointer hover:scale-110 transition"
+                >
+                  {star <= userTempRating ? (
+                    <FaStar className="text-yellow-400" />
+                  ) : (
+                    <FaRegStar className="text-gray-300" />
+                  )}
+                </span>
+              );
+            })}
+          </div>
+
+          {showSubmitRating && (
+            <div className="flex gap-2 mt-2">
+              <button
+                onClick={handleSubmitRating}
+                className="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600"
+              >
+                ✅ Kirim Rating {userTempRating} ⭐
+              </button>
+              <button
+                onClick={handleCancelRating}
+                className="bg-gray-400 text-white px-4 py-1 rounded hover:bg-gray-500"
+              >
+                Batal
+              </button>
+            </div>
+          )}
         </div>
 
         {/* ✅ Komentar */}
