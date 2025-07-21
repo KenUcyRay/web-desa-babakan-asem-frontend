@@ -4,19 +4,16 @@ import { Link } from "react-router-dom";
 import { Helper } from "../../utils/Helper";
 import { AgendaApi } from "../../libs/api/AgendaApi";
 import { alertError } from "../../libs/alert";
+import { ProgramApi } from "../../libs/api/ProgramApi";
 
 export default function Pkk() {
-  const allGaleri = Array.from({ length: 12 }, (_, i) => ({
-    id: i + 1,
-    img: `https://images.unsplash.com/photo-1493815793585-d94ccbc86df8?w=600&random=${i}`,
-  }));
-
   const [currentPage, setCurrentPage] = useState(1);
   const galeriPerPage = 4;
   const indexOfLast = currentPage * galeriPerPage;
   const indexOfFirst = indexOfLast - galeriPerPage;
 
   const [agenda, setAgenda] = useState([]);
+  const [programs, setPrograms] = useState([]);
 
   const fetchAgenda = async () => {
     const response = await AgendaApi.getAgenda(1, 3, "PKK");
@@ -28,8 +25,19 @@ export default function Pkk() {
     }
   };
 
+  const fetchPrograms = async () => {
+    const response = await ProgramApi.getPrograms(1, 3);
+    if (!response.ok) {
+      alertError("Gagal mengambil data program. Silakan coba lagi nanti.");
+      return;
+    }
+    const responseBody = await response.json();
+    setPrograms(responseBody.programs);
+  };
+
   useEffect(() => {
     fetchAgenda();
+    fetchPrograms();
   }, []);
 
   return (
@@ -89,23 +97,23 @@ export default function Pkk() {
           Program Pokok PKK
         </h2>
         <div className="grid gap-6 grid-cols-[repeat(auto-fit,minmax(260px,1fr))]">
-          {[1, 2, 3, 4].map((item) => (
+          {programs.map((item) => (
             <div
-              key={item}
+              key={item.id}
               className="border rounded-xl shadow hover:shadow-lg transition"
             >
               <img
-                src="https://images.unsplash.com/photo-1509099836639-18ba1795216d?w=600"
+                src={`${import.meta.env.VITE_BASE_URL}/programs/images/${
+                  item.featured_image
+                }`}
                 alt="Program PKK"
                 className="rounded-t-xl h-40 w-full object-cover"
               />
               <div className="p-4">
                 <h3 className="font-bold flex items-center gap-2 text-green-700">
-                  <FaWpforms /> Nama Program
+                  <FaWpforms /> {item.title}
                 </h3>
-                <p className="text-sm text-gray-600 mt-1">
-                  Kegiatan PKK untuk meningkatkan kesejahteraan keluarga.
-                </p>
+                <p className="text-sm text-gray-600 mt-1">{item.description}</p>
               </div>
             </div>
           ))}

@@ -26,6 +26,20 @@ export class CategoryApi {
       }
     );
   }
+  static async updateCategory(id, name) {
+    return await fetch(
+      `${import.meta.env.VITE_BASE_URL}/products/admin/categories/${id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
+        },
+        body: JSON.stringify({ name }),
+      }
+    );
+  }
   static async deleteCategory(id) {
     console.log(id);
     return await fetch(

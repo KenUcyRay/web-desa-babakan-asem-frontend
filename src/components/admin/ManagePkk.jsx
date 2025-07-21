@@ -1,43 +1,19 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AdminSidebar from "./AdminSidebar";
 import { FaPlus, FaTrash } from "react-icons/fa";
 import Pagination from "../ui/Pagination";
+import { ProgramApi } from "../../libs/api/ProgramApi";
+import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 
 export default function ManagePkk() {
+  const [programs, setPrograms] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [showForm, setShowForm] = useState(false);
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
   const [image, setImage] = useState(null);
   const [editingId, setEditingId] = useState(null);
-
-  const [programs, setPrograms] = useState([
-    {
-      id: 1,
-      title: "Nama Program",
-      desc: "Kegiatan PKK untuk meningkatkan kesejahteraan keluarga.",
-      image: "https://picsum.photos/400/300?1",
-    },
-    {
-      id: 2,
-      title: "Pelatihan Keterampilan",
-      desc: "Pelatihan memasak, menjahit, dan kerajinan tangan.",
-      image: "https://picsum.photos/400/300?2",
-    },
-    {
-      id: 3,
-      title: "Sosialisasi Kesehatan",
-      desc: "Penyuluhan kesehatan ibu dan anak di desa.",
-      image: "https://picsum.photos/400/300?3",
-    },
-  ]);
-
-  // ✅ Pagination
-  const [currentPage, setCurrentPage] = useState(1);
-  const perPage = 4;
-  const totalPages = Math.ceil(programs.length / perPage);
-  const indexOfLast = currentPage * perPage;
-  const indexOfFirst = indexOfLast - perPage;
-  const currentPrograms = programs.slice(indexOfFirst, indexOfLast);
 
   const resetForm = () => {
     setTitle("");
@@ -47,49 +23,103 @@ export default function ManagePkk() {
     setShowForm(false);
   };
 
-  const handleSave = () => {
-    if (!title || !desc || !image) return alert("Lengkapi semua data!");
-
+  const handleSave = async () => {
     if (editingId) {
+      if (!(await alertConfirm("Yakin simpan perubahan ini?"))) {
+        return;
+      }
+      const rawData = {
+        title: title ?? null,
+        description: desc ?? null,
+        featured_image: image ?? null,
+      };
+      const response = await ProgramApi.updateProgram(editingId, rawData);
+      const responseBody = await response.json();
+      if (!response.ok) {
+        let errorMessage = "Gagal menyimpan perubahan.";
+        if (responseBody.error && Array.isArray(responseBody.error)) {
+          const errorMessages = responseBody.error.map((err) =>
+            err.path?.length ? `${err.path[0]}: ${err.message}` : err.message
+          );
+          errorMessage = errorMessages.join(", ");
+        } else if (typeof responseBody.error === "string") {
+          errorMessage = responseBody.error;
+        }
+        alertError(errorMessage);
+        return;
+      }
+
       setPrograms((prev) =>
-        prev.map((p) =>
-          p.id === editingId
-            ? {
-                ...p,
-                title,
-                desc,
-                image: image instanceof File ? URL.createObjectURL(image) : p.image,
-              }
-            : p
-        )
+        prev.map((p) => (p.id === editingId ? responseBody.program : p))
       );
+
+      await alertSuccess("Program berhasil diperbarui!");
     } else {
-      setPrograms((prev) => [
-        {
-          id: Date.now(),
-          title,
-          desc,
-          image: URL.createObjectURL(image),
-        },
-        ...prev,
-      ]);
+      if (!title || !desc || !image)
+        return await alertError("Lengkapi semua data!");
+      const rawData = {
+        title: title,
+        description: desc,
+        featured_image: image,
+      };
+
+      const response = await ProgramApi.createProgram(rawData);
+      const responseBody = await response.json();
+      if (!response.ok) {
+        let errorMessage = "Gagal menyimpan perubahan.";
+        if (responseBody.error && Array.isArray(responseBody.error)) {
+          const errorMessages = responseBody.error.map((err) =>
+            err.path?.length ? `${err.path[0]}: ${err.message}` : err.message
+          );
+          errorMessage = errorMessages.join(", ");
+        } else if (typeof responseBody.error === "string") {
+          errorMessage = responseBody.error;
+        }
+        alertError(errorMessage);
+        return;
+      }
+      setPrograms([responseBody.program, ...programs]);
+      await alertSuccess("Program berhasil disimpan!");
     }
     resetForm();
   };
 
-  const handleEdit = (program) => {
+  const handleEdit = (id) => {
+    const program = programs.find((p) => p.id === id);
+    if (!program) return;
     setEditingId(program.id);
     setTitle(program.title);
-    setDesc(program.desc);
+    setDesc(program.description);
     setShowForm(true);
   };
 
-  const handleDelete = (id) => {
-    if (confirm("Yakin hapus program ini?")) {
-      setPrograms((prev) => prev.filter((p) => p.id !== id));
+  const handleDelete = async (id) => {
+    if (!(await alertConfirm("Yakin hapus program ini?"))) {
+      return;
     }
+    const response = await ProgramApi.deleteProgram(id);
+    if (!response.ok) {
+      await alertError("Gagal menghapus program");
+      return;
+    }
+    setPrograms((prev) => prev.filter((p) => p.id !== id));
   };
 
+  const fetchPrograms = async () => {
+    const response = await ProgramApi.getPrograms(currentPage, 9);
+    const responseBody = await response.json();
+    if (!response.ok) {
+      await alertError("Gagal mengambil data program");
+      return;
+    }
+    setTotalPages(responseBody.total_page);
+    setCurrentPage(responseBody.page);
+    setPrograms(responseBody.programs);
+  };
+
+  useEffect(() => {
+    fetchPrograms();
+  }, [currentPage]);
   return (
     <div className="flex">
       <AdminSidebar />
@@ -177,16 +207,18 @@ export default function ManagePkk() {
 
         {/* List Program */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {currentPrograms.length === 0 ? (
+          {programs.length === 0 ? (
             <p className="text-gray-500 italic">Belum ada program</p>
           ) : (
-            currentPrograms.map((program) => (
+            programs.map((program) => (
               <div
                 key={program.id}
                 className="bg-white rounded shadow overflow-hidden flex flex-col"
               >
                 <img
-                  src={program.image}
+                  src={`${import.meta.env.VITE_BASE_URL}/programs/images/${
+                    program.featured_image
+                  }`}
                   alt={program.title}
                   className="w-full h-48 object-cover"
                 />
@@ -194,10 +226,10 @@ export default function ManagePkk() {
                   <h3 className="font-semibold text-lg text-green-700">
                     {program.title}
                   </h3>
-                  <p className="text-gray-600 text-sm">{program.desc}</p>
+                  <p className="text-gray-600 text-sm">{program.description}</p>
                   <div className="flex justify-between mt-3">
                     <button
-                      onClick={() => handleEdit(program)}
+                      onClick={() => handleEdit(program.id)}
                       className="text-blue-500 hover:text-blue-700"
                     >
                       Edit
@@ -216,15 +248,15 @@ export default function ManagePkk() {
         </div>
 
         {/* Pagination */}
-        {programs.length > perPage && (
-          <div className="mt-6 flex justify-center">
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-            />
-          </div>
-        )}
+        {/* {programs.length > perPage && ( */}
+        <div className="mt-6 flex justify-center">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+        </div>
+        {/* )} */}
       </div>
     </div>
   );
