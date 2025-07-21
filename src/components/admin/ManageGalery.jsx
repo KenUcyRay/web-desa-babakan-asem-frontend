@@ -1,66 +1,158 @@
-import { useState } from "react";
+import { use, useEffect, useState } from "react";
 import AdminSidebar from "./AdminSidebar";
 import { FaPlus, FaTrash } from "react-icons/fa";
 import Pagination from "../ui/Pagination"; // ✅ pakai komponen Pagination kamu
+import { GaleryApi } from "../../libs/api/GaleryApi";
+import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 
 export default function ManageGalery() {
-  const [galeries, setGaleries] = useState([
-    { id: 1, title: "Kegiatan Gotong Royong", image: "https://picsum.photos/400/250?random=1" },
-    { id: 2, title: "Perayaan HUT Desa", image: "https://picsum.photos/400/250?random=2" },
-    { id: 3, title: "Panen Raya Bersama", image: "https://picsum.photos/400/250?random=3" },
-    { id: 4, title: "Bakti Sosial", image: "https://picsum.photos/400/250?random=4" },
-    { id: 5, title: "Festival Desa", image: "https://picsum.photos/400/250?random=5" },
-    { id: 6, title: "Pelatihan Warga", image: "https://picsum.photos/400/250?random=6" },
-    { id: 7, title: "Kegiatan Rutin PKK", image: "https://picsum.photos/400/250?random=7" },
-  ]);
-
+  const [galeries, setGaleries] = useState([]);
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ id: null, title: "", image: "" });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
-  // ✅ Pagination state
-  const [page, setPage] = useState(1);
-  const itemsPerPage = 6; // tampilkan 6 per halaman
+  const [title, setTitle] = useState("");
+  const [image, setImage] = useState(null);
+  const [editingId, setEditingId] = useState(null);
+  const handleSave = async () => {
+    if (editingId) {
+      if (!(await alertConfirm("Yakin ingin mengedit Galeri ini?"))) {
+        return;
+      }
 
-  // ✅ Hitung total halaman
-  const totalPages = Math.ceil(galeries.length / itemsPerPage);
+      const response = await GaleryApi.updateGaleri(editingId, {
+        title,
+        image,
+      });
+      const responseBody = await response.json();
 
-  // ✅ Data yang ditampilkan hanya per halaman
-  const startIndex = (page - 1) * itemsPerPage;
-  const paginatedGaleries = galeries.slice(startIndex, startIndex + itemsPerPage);
+      if (!response.ok) {
+        let errorMessage = "Gagal menyimpan perubahan.";
 
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onloadend = () => setForm((prev) => ({ ...prev, image: reader.result }));
-    reader.readAsDataURL(file);
-  };
+        if (responseBody.error && Array.isArray(responseBody.error)) {
+          const errorMessages = responseBody.error.map((err) => {
+            if (err.path && err.path.length > 0) {
+              return `${err.path[0]}: ${err.message}`;
+            }
+            return err.message;
+          });
+          errorMessage = errorMessages.join(", ");
+        } else if (
+          responseBody.error &&
+          typeof responseBody.error === "string"
+        ) {
+          errorMessage = responseBody.error;
+        }
+        await alertError(errorMessage);
+        return;
+      }
+      resetForm();
 
-  const handleSave = () => {
-    if (!form.title || !form.image) return alert("Lengkapi judul & pilih gambar!");
-    if (form.id) {
-      setGaleries((prev) => prev.map((g) => (g.id === form.id ? { ...form } : g)));
+      setGaleries((prev) =>
+        prev.map((g) => (g.id === editingId ? responseBody.galeri : g))
+      );
+
+      await alertSuccess("Produk berhasil diperbarui!");
+      return;
+    }
+    if (!title || !image) return alertError("Lengkapi judul & pilih gambar!");
+
+    const response = await GaleryApi.createGaleri({ title, image });
+    const responseBody = await response.json();
+
+    if (response.ok) {
+      await alertSuccess("Galleri berhasil ditambahkan!");
+      setGaleries([responseBody.galeri, ...galeries]);
     } else {
-      setGaleries((prev) => [...prev, { ...form, id: Date.now() }]);
+      let errorMessage = "Gagal menyimpan perubahan.";
+
+      if (responseBody.error && Array.isArray(responseBody.error)) {
+        const errorMessages = responseBody.error.map((err) => {
+          if (err.path && err.path.length > 0) {
+            return `${err.path[0]}: ${err.message}`;
+          }
+          return err.message;
+        });
+        errorMessage = errorMessages.join(", ");
+      } else if (responseBody.error && typeof responseBody.error === "string") {
+        errorMessage = responseBody.error;
+      }
+
+      alertError(errorMessage);
     }
     resetForm();
   };
 
-  const handleDelete = (id) => {
-    if (confirm("Yakin hapus foto ini?")) {
-      setGaleries((prev) => prev.filter((g) => g.id !== id));
+  const handleDelete = async (id) => {
+    if (!(await alertConfirm("Yakin hapus foto ini?"))) {
+      return;
     }
+
+    const response = await GaleryApi.deleteGaleri(id);
+    if (!response.ok) {
+      const responseBody = await response.json();
+
+      let errorMessage = "Gagal menghapus";
+
+      if (responseBody.error && Array.isArray(responseBody.error)) {
+        const errorMessages = responseBody.error.map((err) => {
+          if (err.path && err.path.length > 0) {
+            return `${err.path[0]}: ${err.message}`;
+          }
+          return err.message;
+        });
+        errorMessage = errorMessages.join(", ");
+      } else if (responseBody.error && typeof responseBody.error === "string") {
+        errorMessage = responseBody.error;
+      }
+    }
+
+    await alertSuccess("Foto berhasil dihapus!");
+    setGaleries((prev) => prev.filter((g) => g.id !== id));
   };
 
-  const handleEdit = (g) => {
-    setForm(g);
+  const handleEdit = (id) => {
+    const galeri = galeries.find((g) => g.id === id);
+    if (!galeri) return;
+    setEditingId(galeri.id);
+    setTitle(galeri.title);
+    setImage(null); // Reset image to allow re-upload
     setShowForm(true);
   };
 
   const resetForm = () => {
-    setForm({ id: null, title: "", image: "" });
+    setEditingId(null);
     setShowForm(false);
   };
+
+  const fetchGaleries = async () => {
+    const response = await GaleryApi.getGaleri(currentPage, 9);
+    const responseBody = await response.json();
+    if (!response.ok) {
+      let errorMessage = "Gagal menyimpan perubahan.";
+
+      if (responseBody.error && Array.isArray(responseBody.error)) {
+        const errorMessages = responseBody.error.map((err) => {
+          if (err.path && err.path.length > 0) {
+            return `${err.path[0]}: ${err.message}`;
+          }
+          return err.message;
+        });
+        errorMessage = errorMessages.join(", ");
+      } else if (responseBody.error && typeof responseBody.error === "string") {
+        errorMessage = responseBody.error;
+      }
+      await alertError(errorMessage);
+      return;
+    }
+    setGaleries(responseBody.galeri);
+    setTotalPages(responseBody.total_page);
+    setCurrentPage(responseBody.page);
+  };
+
+  useEffect(() => {
+    fetchGaleries();
+  }, [currentPage]);
 
   return (
     <div className="flex">
@@ -82,43 +174,91 @@ export default function ManageGalery() {
         {/* Form Tambah/Edit */}
         {showForm && (
           <div className="bg-white p-4 rounded shadow mb-6">
-            <h2 className="text-lg font-semibold mb-3">{form.id ? "Edit Foto" : "Tambah Foto"}</h2>
+            <h2 className="text-lg font-semibold mb-3">
+              {editingId ? "Edit Foto" : "Tambah Foto"}
+            </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
                 <label className="block text-sm">Judul Foto</label>
                 <input
                   type="text"
                   className="w-full border p-2 rounded"
-                  value={form.title}
-                  onChange={(e) => setForm({ ...form, title: e.target.value })}
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
                 />
               </div>
               <div>
                 <label className="block text-sm">Upload Gambar</label>
-                <input type="file" accept="image/*" className="w-full border p-2 rounded" onChange={handleImageUpload} />
-                {form.image && <img src={form.image} alt="Preview" className="mt-2 h-32 object-cover rounded" />}
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="w-full border p-2 rounded"
+                  onChange={(e) => {
+                    setImage(e.target.files[0]);
+                  }}
+                />
+                {(image ||
+                  (editingId &&
+                    galeries.find((b) => b.id === editingId)?.image)) && (
+                  <img
+                    src={
+                      image
+                        ? URL.createObjectURL(image)
+                        : galeries.find((b) => b.id === editingId)?.image
+                    }
+                    alt="preview"
+                    className="mt-2 h-32 object-cover rounded"
+                  />
+                )}
               </div>
             </div>
             <div className="flex gap-2 mt-4">
-              <button onClick={handleSave} className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Simpan</button>
-              <button onClick={resetForm} className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">Batal</button>
+              <button
+                onClick={handleSave}
+                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+              >
+                Simpan
+              </button>
+              <button
+                onClick={resetForm}
+                className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
+              >
+                Batal
+              </button>
             </div>
           </div>
         )}
 
         {/* List Foto */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {paginatedGaleries.length === 0 ? (
+          {galeries.length === 0 ? (
             <p className="text-gray-500 italic">Belum ada foto</p>
           ) : (
-            paginatedGaleries.map((g) => (
-              <div key={g.id} className="bg-white rounded shadow overflow-hidden flex flex-col">
-                <img src={g.image} alt={g.title} className="w-full h-48 object-cover" />
+            galeries.map((galeri) => (
+              <div
+                key={galeri.id}
+                className="bg-white rounded shadow overflow-hidden flex flex-col"
+              >
+                <img
+                  src={`${import.meta.env.VITE_BASE_URL}/galeri/images/${
+                    galeri.image
+                  }`}
+                  alt={galeri.title}
+                  className="w-full h-48 object-cover"
+                />
                 <div className="p-3 flex flex-col flex-1 justify-between">
-                  <h3 className="font-semibold text-lg">{g.title}</h3>
+                  <h3 className="font-semibold text-lg">{galeri.title}</h3>
                   <div className="flex justify-between mt-3">
-                    <button onClick={() => handleEdit(g)} className="text-blue-500 hover:text-blue-700">Edit</button>
-                    <button onClick={() => handleDelete(g.id)} className="text-red-500 hover:text-red-700 flex items-center gap-1">
+                    <button
+                      onClick={() => handleEdit(galeri.id)}
+                      className="text-blue-500 hover:text-blue-700"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(galeri.id)}
+                      className="text-red-500 hover:text-red-700 flex items-center gap-1"
+                    >
                       <FaTrash /> Hapus
                     </button>
                   </div>
@@ -131,7 +271,11 @@ export default function ManageGalery() {
         {/* ✅ Pagination */}
         {galeries.length > 0 && (
           <div className="mt-6 flex justify-center">
-            <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
           </div>
         )}
       </div>

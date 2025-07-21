@@ -40,7 +40,7 @@ export default function ManageBumdes() {
   };
 
   const handleDeleteCategory = async (id) => {
-    console.log(products)
+    console.log(products);
     if (
       !(await alertConfirm(
         "Hapus kategori ini? Produk dengan kategori ini akan terhapus."
@@ -144,7 +144,6 @@ export default function ManageBumdes() {
       await alertSuccess("Produk berhasil diperbarui!");
       return;
     }
-
     const response = await ProductApi.createProduct(rawData);
     const responseBody = await response.json();
 
@@ -216,7 +215,7 @@ export default function ManageBumdes() {
   const [totalPages, setTotalPages] = useState(1);
 
   const fetchProducts = async () => {
-    const response = await ProductApi.getOwnProducts(1, 10);
+    const response = await ProductApi.getOwnProducts(currentPage, 10);
     if (!response.ok) {
       alertError("Gagal mengambil produk. Silakan coba lagi.");
       return;

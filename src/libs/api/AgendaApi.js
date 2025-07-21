@@ -58,7 +58,6 @@ export class AgendaApi {
   }
 
   static async updateAgenda(id, data) {
-    console.log("Updating agenda with ID:", data.start_time, data.end_time);
     const formData = new FormData();
     formData.append("title", data.title) ?? null;
     formData.append("description", data.description ?? null);
