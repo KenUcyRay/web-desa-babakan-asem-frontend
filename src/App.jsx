@@ -65,6 +65,7 @@ import ManageBumdes from "./components/admin/ManageBumdes";
 import ManageGalery from "./components/admin/ManageGalery";
 import ManageAnggota from "./components/admin/ManageAnggota";
 import ManageAdministrasi from "./components/admin/ManageAdministrasi";
+import ManagePkk from "./components/admin/ManagePkk";
 
 // ✅ Pengaturan Admin
 import PengaturanProfil from "./components/admin/settings/PengaturanProfil";
@@ -158,6 +159,7 @@ function LayoutAdmin() {
         <Route path="/admin/manage-galery" element={<ManageGalery />} />
         <Route path="/admin/manage-anggota" element={<ManageAnggota />} />
         <Route path="/admin/manage-administrasi" element={<ManageAdministrasi />} />
+        <Route path="/admin/manage-pkk" element={<ManagePkk />} />
 
         {/* ✅ Pengaturan Admin */}
         <Route path="/admin/pengaturan/profil" element={<PengaturanProfil />} />

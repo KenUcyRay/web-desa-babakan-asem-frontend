@@ -1,67 +1,93 @@
 import { useState } from "react";
 import AdminSidebar from "./AdminSidebar";
 import { FaPlus, FaTrash } from "react-icons/fa";
-import Pagination from "../ui/Pagination"; // ✅ Pastikan sudah punya komponen Pagination
+import Pagination from "../ui/Pagination";
 
-export default function ManageGalery() {
+export default function ManagePkk() {
   const [showForm, setShowForm] = useState(false);
   const [title, setTitle] = useState("");
+  const [desc, setDesc] = useState("");
   const [image, setImage] = useState(null);
   const [editingId, setEditingId] = useState(null);
 
-  const kategoriList = ["Semua", "Pemerintah", "PKK", "Karang Taruna", "DPD"];
-  const [kategoriFilter, setKategoriFilter] = useState("Semua");
+  const [programs, setPrograms] = useState([
+    {
+      id: 1,
+      title: "Nama Program",
+      desc: "Kegiatan PKK untuk meningkatkan kesejahteraan keluarga.",
+      image: "https://picsum.photos/400/300?1",
+    },
+    {
+      id: 2,
+      title: "Pelatihan Keterampilan",
+      desc: "Pelatihan memasak, menjahit, dan kerajinan tangan.",
+      image: "https://picsum.photos/400/300?2",
+    },
+    {
+      id: 3,
+      title: "Sosialisasi Kesehatan",
+      desc: "Penyuluhan kesehatan ibu dan anak di desa.",
+      image: "https://picsum.photos/400/300?3",
+    },
+  ]);
 
-  // ✅ Pagination State
+  // ✅ Pagination
   const [currentPage, setCurrentPage] = useState(1);
-  const perPage = 6; // jumlah foto per halaman
-
-  // ✅ Filter berdasarkan kategori
-  const filteredGaleries =
-    kategoriFilter === "Semua"
-      ? galeries
-      : galeries.filter((g) => g.category === kategoriFilter);
-
-  // ✅ Hitung data untuk halaman sekarang
-  const totalPages = Math.ceil(filteredGaleries.length / perPage);
+  const perPage = 4;
+  const totalPages = Math.ceil(programs.length / perPage);
   const indexOfLast = currentPage * perPage;
   const indexOfFirst = indexOfLast - perPage;
-  const currentGaleries = filteredGaleries.slice(indexOfFirst, indexOfLast);
+  const currentPrograms = programs.slice(indexOfFirst, indexOfLast);
 
-  const handleDelete = (id) => {
-    setGaleries((prev) => prev.filter((g) => g.id !== id));
+  const resetForm = () => {
+    setTitle("");
+    setDesc("");
+    setImage(null);
+    setEditingId(null);
+    setShowForm(false);
   };
 
   const handleSave = () => {
-    if (!title || !image) return alert("Isi judul & upload gambar dulu!");
+    if (!title || !desc || !image) return alert("Lengkapi semua data!");
 
     if (editingId) {
-      setGaleries((prev) =>
-        prev.map((g) =>
-          g.id === editingId ? { ...g, title, image: URL.createObjectURL(image) } : g
+      setPrograms((prev) =>
+        prev.map((p) =>
+          p.id === editingId
+            ? {
+                ...p,
+                title,
+                desc,
+                image: image instanceof File ? URL.createObjectURL(image) : p.image,
+              }
+            : p
         )
       );
     } else {
-      setGaleries((prev) => [
+      setPrograms((prev) => [
         {
           id: Date.now(),
           title,
+          desc,
           image: URL.createObjectURL(image),
-          category: "Pemerintah",
         },
         ...prev,
       ]);
     }
-    setTitle("");
-    setImage(null);
-    setShowForm(false);
-    setEditingId(null);
+    resetForm();
   };
 
-  const handleEdit = (galeri) => {
-    setEditingId(galeri.id);
-    setTitle(galeri.title);
+  const handleEdit = (program) => {
+    setEditingId(program.id);
+    setTitle(program.title);
+    setDesc(program.desc);
     setShowForm(true);
+  };
+
+  const handleDelete = (id) => {
+    if (confirm("Yakin hapus program ini?")) {
+      setPrograms((prev) => prev.filter((p) => p.id !== id));
+    }
   };
 
   return (
@@ -69,27 +95,7 @@ export default function ManageGalery() {
       <AdminSidebar />
 
       <div className="ml-64 p-6 w-full">
-        <h1 className="text-2xl font-bold mb-4">Kelola Galeri Desa</h1>
-
-        {/* ✅ Tombol filter kategori */}
-        {/* <div className="flex flex-wrap gap-2 mb-4">
-          {kategoriList.map((k) => (
-            <button
-              key={k}
-              className={`px-4 py-2 rounded transition ${
-                kategoriFilter === k
-                  ? "bg-green-500 text-white"
-                  : "bg-gray-200 hover:bg-gray-300"
-              }`}
-              onClick={() => {
-                setKategoriFilter(k);
-                setCurrentPage(1); // reset ke halaman pertama
-              }}
-            >
-              {k}
-            </button>
-          ))}
-        </div> */}
+        <h1 className="text-2xl font-bold mb-4">Kelola Program Pokok PKK</h1>
 
         {/* Tombol Tambah */}
         {!showForm && (
@@ -97,7 +103,7 @@ export default function ManageGalery() {
             onClick={() => setShowForm(true)}
             className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded flex items-center gap-2 mb-4"
           >
-            <FaPlus /> Tambah Foto
+            <FaPlus /> Tambah Program
           </button>
         )}
 
@@ -105,11 +111,11 @@ export default function ManageGalery() {
         {showForm && (
           <div className="bg-white p-4 rounded shadow mb-6">
             <h2 className="text-lg font-semibold mb-3">
-              {editingId ? "Edit Foto" : "Tambah Foto"}
+              {editingId ? "Edit Program" : "Tambah Program"}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm">Judul Foto</label>
+                <label className="block text-sm">Nama Program</label>
                 <input
                   type="text"
                   className="w-full border p-2 rounded"
@@ -128,12 +134,12 @@ export default function ManageGalery() {
                 />
                 {(image ||
                   (editingId &&
-                    galeries.find((b) => b.id === editingId)?.image)) && (
+                    programs.find((b) => b.id === editingId)?.image)) && (
                   <img
                     src={
                       image
                         ? URL.createObjectURL(image)
-                        : galeries.find((b) => b.id === editingId)?.image
+                        : programs.find((b) => b.id === editingId)?.image
                     }
                     alt="preview"
                     className="mt-2 h-32 object-cover rounded"
@@ -141,21 +147,14 @@ export default function ManageGalery() {
                 )}
               </div>
 
-              {/* ✅ Pilih kategori */}
-              <div>
-                <label className="block text-sm">Kategori</label>
-                <select
+              <div className="md:col-span-2">
+                <label className="block text-sm">Deskripsi</label>
+                <textarea
+                  rows={3}
                   className="w-full border p-2 rounded"
-                  value={form.category}
-                  onChange={(e) =>
-                    setForm({ ...form, category: e.target.value })
-                  }
-                >
-                  <option value="Pemerintah">Pemerintah</option>
-                  <option value="PKK">PKK</option>
-                  <option value="Karang Taruna">Karang Taruna</option>
-                  <option value="DPD">DPD</option>
-                </select>
+                  value={desc}
+                  onChange={(e) => setDesc(e.target.value)}
+                />
               </div>
             </div>
 
@@ -167,7 +166,7 @@ export default function ManageGalery() {
                 Simpan
               </button>
               <button
-                onClick={() => setShowForm(false)}
+                onClick={resetForm}
                 className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
               >
                 Batal
@@ -176,33 +175,35 @@ export default function ManageGalery() {
           </div>
         )}
 
-        {/* ✅ List Foto */}
+        {/* List Program */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {currentGaleries.length === 0 ? (
-            <p className="text-gray-500 italic">Belum ada foto</p>
+          {currentPrograms.length === 0 ? (
+            <p className="text-gray-500 italic">Belum ada program</p>
           ) : (
-            currentGaleries.map((galeri) => (
+            currentPrograms.map((program) => (
               <div
-                key={galeri.id}
+                key={program.id}
                 className="bg-white rounded shadow overflow-hidden flex flex-col"
               >
                 <img
-                  src={galeri.image}
-                  alt={galeri.title}
+                  src={program.image}
+                  alt={program.title}
                   className="w-full h-48 object-cover"
                 />
                 <div className="p-3 flex flex-col flex-1 justify-between">
-                  <h3 className="font-semibold text-lg">{galeri.title}</h3>
-                  <p className="text-sm text-gray-500">{galeri.category}</p>
+                  <h3 className="font-semibold text-lg text-green-700">
+                    {program.title}
+                  </h3>
+                  <p className="text-gray-600 text-sm">{program.desc}</p>
                   <div className="flex justify-between mt-3">
                     <button
-                      onClick={() => handleEdit(galeri)}
+                      onClick={() => handleEdit(program)}
                       className="text-blue-500 hover:text-blue-700"
                     >
                       Edit
                     </button>
                     <button
-                      onClick={() => handleDelete(galeri.id)}
+                      onClick={() => handleDelete(program.id)}
                       className="text-red-500 hover:text-red-700 flex items-center gap-1"
                     >
                       <FaTrash /> Hapus
@@ -214,16 +215,16 @@ export default function ManageGalery() {
           )}
         </div>
 
-        {/* ✅ Pagination */}
-        {/* {filteredGaleries.length > 0 && ( */}
-        <div className="mt-6 flex justify-center">
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-          />
-        </div>
-        {/* )} */}
+        {/* Pagination */}
+        {programs.length > perPage && (
+          <div className="mt-6 flex justify-center">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

@@ -9,8 +9,9 @@ import {
   FaArrowLeft,
   FaStore,
   FaImage,
-  FaSitemap, 
-  FaClipboardList // ✅ icon untuk Administrasi
+  FaSitemap,
+  FaClipboardList,
+  FaUsersCog // ✅ icon untuk PKK
 } from "react-icons/fa";
 import logo from "../../assets/logo.png";
 import { useAuth } from "../../contexts/AuthContext";
@@ -37,16 +38,22 @@ export default function AdminSidebar() {
     { to: "/admin/manage-user", label: "Kelola User", icon: <FaUsers /> },
     { to: "/admin/manage-bumdes", label: "Kelola Produk BUMDes", icon: <FaStore /> },
     { to: "/admin/manage-galery", label: "Kelola Galeri Desa", icon: <FaImage /> },
-    { to: "/admin/manage-form", label: "Kelola Form Diterima", icon: <FaImage /> },
 
-    // ✅ Menu baru untuk Administrasi (Form Online, Formulir Layanan, Surat Pengantar)
+    // ✅ Menu baru untuk Administrasi
     {
       to: "/admin/manage-administrasi",
       label: "Kelola Administrasi",
       icon: <FaClipboardList />,
     },
 
-    // ✅ Tambahan menu baru untuk struktur organisasi
+    // ✅ Menu baru untuk Program PKK
+    {
+      to: "/admin/manage-pkk",
+      label: "Kelola Program PKK",
+      icon: <FaUsersCog />,
+    },
+
+    // ✅ Menu baru untuk struktur organisasi
     {
       to: "/admin/manage-anggota",
       label: "Struktur Organisasi",
