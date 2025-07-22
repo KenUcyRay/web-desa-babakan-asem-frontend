@@ -4,14 +4,9 @@ import "aos/dist/aos.css";
 import { MemberApi } from "../../libs/api/MemberApi";
 import { alertError } from "../../libs/alert";
 import { AgendaApi } from "../../libs/api/AgendaApi";
+import { Helper } from "../../utils/Helper";
 
 export default function Bpd() {
-  const agendaBPD = [
-    { title: "Musyawarah Desa Rencana Kerja 2025", tanggal: "12 Agustus 2025" },
-    { title: "Evaluasi APB Desa Semester 1", tanggal: "5 September 2025" },
-    { title: "Reses & Penyerapan Aspirasi Warga", tanggal: "20 Oktober 2025" },
-  ];
-
   const [agenda, setAgenda] = useState([]);
 
   const fetchAgenda = async () => {
