@@ -8,7 +8,7 @@ import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 export default function ManageAnggota() {
   const [members, setMembers] = useState([]);
   const [kategori, setKategori] = useState("Semua");
-  const kategoriList = ["Semua", "PKK", "Karang Taruna", "DPD", "PEMERINTAH"];
+  const kategoriList = ["Semua", "PKK", "Karang Taruna", "DPD", "PEMERINTAH", "BPD"];
 
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -271,6 +271,7 @@ export default function ManageAnggota() {
                 <option value="PKK">PKK</option>
                 <option value="Karang Taruna">Karang Taruna</option>
                 <option value="DPD">DPD</option>
+                <option value="BPD">BPD</option>
               </select>
 
               <div>
