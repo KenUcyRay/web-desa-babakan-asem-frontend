@@ -29,6 +29,9 @@ export default function TopNavbar() {
           <Link to="/dpd" className="hover:text-[#B6F500] transition font-semibold">
             DPD
           </Link>
+          <Link to="/bpd" className="hover:text-[#B6F500] transition font-semibold">
+            BPD
+          </Link>
         </div>
 
         {/* ✅ Sosmed */}
