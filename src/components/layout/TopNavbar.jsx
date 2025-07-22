@@ -1,28 +1,16 @@
-import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   FaFacebookF,
   FaInstagram,
-  FaYoutube,
-  FaMoon,
-  FaSun,
+  FaTiktok,
+  FaWhatsapp,
 } from "react-icons/fa";
+import { MdEmail } from "react-icons/md";
 
 export default function TopNavbar() {
-  const [darkMode, setDarkMode] = useState(false);
-
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, [darkMode]);
-
   return (
-    <div className="w-full fixed top-0 left-0 bg-white dark:bg-black shadow z-50">
-      {/* ✅ Biar full width tapi konten tetap rapi */}
-      <div className="w-full flex flex-wrap items-center justify-between px-6 xl:px-16 py-3 text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-200">
+    <div className="w-full fixed top-0 left-0 bg-white shadow z-50">
+      <div className="w-full flex flex-wrap items-center justify-between px-6 xl:px-16 py-3 text-xs sm:text-sm font-medium text-gray-700">
         
         {/* ✅ Menu kiri */}
         <div className="flex flex-wrap gap-6 justify-center sm:justify-start w-full sm:w-auto">
@@ -38,30 +26,63 @@ export default function TopNavbar() {
           <Link to="/galeri" className="hover:text-[#B6F500] transition">
             Galeri
           </Link>
-          {/* ✅ Tambahan DPD */}
           <Link to="/dpd" className="hover:text-[#B6F500] transition font-semibold">
             DPD
           </Link>
         </div>
 
-        {/* ✅ Sosmed + Darkmode */}
+        {/* ✅ Sosmed */}
         <div className="flex items-center gap-5 justify-center w-full sm:w-auto mt-2 sm:mt-0">
-          <a href="#" className="hover:text-[#B6F500] transition">
+          {/* Facebook */}
+          <a
+            href="https://www.facebook.com/KpuSumedangKab/?locale=id_ID"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-500 hover:text-blue-600 transition"
+            aria-label="Facebook"
+          >
             <FaFacebookF />
           </a>
-          <a href="#" className="hover:text-[#B6F500] transition">
+          {/* Instagram */}
+          <a
+            href="https://www.instagram.com/inimahsumedang/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-500 hover:text-pink-500 transition"
+            aria-label="Instagram"
+          >
             <FaInstagram />
           </a>
-          <a href="#" className="hover:text-[#B6F500] transition">
-            <FaYoutube />
-          </a>
-
-          <button
-            onClick={() => setDarkMode(!darkMode)}
-            className="ml-3 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
+          {/* TikTok */}
+          <a
+            href="https://www.tiktok.com/@bpskabsumedang"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-500 hover:text-black transition"
+            aria-label="TikTok"
           >
-            {darkMode ? <FaSun /> : <FaMoon />}
-          </button>
+            <FaTiktok />
+          </a>
+          {/* WhatsApp */}
+          <a
+            href="https://api.whatsapp.com/send?phone=6281122202220&text=Simpati"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-500 hover:text-green-500 transition"
+            aria-label="WhatsApp"
+          >
+            <FaWhatsapp />
+          </a>
+          {/* Gmail */}
+          <a
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-500 hover:text-red-500 transition"
+            aria-label="Gmail"
+          >
+            <MdEmail />
+          </a>
         </div>
       </div>
     </div>

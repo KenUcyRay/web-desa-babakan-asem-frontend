@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import AdminSidebar from "./AdminSidebar";
-import { FaPlus, FaTrash } from "react-icons/fa";
+import { FaPlus, FaTrash, FaSave, FaTimes } from "react-icons/fa";
 import Pagination from "../ui/Pagination";
 import { ProgramApi } from "../../libs/api/ProgramApi";
 import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
@@ -23,64 +22,53 @@ export default function ManagePkk() {
     setShowForm(false);
   };
 
-  const handleSave = async () => {
+  const handleSave = async (e) => {
+    e.preventDefault();
+
+    if (!title || !desc || (!image && !editingId)) {
+      return alertError("Lengkapi semua data sebelum simpan!");
+    }
+
     if (editingId) {
-      if (!(await alertConfirm("Yakin simpan perubahan ini?"))) {
-        return;
-      }
+      if (!(await alertConfirm("Yakin simpan perubahan ini?"))) return;
+
       const rawData = {
-        title: title ?? null,
-        description: desc ?? null,
-        featured_image: image ?? null,
+        title,
+        description: desc,
+        featured_image: image,
       };
       const response = await ProgramApi.updateProgram(editingId, rawData);
-      const responseBody = await response.json();
+      const body = await response.json();
+
       if (!response.ok) {
-        let errorMessage = "Gagal menyimpan perubahan.";
-        if (responseBody.error && Array.isArray(responseBody.error)) {
-          const errorMessages = responseBody.error.map((err) =>
-            err.path?.length ? `${err.path[0]}: ${err.message}` : err.message
-          );
-          errorMessage = errorMessages.join(", ");
-        } else if (typeof responseBody.error === "string") {
-          errorMessage = responseBody.error;
-        }
-        alertError(errorMessage);
+        alertError(typeof body.error === "string" ? body.error : "Gagal menyimpan perubahan.");
         return;
       }
 
       setPrograms((prev) =>
-        prev.map((p) => (p.id === editingId ? responseBody.program : p))
+        prev.map((p) => (p.id === editingId ? body.program : p))
       );
 
       await alertSuccess("Program berhasil diperbarui!");
     } else {
-      if (!title || !desc || !image)
-        return await alertError("Lengkapi semua data!");
       const rawData = {
-        title: title,
+        title,
         description: desc,
         featured_image: image,
       };
 
       const response = await ProgramApi.createProgram(rawData);
-      const responseBody = await response.json();
+      const body = await response.json();
+
       if (!response.ok) {
-        let errorMessage = "Gagal menyimpan perubahan.";
-        if (responseBody.error && Array.isArray(responseBody.error)) {
-          const errorMessages = responseBody.error.map((err) =>
-            err.path?.length ? `${err.path[0]}: ${err.message}` : err.message
-          );
-          errorMessage = errorMessages.join(", ");
-        } else if (typeof responseBody.error === "string") {
-          errorMessage = responseBody.error;
-        }
-        alertError(errorMessage);
+        alertError(typeof body.error === "string" ? body.error : "Gagal menyimpan program.");
         return;
       }
-      setPrograms([responseBody.program, ...programs]);
-      await alertSuccess("Program berhasil disimpan!");
+
+      setPrograms([body.program, ...programs]);
+      await alertSuccess("Program berhasil ditambahkan!");
     }
+
     resetForm();
   };
 
@@ -90,173 +78,181 @@ export default function ManagePkk() {
     setEditingId(program.id);
     setTitle(program.title);
     setDesc(program.description);
+    setImage(null);
     setShowForm(true);
   };
 
   const handleDelete = async (id) => {
-    if (!(await alertConfirm("Yakin hapus program ini?"))) {
-      return;
-    }
+    if (!(await alertConfirm("Yakin hapus program ini?"))) return;
+
     const response = await ProgramApi.deleteProgram(id);
     if (!response.ok) {
       await alertError("Gagal menghapus program");
       return;
     }
+
     setPrograms((prev) => prev.filter((p) => p.id !== id));
+    await alertSuccess("Program berhasil dihapus!");
   };
 
   const fetchPrograms = async () => {
     const response = await ProgramApi.getPrograms(currentPage, 9);
-    const responseBody = await response.json();
+    const body = await response.json();
+
     if (!response.ok) {
       await alertError("Gagal mengambil data program");
       return;
     }
-    setTotalPages(responseBody.total_page);
-    setCurrentPage(responseBody.page);
-    setPrograms(responseBody.programs);
+
+    setTotalPages(body.total_page);
+    setCurrentPage(body.page);
+    setPrograms(body.programs);
   };
 
   useEffect(() => {
     fetchPrograms();
   }, [currentPage]);
+
   return (
-    <div className="flex">
-      <AdminSidebar />
+    <div className="font-[Poppins,sans-serif]">
+      {/* HEADER */}
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold text-green-700">Kelola Program PKK</h1>
 
-      <div className="ml-64 p-6 w-full">
-        <h1 className="text-2xl font-bold mb-4">Kelola Program Pokok PKK</h1>
-
-        {/* Tombol Tambah */}
         {!showForm && (
           <button
             onClick={() => setShowForm(true)}
-            className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded flex items-center gap-2 mb-4"
+            className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded shadow hover:bg-green-600 transition"
           >
             <FaPlus /> Tambah Program
           </button>
         )}
+      </div>
 
-        {/* Form Tambah/Edit */}
-        {showForm && (
-          <div className="bg-white p-4 rounded shadow mb-6">
-            <h2 className="text-lg font-semibold mb-3">
-              {editingId ? "Edit Program" : "Tambah Program"}
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div>
-                <label className="block text-sm">Nama Program</label>
-                <input
-                  type="text"
-                  className="w-full border p-2 rounded"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm">Upload Gambar</label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="w-full border p-2 rounded"
-                  onChange={(e) => setImage(e.target.files[0])}
-                />
-                {(image ||
-                  (editingId &&
-                    programs.find((b) => b.id === editingId)?.image)) && (
-                  <img
-                    src={
-                      image
-                        ? URL.createObjectURL(image)
-                        : programs.find((b) => b.id === editingId)?.image
-                    }
-                    alt="preview"
-                    className="mt-2 h-32 object-cover rounded"
-                  />
-                )}
-              </div>
-
-              <div className="md:col-span-2">
-                <label className="block text-sm">Deskripsi</label>
-                <textarea
-                  rows={3}
-                  className="w-full border p-2 rounded"
-                  value={desc}
-                  onChange={(e) => setDesc(e.target.value)}
-                />
-              </div>
-            </div>
-
-            <div className="flex gap-2 mt-4">
-              <button
-                onClick={handleSave}
-                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-              >
-                Simpan
-              </button>
-              <button
-                onClick={resetForm}
-                className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
-              >
-                Batal
-              </button>
-            </div>
+      {/* FORM TAMBAH/EDIT */}
+      {showForm && (
+        <form
+          onSubmit={handleSave}
+          className="bg-white p-6 rounded-xl shadow-md mb-6 space-y-4 max-w-2xl border"
+        >
+          {/* Nama Program */}
+          <div>
+            <label className="block font-medium text-gray-700 mb-1">Nama Program</label>
+            <input
+              type="text"
+              className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-green-300 outline-none"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Masukkan nama program"
+              required
+            />
           </div>
-        )}
 
-        {/* List Program */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {programs.length === 0 ? (
-            <p className="text-gray-500 italic">Belum ada program</p>
-          ) : (
-            programs.map((program) => (
-              <div
-                key={program.id}
-                className="bg-white rounded shadow overflow-hidden flex flex-col"
-              >
-                <img
-                  src={`${import.meta.env.VITE_BASE_URL}/programs/images/${
-                    program.featured_image
-                  }`}
-                  alt={program.title}
-                  className="w-full h-48 object-cover"
-                />
-                <div className="p-3 flex flex-col flex-1 justify-between">
-                  <h3 className="font-semibold text-lg text-green-700">
-                    {program.title}
-                  </h3>
-                  <p className="text-gray-600 text-sm">{program.description}</p>
-                  <div className="flex justify-between mt-3">
-                    <button
-                      onClick={() => handleEdit(program.id)}
-                      className="text-blue-500 hover:text-blue-700"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(program.id)}
-                      className="text-red-500 hover:text-red-700 flex items-center gap-1"
-                    >
-                      <FaTrash /> Hapus
-                    </button>
-                  </div>
+          {/* Upload Gambar */}
+          <div>
+            <label className="block font-medium text-gray-700 mb-1">Upload Gambar</label>
+            <input
+              type="file"
+              accept="image/*"
+              className="w-full border rounded-lg p-2"
+              onChange={(e) => setImage(e.target.files[0])}
+            />
+            {(image || (editingId && programs.find((p) => p.id === editingId)?.featured_image)) && (
+              <img
+                src={
+                  image
+                    ? URL.createObjectURL(image)
+                    : `${import.meta.env.VITE_BASE_URL}/programs/images/${
+                        programs.find((p) => p.id === editingId)?.featured_image
+                      }`
+                }
+                alt="preview"
+                className="mt-3 w-full h-40 object-cover rounded-lg shadow-sm"
+              />
+            )}
+          </div>
+
+          {/* Deskripsi */}
+          <div>
+            <label className="block font-medium text-gray-700 mb-1">Deskripsi</label>
+            <textarea
+              rows={4}
+              className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-green-300 outline-none"
+              value={desc}
+              onChange={(e) => setDesc(e.target.value)}
+              placeholder="Tuliskan deskripsi program..."
+              required
+            />
+          </div>
+
+          {/* Tombol Simpan/Batal */}
+          <div className="flex gap-3">
+            <button
+              type="submit"
+              className="flex items-center gap-2 bg-green-500 text-white px-5 py-2 rounded-lg shadow hover:bg-green-600 transition"
+            >
+              <FaSave /> {editingId ? "Update Program" : "Simpan Program"}
+            </button>
+            <button
+              type="button"
+              onClick={resetForm}
+              className="flex items-center gap-2 bg-gray-400 text-white px-4 py-2 rounded-lg hover:bg-gray-500 transition"
+            >
+              <FaTimes /> Batal
+            </button>
+          </div>
+        </form>
+      )}
+
+      {/* LIST PROGRAM */}
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {programs.length === 0 ? (
+          <p className="text-gray-500 italic">Belum ada program</p>
+        ) : (
+          programs.map((program) => (
+            <div
+              key={program.id}
+              className="bg-white rounded-xl shadow-md border hover:shadow-lg transition overflow-hidden"
+            >
+              <img
+                src={`${import.meta.env.VITE_BASE_URL}/programs/images/${program.featured_image}`}
+                alt={program.title}
+                className="w-full h-48 object-cover"
+              />
+              <div className="p-4">
+                <h3 className="font-semibold text-lg text-gray-800 line-clamp-2">
+                  {program.title}
+                </h3>
+                <p className="text-gray-600 text-sm mt-2 line-clamp-3">
+                  {program.description}
+                </p>
+                <div className="flex justify-between mt-4 text-sm">
+                  <button
+                    onClick={() => handleEdit(program.id)}
+                    className="text-blue-500 hover:text-blue-700 transition"
+                  >
+                    ✏️ Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(program.id)}
+                    className="flex items-center gap-1 text-red-500 hover:text-red-700 transition"
+                  >
+                    <FaTrash /> Hapus
+                  </button>
                 </div>
               </div>
-            ))
-          )}
-        </div>
+            </div>
+          ))
+        )}
+      </div>
 
-        {/* Pagination */}
-        {/* {programs.length > perPage && ( */}
-        <div className="mt-6 flex justify-center">
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-          />
-        </div>
-        {/* )} */}
+      {/* PAGINATION */}
+      <div className="mt-6 flex justify-center">
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
       </div>
     </div>
   );

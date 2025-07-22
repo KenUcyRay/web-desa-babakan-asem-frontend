@@ -12,11 +12,14 @@ import {
 import { Link, useLocation } from "react-router-dom";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 
-import LogoDesa from "../../assets/logo.png"; 
+import LogoDesa from "../../assets/logo.png";
 import { NewsApi } from "../../libs/api/NewsApi";
 import { Helper } from "../../utils/Helper";
 import { alertError } from "../../libs/alert";
 import { ProductApi } from "../../libs/api/ProductApi";
+import foto1 from "../../assets/babakan.jpg";
+import foto2 from "../../assets/kantor.jpg";
+import foto3 from "../../assets/jalan.jpg";
 
 export default function Home() {
   const location = useLocation();
@@ -53,10 +56,11 @@ export default function Home() {
     },
   ];
 
+  // ✅ APB Desa yang lebih normal
   const apbData = [
-    { name: "Pendapatan", value: 1200000000, color: "#4ade80" },
-    { name: "Belanja", value: 950000000, color: "#f87171" },
-    { name: "Sisa Anggaran", value: 250000000, color: "#60a5fa" },
+    { name: "Pendapatan", value: 350000000, color: "#4ade80" },
+    { name: "Belanja", value: 280000000, color: "#f87171" },
+    { name: "Sisa Anggaran", value: 70000000, color: "#60a5fa" },
   ];
 
   const [products, setProducts] = useState([]);
@@ -68,9 +72,7 @@ export default function Home() {
       const responseBody = await response.json();
       setProducts(responseBody.products);
     } else {
-      await alertError(
-        "Gagal mengambil data product. Silakan coba lagi nanti."
-      );
+      await alertError("Gagal mengambil data product. Silakan coba lagi nanti.");
     }
   };
 
@@ -102,12 +104,12 @@ export default function Home() {
         >
           {[
             {
-              img: "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?auto=format&fit=crop&w=1600&q=80",
+              img: foto1,
               title: "Selamat Datang di Desa Babakan Asem",
               desc: "Desa yang asri, ramah, dan penuh gotong royong.",
             },
             {
-              img: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1600&q=80",
+              img: foto2,
               title: "Profil Desa Babakan Asem",
               desc: (
                 <>
@@ -122,7 +124,7 @@ export default function Home() {
               ),
             },
             {
-              img: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=80",
+              img: foto3,
               title: "Potensi & Kegiatan Desa",
               desc: "Memberdayakan UMKM & budaya lokal bersama masyarakat.",
             },
@@ -244,7 +246,7 @@ export default function Home() {
             {products.map((product) => (
               <Link
                 key={product.product.id}
-                to={`/bumdes/${product.product.id}`} // ✅ sekarang ke detail
+                to={`/bumdes/${product.product.id}`}
                 className="bg-white rounded-xl shadow hover:shadow-xl hover:scale-105 transition-transform"
               >
                 <img
@@ -267,44 +269,56 @@ export default function Home() {
       </div>
 
       {/* ✅ APB Desa dengan Pie Chart */}
-      <div className="max-w-7xl mx-auto px-4 py-12">
-        <h2 className="text-2xl font-bold text-center text-green-700 mb-6">
-          APB Desa Tahun 2025
+      <div className="max-w-7xl mx-auto px-4 py-12 font-poppins">
+        <h2
+          className="text-2xl md:text-3xl font-bold text-center text-green-700 mb-8"
+          data-aos="fade-up"
+        >
+          📊 APB Desa Tahun 2025
         </h2>
-        <div className="flex flex-col md:flex-row items-center justify-center gap-8">
-          <div className="w-full md:w-1/2 h-64">
-            <ResponsiveContainer>
-              <PieChart>
-                <Pie
-                  data={apbData}
-                  dataKey="value"
-                  nameKey="name"
-                  outerRadius={100}
-                  label
-                >
-                  {apbData.map((entry, idx) => (
-                    <Cell key={idx} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-          <div className="grid gap-4">
-            {apbData.map((item, idx) => (
-              <div key={idx} className="flex items-center gap-3">
+
+        <div className="bg-white rounded-2xl shadow-lg p-6 md:p-10">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-10">
+            {/* ✅ Chart */}
+            <div className="w-full md:w-[50%] h-[280px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={apbData}
+                    dataKey="value"
+                    nameKey="name"
+                    outerRadius={100}
+                    label
+                  >
+                    {apbData.map((entry, idx) => (
+                      <Cell key={idx} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+
+            {/* ✅ Detail anggaran */}
+            <div className="grid gap-4">
+              {apbData.map((item, idx) => (
                 <div
-                  className="w-4 h-4 rounded"
-                  style={{ backgroundColor: item.color }}
-                ></div>
-                <span className="text-gray-700 font-medium">
-                  {item.name}:{" "}
-                  <span className="font-bold">
-                    Rp {item.value.toLocaleString("id-ID")}
+                  key={idx}
+                  className="flex items-center gap-3 text-gray-700"
+                >
+                  <div
+                    className="w-4 h-4 rounded"
+                    style={{ backgroundColor: item.color }}
+                  ></div>
+                  <span className="font-medium">
+                    {item.name}:{" "}
+                    <span className="font-bold">
+                      Rp {item.value.toLocaleString("id-ID")}
+                    </span>
                   </span>
-                </span>
-              </div>
-            ))}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

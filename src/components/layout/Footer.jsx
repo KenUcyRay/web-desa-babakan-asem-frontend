@@ -9,17 +9,15 @@ import {
   FaPhone,
   FaEnvelope,
 } from "react-icons/fa";
+import foto1 from "../../assets/sponsor1.png";
+import foto2 from "../../assets/sponsor2.png";
+import foto3 from "../../assets/sponsor3.png";
 
 export default function Footer() {
   return (
     <footer className="bg-[#3c3838] text-white w-full">
       {/* Bagian konten utama footer */}
-      <div
-        className="
-          w-full px-6 py-12 
-          grid grid-cols-1 md:grid-cols-4 gap-8 text-sm
-        "
-      >
+      <div className="w-full px-6 py-12 grid grid-cols-1 md:grid-cols-4 gap-8 text-sm">
         {/* ✅ Logo + Teks */}
         <div className="flex flex-col md:flex-row gap-4 items-center md:items-start">
           <Link to="/" className="group flex-shrink-0">
@@ -70,6 +68,8 @@ export default function Footer() {
             <li>
               <a
                 href="#"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-gray-400 hover:text-white hover:underline transition"
               >
                 Website Kemendesa
@@ -78,6 +78,8 @@ export default function Footer() {
             <li>
               <a
                 href="#"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-gray-400 hover:text-white hover:underline transition"
               >
                 Website Kemendagri
@@ -86,6 +88,8 @@ export default function Footer() {
             <li>
               <a
                 href="#"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-gray-400 hover:text-white hover:underline transition"
               >
                 Website Sumedang
@@ -94,6 +98,8 @@ export default function Footer() {
             <li>
               <a
                 href="#"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-gray-400 hover:text-white hover:underline transition"
               >
                 Kartanegara
@@ -103,35 +109,95 @@ export default function Footer() {
         </div>
       </div>
 
+      {/* ✅ Baris Sponsor pakai gambar asli */}
+      <div className="border-t border-gray-600 py-6 flex flex-col items-center">
+        <p className="mb-4 text-gray-300 font-semibold text-sm uppercase tracking-wide">
+          Didukung oleh
+        </p>
+        <div className="flex gap-14 flex-wrap justify-center">
+          {/* Sponsor 1 */}
+          <a
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative"
+          >
+            <img
+              src={foto1}
+              alt="Sponsor 1"
+              className="h-20 opacity-70 group-hover:opacity-100 transition duration-300"
+            />
+          </a>
+
+          {/* Sponsor 2 */}
+          <a
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative"
+          >
+            <img
+              src={foto2}
+              alt="Sponsor 2"
+              className="h-20 opacity-70 group-hover:opacity-100 transition duration-300"
+            />
+          </a>
+
+          {/* Sponsor 3 */}
+          <a
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative"
+          >
+            <img
+              src={foto3}
+              alt="Sponsor 3"
+              className="h-20 opacity-70 group-hover:opacity-100 transition duration-300"
+            />
+          </a>
+        </div>
+      </div>
+
       {/* ✅ Garis + Sosial Media */}
       <div className="border-t border-gray-500 mt-8 pt-6 flex flex-col items-center">
         <div className="flex gap-6 mb-4 flex-wrap justify-center">
           <a
             href="#"
+            target="_blank"
+            rel="noopener noreferrer"
             className="text-2xl opacity-70 hover:opacity-100 hover:text-blue-500 transition"
           >
             <FaFacebookF />
           </a>
           <a
             href="#"
+            target="_blank"
+            rel="noopener noreferrer"
             className="text-2xl opacity-70 hover:opacity-100 hover:text-red-600 transition"
           >
             <FaYoutube />
           </a>
           <a
             href="#"
+            target="_blank"
+            rel="noopener noreferrer"
             className="text-2xl opacity-70 hover:opacity-100 hover:text-yellow-400 transition"
           >
             <FaGoogle />
           </a>
           <a
             href="#"
+            target="_blank"
+            rel="noopener noreferrer"
             className="text-2xl opacity-70 hover:opacity-100 hover:text-blue-400 transition"
           >
             <FaTwitter />
           </a>
           <a
             href="#"
+            target="_blank"
+            rel="noopener noreferrer"
             className="text-2xl opacity-70 hover:opacity-100 hover:text-gray-300 transition"
           >
             <FaTiktok />

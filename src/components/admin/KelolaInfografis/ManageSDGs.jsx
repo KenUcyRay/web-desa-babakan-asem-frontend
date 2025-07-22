@@ -66,7 +66,7 @@ export default function SDGs() {
 
   const handleEdit = (index) => {
     setEditingIndex(index);
-    setProgressBaru(data[index].value.replace("%", "")); // ambil angka aja
+    setProgressBaru(data[index].value.replace("%", ""));
     setShowForm(true);
   };
 
@@ -75,7 +75,6 @@ export default function SDGs() {
       alert("Masukkan angka progress yang valid!");
       return;
     }
-
     const updated = [...data];
     updated[editingIndex].value = `${progressBaru}%`;
     setData(updated);
@@ -83,26 +82,25 @@ export default function SDGs() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-8 font-poppins md:ml-64 bg-gray-50 min-h-screen">
-      {/* Header */}
-      <div className="grid md:grid-cols-2 gap-6 items-center mb-6">
+    <div className="max-w-6xl mx-auto px-6 py-8 font-poppins bg-gray-50 min-h-screen">
+      {/* ✅ Header */}
+      <div className="grid md:grid-cols-2 gap-6 items-center mb-8">
         <div>
           <h2 className="text-3xl font-bold text-gray-800">SDGs Desa</h2>
-          <p className="mt-2 text-gray-600">
-            17 Tujuan Pembangunan Berkelanjutan di Desa Babakan Asem.
-            <br />
+          <p className="text-gray-600 mt-2">
+            17 Tujuan Pembangunan Berkelanjutan di Desa Babakan Asem.<br />
             Anda hanya bisa memperbarui progress (%) tiap tujuan.
           </p>
         </div>
         <img src={cuate} alt="SDGs" className="w-full max-w-md mx-auto" />
       </div>
 
-      {/* Grid data */}
+      {/* ✅ Grid data */}
       <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
         {data.map((item, idx) => (
           <div
             key={idx}
-            className="flex flex-col items-center bg-white p-6 rounded-xl shadow hover:shadow-lg hover:scale-105 transition-all relative"
+            className="flex flex-col items-center bg-white p-6 rounded-xl shadow hover:shadow-lg hover:scale-[1.03] transition-all relative"
           >
             {/* Icon */}
             <div className="text-3xl text-[#B6F500]">{getIconByKey(item.iconKey)}</div>
@@ -113,7 +111,7 @@ export default function SDGs() {
             {/* Progress */}
             <p className="text-xl font-bold text-gray-800">{item.value}</p>
 
-            {/* Progress Bar visual */}
+            {/* Progress Bar */}
             <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
               <div
                 className="bg-green-500 h-2 rounded-full"
@@ -122,19 +120,17 @@ export default function SDGs() {
             </div>
 
             {/* Tombol Edit */}
-            <div className="absolute top-3 right-3">
-              <button
-                onClick={() => handleEdit(idx)}
-                className="text-blue-600 hover:underline text-sm"
-              >
-                Edit
-              </button>
-            </div>
+            <button
+              onClick={() => handleEdit(idx)}
+              className="absolute top-3 right-3 text-blue-600 hover:underline text-sm"
+            >
+              Edit
+            </button>
           </div>
         ))}
       </div>
 
-      {/* Modal Edit Progress */}
+      {/* ✅ Modal Edit Progress */}
       {showForm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg p-6 w-80">
@@ -142,7 +138,6 @@ export default function SDGs() {
               Edit Progress - {data[editingIndex].label}
             </h3>
 
-            {/* Input Progress */}
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Progress (%) Baru
             </label>

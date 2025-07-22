@@ -19,10 +19,8 @@ export default function ManagePenduduk() {
     { key: "child", label: "Anak-anak", icon: <FaChild /> },
   ];
 
-  const getIconByKey = (key) => {
-    const found = iconOptions.find((opt) => opt.key === key);
-    return found ? found.icon : <FaHome />;
-  };
+  const getIconByKey = (key) =>
+    iconOptions.find((opt) => opt.key === key)?.icon || <FaHome />;
 
   const [data, setData] = useState([
     { iconKey: "male", label: "Laki-laki", value: 320 },
@@ -54,23 +52,13 @@ export default function ManagePenduduk() {
   };
 
   return (
-    <div className="p-6 font-poppins md:ml-64">
-      {/* ✅ Judul */}
-      <div className="mb-6">
-        <h2 className="text-3xl font-bold text-gray-800">Kelola Infografis Penduduk</h2>
-        <p className="text-gray-500 text-sm">
-          Anda hanya bisa mengedit jumlah penduduk untuk tiap kategori.
-        </p>
-      </div>
-
-      {/* ✅ Preview Info */}
-      <div className="grid md:grid-cols-2 gap-8 items-center mb-8">
+    <div className="max-w-6xl mx-auto px-6 py-8 font-poppins bg-gray-50 min-h-screen">
+      {/* ✅ Header */}
+      <div className="grid md:grid-cols-2 gap-6 items-center mb-8">
         <div>
-          <h3 className="text-2xl font-bold text-gray-800 leading-snug">
-            Demografi Penduduk Desa Babakan
-          </h3>
-          <p className="mt-2 text-gray-600 text-justify">
-            Data ini bersifat ilustratif. Anda bisa memperbarui jumlah kategori
+          <h2 className="text-3xl font-bold text-gray-800">Kelola Infografis Penduduk</h2>
+          <p className="text-gray-600 mt-2 text-justify">
+            Data demografi Desa Babakan, Anda bisa memperbarui jumlah kategori
             penduduk sesuai kondisi terkini.
           </p>
         </div>
@@ -86,26 +74,22 @@ export default function ManagePenduduk() {
         {data.map((item, idx) => (
           <div
             key={idx}
-            className="relative flex flex-col items-center bg-white p-6 rounded-xl shadow hover:shadow-lg hover:-translate-y-1 transition-all"
+            className="relative flex flex-col items-center bg-white p-6 rounded-xl shadow hover:shadow-lg hover:scale-[1.03] transition-all"
           >
             {/* Icon */}
-            <div className="text-4xl text-[#B6F500]">
-              {getIconByKey(item.iconKey)}
-            </div>
+            <div className="text-4xl text-[#B6F500]">{getIconByKey(item.iconKey)}</div>
 
-            {/* Nama kategori & angka */}
+            {/* Label + angka */}
             <p className="text-gray-600 mt-2 text-sm">{item.label}</p>
             <p className="text-2xl font-bold text-gray-800">{item.value}</p>
 
             {/* Tombol Edit */}
-            <div className="absolute top-2 right-2">
-              <button
-                onClick={() => handleEdit(idx)}
-                className="text-blue-500 hover:text-blue-700"
-              >
-                <FaEdit />
-              </button>
-            </div>
+            <button
+              onClick={() => handleEdit(idx)}
+              className="absolute top-3 right-3 text-blue-500 hover:text-blue-700"
+            >
+              <FaEdit />
+            </button>
           </div>
         ))}
       </div>
@@ -134,7 +118,6 @@ export default function ManagePenduduk() {
               Edit Jumlah - {data[editingIndex].label}
             </h3>
 
-            {/* Jumlah */}
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Jumlah Penduduk
             </label>
@@ -145,7 +128,6 @@ export default function ManagePenduduk() {
               className="w-full p-2 border rounded mb-4"
             />
 
-            {/* Tombol Modal */}
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => setShowForm(false)}

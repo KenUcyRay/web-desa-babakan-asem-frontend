@@ -82,6 +82,7 @@ import ManageIDM from "./components/admin/KelolaInfografis/ManageIDM";
 import ManageSDGs from "./components/admin/KelolaInfografis/ManageSDGs";
 import ManageBansos from "./components/admin/KelolaInfografis/ManageBansos";
 
+
 // ✅ Layout Umum (Navbar & Footer aktif)
 function LayoutUmum() {
   return (
@@ -147,41 +148,43 @@ function LayoutUmum() {
   );
 }
 
-// ✅ Layout Admin (pakai Sidebar + Outlet)
+// ✅ Layout Admin (FIXED)
 function LayoutAdmin() {
   return (
     <Routes>
-      <Route element={<AdminLayout />}>
-        <Route path="/admin" element={<AdminDashboard />} />
+      {/* Parent Route untuk Admin */}
+      <Route path="/admin" element={<AdminLayout />}>
+        {/* Default Dashboard */}
+        <Route index element={<AdminDashboard />} />
 
         {/* ✅ Menu Admin */}
-        <Route path="/admin/manage-berita" element={<ManageBerita />} />
-        <Route path="/admin/manage-agenda" element={<ManageAgenda />} />
-        <Route path="/admin/manage-pesan" element={<ManagePesan />} />
-        <Route path="/admin/manage-user" element={<ManageUser />} />
-        <Route path="/admin/manage-bumdes" element={<ManageBumdes />} />
-        <Route path="/admin/manage-galery" element={<ManageGalery />} />
-        <Route path="/admin/manage-anggota" element={<ManageAnggota />} />
-        <Route path="/admin/manage-administrasi" element={<ManageAdministrasi />} />
-        <Route path="/admin/manage-pkk" element={<ManagePkk />} />
+        <Route path="manage-berita" element={<ManageBerita />} />
+        <Route path="manage-agenda" element={<ManageAgenda />} />
+        <Route path="manage-pesan" element={<ManagePesan />} />
+        <Route path="manage-user" element={<ManageUser />} />
+        <Route path="manage-bumdes" element={<ManageBumdes />} />
+        <Route path="manage-galery" element={<ManageGalery />} />
+        <Route path="manage-anggota" element={<ManageAnggota />} />
+        <Route path="manage-administrasi" element={<ManageAdministrasi />} />
+        <Route path="manage-pkk" element={<ManagePkk />} />
 
-        {/* ✅ Kelola Infografis Admin */}
-        <Route path="/admin/kelola-infografis/penduduk" element={<ManagePenduduk />} />
-        <Route path="/admin/kelola-infografis/idm" element={<ManageIDM />} />
-        <Route path="/admin/kelola-infografis/sdgs" element={<ManageSDGs />} />
-        <Route path="/admin/kelola-infografis/bansos" element={<ManageBansos />} />
+        {/* ✅ Kelola Infografis */}
+        <Route path="kelola-infografis/penduduk" element={<ManagePenduduk />} />
+        <Route path="kelola-infografis/idm" element={<ManageIDM />} />
+        <Route path="kelola-infografis/sdgs" element={<ManageSDGs />} />
+        <Route path="kelola-infografis/bansos" element={<ManageBansos />} />
 
         {/* ✅ Pengaturan Admin */}
-        <Route path="/admin/pengaturan/profil" element={<PengaturanProfil />} />
+        <Route path="pengaturan/profil" element={<PengaturanProfil />} />
 
-        {/* ✅ Redirect default */}
-        <Route path="/admin/*" element={<Navigate to="/admin" replace />} />
+        {/* ✅ Redirect default kalau salah path */}
+        <Route path="*" element={<Navigate to="/admin" replace />} />
       </Route>
     </Routes>
   );
 }
 
-// ✅ Loader + Progress + Fade Animasi saat pindah halaman
+// ✅ Loader + Progress saat pindah halaman
 function AppContent() {
   const location = useLocation();
   const [loading, setLoading] = useState(false);
