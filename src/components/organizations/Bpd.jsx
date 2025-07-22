@@ -8,9 +8,10 @@ import { Helper } from "../../utils/Helper";
 
 export default function Bpd() {
   const [agenda, setAgenda] = useState([]);
+  const [members, setMembers] = useState([]);
 
   const fetchAgenda = async () => {
-    const response = await AgendaApi.getAgenda(1, 3, "BPD"); // ambil 3 agenda terbaru
+    const response = await AgendaApi.getAgenda(1, 3, "BPD");
     const responseBody = await response.json();
     if (!response.ok) {
       await alertError("Gagal mengambil data agenda BPD.");
@@ -18,8 +19,6 @@ export default function Bpd() {
     }
     setAgenda(responseBody.agenda);
   };
-
-  const [members, setMembers] = useState([]);
 
   const fetchMembers = async () => {
     const response = await MemberApi.getMembers("BPD");
@@ -34,13 +33,13 @@ export default function Bpd() {
   useEffect(() => {
     AOS.init({ duration: 800, once: true });
     AOS.refresh();
-    fetchMembers(); // Panggil saat mount
+    fetchMembers();
     fetchAgenda();
   }, []);
 
   return (
     <div className="font-poppins text-gray-800 w-full">
-      {/* ✅ HERO Section - teks tengah */}
+      {/* ✅ HERO Section */}
       <section
         className="relative bg-gradient-to-b from-green-50 to-white w-full py-16 text-center"
         data-aos="fade-down"
@@ -55,7 +54,7 @@ export default function Bpd() {
         </p>
       </section>
 
-      {/* ✅ Penjelasan & Tugas BPD */}
+      {/* ✅ Peran & Tugas */}
       <section
         className="max-w-screen-lg mx-auto px-6 py-12 text-center"
         data-aos="fade-up"
@@ -105,7 +104,7 @@ export default function Bpd() {
         </ul>
       </section>
 
-      {/* ✅ Statistik BPD (style simple) */}
+      {/* ✅ Statistik */}
       <section className="max-w-screen-lg mx-auto px-6 py-12 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
         <div
           className="border border-green-200 rounded-xl p-6 shadow-sm hover:shadow-md transition"
@@ -132,7 +131,7 @@ export default function Bpd() {
         </div>
       </section>
 
-      {/* ✅ Struktur Organisasi BPD */}
+      {/* ✅ Struktur Organisasi */}
       <section className="max-w-screen-lg mx-auto px-6 py-12">
         <h2
           className="text-2xl md:text-3xl font-bold text-center text-green-700 mb-8"
@@ -140,18 +139,28 @@ export default function Bpd() {
         >
           Struktur Organisasi BPD
         </h2>
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {members.map((member, idx) => (
             <div
               key={member.id}
-              className="flex flex-col sm:flex-row justify-between items-center bg-white border border-green-100 rounded-xl p-4 shadow-sm hover:shadow-md transition"
+              className="flex flex-col items-center bg-white border border-green-100 rounded-xl p-4 shadow-sm hover:shadow-md transition"
               data-aos="fade-up"
               data-aos-delay={idx * 100}
             >
-              <span className="font-semibold text-gray-800 text-lg">
+              {/* ✅ Foto anggota */}
+              <img
+                src={
+                  member.profile_photo
+                    ? `${import.meta.env.VITE_BASE_URL}/organizations/images/${member.profile_photo}`
+                    : "/default-user.png"
+                }
+                alt={member.name}
+                className="w-24 h-24 object-cover rounded-full border-2 border-green-300 mb-3"
+              />
+              <span className="font-semibold text-gray-800 text-lg text-center">
                 {member.name}
               </span>
-              <span className="text-green-700 text-sm mt-1 sm:mt-0">
+              <span className="text-green-700 text-sm mt-1">
                 {member.position}
               </span>
             </div>
@@ -159,7 +168,7 @@ export default function Bpd() {
         </div>
       </section>
 
-      {/* ✅ Agenda BPD - versi list simple */}
+      {/* ✅ Agenda BPD */}
       <section className="max-w-screen-lg mx-auto px-6 py-12">
         <h2
           className="text-2xl md:text-3xl font-bold text-center text-green-700 mb-8"
@@ -167,19 +176,29 @@ export default function Bpd() {
         >
           Agenda Mendatang
         </h2>
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {agenda.map((item, idx) => (
             <div
               key={item.agenda.id}
-              className="flex items-center justify-between bg-green-50 border border-green-100 rounded-xl p-4 hover:shadow-md transition"
+              className="bg-white border border-green-100 rounded-xl shadow-sm hover:shadow-md transition overflow-hidden"
               data-aos="fade-right"
               data-aos-delay={idx * 150}
             >
-              <div className="text-left">
+              {/* ✅ Thumbnail agenda */}
+              <img
+                src={
+                  item.agenda.featured_image
+                    ? `${import.meta.env.VITE_BASE_URL}/agenda/images/${item.agenda.featured_image}`
+                    : "/default-agenda.jpg"
+                }
+                alt={item.agenda.title}
+                className="w-full h-40 object-cover"
+              />
+              <div className="p-4">
                 <h3 className="font-semibold text-gray-800">
                   {item.agenda.title}
                 </h3>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-500 mt-1">
                   {
                     Helper.formatAgendaDateTime(
                       item.agenda.start_time,
@@ -188,7 +207,6 @@ export default function Bpd() {
                   }
                 </p>
               </div>
-              <span className="text-green-600 text-sm font-medium">📅</span>
             </div>
           ))}
         </div>

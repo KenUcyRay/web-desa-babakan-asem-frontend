@@ -3,11 +3,14 @@ import Pagination from "../ui/Pagination";
 import { AgendaApi } from "../../libs/api/AgendaApi";
 import { Helper } from "../../utils/Helper";
 import { MemberApi } from "../../libs/api/MemberApi";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 export default function KarangTaruna() {
   const [agenda, setAgenda] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [members, setMembers] = useState([]);
 
   const fetchAgenda = async () => {
     const response = await AgendaApi.getAgenda(currentPage, 3, "KARANG_TARUNA");
@@ -21,34 +24,18 @@ export default function KarangTaruna() {
     }
   };
 
-  const truncateText = (text, maxLength = 100) => {
-    if (!text) return "";
-    return text.length > maxLength
-      ? text.substring(0, maxLength) + "..."
-      : text;
-  };
-
-  useEffect(() => {
-    fetchAgenda(currentPage);
-  }, [currentPage]);
-
-  const [members, setMembers] = useState([]);
-
   const fetchMembers = async () => {
     const response = await MemberApi.getMembers("KARANG_TARUNA");
     const responseBody = await response.json();
     if (!response.ok) {
       let errorMessage = "Gagal menyimpan perubahan.";
-
       if (responseBody.error && Array.isArray(responseBody.error)) {
         const errorMessages = responseBody.error.map((err) => {
-          if (err.path && err.path.length > 0) {
-            return `${err.path[0]}: ${err.message}`;
-          }
+          if (err.path?.length > 0) return `${err.path[0]}: ${err.message}`;
           return err.message;
         });
         errorMessage = errorMessages.join(", ");
-      } else if (responseBody.error && typeof responseBody.error === "string") {
+      } else if (typeof responseBody.error === "string") {
         errorMessage = responseBody.error;
       }
       await alertError(errorMessage);
@@ -57,65 +44,87 @@ export default function KarangTaruna() {
     setMembers(responseBody.members);
   };
 
+  const truncateText = (text, maxLength = 100) => {
+    if (!text) return "";
+    return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
+  };
+
+  useEffect(() => {
+    fetchAgenda(currentPage);
+  }, [currentPage]);
+
   useEffect(() => {
     fetchMembers();
+    AOS.init({ duration: 700, once: true });
   }, []);
 
   return (
-    <div className="bg-gray-50 py-10 w-full max-w-screen-2xl mx-auto px-4 sm:px-6 md:px-8">
-      {/* ✅ Judul + Hero */}
-      <div className="grid md:grid-cols-2 gap-8 items-center mb-12">
-        <div>
-          <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900">
-            Karang Taruna Desa Babakan Asem
-          </h1>
-          <p className="text-gray-600 mt-3 leading-relaxed">
-            Pemuda Berkarya, Desa Berjaya. Karang Taruna Desa Babakan Asem
-            adalah wadah pembinaan dan pengembangan generasi muda yang bergerak
-            di bidang kesejahteraan sosial, kepemudaan, dan kemasyarakatan.
-          </p>
-        </div>
+    <div className="bg-gray-50 py-12 w-full max-w-screen-2xl mx-auto px-4 sm:px-6 md:px-8 font-poppins">
+      
+      {/* ✅ HERO / INTRO */}
+      <div className="text-center mb-16" data-aos="fade-down">
+        <h1 className="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-[#9BEC00] to-[#1ee432] bg-clip-text text-transparent">
+          Karang Taruna Desa Babakan Asem
+        </h1>
+        <p className="mt-4 text-gray-600 max-w-3xl mx-auto leading-relaxed text-lg">
+          Pemuda Berkarya, Desa Berjaya. Wadah pembinaan dan pengembangan generasi muda yang 
+          bergerak di bidang sosial, kepemudaan, dan kemasyarakatan.
+        </p>
+      </div>
+
+      {/* ✅ Hero Image */}
+      <div className="rounded-2xl overflow-hidden shadow-xl mb-16" data-aos="zoom-in">
         <img
-          src="https://picsum.photos/600/400?random=4"
+          src="https://picsum.photos/1200/500?random=12"
           alt="Karang Taruna"
-          className="rounded-xl shadow-lg w-full object-cover"
+          className="w-full object-cover hover:scale-105 transition-transform duration-500"
         />
       </div>
 
-      {/* ✅ Visi & Misi */}
-      <div className="grid md:grid-cols-2 gap-6 mb-12">
-        <div className="bg-[#B6F500] p-6 rounded-xl shadow hover:shadow-md transition">
-          <h2 className="text-xl font-bold text-black">Visi</h2>
-          <p className="mt-2 text-black">
-            Menjadi pemuda yang aktif, kreatif, dan peduli terhadap pembangunan
-            desa.
+      {/* ✅ VISI & MISI */}
+      <div className="grid md:grid-cols-2 gap-8 mb-20">
+        <div
+          className="p-8 rounded-2xl bg-gradient-to-r from-[#9BEC00] to-[#D2FF72] shadow-md text-center hover:shadow-xl transition"
+          data-aos="fade-right"
+        >
+          <h2 className="text-2xl font-bold text-gray-900 mb-3">Visi</h2>
+          <p className="text-gray-800 text-lg">
+            Menjadi pemuda yang aktif, kreatif, dan peduli terhadap pembangunan desa.
           </p>
         </div>
-        <div className="bg-orange-200 p-6 rounded-xl shadow hover:shadow-md transition">
-          <h2 className="text-xl font-bold text-gray-800">Misi</h2>
-          <ul className="list-disc ml-5 mt-2 space-y-1 text-gray-700">
+        <div
+          className="p-8 rounded-2xl bg-white shadow-md hover:shadow-xl transition"
+          data-aos="fade-left"
+        >
+          <h2 className="text-2xl font-bold text-green-800 mb-3 text-center">
+            Misi
+          </h2>
+          <ul className="list-disc list-inside space-y-2 text-gray-700 text-lg">
             <li>Mengembangkan potensi generasi muda</li>
             <li>Mengadakan kegiatan sosial dan budaya</li>
-            <li>Menjadi penggerak kegiatan desa</li>
+            <li>Menjadi penggerak utama pembangunan desa</li>
           </ul>
         </div>
       </div>
 
-      {/* ✅ Struktur Organisasi */}
-      <div className="bg-white rounded-xl shadow-md p-6 mb-12">
-        <h2 className="text-2xl font-semibold text-center mb-8">
+      {/* ✅ STRUKTUR ORGANISASI */}
+      <div
+        className="bg-white rounded-2xl shadow-lg p-10 mb-20"
+        data-aos="fade-up"
+      >
+        <h2 className="text-3xl font-bold text-center mb-10">
           Struktur Organisasi Karang Taruna
         </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-8 text-center">
-          {members.map((member) => (
-            <div key={member.id} className="flex flex-col items-center">
-              <img
-                src={`${import.meta.env.VITE_BASE_URL}/organizations/images/${
-                  member.profile_photo
-                }`}
-                alt={member.name}
-                className="w-20 h-20 rounded-full border-4 border-[#B6F500] shadow-md"
-              />
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-10 text-center">
+          {members.map((member, idx) => (
+            <div key={member.id} className="flex flex-col items-center" data-aos="zoom-in" data-aos-delay={idx * 50}>
+              <div className="relative">
+                <img
+                  src={`${import.meta.env.VITE_BASE_URL}/organizations/images/${member.profile_photo}`}
+                  alt={member.name}
+                  className="w-24 h-24 rounded-full border-4 border-[#9BEC00] shadow-md object-cover"
+                />
+              </div>
               <p className="font-semibold mt-3">{member.name}</p>
               <p className="text-sm text-gray-500">{member.position}</p>
               <p className="text-xs text-gray-400">
@@ -126,40 +135,48 @@ export default function KarangTaruna() {
         </div>
       </div>
 
-      {/* ✅ Dokumentasi Kegiatan */}
+      {/* ✅ DOKUMENTASI KEGIATAN */}
       <div>
-        <h2 className="text-2xl font-bold mb-4">
+        <h2
+          className="text-3xl font-bold text-center mb-4 bg-gradient-to-r from-[#000000] to-[#000000] bg-clip-text text-transparent"
+          data-aos="fade-down"
+        >
           Dokumentasi Kegiatan Karang Taruna
         </h2>
-        <p className="text-gray-600 mb-6">
+        <p className="text-gray-600 text-center max-w-2xl mx-auto mb-10" data-aos="fade-up">
           Berikut beberapa kegiatan terbaru Karang Taruna Desa Babakan Asem.
         </p>
 
-        {/* ✅ Card Kegiatan */}
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {agenda.map((item) => (
+        {/* ✅ Card Grid Kegiatan */}
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          {agenda.map((item, idx) => (
             <div
               key={item.agenda.id}
-              className="bg-white shadow-md rounded-xl overflow-hidden hover:shadow-lg transition"
+              className="bg-white shadow-md rounded-xl overflow-hidden hover:shadow-xl transition group"
+              data-aos="fade-up"
+              data-aos-delay={idx * 80}
             >
-              <div className="w-full aspect-[4/3] overflow-hidden">
+              <div className="relative w-full aspect-[4/3] overflow-hidden">
                 <img
-                  src={`${import.meta.env.VITE_BASE_URL}/agenda/images/${
-                    item.agenda.featured_image
-                  }`}
+                  src={`${import.meta.env.VITE_BASE_URL}/agenda/images/${item.agenda.featured_image}`}
                   alt={item.agenda.title}
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
+                <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex justify-center items-center">
+                  <span className="text-white font-semibold">📸 Kegiatan</span>
+                </div>
               </div>
               <div className="p-5">
-                <h3 className="font-semibold text-lg">{item.agenda.title}</h3>
+                <h3 className="font-bold text-lg text-gray-800">
+                  {item.agenda.title}
+                </h3>
                 {(() => {
                   const { tanggal, waktu } = Helper.formatAgendaDateTime(
                     item.agenda.start_time,
                     item.agenda.end_time
                   );
                   return (
-                    <p className="text-sm text-gray-500 mt-1">
+                    <p className="text-sm text-gray-500 mt-2">
                       📍 {item.agenda.location} <br />
                       📅 {tanggal} | ⏰ {waktu}
                     </p>
@@ -174,7 +191,7 @@ export default function KarangTaruna() {
         </div>
 
         {/* ✅ Pagination */}
-        <div className="mt-10 flex justify-center">
+        <div className="mt-12 flex justify-center" data-aos="fade-up">
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
