@@ -48,6 +48,7 @@ import Bansos from "./components/Infografis/Bansos";
 import SDGs from "./components/Infografis/SDGs";
 
 // ✅ Halaman DPD
+import Bpd from "./components/organizations/Bpd";
 import Dpd from "./components/organizations/Dpd";
 import DetailDpd from "./components/organizations/DetailDpd";
 
@@ -114,6 +115,7 @@ function LayoutUmum() {
           <Route path="/potensi" element={<PotensiDesa />} />
           <Route path="/pemerintahan" element={<Pemerintahan />} />
           <Route path="/dpd" element={<Dpd />} />
+          <Route path="/bpd" element={<Bpd />} />
           <Route path="/profil" element={<ProfilDesa />} />
           <Route path="/kontak" element={<KontakKami />} />
           <Route path="/pkk/struktur" element={<StPkk />} />

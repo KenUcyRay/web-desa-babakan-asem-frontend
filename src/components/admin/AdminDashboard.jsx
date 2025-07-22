@@ -8,7 +8,6 @@ import {
   FaClipboardList,
   FaImage,
   FaTasks,
-  FaBell,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
@@ -55,7 +54,7 @@ export default function AdminDashboard() {
 
   // ✅ Fetch TOTAL data
   const fetchNews = async () => {
-    const res = await NewsApi.getOwnNews(); // tanpa limit
+    const res = await NewsApi.getOwnNews(); 
     if (!res.ok) return alertError("Gagal ambil berita");
     const data = await res.json();
     setNewsCount(data.news?.length || 0);
@@ -134,18 +133,9 @@ export default function AdminDashboard() {
 
   return (
     <div className="w-full font-[Poppins,sans-serif]">
-      <h1 className="text-2xl md:text-3xl font-bold mb-4 text-gray-800">
+      <h1 className="text-2xl md:text-3xl font-bold mb-6 text-gray-800">
         Dashboard Admin
       </h1>
-
-      {/* ✅ QUICK ACTION HANYA CEK PESAN */}
-      <div className="flex gap-3 mb-6 flex-wrap">
-        <QuickAction
-          icon={<FaBell />}
-          label={`Cek Pesan Baru (${messageCount})`}
-          onClick={() => navigate("/admin/manage-pesan")}
-        />
-      </div>
 
       {/* ✅ GRID STATISTIK */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -175,16 +165,10 @@ export default function AdminDashboard() {
         />
       </div>
 
-      {/* ✅ INFROGRAFIS PENDUDUK - Klik seluruh box bisa pindah */}
-      <div
-        className="bg-white rounded-xl shadow-md p-6 mb-8 hover:shadow-lg transition cursor-pointer"
-        onClick={() => navigate("/admin/manage-penduduk")}
-      >
-        <h2 className="text-xl font-semibold text-gray-800 mb-4 flex justify-between items-center">
+      {/* ✅ INFROGRAFIS PENDUDUK - TANPA LINK */}
+      <div className="bg-white rounded-xl shadow-md p-6 mb-8">
+        <h2 className="text-xl font-semibold text-gray-800 mb-4">
           Infografis Penduduk
-          <span className="text-sm text-green-600 hover:underline">
-            ➜ Kelola
-          </span>
         </h2>
         <ResponsiveContainer width="100%" height={250}>
           <BarChart data={pendudukData} barCategoryGap="30%">
@@ -201,7 +185,7 @@ export default function AdminDashboard() {
           </BarChart>
         </ResponsiveContainer>
         <p className="text-sm text-gray-500 text-center mt-3">
-          Klik grafik atau kotak ini untuk melihat & kelola data penduduk →
+          Grafik statistik jumlah penduduk
         </p>
       </div>
 
@@ -265,19 +249,7 @@ function StatCard({ icon, title, count, onClick }) {
   );
 }
 
-// ✅ QUICK ACTION CUMA CEK PESAN
-function QuickAction({ icon, label, onClick }) {
-  return (
-    <button
-      onClick={onClick}
-      className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition"
-    >
-      {icon} {label}
-    </button>
-  );
-}
-
-// ✅ PREVIEW SECTION LIST - Sekarang lihat lengkap bisa navigate
+// ✅ PREVIEW SECTION LIST
 function PreviewSection({ title, icon, data, onClick }) {
   return (
     <div className="bg-white rounded-xl shadow-md p-5 mb-6">
