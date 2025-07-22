@@ -1,13 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { alertConfirm, alertError, alertSuccess } from "../../../libs/alert"; // ← pastikan ada
+import { InfografisApi } from "../../../libs/api/InfografisApi";
 
 export default function Bansos() {
-  const [data, setData] = useState([
-    { nama: "BLT Dana Desa", penerima: 50 },
-    { nama: "Bantuan Pangan", penerima: 70 },
-    { nama: "PKH", penerima: 40 },
-    { nama: "Rastra", penerima: 30 },
-  ]);
-
+  const [data, setData] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [isAdding, setIsAdding] = useState(true);
   const [editingIndex, setEditingIndex] = useState(null);
@@ -21,47 +17,108 @@ export default function Bansos() {
   };
 
   const handleEdit = (index) => {
+    const item = data[index];
     setFormData({
-      nama: data[index].nama,
-      penerima: data[index].penerima.toString(),
+      id: item.id, // ← tambahkan ini
+      nama: item.nama,
+      penerima: item.penerima.toString(),
     });
     setIsAdding(false);
     setEditingIndex(index);
     setShowForm(true);
   };
 
-  const handleDelete = (index) => {
-    if (confirm(`Hapus bantuan sosial "${data[index].nama}"?`)) {
-      setData((prev) => prev.filter((_, i) => i !== index));
+  const handleDelete = async (index) => {
+    const confirm = await alertConfirm(
+      `Yakin ingin menghapus "${data[index].nama}"?`
+    );
+    if (!confirm) return;
+
+    const id = data[index].id;
+    const response = await InfografisApi.deleteBansos(id);
+
+    if (!response.ok) {
+      alertError("Gagal menghapus data.");
+      return;
     }
+
+    setData((prev) => prev.filter((_, i) => i !== index));
+    alertSuccess("Data berhasil dihapus!");
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!formData.nama.trim()) {
-      alert("Nama bantuan harus diisi!");
+      alertError("Nama bantuan harus diisi!");
       return;
     }
     const penerimaNum = parseInt(formData.penerima);
     if (isNaN(penerimaNum) || penerimaNum < 0) {
-      alert("Jumlah penerima harus angka positif!");
+      alertError("Jumlah penerima harus angka positif!");
       return;
     }
 
+    const payload = {
+      name: formData.nama.trim(),
+      amount: penerimaNum,
+    };
+
     if (isAdding) {
-      setData((prev) => [
-        ...prev,
-        { nama: formData.nama.trim(), penerima: penerimaNum },
-      ]);
+      const response = await InfografisApi.createBansos(payload);
+      if (!response.ok) {
+        alertError("Gagal menyimpan data ke server.");
+        return;
+      }
+
+      const result = await response.json();
+      const newItem = {
+        id: result.bansos.id,
+        nama: result.bansos.name,
+        penerima: result.bansos.amount,
+      };
+      setData((prev) => [newItem, ...prev]);
+      alertSuccess("Data berhasil ditambahkan!");
     } else {
+      const response = await InfografisApi.upfdateBansos(formData.id, payload);
+      if (!response.ok) {
+        alertError("Gagal mengupdate data.");
+        return;
+      }
+
       const updated = [...data];
       updated[editingIndex] = {
+        id: formData.id, // pastikan tetap simpan id-nya
         nama: formData.nama.trim(),
         penerima: penerimaNum,
       };
       setData(updated);
+      alertSuccess("Data berhasil diperbarui!");
     }
+
     setShowForm(false);
   };
+
+  const fetchData = async () => {
+    const response = await InfografisApi.getBansos();
+
+    if (!response.ok) {
+      alertError("Gagal mengambil data bansos");
+      return;
+    }
+
+    const result = await response.json();
+
+    const mapped = result.bansos.map((item) => ({
+      id: item.id,
+      nama: item.name,
+      penerima: item.amount,
+    }));
+
+    setData(mapped);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-8 font-poppins bg-gray-50 min-h-screen">
@@ -88,7 +145,7 @@ export default function Bansos() {
         {data.length > 0 ? (
           data.map((item, idx) => (
             <div
-              key={idx}
+              key={item.id}
               className="bg-white p-6 rounded-xl shadow hover:shadow-lg hover:scale-[1.02] transition relative"
             >
               {/* Nama bantuan */}
