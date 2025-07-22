@@ -33,7 +33,6 @@ export default function ManageAdministrasi() {
     const itemIndex = layanan.findIndex((i) => i.id === item.id);
     let response;
 
-    // Tentukan endpoint berdasarkan jenis form
     if (item.jenis_form === "Form Online") {
       response = await AdministrasiApi.updateOnline(item.id);
     } else if (item.jenis_form === "Formulir Layanan") {
@@ -61,7 +60,7 @@ export default function ManageAdministrasi() {
     }
 
     const responseBody = await response.json();
-    const mapped = responseBody.data.map((item) => ({
+    return responseBody.data.map((item) => ({
       id: item.id,
       nama: item.name,
       email: item.email,
@@ -71,8 +70,6 @@ export default function ManageAdministrasi() {
       created_at: item.createdAt,
       status: item.is_pending ? "pending" : "diterima",
     }));
-
-    return mapped;
   };
 
   const fetchLayanan = async () => {
@@ -83,20 +80,18 @@ export default function ManageAdministrasi() {
     }
 
     const responseBody = await response.json();
-    const mapped = responseBody.data.map((item) => ({
+    return responseBody.data.map((item) => ({
       id: item.id,
       nama: item.name,
       email: item.email,
       jenis_form: "Formulir Layanan",
       layanan: Helper.formatText(item.type),
-
       created_at: item.createdAt,
       status: item.is_pending ? "pending" : "diterima",
       pesan: item.message || "",
     }));
-
-    return mapped;
   };
+
   const fetchPengantar = async () => {
     const response = await AdministrasiApi.getPengantar();
     if (!response.ok) {
@@ -105,20 +100,18 @@ export default function ManageAdministrasi() {
     }
 
     const responseBody = await response.json();
-    const mapped = responseBody.data.map((item) => ({
+    return responseBody.data.map((item) => ({
       id: item.id,
       nama: item.name,
       nik: item.nik,
       jenis_form: "Surat Pengantar",
       layanan: Helper.formatText(item.type),
-
       keterangan: item.description,
       created_at: item.createdAt,
       status: item.is_pending ? "pending" : "diterima",
     }));
-
-    return mapped;
   };
+
   const fetchData = async () => {
     const [online, layanan, pengantar] = await Promise.all([
       fecthOnline(),
@@ -183,8 +176,8 @@ export default function ManageAdministrasi() {
         </select>
       </div>
 
-      {/* ✅ Table scrollable di HP */}
-      <div className="bg-white rounded-xl shadow-lg overflow-x-auto">
+      {/* ✅ Desktop: Table */}
+      <div className="hidden md:block bg-white rounded-xl shadow-lg overflow-x-auto">
         <table className="w-full min-w-[800px] text-left">
           <thead className="bg-gray-100 text-gray-700 text-sm uppercase">
             <tr>
@@ -299,6 +292,65 @@ export default function ManageAdministrasi() {
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* ✅ Mobile: Card List */}
+      <div className="md:hidden grid gap-4">
+        {currentData.map((item, idx) => (
+          <div
+            key={item.id}
+            className="bg-white p-4 rounded-lg shadow space-y-2 border border-gray-200"
+          >
+            <div className="flex justify-between items-center">
+              <h3 className="font-bold text-gray-800">{item.nama}</h3>
+              <span
+                className={`text-xs px-2 py-1 rounded-full ${
+                  item.status === "pending"
+                    ? "bg-yellow-100 text-yellow-700"
+                    : "bg-green-100 text-green-700"
+                }`}
+              >
+                {item.status === "pending" ? "⏳ Pending" : "✅ Diterima"}
+              </span>
+            </div>
+            <p className="text-sm text-gray-600">
+              📧 {item.email || item.nomor || item.nik || "-"}
+            </p>
+            <p className="text-sm text-gray-700">
+              📄 {item.layanan || item.jenisSurat || "-"}
+            </p>
+            <p className="text-xs text-gray-500">
+              {new Date(item.created_at).toLocaleString("id-ID")}
+            </p>
+
+            {/* Detail tambahan */}
+            {item.keterangan && (
+              <p className="text-sm text-gray-700">
+                📝 <span className="font-medium">Keterangan:</span>{" "}
+                {item.keterangan}
+              </p>
+            )}
+            {item.pesan && (
+              <p className="text-sm text-gray-700">
+                💬 <span className="font-medium">Pesan:</span> {item.pesan}
+              </p>
+            )}
+
+            {/* Tombol terima */}
+            {item.status === "pending" && (
+              <button
+                onClick={() => handleTerima(idx)}
+                className="w-full mt-2 px-3 py-2 rounded-lg bg-blue-500 hover:bg-blue-600 text-white text-sm"
+              >
+                ✅ Terima
+              </button>
+            )}
+          </div>
+        ))}
+
+        {filteredData.length === 0 && (
+          <p className="text-center text-gray-500">Tidak ada pengajuan.</p>
+        )}
       </div>
 
       {/* ✅ Pagination */}
