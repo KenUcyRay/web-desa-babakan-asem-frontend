@@ -58,23 +58,23 @@ export default function NavbarTop() {
         {/* ✅ Avatar Icon */}
         <button
           onClick={() => setAvatarMenuOpen((prev) => !prev)}
-          className="flex items-center gap-2 text-gray-700 dark:text-gray-200 hover:text-[#B6F500] transition"
+          className="flex items-center gap-2 text-gray-700  hover:text-[#B6F500] transition"
         >
           <FaUserCircle size={28} />
         </button>
 
         {/* ✅ Dropdown Menu */}
         {avatarMenuOpen && (
-          <div className="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 shadow-md rounded-md py-2 z-50">
+          <div className="absolute right-0 mt-2 w-40 bg-white  shadow-md rounded-md py-2 z-50">
             <button
               onClick={goProfile}
-              className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
+              className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 "
             >
               Profil Saya
             </button>
             <button
               onClick={handleLogout}
-              className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-red-500"
+              className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100  text-red-500"
             >
               Logout
             </button>
@@ -119,7 +119,7 @@ export default function NavbarTop() {
               navigate("/profile");
               setMobileOpen(false);
             }}
-            className="bg-gray-200 dark:bg-gray-700 text-center py-2 rounded hover:opacity-80"
+            className="bg-gray-200  text-center py-2 rounded hover:opacity-80"
           >
             Profil Saya
           </button>
@@ -148,21 +148,21 @@ export default function NavbarTop() {
   };
 
   return (
-    <div className="w-full sticky top-0 bg-white dark:bg-black shadow z-50 font-poppins">
+    <div className="w-full sticky top-0 bg-white  shadow z-50 font-poppins">
       <div className="w-full flex items-center justify-between px-6 lg:px-12 py-4">
         {/* ✅ Logo klik ke home */}
         <Link to="/" className="flex items-center gap-3">
           <img src={logo} alt="Logo Desa" className="h-12 w-auto" />
-          <div className="text-gray-800 dark:text-white text-base sm:text-lg font-bold leading-tight">
+          <div className="text-gray-800  text-base sm:text-lg font-bold leading-tight">
             Desa Babakan Asem
-            <div className="text-xs font-normal text-gray-500 dark:text-gray-300">
+            <div className="text-xs font-normal text-gray-500 ">
               Kabupaten Sumedang
             </div>
           </div>
         </Link>
 
         {/* ✅ MENU DESKTOP */}
-        <div className="hidden md:flex items-center gap-6 text-gray-700 dark:text-gray-200 font-medium relative">
+        <div className="hidden md:flex items-center gap-6 text-gray-700  font-medium relative">
           <NavLink
             to="/"
             end
@@ -254,7 +254,7 @@ export default function NavbarTop() {
         {/* ✅ HAMBURGER BUTTON (mobile) */}
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="md:hidden text-2xl text-gray-800 dark:text-white"
+          className="md:hidden text-2xl text-gray-800 "
         >
           {mobileOpen ? <FiX /> : <FiMenu />}
         </button>
@@ -262,7 +262,7 @@ export default function NavbarTop() {
 
       {/* ✅ MENU MOBILE */}
       {mobileOpen && (
-        <div className="md:hidden flex flex-col gap-4 px-6 py-4 bg-gradient-to-b from-white to-[#f7f7f7] dark:from-black dark:to-gray-900 text-gray-800 dark:text-gray-200">
+        <div className="md:hidden flex flex-col gap-4 px-6 py-4 bg-gradient-to-b from-white to-[#f7f7f7]   text-gray-800 ">
           <NavLink
             to="/"
             end
