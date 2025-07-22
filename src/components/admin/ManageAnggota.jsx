@@ -11,7 +11,7 @@ export default function ManageAnggota() {
   const kategoriList = [
     "Semua",
     "PKK",
-    "Karang Taruna",
+    "KARANG_TARUNA",
     "DPD",
     "PEMERINTAH",
     "BPD",
@@ -36,7 +36,7 @@ export default function ManageAnggota() {
 
   const fetchMembers = async () => {
     let kategoriValue = kategori === "Semua" ? "" : kategori;
-    const response = await MemberApi.getMembers(kategoriValue, currentPage, 9);
+    const response = await MemberApi.getAllMembers(kategoriValue, currentPage, 9);
     if (!response.ok) {
       alertError("Gagal mengambil data anggota.");
       return;
