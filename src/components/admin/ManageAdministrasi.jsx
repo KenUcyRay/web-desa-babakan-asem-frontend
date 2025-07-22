@@ -1,5 +1,8 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Pagination from "../ui/Pagination";
+import { alertError, alertSuccess } from "../../libs/alert";
+import { AdministrasiApi } from "../../libs/api/AdministrasiApi";
+import { Helper } from "../../utils/Helper";
 
 export default function ManageAdministrasi() {
   const [layanan, setLayanan] = useState([]);
@@ -8,57 +11,6 @@ export default function ManageAdministrasi() {
   const [filterStatus, setFilterStatus] = useState("Semua");
   const [expandedRow, setExpandedRow] = useState(null);
   const perPage = 5;
-
-  const dummyData = [
-    {
-      nama: "Budi Santoso",
-      email: "budi@mail.com",
-      nomor: "08123456789",
-      jenis_form: "Form Online",
-      layanan: "Tracking Surat",
-      created_at: "2025-07-21T09:00:00",
-      status: "pending",
-    },
-    {
-      nama: "Siti Aminah",
-      email: "siti@mail.com",
-      jenis_form: "Formulir Layanan",
-      layanan: "Pengaduan",
-      created_at: "2025-07-20T10:30:00",
-      status: "pending",
-    },
-    {
-      nama: "Andi Pratama",
-      nik: "3276012345678901",
-      jenis_form: "Surat Pengantar",
-      jenisSurat: "Surat Pengantar SKCK",
-      keterangan: "Perlu untuk melamar kerja",
-      created_at: "2025-07-19T14:15:00",
-      status: "diterima",
-    },
-    {
-      nama: "Dewi Lestari",
-      email: "dewi@mail.com",
-      nomor: "08567890123",
-      jenis_form: "Form Online",
-      layanan: "Buat Permohonan",
-      created_at: "2025-07-18T16:45:00",
-      status: "pending",
-    },
-    {
-      nama: "Ahmad Fauzi",
-      email: "ahmad@mail.com",
-      jenis_form: "Formulir Layanan",
-      layanan: "Permohonan",
-      pesan: "Mohon segera diproses sebelum minggu depan.",
-      created_at: "2025-07-17T11:20:00",
-      status: "diterima",
-    },
-  ];
-
-  useEffect(() => {
-    setLayanan(dummyData);
-  }, []);
 
   const filteredData = layanan.filter((item) => {
     const matchKategori = item.jenis_form === filterKategori;
@@ -75,18 +27,112 @@ export default function ManageAdministrasi() {
     setExpandedRow(expandedRow === idx ? null : idx);
   };
 
-  const handleTerima = (idx) => {
+  const handleTerima = async (idx) => {
     const updated = [...layanan];
-    const itemIndex = layanan.findIndex(
-      (item) =>
-        item.nama === currentData[idx].nama &&
-        item.created_at === currentData[idx].created_at
-    );
-    if (itemIndex !== -1) {
-      updated[itemIndex].status = "diterima";
-      setLayanan(updated);
+    const item = currentData[idx];
+    const itemIndex = layanan.findIndex((i) => i.id === item.id);
+    let response;
+
+    // Tentukan endpoint berdasarkan jenis form
+    if (item.jenis_form === "Form Online") {
+      response = await AdministrasiApi.updateOnline(item.id);
+    } else if (item.jenis_form === "Formulir Layanan") {
+      response = await AdministrasiApi.updateLayanan(item.id);
+    } else if (item.jenis_form === "Surat Pengantar") {
+      response = await AdministrasiApi.updatePengantar(item.id);
+    }
+
+    if (response && response.ok) {
+      if (itemIndex !== -1) {
+        updated[itemIndex].status = "diterima";
+        await alertSuccess("Status berhasil diperbarui.");
+        setLayanan(updated);
+      }
+    } else {
+      alertError("Gagal memperbarui status.");
     }
   };
+
+  const fecthOnline = async () => {
+    const response = await AdministrasiApi.getOnline();
+    if (!response.ok) {
+      alertError("Gagal mengambil data online.");
+      return [];
+    }
+
+    const responseBody = await response.json();
+    const mapped = responseBody.data.map((item) => ({
+      id: item.id,
+      nama: item.name,
+      email: item.email,
+      nomor: item.phone,
+      jenis_form: "Form Online",
+      layanan: Helper.formatText(item.type),
+      created_at: item.createdAt,
+      status: item.is_pending ? "pending" : "diterima",
+    }));
+
+    return mapped;
+  };
+
+  const fetchLayanan = async () => {
+    const response = await AdministrasiApi.getLayanan();
+    if (!response.ok) {
+      alertError("Gagal mengambil data layanan.");
+      return [];
+    }
+
+    const responseBody = await response.json();
+    const mapped = responseBody.data.map((item) => ({
+      id: item.id,
+      nama: item.name,
+      email: item.email,
+      jenis_form: "Formulir Layanan",
+      layanan: Helper.formatText(item.type),
+
+      created_at: item.createdAt,
+      status: item.is_pending ? "pending" : "diterima",
+      pesan: item.message || "",
+    }));
+
+    return mapped;
+  };
+  const fetchPengantar = async () => {
+    const response = await AdministrasiApi.getPengantar();
+    if (!response.ok) {
+      alertError("Gagal mengambil data pengantar.");
+      return [];
+    }
+
+    const responseBody = await response.json();
+    const mapped = responseBody.data.map((item) => ({
+      id: item.id,
+      nama: item.name,
+      nik: item.nik,
+      jenis_form: "Surat Pengantar",
+      layanan: Helper.formatText(item.type),
+
+      keterangan: item.description,
+      created_at: item.createdAt,
+      status: item.is_pending ? "pending" : "diterima",
+    }));
+
+    return mapped;
+  };
+  const fetchData = async () => {
+    const [online, layanan, pengantar] = await Promise.all([
+      fecthOnline(),
+      fetchLayanan(),
+      fetchPengantar(),
+    ]);
+
+    const allData = [...online, ...layanan, ...pengantar];
+    setLayanan(allData);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
     <div className="w-full">
@@ -154,9 +200,9 @@ export default function ManageAdministrasi() {
             {currentData.map((item, idx) => {
               const isExpanded = expandedRow === idx;
               return (
-                <>
+                <React.Fragment key={item.id}>
                   <tr
-                    key={idx}
+                    key={item.id}
                     className={`border-b transition hover:bg-green-50 ${
                       idx % 2 === 0 ? "bg-white" : "bg-gray-50"
                     } cursor-pointer`}
@@ -224,7 +270,9 @@ export default function ManageAdministrasi() {
                           )}
                           {item.keterangan && (
                             <p>
-                              <span className="font-medium">📝 Keterangan:</span>{" "}
+                              <span className="font-medium">
+                                📝 Keterangan:
+                              </span>{" "}
                               {item.keterangan}
                             </p>
                           )}
@@ -238,7 +286,7 @@ export default function ManageAdministrasi() {
                       </td>
                     </tr>
                   )}
-                </>
+                </React.Fragment>
               );
             })}
 
