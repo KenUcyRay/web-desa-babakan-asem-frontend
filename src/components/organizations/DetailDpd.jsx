@@ -37,6 +37,13 @@ export default function DetailDpd() {
     fetchGalery();
   }, []);
 
+  const handleBack = () => {
+    // scroll ke atas dulu dengan smooth
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    // kasih delay sedikit biar smooth keliatan
+    setTimeout(() => navigate("/dpd"), 300);
+  };
+
   return (
     <div className="font-poppins text-gray-800 w-full">
       {/* ✅ Hero Section */}
@@ -55,7 +62,7 @@ export default function DetailDpd() {
       {/* ✅ Tombol Back ke halaman DPD */}
       <div className="w-full max-w-screen-2xl mx-auto px-4 md:px-8 mt-4 flex">
         <button
-          onClick={() => navigate("/dpd")}
+          onClick={handleBack}
           className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-[#9BEC00] to-[#D2FF72] shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 text-green-900 font-semibold"
         >
           <HiArrowLeft className="text-xl" />
@@ -119,11 +126,6 @@ export default function DetailDpd() {
                 alt="Galeri DPD"
                 className="w-full h-40 sm:h-48 md:h-56 object-cover"
               />
-              {/* <div className="p-4">
-                <p className="text-sm md:text-base text-gray-700 leading-relaxed">
-                  {item.desc}
-                </p>
-              </div> */}
             </div>
           ))}
         </div>

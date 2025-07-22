@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaMapMarkerAlt, FaClock, FaCalendarAlt, FaTag } from "react-icons/fa";
-import berita1 from "../../assets/berita1.jpeg";
+import { HiArrowLeft } from "react-icons/hi";
 import SidebarInfo from "../layout/SidebarInfo";
 import { AgendaApi } from "../../libs/api/AgendaApi";
 import { CommentApi } from "../../libs/api/CommentApi";
@@ -12,7 +12,6 @@ export default function DetailAgenda() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [agenda, setAgenda] = useState({});
-  const [userCreated, setUserCreated] = useState({});
   const [comments, setComments] = useState([]);
   const [pesan, setPesan] = useState("");
 
@@ -36,7 +35,6 @@ export default function DetailAgenda() {
     }
 
     await alertSuccess("Komentar berhasil dikirim!");
-
     setPesan("");
   };
 
@@ -45,12 +43,9 @@ export default function DetailAgenda() {
     const responseBody = await response.json();
     if (response.status === 200) {
       setAgenda(responseBody.agenda);
-      setUserCreated(responseBody.user_created);
       setComments(responseBody.comments);
     } else {
-      await alertError(
-        `Gagal mengambil detail agenda. Silakan coba lagi nanti.`
-      );
+      await alertError(`Gagal mengambil detail agenda. Silakan coba lagi nanti.`);
       navigate("/agenda");
     }
   };
@@ -77,26 +72,37 @@ export default function DetailAgenda() {
     return () => clearInterval(interval);
   }, [id]);
 
+  const handleBack = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    setTimeout(() => navigate("/agenda"), 300);
+  };
+
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-4 gap-6">
+    <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-4 gap-6 font-poppins">
       {/* ✅ Konten utama */}
       <div className="md:col-span-3">
-        {/* Gambar Utama */}
+        {/* ✅ Tombol Back smooth */}
+        <button
+          onClick={handleBack}
+          className="mb-5 flex items-center gap-2 px-4 py-2 rounded-full border border-gray-300 text-gray-800 hover:bg-gray-900 hover:text-white hover:scale-105 transition-all duration-300"
+        >
+          <HiArrowLeft className="text-lg" />
+          Kembali
+        </button>
+
+        {/* ✅ Gambar Utama */}
         <img
-          src={`${import.meta.env.VITE_BASE_URL}/agenda/images/${
-            agenda.featured_image
-          }`}
+          src={`${import.meta.env.VITE_BASE_URL}/agenda/images/${agenda.featured_image}`}
           alt={agenda.title}
           className="w-full h-96 object-cover rounded-lg mb-6"
         />
 
-        {/* Info Penting */}
+        {/* ✅ Info Penting */}
         <div className="bg-green-50 p-5 rounded-lg shadow mb-6 border-l-4 border-green-500">
           <h1 className="text-3xl font-bold mb-3">{agenda.title}</h1>
 
           <div className="flex flex-wrap gap-4 text-sm text-gray-700">
-            {agenda &&
-              agenda.start_time &&
+            {agenda?.start_time &&
               (() => {
                 const { tanggal, waktu } = Helper.formatAgendaDateTime(
                   agenda.start_time,
@@ -123,7 +129,7 @@ export default function DetailAgenda() {
           </div>
         </div>
 
-        {/* Deskripsi Agenda */}
+        {/* ✅ Deskripsi Agenda */}
         <div className="space-y-4 text-gray-800 leading-relaxed bg-white p-6 rounded-lg shadow">
           <p>{agenda.content}</p>
         </div>
@@ -159,6 +165,9 @@ export default function DetailAgenda() {
                 </p>
               </div>
             ))}
+            {comments.length === 0 && (
+              <p className="text-center text-gray-400">Belum ada komentar</p>
+            )}
           </div>
         </div>
       </div>

@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { FaWhatsapp, FaStar, FaRegStar, FaStarHalfAlt } from "react-icons/fa";
+import { HiArrowLeft } from "react-icons/hi";
 import SidebarProduk from "../layout/SidebarProduk";
 import { Helper } from "../../utils/Helper";
 import { alertError, alertSuccess } from "../../libs/alert";
@@ -28,9 +29,7 @@ export default function DetailProduk() {
       setAverageRating(responseBody.rating ?? 0);
       setComments(responseBody.comments ?? []);
     } else {
-      await alertError(
-        "Gagal mengambil detail product. Silakan coba lagi nanti."
-      );
+      await alertError("Gagal mengambil detail product. Silakan coba lagi nanti.");
       navigate("/bumdes");
     }
   };
@@ -49,7 +48,7 @@ export default function DetailProduk() {
     const responseBody = await response.json();
     if (response.ok && responseBody.rated) {
       setUserRated(true);
-      setUserTempRating(responseBody.rating); // untuk tampilkan rating sebelumnya
+      setUserTempRating(responseBody.rating); // tampilkan rating sebelumnya
     }
   };
 
@@ -107,9 +106,7 @@ export default function DetailProduk() {
       return;
     }
 
-    await alertSuccess(
-      `Terima kasih! Rating ${userTempRating} ⭐ telah dikirim.`
-    );
+    await alertSuccess(`Terima kasih! Rating ${userTempRating} ⭐ telah dikirim.`);
     setUserRated(true);
     setShowSubmitRating(false);
     fetchDetailProduct();
@@ -123,16 +120,31 @@ export default function DetailProduk() {
   const full = Math.floor(averageRating);
   const half = averageRating - full >= 0.5;
 
+  const handleBack = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    setTimeout(() => navigate(-1), 300);
+  };
+
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-4 gap-6">
+    <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-4 gap-6 font-poppins">
       <div className="md:col-span-3">
+        {/* ✅ Tombol Back konsisten */}
+        <button
+          onClick={handleBack}
+          className="mb-5 flex items-center gap-2 px-4 py-2 rounded-full border border-gray-300 text-gray-800 hover:bg-gray-900 hover:text-white hover:scale-105 transition-all duration-300"
+        >
+          <HiArrowLeft className="text-lg" />
+          Kembali
+        </button>
+
+        {/* ✅ Gambar Produk */}
         <img
-          src={`${import.meta.env.VITE_BASE_URL}/products/images/${
-            product.featured_image
-          }`}
+          src={`${import.meta.env.VITE_BASE_URL}/products/images/${product.featured_image}`}
           alt={product.title}
           className="w-full h-96 object-cover rounded-lg mb-6"
         />
+
+        {/* ✅ Info Produk */}
         <h1 className="text-2xl font-bold mb-3">{product.title}</h1>
         <p className="text-sm text-gray-500 mb-2">
           Oleh BUMDes Babakan Asem | Harga :{" "}
@@ -141,6 +153,7 @@ export default function DetailProduk() {
           </span>
         </p>
 
+        {/* ✅ Rating Produk */}
         <div className="flex items-center gap-1 mt-2">
           {[1, 2, 3, 4, 5].map((star) => {
             let icon;
@@ -158,11 +171,13 @@ export default function DetailProduk() {
           </span>
         </div>
 
+        {/* ✅ Deskripsi Produk */}
         <div className="space-y-4 text-gray-800 leading-relaxed mt-4">
           <p>{product.description}</p>
           <p>Produk ini 100% hasil desa dan dikelola oleh masyarakat lokal.</p>
         </div>
 
+        {/* ✅ Tombol Pesan WA */}
         <div className="mt-6">
           <a
             href={product.link_whatsapp}
@@ -174,28 +189,25 @@ export default function DetailProduk() {
           </a>
         </div>
 
+        {/* ✅ Form Rating */}
         <div className="mt-6 p-4 bg-gray-50 rounded-lg shadow">
-          <h2 className="text-lg font-semibold mb-2">
-            ⭐ Beri Penilaian Produk Ini
-          </h2>
+          <h2 className="text-lg font-semibold mb-2">⭐ Beri Penilaian Produk Ini</h2>
           <div className="flex items-center gap-1">
-            {[1, 2, 3, 4, 5].map((star) => {
-              return (
-                <span
-                  key={star}
-                  onClick={() => handleSelectStar(star)}
-                  className={`cursor-pointer hover:scale-110 transition ${
-                    userRated ? "pointer-events-none" : ""
-                  }`}
-                >
-                  {star <= userTempRating ? (
-                    <FaStar className="text-yellow-400" />
-                  ) : (
-                    <FaRegStar className="text-gray-300" />
-                  )}
-                </span>
-              );
-            })}
+            {[1, 2, 3, 4, 5].map((star) => (
+              <span
+                key={star}
+                onClick={() => handleSelectStar(star)}
+                className={`cursor-pointer hover:scale-110 transition ${
+                  userRated ? "pointer-events-none" : ""
+                }`}
+              >
+                {star <= userTempRating ? (
+                  <FaStar className="text-yellow-400" />
+                ) : (
+                  <FaRegStar className="text-gray-300" />
+                )}
+              </span>
+            ))}
           </div>
 
           {showSubmitRating && (
@@ -216,6 +228,7 @@ export default function DetailProduk() {
           )}
         </div>
 
+        {/* ✅ Komentar */}
         <div className="mt-10 p-6 bg-gray-50 rounded-lg shadow">
           <h2 className="text-xl font-semibold mb-4">💬 Tinggalkan Komentar</h2>
 
@@ -236,13 +249,13 @@ export default function DetailProduk() {
             </button>
           </form>
 
+          {/* ✅ List Komentar */}
           <div className="mt-6 space-y-4">
             {comments.map((c, i) => (
               <div key={i} className="p-4 bg-white rounded-lg shadow">
                 <p className="text-sm text-gray-700">{c.content}</p>
                 <p className="text-xs text-gray-500 mt-1">
-                  ✍ {c.user?.name ?? "Anonim"} •{" "}
-                  {Helper.formatTanggal(c.updated_at)}
+                  ✍ {c.user?.name ?? "Anonim"} • {Helper.formatTanggal(c.updated_at)}
                 </p>
               </div>
             ))}
@@ -253,6 +266,7 @@ export default function DetailProduk() {
         </div>
       </div>
 
+      {/* ✅ Sidebar Produk */}
       <aside>
         <SidebarProduk />
       </aside>

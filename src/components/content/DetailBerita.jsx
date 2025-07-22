@@ -5,6 +5,7 @@ import { NewsApi } from "../../libs/api/NewsApi";
 import { alertError, alertSuccess } from "../../libs/alert";
 import { Helper } from "../../utils/Helper";
 import { CommentApi } from "../../libs/api/CommentApi";
+import { HiArrowLeft } from "react-icons/hi";
 
 export default function DetailBerita() {
   const { id } = useParams();
@@ -34,7 +35,6 @@ export default function DetailBerita() {
     }
 
     await alertSuccess("Komentar berhasil dikirim!");
-
     setPesan("");
   };
 
@@ -46,9 +46,7 @@ export default function DetailBerita() {
       setUserCreated(responseBody.user_created);
       setComments(responseBody.comments);
     } else {
-      await alertError(
-        `Gagal mengambil detail berita. Silakan coba lagi nanti.`
-      );
+      await alertError(`Gagal mengambil detail berita. Silakan coba lagi nanti.`);
       navigate("/berita");
     }
   };
@@ -75,24 +73,39 @@ export default function DetailBerita() {
     return () => clearInterval(interval);
   }, [id]);
 
+  const handleBack = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    setTimeout(() => navigate("/berita"), 300);
+  };
+
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-4 gap-6">
+    <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-4 gap-6 font-poppins">
       {/* ✅ Konten utama */}
       <div className="md:col-span-3">
+        {/* ✅ Tombol Back minimalis */}
+        <button
+          onClick={handleBack}
+          className="mb-5 flex items-center gap-2 px-4 py-2 rounded-full border border-gray-300 text-gray-800 hover:bg-gray-900 hover:text-white hover:scale-105 transition-all duration-300"
+        >
+          <HiArrowLeft className="text-lg" />
+          Kembali
+        </button>
+
+        {/* ✅ Gambar Berita */}
         <img
-          src={`${import.meta.env.VITE_BASE_URL}/news/images/${
-            news.featured_image
-          }`}
+          src={`${import.meta.env.VITE_BASE_URL}/news/images/${news.featured_image}`}
           alt="Detail Berita"
           className="w-full h-96 object-cover rounded-lg mb-6"
         />
+
+        {/* ✅ Judul + Info */}
         <h1 className="text-2xl font-bold mb-3">{news.title}</h1>
         <p className="text-sm text-gray-500 mb-6">
           Oleh {userCreated.name} | Tanggal:{" "}
-          {Helper.formatTanggal(news.published_at)} | 👁 {news.view_count}{" "}
-          Dilihat
+          {Helper.formatTanggal(news.published_at)} | 👁 {news.view_count} Dilihat
         </p>
 
+        {/* ✅ Konten Berita */}
         <div className="space-y-4 text-gray-800 leading-relaxed">
           <p>{news.content}</p>
         </div>
@@ -128,6 +141,9 @@ export default function DetailBerita() {
                 </p>
               </div>
             ))}
+            {comments.length === 0 && (
+              <p className="text-center text-gray-400">Belum ada komentar</p>
+            )}
           </div>
         </div>
       </div>
