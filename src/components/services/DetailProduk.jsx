@@ -13,9 +13,8 @@ export default function DetailProduk() {
   const [product, setProduct] = useState({});
   const [comments, setComments] = useState([]);
   const [pesan, setPesan] = useState("");
-
-  const [averageRating, setAverageRating] = useState(0); // ✅ rata-rata untuk rekap
-  const [userTempRating, setUserTempRating] = useState(0); // ✅ rating sementara user
+  const [averageRating, setAverageRating] = useState(0);
+  const [userTempRating, setUserTempRating] = useState(0);
   const [userRated, setUserRated] = useState(false);
   const [showSubmitRating, setShowSubmitRating] = useState(false);
 
@@ -44,8 +43,19 @@ export default function DetailProduk() {
     }
   };
 
+  const checkUserRated = async () => {
+    if (!userToken) return;
+    const response = await ProductApi.alreadyRated(id);
+    const responseBody = await response.json();
+    if (response.ok && responseBody.rated) {
+      setUserRated(true);
+      setUserTempRating(responseBody.rating); // untuk tampilkan rating sebelumnya
+    }
+  };
+
   useEffect(() => {
     fetchDetailProduct();
+    checkUserRated();
   }, [id]);
 
   useEffect(() => {
@@ -74,7 +84,6 @@ export default function DetailProduk() {
     fetchComment();
   };
 
-  // ✅ Bagian klik bintang (untuk rating)
   const handleSelectStar = (value) => {
     if (!userToken) {
       alert("Silakan login dulu untuk memberi rating!");
@@ -90,16 +99,20 @@ export default function DetailProduk() {
   };
 
   const handleSubmitRating = async () => {
-    // Simulasi kirim ke backend & update rata-rata
-    const newAverage = (averageRating + userTempRating) / 2; // contoh kalkulasi lokal
-    setAverageRating(newAverage);
+    const response = await ProductApi.createRating(id, userTempRating);
+    const responseBody = await response.json();
 
-    setUserRated(true);
-    setShowSubmitRating(false);
+    if (!response.ok) {
+      await alertError("Gagal mengirim rating. Silakan coba lagi.");
+      return;
+    }
 
     await alertSuccess(
       `Terima kasih! Rating ${userTempRating} ⭐ telah dikirim.`
     );
+    setUserRated(true);
+    setShowSubmitRating(false);
+    fetchDetailProduct();
   };
 
   const handleCancelRating = () => {
@@ -112,7 +125,6 @@ export default function DetailProduk() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-4 gap-6">
-      {/* ✅ Konten utama */}
       <div className="md:col-span-3">
         <img
           src={`${import.meta.env.VITE_BASE_URL}/products/images/${
@@ -129,7 +141,6 @@ export default function DetailProduk() {
           </span>
         </p>
 
-        {/* ✅ Rekap Rating (read-only, rata-rata) */}
         <div className="flex items-center gap-1 mt-2">
           {[1, 2, 3, 4, 5].map((star) => {
             let icon;
@@ -147,13 +158,11 @@ export default function DetailProduk() {
           </span>
         </div>
 
-        {/* ✅ Deskripsi */}
         <div className="space-y-4 text-gray-800 leading-relaxed mt-4">
           <p>{product.description}</p>
           <p>Produk ini 100% hasil desa dan dikelola oleh masyarakat lokal.</p>
         </div>
 
-        {/* ✅ Tombol WA Pesan */}
         <div className="mt-6">
           <a
             href={product.link_whatsapp}
@@ -165,7 +174,6 @@ export default function DetailProduk() {
           </a>
         </div>
 
-        {/* ✅ Bagian Rating User di bawah tombol WhatsApp */}
         <div className="mt-6 p-4 bg-gray-50 rounded-lg shadow">
           <h2 className="text-lg font-semibold mb-2">
             ⭐ Beri Penilaian Produk Ini
@@ -176,7 +184,9 @@ export default function DetailProduk() {
                 <span
                   key={star}
                   onClick={() => handleSelectStar(star)}
-                  className="cursor-pointer hover:scale-110 transition"
+                  className={`cursor-pointer hover:scale-110 transition ${
+                    userRated ? "pointer-events-none" : ""
+                  }`}
                 >
                   {star <= userTempRating ? (
                     <FaStar className="text-yellow-400" />
@@ -206,7 +216,6 @@ export default function DetailProduk() {
           )}
         </div>
 
-        {/* ✅ Komentar */}
         <div className="mt-10 p-6 bg-gray-50 rounded-lg shadow">
           <h2 className="text-xl font-semibold mb-4">💬 Tinggalkan Komentar</h2>
 
@@ -227,7 +236,6 @@ export default function DetailProduk() {
             </button>
           </form>
 
-          {/* ✅ List Komentar */}
           <div className="mt-6 space-y-4">
             {comments.map((c, i) => (
               <div key={i} className="p-4 bg-white rounded-lg shadow">
@@ -245,7 +253,6 @@ export default function DetailProduk() {
         </div>
       </div>
 
-      {/* ✅ Sidebar */}
       <aside>
         <SidebarProduk />
       </aside>

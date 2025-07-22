@@ -96,4 +96,31 @@ export class ProductApi {
       }
     );
   }
+  static async createRating(productId, rating) {
+    return await fetch(
+      `${import.meta.env.VITE_BASE_URL}/products/rating/${productId}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
+        },
+        body: JSON.stringify({ rating }),
+      }
+    );
+  }
+  static async alreadyRated(productId) {
+    return await fetch(
+      `${import.meta.env.VITE_BASE_URL}/products/rating/${productId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
+        },
+      }
+    );
+  }
 }

@@ -6,7 +6,8 @@ import Pagination from "../ui/Pagination";
 
 export default function ManagePesan() {
   const [messages, setMessages] = useState([]);
-  const [filter, setFilter] = useState("all"); // all | read | unread
+  const [filter, setFilter] = useState("all");
+  const [totalPages, setTotalPages] = useState(1); // ✅ ini baru // all | read | unread
   const [page, setPage] = useState(1);
   const perPage = 5;
 
@@ -14,7 +15,11 @@ export default function ManagePesan() {
     try {
       // ✅ kalau API mendukung query
       const query = `?page=${page}&limit=${perPage}${
-        filter === "read" ? "&is_read=true" : filter === "unread" ? "&is_read=false" : ""
+        filter === "read"
+          ? "&is_read=true"
+          : filter === "unread"
+          ? "&is_read=false"
+          : ""
       }`;
 
       const response = await MessageApi.getMessages(query);
@@ -26,6 +31,7 @@ export default function ManagePesan() {
       }
 
       setMessages(resBody.messages || []);
+      setTotalPages(resBody.total_page);
     } catch (err) {
       console.error(err);
       alertError("Terjadi kesalahan saat mengambil pesan.");
@@ -37,7 +43,8 @@ export default function ManagePesan() {
   }, [filter, page]);
 
   const handleDelete = async (id) => {
-    if (!(await alertConfirm("Apakah Anda yakin ingin menghapus pesan ini?"))) return;
+    if (!(await alertConfirm("Apakah Anda yakin ingin menghapus pesan ini?")))
+      return;
 
     const response = await MessageApi.deleteMessage(id);
     if (!response.ok) {
@@ -60,23 +67,13 @@ export default function ManagePesan() {
     await MessageApi.markAsRead(id);
   };
 
-  const filteredMessages = messages.filter((m) => {
-    if (filter === "read") return m.is_read;
-    if (filter === "unread") return !m.is_read;
-    return true;
-  });
-
-  const totalPages = Math.ceil(filteredMessages.length / perPage);
-  const paginatedMessages = filteredMessages.slice(
-    (page - 1) * perPage,
-    page * perPage
-  );
-
   return (
     <div className="font-[Poppins,sans-serif]">
       {/* ✅ Header */}
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold text-gray-800">📩 Kelola Pesan Masuk</h1>
+        <h1 className="text-2xl font-bold text-gray-800">
+          📩 Kelola Pesan Masuk
+        </h1>
       </div>
 
       {/* ✅ FILTER BUTTONS */}
@@ -85,24 +82,30 @@ export default function ManagePesan() {
           <button
             key={f}
             className={`px-4 py-2 rounded-lg text-sm transition ${
-              filter === f ? "bg-green-500 text-white" : "bg-gray-200 hover:bg-gray-300"
+              filter === f
+                ? "bg-green-500 text-white"
+                : "bg-gray-200 hover:bg-gray-300"
             }`}
             onClick={() => {
               setFilter(f);
               setPage(1);
             }}
           >
-            {f === "all" ? "Semua" : f === "read" ? "Sudah Dibaca" : "Belum Dibaca"}
+            {f === "all"
+              ? "Semua"
+              : f === "read"
+              ? "Sudah Dibaca"
+              : "Belum Dibaca"}
           </button>
         ))}
       </div>
 
       {/* ✅ LIST PESAN */}
       <div className="space-y-4">
-        {paginatedMessages.length === 0 ? (
+        {messages.length === 0 ? (
           <p className="text-gray-500 italic">Tidak ada pesan</p>
         ) : (
-          paginatedMessages.map((p) => (
+          messages.map((p) => (
             <div
               key={p.id}
               className={`bg-white p-4 rounded-xl shadow flex justify-between items-start transition ${
@@ -137,7 +140,11 @@ export default function ManagePesan() {
 
       {/* ✅ PAGINATION */}
       <div className="mt-6 flex justify-center">
-        <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
+        <Pagination
+          currentPage={page}
+          totalPages={totalPages}
+          onPageChange={setPage}
+        />
       </div>
     </div>
   );
