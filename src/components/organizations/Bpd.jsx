@@ -13,20 +13,14 @@ export default function Bpd() {
   const fetchAgenda = async () => {
     const response = await AgendaApi.getAgenda(1, 3, "BPD");
     const responseBody = await response.json();
-    if (!response.ok) {
-      await alertError("Gagal mengambil data agenda BPD.");
-      return;
-    }
+    if (!response.ok) return alertError("Gagal mengambil data agenda BPD.");
     setAgenda(responseBody.agenda);
   };
 
   const fetchMembers = async () => {
     const response = await MemberApi.getMembers("BPD");
     const responseBody = await response.json();
-    if (!response.ok) {
-      await alertError("Gagal mengambil data anggota BPD.");
-      return;
-    }
+    if (!response.ok) return alertError("Gagal mengambil data anggota BPD.");
     setMembers(responseBody.members);
   };
 
@@ -41,13 +35,13 @@ export default function Bpd() {
     <div className="font-poppins text-gray-800 w-full">
       {/* ✅ HERO Section */}
       <section
-        className="relative bg-gradient-to-b from-green-50 to-white w-full py-16 text-center"
+        className="relative bg-gradient-to-b from-green-50 to-white w-full py-12 md:py-16 text-center px-4"
         data-aos="fade-down"
       >
-        <h1 className="text-4xl md:text-5xl font-extrabold text-green-700 mb-4">
+        <h1 className="text-3xl md:text-5xl font-extrabold text-green-700 mb-4 leading-tight">
           Badan Permusyawaratan Desa
         </h1>
-        <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+        <p className="text-base md:text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
           Lembaga perwakilan masyarakat desa yang berfungsi menampung aspirasi
           warga, mengawasi jalannya pemerintahan desa, serta memastikan
           transparansi pembangunan.
@@ -56,90 +50,68 @@ export default function Bpd() {
 
       {/* ✅ Peran & Tugas */}
       <section
-        className="max-w-screen-lg mx-auto px-6 py-12 text-center"
+        className="max-w-6xl mx-auto px-4 md:px-8 py-10 md:py-14 text-center"
         data-aos="fade-up"
       >
         <h2 className="text-2xl md:text-3xl font-bold text-green-700 mb-6">
           Peran & Tugas Utama BPD
         </h2>
-        <p className="text-gray-700 text-base md:text-lg leading-relaxed mb-4">
+        <p className="text-gray-700 text-base md:text-lg leading-relaxed mb-6">
           Badan Permusyawaratan Desa (BPD) merupakan mitra pemerintah desa dalam
           penyelenggaraan pemerintahan desa. BPD berfungsi sebagai lembaga yang
           menampung dan menyalurkan aspirasi masyarakat, membahas dan
           menyepakati rancangan peraturan desa, serta melakukan pengawasan
           terhadap kinerja pemerintah desa.
         </p>
-        <ul className="text-left max-w-2xl mx-auto mt-6 space-y-3">
-          <li className="flex items-start gap-3" data-aos="fade-right">
-            ✅ <span>Menampung aspirasi dan kebutuhan masyarakat desa.</span>
-          </li>
-          <li
-            className="flex items-start gap-3"
-            data-aos="fade-right"
-            data-aos-delay="100"
-          >
-            ✅{" "}
-            <span>Mengawasi jalannya pemerintahan desa secara transparan.</span>
-          </li>
-          <li
-            className="flex items-start gap-3"
-            data-aos="fade-right"
-            data-aos-delay="200"
-          >
-            ✅{" "}
-            <span>
-              Memberikan masukan dalam penyusunan APB Desa dan peraturan desa.
-            </span>
-          </li>
-          <li
-            className="flex items-start gap-3"
-            data-aos="fade-right"
-            data-aos-delay="300"
-          >
-            ✅{" "}
-            <span>
-              Menjadi jembatan komunikasi antara pemerintah desa dan masyarakat.
-            </span>
-          </li>
+        <ul className="text-left max-w-2xl mx-auto mt-6 space-y-4">
+          {[
+            "Menampung aspirasi dan kebutuhan masyarakat desa.",
+            "Mengawasi jalannya pemerintahan desa secara transparan.",
+            "Memberikan masukan dalam penyusunan APB Desa dan peraturan desa.",
+            "Menjadi jembatan komunikasi antara pemerintah desa dan masyarakat.",
+          ].map((tugas, i) => (
+            <li
+              key={i}
+              className="flex items-start gap-3 text-sm md:text-base"
+              data-aos="fade-right"
+              data-aos-delay={i * 100}
+            >
+              ✅ <span>{tugas}</span>
+            </li>
+          ))}
         </ul>
       </section>
 
       {/* ✅ Statistik */}
-      <section className="max-w-screen-lg mx-auto px-6 py-12 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
-        <div
-          className="border border-green-200 rounded-xl p-6 shadow-sm hover:shadow-md transition"
-          data-aos="zoom-in"
-        >
-          <h3 className="text-3xl font-bold text-green-700">7</h3>
-          <p className="text-gray-600 mt-2">Anggota Aktif</p>
-        </div>
-        <div
-          className="border border-green-200 rounded-xl p-6 shadow-sm hover:shadow-md transition"
-          data-aos="zoom-in"
-          data-aos-delay="150"
-        >
-          <h3 className="text-3xl font-bold text-green-700">4</h3>
-          <p className="text-gray-600 mt-2">Program Tahunan</p>
-        </div>
-        <div
-          className="border border-green-200 rounded-xl p-6 shadow-sm hover:shadow-md transition"
-          data-aos="zoom-in"
-          data-aos-delay="300"
-        >
-          <h3 className="text-3xl font-bold text-green-700">90+</h3>
-          <p className="text-gray-600 mt-2">Aspirasi Warga</p>
+      <section className="max-w-6xl mx-auto px-4 md:px-8 py-10 md:py-14">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 text-center">
+          {[
+            { angka: "7", label: "Anggota Aktif" },
+            { angka: "4", label: "Program Tahunan" },
+            { angka: "90+", label: "Aspirasi Warga" },
+          ].map((stat, i) => (
+            <div
+              key={i}
+              className="border border-green-200 rounded-xl p-6 shadow-sm hover:shadow-md transition"
+              data-aos="zoom-in"
+              data-aos-delay={i * 150}
+            >
+              <h3 className="text-3xl font-bold text-green-700">{stat.angka}</h3>
+              <p className="text-gray-600 mt-2">{stat.label}</p>
+            </div>
+          ))}
         </div>
       </section>
 
       {/* ✅ Struktur Organisasi */}
-      <section className="max-w-screen-lg mx-auto px-6 py-12">
+      <section className="max-w-6xl mx-auto px-4 md:px-8 py-10 md:py-14">
         <h2
           className="text-2xl md:text-3xl font-bold text-center text-green-700 mb-8"
           data-aos="fade-up"
         >
           Struktur Organisasi BPD
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
           {members.map((member, idx) => (
             <div
               key={member.id}
@@ -147,7 +119,6 @@ export default function Bpd() {
               data-aos="fade-up"
               data-aos-delay={idx * 100}
             >
-              {/* ✅ Foto anggota */}
               <img
                 src={
                   member.profile_photo
@@ -155,12 +126,12 @@ export default function Bpd() {
                     : "/default-user.png"
                 }
                 alt={member.name}
-                className="w-24 h-24 object-cover rounded-full border-2 border-green-300 mb-3"
+                className="w-20 h-20 md:w-24 md:h-24 object-cover rounded-full border-2 border-green-300 mb-3"
               />
-              <span className="font-semibold text-gray-800 text-lg text-center">
+              <span className="font-semibold text-gray-800 text-sm md:text-base text-center">
                 {member.name}
               </span>
-              <span className="text-green-700 text-sm mt-1">
+              <span className="text-green-700 text-xs md:text-sm mt-1 text-center">
                 {member.position}
               </span>
             </div>
@@ -169,14 +140,14 @@ export default function Bpd() {
       </section>
 
       {/* ✅ Agenda BPD */}
-      <section className="max-w-screen-lg mx-auto px-6 py-12">
+      <section className="max-w-6xl mx-auto px-4 md:px-8 py-10 md:py-14">
         <h2
           className="text-2xl md:text-3xl font-bold text-center text-green-700 mb-8"
           data-aos="fade-up"
         >
           Agenda Mendatang
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {agenda.map((item, idx) => (
             <div
               key={item.agenda.id}
@@ -184,7 +155,6 @@ export default function Bpd() {
               data-aos="fade-right"
               data-aos-delay={idx * 150}
             >
-              {/* ✅ Thumbnail agenda */}
               <img
                 src={
                   item.agenda.featured_image
@@ -192,13 +162,13 @@ export default function Bpd() {
                     : "/default-agenda.jpg"
                 }
                 alt={item.agenda.title}
-                className="w-full h-40 object-cover"
+                className="w-full h-40 md:h-48 object-cover"
               />
               <div className="p-4">
-                <h3 className="font-semibold text-gray-800">
+                <h3 className="font-semibold text-gray-800 text-sm md:text-base">
                   {item.agenda.title}
                 </h3>
-                <p className="text-sm text-gray-500 mt-1">
+                <p className="text-xs md:text-sm text-gray-500 mt-1">
                   {
                     Helper.formatAgendaDateTime(
                       item.agenda.start_time,
