@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   LineChart,
   Line,
@@ -8,15 +8,13 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { alertConfirm, alertError, alertSuccess } from "../../../libs/alert";
+import { InfografisApi } from "../../../libs/api/InfografisApi";
 
 export default function ManageIDM() {
   // ✅ Data grafik IDM
-  const [skorIDM, setSkorIDM] = useState([
-    { tahun: "2021", skor: 0.68 },
-    { tahun: "2022", skor: 0.72 },
-    { tahun: "2023", skor: 0.75 },
-    { tahun: "2024", skor: 0.8 },
-  ]);
+  const [skorIDM, setSkorIDM] = useState([]);
+  const [extraIdmId, setExtraIdmId] = useState(null);
 
   // ✅ Data utama yang ditampilkan
   const [statusDesa, setStatusDesa] = useState("Maju");
@@ -31,11 +29,29 @@ export default function ManageIDM() {
   const [tempLingkungan, setTempLingkungan] = useState(dimensiLingkungan);
 
   // ✅ Simpan perubahan kotak statistik
-  const handleSaveStatistik = () => {
-    setStatusDesa(tempStatus);
-    setDimensiSosial(tempSosial);
-    setDimensiEkonomi(tempEkonomi);
-    setDimensiLingkungan(tempLingkungan);
+  const handleSaveStatistik = async () => {
+    if (!extraIdmId) return alertError("ID data statistik tidak ditemukan.");
+
+    const response = await InfografisApi.updateExtraIdm(extraIdmId, {
+      status_desa: tempStatus.toUpperCase(),
+      sosial: tempSosial,
+      ekonomi: tempEkonomi,
+      lingkungan: tempLingkungan,
+    });
+
+    const resBody = await response.json();
+
+    if (!response.ok) {
+      return alertError(resBody?.error ?? "Gagal menyimpan data statistik.");
+    }
+
+    // Simpan ke state utama
+    setStatusDesa(resBody.extraIdm.status_desa);
+    setDimensiSosial(resBody.extraIdm.sosial);
+    setDimensiEkonomi(resBody.extraIdm.ekonomi);
+    setDimensiLingkungan(resBody.extraIdm.lingkungan);
+
+    alertSuccess("Data statistik berhasil diperbarui.");
   };
 
   // ✅ Modal tambah/edit skor IDM
@@ -50,37 +66,142 @@ export default function ManageIDM() {
     setEditingIndex(null);
     setShowForm(true);
   };
+  const handleEdit = (id) => {
+    const item = skorIDM.find((d) => d.id === id);
+    if (!item) return;
 
-  const handleEdit = (index) => {
     setFormData({
-      tahun: skorIDM[index].tahun,
-      skor: skorIDM[index].skor.toString(),
+      tahun: item.tahun,
+      skor: item.skor.toString(),
     });
-    setEditingIndex(index);
+    setEditingIndex(id);
     setIsAdding(false);
     setShowForm(true);
   };
 
-  const handleDelete = (index) => {
-    setSkorIDM((prev) => prev.filter((_, i) => i !== index));
+  const handleDelete = async (id) => {
+    if (!(await alertConfirm("Yakin ingin menghapus data ini?"))) return;
+
+    const response = await InfografisApi.deleteIdm(id);
+
+    if (!response.ok) {
+      return alertError("Gagal menghapus data dari server.");
+    }
+
+    setSkorIDM((prev) => prev.filter((d) => d.id !== id));
+    alertSuccess("Data berhasil dihapus.");
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const tahunTrimmed = formData.tahun.trim();
-    const skorNum = parseFloat(formData.skor);
+    const skorTrimmed = formData.skor.trim();
+    const skorNum = parseFloat(skorTrimmed);
 
-    if (!tahunTrimmed) return;
-    if (isNaN(skorNum) || skorNum < 0 || skorNum > 1) return;
+    if (!tahunTrimmed) return alertError("Tahun tidak boleh kosong");
+    if (!skorTrimmed || isNaN(skorNum) || skorNum < 0 || skorNum > 1)
+      return alertError("Skor harus berupa angka antara 0 dan 1");
+
+    const year = parseInt(tahunTrimmed);
 
     if (isAdding) {
-      if (skorIDM.some((d) => d.tahun === tahunTrimmed)) return;
-      setSkorIDM((prev) => [...prev, { tahun: tahunTrimmed, skor: skorNum }]);
+      const exists = skorIDM.some((d) => d.tahun === tahunTrimmed);
+      if (exists) return alertError(`Data tahun ${tahunTrimmed} sudah ada`);
+
+      const response = await InfografisApi.createIdm({
+        year,
+        skor: skorNum * 100, // API minta skor dalam bentuk persen
+      });
+      const resBody = await response.json();
+
+      if (!response.ok) {
+        return alertError(resBody?.error ?? "Gagal menyimpan data");
+      }
+
+      const newData = resBody.idm; // karena API return-nya array
+
+      setSkorIDM((prev) => [
+        ...prev,
+        {
+          id: newData.id,
+          tahun: newData.year.toString(),
+          skor: newData.skor / 100,
+        },
+      ]);
+      alertSuccess("Data berhasil ditambahkan.");
     } else {
-      const updated = [...skorIDM];
-      updated[editingIndex] = { tahun: tahunTrimmed, skor: skorNum };
+      if (!(await alertConfirm("Yakin ingin mengubah data ini?"))) return;
+
+      const response = await InfografisApi.updateIdm(editingIndex, {
+        year,
+        skor: skorNum * 100, // backend pakai persen
+      });
+
+      const resBody = await response.json();
+
+      if (!response.ok) {
+        return alertError(resBody?.error ?? "Gagal mengupdate data.");
+      }
+
+      const updated = skorIDM.map((item) =>
+        item.id === editingIndex
+          ? {
+              ...item,
+              tahun: resBody.idm.year.toString(),
+              skor: resBody.idm.skor / 100,
+            }
+          : item
+      );
+
       setSkorIDM(updated);
+      alertSuccess("Data berhasil diubah.");
     }
+
     setShowForm(false);
+  };
+  useEffect(() => {
+    loadAllIdmData();
+  }, []);
+
+  const loadAllIdmData = async () => {
+    // --- Ambil skor IDM (chart + tabel) ---
+    const responseIdm = await InfografisApi.getIdm();
+    const resIdmBody = await responseIdm.json();
+
+    if (responseIdm.ok && Array.isArray(resIdmBody.idm)) {
+      const mapped = resIdmBody.idm.map((d) => ({
+        id: d.id,
+        tahun: d.year.toString(),
+        skor: d.skor / 100,
+      }));
+      setSkorIDM(mapped);
+    } else {
+      alertError("Gagal mengambil data grafik IDM.");
+    }
+
+    // --- Ambil data Extra IDM (status + 3 dimensi) ---
+    const responseExtra = await InfografisApi.getExtraIdm();
+    const resExtraBody = await responseExtra.json();
+
+    if (
+      responseExtra.ok &&
+      Array.isArray(resExtraBody.extraIdm) &&
+      resExtraBody.extraIdm.length > 0
+    ) {
+      const data = resExtraBody.extraIdm[0];
+      setExtraIdmId(data.id);
+      setStatusDesa(data.status_desa);
+      setDimensiSosial(data.sosial);
+      setDimensiEkonomi(data.ekonomi);
+      setDimensiLingkungan(data.lingkungan);
+
+      // Sync ke temp juga
+      setTempStatus(data.status_desa);
+      setTempSosial(data.sosial);
+      setTempEkonomi(data.ekonomi);
+      setTempLingkungan(data.lingkungan);
+    } else {
+      alertError("Gagal mengambil data status desa & dimensi.");
+    }
   };
 
   return (
@@ -92,7 +213,8 @@ export default function ManageIDM() {
             Skor IDM Desa Babakan Asem
           </h2>
           <p className="mt-2 text-gray-600">
-            Perkembangan <strong>Indeks Desa Membangun (IDM)</strong> dari tahun ke tahun.
+            Perkembangan <strong>Indeks Desa Membangun (IDM)</strong> dari tahun
+            ke tahun.
           </p>
         </div>
         <button
@@ -112,11 +234,11 @@ export default function ManageIDM() {
             onChange={(e) => setTempStatus(e.target.value)}
             className="mt-2 border rounded px-3 py-2 text-gray-800"
           >
-            <option value="Maju">Maju</option>
-            <option value="Berkembang">Berkembang</option>
-            <option value="Mandiri">Mandiri</option>
-            <option value="Tertinggal">Tertinggal</option>
-            <option value="Sangat Tertinggal">Sangat Tertinggal</option>
+            <option value="MAJU">Maju</option>
+            <option value="BERKEMBANG">Berkembang</option>
+            <option value="MANDIRI">Mandiri</option>
+            <option value="TERINGGAL">Tertinggal</option>
+            <option value="SANGAT_TERTINGGAL">Sangat Tertinggal</option>
           </select>
         </div>
 
@@ -172,10 +294,18 @@ export default function ManageIDM() {
 
       {/* ✅ Tampilan nilai tersimpan */}
       <div className="mt-4 text-gray-700">
-        <p><strong>Status Desa:</strong> {statusDesa}</p>
-        <p><strong>Dimensi Sosial:</strong> {dimensiSosial}</p>
-        <p><strong>Dimensi Ekonomi:</strong> {dimensiEkonomi}</p>
-        <p><strong>Dimensi Lingkungan:</strong> {dimensiLingkungan}</p>
+        <p>
+          <strong>Status Desa:</strong> {statusDesa}
+        </p>
+        <p>
+          <strong>Dimensi Sosial:</strong> {dimensiSosial}
+        </p>
+        <p>
+          <strong>Dimensi Ekonomi:</strong> {dimensiEkonomi}
+        </p>
+        <p>
+          <strong>Dimensi Lingkungan:</strong> {dimensiLingkungan}
+        </p>
       </div>
 
       {/* ✅ Tabel Data */}
@@ -183,28 +313,31 @@ export default function ManageIDM() {
         <table className="w-full bg-white rounded-xl shadow">
           <thead className="bg-gray-100">
             <tr>
-              <th className="p-3 text-left font-semibold text-gray-700">Tahun</th>
-              <th className="p-3 text-left font-semibold text-gray-700">Skor</th>
-              <th className="p-3 text-left font-semibold text-gray-700">Aksi</th>
+              <th className="p-3 text-left font-semibold text-gray-700">
+                Tahun
+              </th>
+              <th className="p-3 text-left font-semibold text-gray-700">
+                Skor
+              </th>
+              <th className="p-3 text-left font-semibold text-gray-700">
+                Aksi
+              </th>
             </tr>
           </thead>
           <tbody>
-            {skorIDM.map((data, i) => (
-              <tr
-                key={data.tahun}
-                className="border-b border-gray-200 hover:bg-gray-50 transition"
-              >
+            {skorIDM.map((data) => (
+              <tr key={data.id} className="...">
                 <td className="p-3">{data.tahun}</td>
                 <td className="p-3">{data.skor}</td>
                 <td className="p-3 space-x-3">
                   <button
-                    onClick={() => handleEdit(i)}
+                    onClick={() => handleEdit(data.id)}
                     className="text-blue-600 hover:underline"
                   >
                     Edit
                   </button>
                   <button
-                    onClick={() => handleDelete(i)}
+                    onClick={() => handleDelete(data.id)}
                     className="text-red-600 hover:underline"
                   >
                     Hapus

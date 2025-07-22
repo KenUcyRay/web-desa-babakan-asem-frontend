@@ -12,26 +12,40 @@ import { InfografisApi } from "../../libs/api/InfografisApi";
 import { alertError } from "../../libs/alert";
 
 export default function IDM() {
-  const skorIDM = [
-    { tahun: "2021", skor: 0.68 },
-    { tahun: "2022", skor: 0.72 },
-    { tahun: "2023", skor: 0.75 },
-    { tahun: "2024", skor: 0.8 },
-  ];
   const [idm, setIdm] = useState([]);
+  const [extraIdm, setExtraIdm] = useState({
+    status_desa: "-",
+    sosial: 0,
+    ekonomi: 0,
+    lingkungan: 0,
+  });
 
-  const fetchIdm = async () => {
-    const response = await InfografisApi.getIdm();
-    const responseBody = await response.json();
-    if (!response.ok) {
-      await alertError("Gagal mengambil data IDM.");
-      return;
+  const fetchData = async () => {
+    // Fetch data IDM (chart)
+    const resIdm = await InfografisApi.getIdm();
+    const bodyIdm = await resIdm.json();
+    if (resIdm.ok && Array.isArray(bodyIdm.idm)) {
+      setIdm(bodyIdm.idm.map((d) => ({ ...d, skor: d.skor / 100 }))); // normalisasi skor
+    } else {
+      alertError("Gagal mengambil data IDM.");
     }
-    setIdm(responseBody.idm);
+
+    // Fetch extraIdm (statistik kotak)
+    const resExtra = await InfografisApi.getExtraIdm();
+    const bodyExtra = await resExtra.json();
+    if (
+      resExtra.ok &&
+      Array.isArray(bodyExtra.extraIdm) &&
+      bodyExtra.extraIdm.length > 0
+    ) {
+      setExtraIdm(bodyExtra.extraIdm[0]);
+    } else {
+      alertError("Gagal mengambil data status desa & dimensi.");
+    }
   };
 
   useEffect(() => {
-    fetchIdm();
+    fetchData();
   }, []);
 
   return (
@@ -50,19 +64,23 @@ export default function IDM() {
       <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-6 mt-8">
         <div className="flex flex-col items-center bg-white p-6 rounded-xl shadow hover:shadow-md transition">
           <p className="text-gray-600">Status Desa</p>
-          <p className="text-xl font-bold text-gray-800">Maju</p>
+          <p className="text-xl font-bold text-gray-800">
+            {extraIdm.status_desa}
+          </p>
         </div>
         <div className="flex flex-col items-center bg-white p-6 rounded-xl shadow hover:shadow-md transition">
           <p className="text-gray-600">Dimensi Sosial</p>
-          <p className="text-xl font-bold text-gray-800">0.78</p>
+          <p className="text-xl font-bold text-gray-800">{extraIdm.sosial}</p>
         </div>
         <div className="flex flex-col items-center bg-white p-6 rounded-xl shadow hover:shadow-md transition">
           <p className="text-gray-600">Dimensi Ekonomi</p>
-          <p className="text-xl font-bold text-gray-800">0.72</p>
+          <p className="text-xl font-bold text-gray-800">{extraIdm.ekonomi}</p>
         </div>
         <div className="flex flex-col items-center bg-white p-6 rounded-xl shadow hover:shadow-md transition">
           <p className="text-gray-600">Dimensi Lingkungan</p>
-          <p className="text-xl font-bold text-gray-800">0.74</p>
+          <p className="text-xl font-bold text-gray-800">
+            {extraIdm.lingkungan}
+          </p>
         </div>
       </div>
 
@@ -72,9 +90,9 @@ export default function IDM() {
           Perkembangan Skor IDM
         </h3>
         <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={skorIDM}>
+          <LineChart data={idm}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="tahun" />
+            <XAxis dataKey="year" />
             <YAxis domain={[0.6, 1]} />
             <Tooltip />
             <Line

@@ -92,41 +92,60 @@ export default function StPkk() {
           terdiri dari Ketua, Sekretaris, Bendahara, dan Pokja I-IV.
         </p>
 
-        {/* Struktur Diagram Sederhana */}
         <div className="flex flex-col gap-6 items-center">
           {/* Ketua */}
-          <div className="bg-green-100 p-4 rounded-xl shadow-md w-72 text-center">
-            <FaUsers className="mx-auto text-3xl text-green-700 mb-2" />
-            <h3 className="font-bold text-lg">Ketua PKK</h3>
-            <p className="text-sm text-gray-600">Nama Ketua PKK</p>
-          </div>
+          {members
+            .filter((m) => m.position.toLowerCase() === "ketua" && m.is_term)
+            .map((m) => (
+              <div
+                key={m.id}
+                className="bg-green-100 p-4 rounded-xl shadow-md w-72 text-center"
+              >
+                <FaUsers className="mx-auto text-3xl text-green-700 mb-2" />
+                <h3 className="font-bold text-lg">{m.position} PKK</h3>
+                <p className="text-sm text-gray-600">{m.name}</p>
+              </div>
+            ))}
 
           {/* Sekretaris & Bendahara */}
           <div className="flex flex-wrap justify-center gap-6">
-            {["Sekretaris", "Bendahara"].map((role, i) => (
-              <div
-                key={i}
-                className="bg-green-50 p-4 rounded-xl shadow w-56 text-center"
-              >
-                <FaSitemap className="mx-auto text-2xl text-green-600 mb-2" />
-                <h4 className="font-semibold">{role}</h4>
-                <p className="text-sm text-gray-600">Nama {role}</p>
-              </div>
-            ))}
+            {["Sekretaris", "Bendahara"].map((role) =>
+              members
+                .filter(
+                  (m) =>
+                    m.position.toLowerCase() === role.toLowerCase() && m.is_term
+                )
+                .map((m) => (
+                  <div
+                    key={m.id}
+                    className="bg-green-50 p-4 rounded-xl shadow w-56 text-center"
+                  >
+                    <FaSitemap className="mx-auto text-2xl text-green-600 mb-2" />
+                    <h4 className="font-semibold">{m.position}</h4>
+                    <p className="text-sm text-gray-600">{m.name}</p>
+                  </div>
+                ))
+            )}
           </div>
 
-          {/* Pokja */}
+          {/* Pokja I - IV */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-            {["Pokja I", "Pokja II", "Pokja III", "Pokja IV"].map(
-              (pokja, i) => (
-                <div
-                  key={i}
-                  className="bg-white border p-4 rounded-lg shadow hover:shadow-md transition text-center"
-                >
-                  <h5 className="font-bold text-green-700">{pokja}</h5>
-                  <p className="text-xs text-gray-600 mt-1">Ketua {pokja}</p>
-                </div>
-              )
+            {["Pokja I", "Pokja II", "Pokja III", "Pokja IV"].map((pokja) =>
+              members
+                .filter(
+                  (m) =>
+                    m.position.toLowerCase() === pokja.toLowerCase() &&
+                    m.is_term
+                )
+                .map((m) => (
+                  <div
+                    key={m.id}
+                    className="bg-white border p-4 rounded-lg shadow hover:shadow-md transition text-center"
+                  >
+                    <h5 className="font-bold text-green-700">{m.position}</h5>
+                    <p className="text-xs text-gray-600 mt-1">{m.name}</p>
+                  </div>
+                ))
             )}
           </div>
         </div>
