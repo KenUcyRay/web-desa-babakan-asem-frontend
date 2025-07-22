@@ -11,6 +11,24 @@ import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 import Pagination from "../ui/Pagination";
 
 export default function ManageAgenda() {
+  const kategoriList = [
+    "Semua",
+    "REGULAR",
+    "PKK",
+    "KARANG_TARUNA",
+    "DPD",
+    "BPD",
+  ];
+
+  const kategoriLabel = {
+    Semua: "Semua",
+    REGULAR: "Regular",
+    PKK: "PKK",
+    KARANG_TARUNA: "Karang Taruna",
+    DPD: "DPD",
+    BPD: "BPD",
+  };
+
   const type = [
     { id: 1, name: "Regular", value: "REGULAR" },
     { id: 2, name: "Pkk", value: "PKK" },
@@ -22,6 +40,7 @@ export default function ManageAgenda() {
   const [agenda, setAgenda] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [kategori, setKategori] = useState("Semua");
 
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -109,26 +128,36 @@ export default function ManageAgenda() {
     });
 
   const fetchAgenda = async () => {
-    const response = await AgendaApi.getOwnAgenda(currentPage, 6);
+    console.log("🔍 Fetching agenda dengan kategori:", kategori);
+
+    // Ambil semua dulu
+    const response = await AgendaApi.getOwnAgenda(currentPage, 6, "");
     if (!response.ok) return alertError("Gagal ambil agenda.");
     const resBody = await response.json();
-    setAgenda(resBody.agenda);
-    setCurrentPage(resBody.page);
-    setTotalPages(resBody.total_page);
+    console.log("✅ Respon API Agenda:", resBody);
+
+    let data = resBody.agenda || [];
+
+    // Filter manual di frontend kalau kategori dipilih
+    if (kategori !== "Semua") {
+      data = data.filter((a) => a.type === kategori);
+    }
+
+    setAgenda(data);
+    setCurrentPage(resBody.page || 1);
+    setTotalPages(resBody.total_page || 1);
   };
 
   useEffect(() => {
     fetchAgenda();
-  }, [currentPage]);
+  }, [currentPage, kategori]);
 
   return (
     <div className="font-[Poppins,sans-serif]">
-      {/* ✅ Header */}
-      <div className="flex justify-between items-center mb-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800">
-            📅 Manajemen Agenda
-          </h1>
+          <h1 className="text-3xl font-bold text-gray-800">📅 Manajemen Agenda</h1>
           <p className="text-gray-500 text-sm mt-1">
             Kelola semua agenda desa dengan mudah
           </p>
@@ -147,7 +176,27 @@ export default function ManageAgenda() {
         )}
       </div>
 
-      {/* ✅ FORM Tambah / Edit */}
+      {/* Filter Kategori */}
+      <div className="flex flex-wrap gap-2 mb-6">
+        {kategoriList.map((k) => (
+          <button
+            key={k}
+            onClick={() => {
+              setKategori(k);
+              setCurrentPage(1);
+            }}
+            className={`px-4 py-2 rounded-full text-sm font-medium transition ${
+              kategori === k
+                ? "bg-blue-500 text-white shadow"
+                : "bg-gray-100 hover:bg-blue-50 text-gray-700"
+            }`}
+          >
+            {kategoriLabel[k]}
+          </button>
+        ))}
+      </div>
+
+      {/* Form Tambah / Edit */}
       {showForm && (
         <form
           onSubmit={handleSubmit}
@@ -158,9 +207,7 @@ export default function ManageAgenda() {
           </h2>
 
           <div>
-            <label className="block text-sm font-medium mb-1">
-              Judul Agenda
-            </label>
+            <label className="block text-sm font-medium mb-1">Judul Agenda</label>
             <input
               className="w-full border rounded-lg p-3 focus:ring focus:ring-blue-200"
               value={title}
@@ -203,9 +250,7 @@ export default function ManageAgenda() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">
-              Lokasi Acara
-            </label>
+            <label className="block text-sm font-medium mb-1">Lokasi Acara</label>
             <input
               className="w-full border rounded-lg p-3 focus:ring focus:ring-blue-200"
               value={location}
@@ -215,9 +260,7 @@ export default function ManageAgenda() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">
-              Tipe Agenda
-            </label>
+            <label className="block text-sm font-medium mb-1">Tipe Agenda</label>
             <select
               className="w-full border rounded-lg p-3"
               value={typeSelected}
@@ -232,9 +275,7 @@ export default function ManageAgenda() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">
-              Upload Gambar
-            </label>
+            <label className="block text-sm font-medium mb-1">Upload Gambar</label>
             <input
               type="file"
               accept="image/*"
@@ -242,8 +283,7 @@ export default function ManageAgenda() {
               className="w-full border p-2 rounded-lg"
             />
             {(featuredImage ||
-              (editingId &&
-                agenda.find((a) => a.id === editingId)?.featuredImage)) && (
+              (editingId && agenda.find((a) => a.id === editingId)?.featuredImage)) && (
               <img
                 src={
                   featuredImage
@@ -300,8 +340,14 @@ export default function ManageAgenda() {
         </form>
       )}
 
-      {/* ✅ LIST Agenda */}
+      {/* List Agenda */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {agenda.length === 0 && (
+          <p className="text-center text-gray-500 col-span-full">
+            Tidak ada agenda untuk kategori ini.
+          </p>
+        )}
+
         {agenda.map((a) => (
           <div
             key={a.id}
@@ -360,14 +406,16 @@ export default function ManageAgenda() {
         ))}
       </div>
 
-      {/* ✅ Pagination */}
-      <div className="mt-8 flex justify-center">
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-        />
-      </div>
+      {/* Pagination */}
+      {agenda.length > 0 && (
+        <div className="mt-8 flex justify-center">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+        </div>
+      )}
     </div>
   );
 }
