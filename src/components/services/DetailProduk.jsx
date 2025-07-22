@@ -29,7 +29,9 @@ export default function DetailProduk() {
       setAverageRating(responseBody.rating ?? 0);
       setComments(responseBody.comments ?? []);
     } else {
-      await alertError("Gagal mengambil detail product. Silakan coba lagi nanti.");
+      await alertError(
+        "Gagal mengambil detail product. Silakan coba lagi nanti."
+      );
       navigate("/bumdes");
     }
   };
@@ -53,6 +55,11 @@ export default function DetailProduk() {
   };
 
   useEffect(() => {
+    setProduct({});
+    setUserTempRating(0);
+    setUserRated(false);
+    setShowSubmitRating(false);
+
     fetchDetailProduct();
     checkUserRated();
   }, [id]);
@@ -99,14 +106,15 @@ export default function DetailProduk() {
 
   const handleSubmitRating = async () => {
     const response = await ProductApi.createRating(id, userTempRating);
-    const responseBody = await response.json();
 
     if (!response.ok) {
       await alertError("Gagal mengirim rating. Silakan coba lagi.");
       return;
     }
 
-    await alertSuccess(`Terima kasih! Rating ${userTempRating} ⭐ telah dikirim.`);
+    await alertSuccess(
+      `Terima kasih! Rating ${userTempRating} ⭐ telah dikirim.`
+    );
     setUserRated(true);
     setShowSubmitRating(false);
     fetchDetailProduct();
@@ -139,7 +147,9 @@ export default function DetailProduk() {
 
         {/* ✅ Gambar Produk */}
         <img
-          src={`${import.meta.env.VITE_BASE_URL}/products/images/${product.featured_image}`}
+          src={`${import.meta.env.VITE_BASE_URL}/products/images/${
+            product.featured_image
+          }`}
           alt={product.title}
           className="w-full h-96 object-cover rounded-lg mb-6"
         />
@@ -191,7 +201,9 @@ export default function DetailProduk() {
 
         {/* ✅ Form Rating */}
         <div className="mt-6 p-4 bg-gray-50 rounded-lg shadow">
-          <h2 className="text-lg font-semibold mb-2">⭐ Beri Penilaian Produk Ini</h2>
+          <h2 className="text-lg font-semibold mb-2">
+            ⭐ Beri Penilaian Produk Ini
+          </h2>
           <div className="flex items-center gap-1">
             {[1, 2, 3, 4, 5].map((star) => (
               <span
@@ -255,7 +267,8 @@ export default function DetailProduk() {
               <div key={i} className="p-4 bg-white rounded-lg shadow">
                 <p className="text-sm text-gray-700">{c.content}</p>
                 <p className="text-xs text-gray-500 mt-1">
-                  ✍ {c.user?.name ?? "Anonim"} • {Helper.formatTanggal(c.updated_at)}
+                  ✍ {c.user?.name ?? "Anonim"} •{" "}
+                  {Helper.formatTanggal(c.updated_at)}
                 </p>
               </div>
             ))}
