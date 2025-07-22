@@ -24,11 +24,11 @@ export class AgendaApi {
     });
   }
 
-  static async getOwnAgenda(page = 1, limit = 10) {
+  static async getOwnAgenda(page = 1, limit = 10, type = "") {
     return await fetch(
       `${
         import.meta.env.VITE_BASE_URL
-      }/agenda/admin/me?page=${page}&limit=${limit}`,
+      }/agenda/admin/me?page=${page}&limit=${limit}&type=${type}  `,
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,

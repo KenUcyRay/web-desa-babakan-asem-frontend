@@ -128,20 +128,12 @@ export default function ManageAgenda() {
     });
 
   const fetchAgenda = async () => {
-    console.log("🔍 Fetching agenda dengan kategori:", kategori);
-
     // Ambil semua dulu
-    const response = await AgendaApi.getOwnAgenda(currentPage, 6, "");
+    const response = await AgendaApi.getOwnAgenda(currentPage, 6, kategori);
     if (!response.ok) return alertError("Gagal ambil agenda.");
     const resBody = await response.json();
-    console.log("✅ Respon API Agenda:", resBody);
 
     let data = resBody.agenda || [];
-
-    // Filter manual di frontend kalau kategori dipilih
-    if (kategori !== "Semua") {
-      data = data.filter((a) => a.type === kategori);
-    }
 
     setAgenda(data);
     setCurrentPage(resBody.page || 1);
@@ -157,7 +149,9 @@ export default function ManageAgenda() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800">📅 Manajemen Agenda</h1>
+          <h1 className="text-3xl font-bold text-gray-800">
+            📅 Manajemen Agenda
+          </h1>
           <p className="text-gray-500 text-sm mt-1">
             Kelola semua agenda desa dengan mudah
           </p>
@@ -207,7 +201,9 @@ export default function ManageAgenda() {
           </h2>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Judul Agenda</label>
+            <label className="block text-sm font-medium mb-1">
+              Judul Agenda
+            </label>
             <input
               className="w-full border rounded-lg p-3 focus:ring focus:ring-blue-200"
               value={title}
@@ -250,7 +246,9 @@ export default function ManageAgenda() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Lokasi Acara</label>
+            <label className="block text-sm font-medium mb-1">
+              Lokasi Acara
+            </label>
             <input
               className="w-full border rounded-lg p-3 focus:ring focus:ring-blue-200"
               value={location}
@@ -260,7 +258,9 @@ export default function ManageAgenda() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Tipe Agenda</label>
+            <label className="block text-sm font-medium mb-1">
+              Tipe Agenda
+            </label>
             <select
               className="w-full border rounded-lg p-3"
               value={typeSelected}
@@ -275,7 +275,9 @@ export default function ManageAgenda() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Upload Gambar</label>
+            <label className="block text-sm font-medium mb-1">
+              Upload Gambar
+            </label>
             <input
               type="file"
               accept="image/*"
@@ -283,7 +285,8 @@ export default function ManageAgenda() {
               className="w-full border p-2 rounded-lg"
             />
             {(featuredImage ||
-              (editingId && agenda.find((a) => a.id === editingId)?.featuredImage)) && (
+              (editingId &&
+                agenda.find((a) => a.id === editingId)?.featuredImage)) && (
               <img
                 src={
                   featuredImage
