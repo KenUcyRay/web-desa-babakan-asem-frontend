@@ -8,7 +8,14 @@ import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 export default function ManageAnggota() {
   const [members, setMembers] = useState([]);
   const [kategori, setKategori] = useState("Semua");
-  const kategoriList = ["Semua", "PKK", "Karang Taruna", "DPD", "PEMERINTAH", "BPD"];
+  const kategoriList = [
+    "Semua",
+    "PKK",
+    "Karang Taruna",
+    "DPD",
+    "PEMERINTAH",
+    "BPD",
+  ];
 
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -96,11 +103,15 @@ export default function ManageAnggota() {
 
     const response = await apiCall;
     if (!response.ok) {
-      alertError(editingId ? "Gagal menyimpan perubahan." : "Gagal menambah anggota.");
+      alertError(
+        editingId ? "Gagal menyimpan perubahan." : "Gagal menambah anggota."
+      );
       return;
     }
 
-    await alertSuccess(editingId ? "Anggota diperbarui!" : "Anggota ditambahkan!");
+    await alertSuccess(
+      editingId ? "Anggota diperbarui!" : "Anggota ditambahkan!"
+    );
     setShowModal(false);
     fetchMembers();
   };
@@ -159,14 +170,18 @@ export default function ManageAnggota() {
               src={
                 member.profile_photo.startsWith("http")
                   ? member.profile_photo
-                  : `${import.meta.env.VITE_BASE_URL}/organizations/images/${member.profile_photo}`
+                  : `${import.meta.env.VITE_BASE_URL}/organizations/images/${
+                      member.profile_photo
+                    }`
               }
               alt={member.name}
               className="w-full h-48 object-cover"
             />
 
             <div className="p-4">
-              <h2 className="text-lg font-semibold text-gray-800">{member.name}</h2>
+              <h2 className="text-lg font-semibold text-gray-800">
+                {member.name}
+              </h2>
               <p className="text-sm text-gray-600">{member.position}</p>
 
               <div className="flex flex-wrap gap-2 mt-3 text-xs">
@@ -178,7 +193,9 @@ export default function ManageAnggota() {
                 </span>
                 <span
                   className={`px-2 py-1 rounded ${
-                    member.is_term ? "bg-green-200 text-green-800" : "bg-red-200 text-red-800"
+                    member.is_term
+                      ? "bg-green-200 text-green-800"
+                      : "bg-red-200 text-red-800"
                   }`}
                 >
                   {member.is_term ? "Menjabat" : "Tidak Menjabat"}
@@ -229,7 +246,9 @@ export default function ManageAnggota() {
                 type="text"
                 placeholder="Nama Lengkap"
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
                 className="w-full border rounded-lg p-2 focus:ring focus:ring-green-200"
                 required
               />
@@ -238,7 +257,9 @@ export default function ManageAnggota() {
                 type="text"
                 placeholder="Jabatan"
                 value={formData.position}
-                onChange={(e) => setFormData({ ...formData, position: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, position: e.target.value })
+                }
                 className="w-full border rounded-lg p-2 focus:ring focus:ring-green-200"
                 required
               />
@@ -248,7 +269,9 @@ export default function ManageAnggota() {
                   type="number"
                   placeholder="Mulai"
                   value={formData.term_start}
-                  onChange={(e) => setFormData({ ...formData, term_start: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, term_start: e.target.value })
+                  }
                   className="w-1/2 border rounded-lg p-2"
                   required
                 />
@@ -256,7 +279,9 @@ export default function ManageAnggota() {
                   type="number"
                   placeholder="Akhir"
                   value={formData.term_end}
-                  onChange={(e) => setFormData({ ...formData, term_end: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, term_end: e.target.value })
+                  }
                   className="w-1/2 border rounded-lg p-2"
                   required
                 />
@@ -264,12 +289,17 @@ export default function ManageAnggota() {
 
               <select
                 value={formData.organization_type}
-                onChange={(e) => setFormData({ ...formData, organization_type: e.target.value })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    organization_type: e.target.value,
+                  })
+                }
                 className="w-full border rounded-lg p-2"
               >
                 <option value="PEMERINTAH">Pemerintah</option>
                 <option value="PKK">PKK</option>
-                <option value="Karang Taruna">Karang Taruna</option>
+                <option value="KARANG_TARUNA">Karang Taruna</option>
                 <option value="DPD">DPD</option>
                 <option value="BPD">BPD</option>
               </select>
@@ -280,7 +310,10 @@ export default function ManageAnggota() {
                   type="file"
                   accept="image/*"
                   onChange={(e) =>
-                    setFormData({ ...formData, profile_photo: e.target.files[0] })
+                    setFormData({
+                      ...formData,
+                      profile_photo: e.target.files[0],
+                    })
                   }
                   className="w-full border rounded-lg p-2"
                   {...(editingId ? {} : { required: true })}
@@ -291,7 +324,9 @@ export default function ManageAnggota() {
                 <input
                   type="checkbox"
                   checked={formData.is_term}
-                  onChange={(e) => setFormData({ ...formData, is_term: e.target.checked })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, is_term: e.target.checked })
+                  }
                 />
                 <span>Masih menjabat?</span>
               </div>
