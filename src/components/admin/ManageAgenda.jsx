@@ -16,6 +16,7 @@ export default function ManageAgenda() {
     { id: 2, name: "Pkk", value: "PKK" },
     { id: 3, name: "Karang Taruna", value: "KARANG_TARUNA" },
     { id: 4, name: "DPD", value: "DPD" },
+    { id: 5, name: "BPD", value: "BPD" },
   ];
 
   const [agenda, setAgenda] = useState([]);
