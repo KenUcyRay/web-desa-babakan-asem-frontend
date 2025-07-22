@@ -35,9 +35,11 @@ export class MemberApi {
     );
   }
 
-  static async getAllMembers() {
+  static async getAllMembers(type, page = 1, limit = 10) {
     return await fetch(
-      `${import.meta.env.VITE_BASE_URL}/organizations/admin/members`,
+      `${
+        import.meta.env.VITE_BASE_URL
+      }/organizations/admin/members?organizationType=${type}&page=${page}&limit=${limit}`,
       {
         method: "GET",
         headers: {
