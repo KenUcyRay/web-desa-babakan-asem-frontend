@@ -35,6 +35,20 @@ export class MemberApi {
     );
   }
 
+  static async getAllMembers() {
+    return await fetch(
+      `${import.meta.env.VITE_BASE_URL}/organizations/admin/members`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      }
+    );
+  }
+
   static async updateMember(id, data) {
     const formData = new FormData();
     formData.append("name", data.name) ?? undefined;
@@ -43,7 +57,7 @@ export class MemberApi {
     formData.append("term_end", data.term_end) ?? undefined;
     formData.append("organization_type", data.organization_type);
     formData.append("profile_photo", data.profile_photo ?? undefined);
-    formData.append("is_term", data.is_term) ?? undefined;
+    formData.append("is_term", data.is_term);
     formData.append("important_level", data.important_level) ?? undefined;
 
     return await fetch(
