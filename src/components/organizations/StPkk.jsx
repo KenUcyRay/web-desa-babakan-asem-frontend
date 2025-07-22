@@ -1,174 +1,117 @@
-import { FaUsers, FaSitemap, FaArrowLeft } from "react-icons/fa";
-import { Link } from "react-router-dom";
-import { alertError } from "../../libs/alert";
 import { useEffect, useState } from "react";
-import { GaleryApi } from "../../libs/api/GaleryApi";
+import AOS from "aos";
+import "aos/dist/aos.css";
 import { MemberApi } from "../../libs/api/MemberApi";
+import { GaleryApi } from "../../libs/api/GaleryApi";
+import { alertError } from "../../libs/alert";
 
 export default function StPkk() {
+  const [members, setMembers] = useState([]);
   const [galery, setGalery] = useState([]);
 
+  // ✅ Ambil data anggota PKK
+  const fetchMembers = async () => {
+    const response = await MemberApi.getMembers("PKK");
+    const responseBody = await response.json();
+
+    if (!response.ok) {
+      await alertError("Gagal mengambil data anggota PKK.");
+      return;
+    }
+    setMembers(responseBody.members);
+  };
+
+  // ✅ Ambil galeri PKK
   const fetchGalery = async () => {
     const response = await GaleryApi.getGaleri(1, 8, "PKK");
     if (response.status === 200) {
       const responseBody = await response.json();
       setGalery(responseBody.galeri);
     } else {
-      await alertError("Gagal mengambil data galeri. Silakan coba lagi nanti.");
+      await alertError("Gagal mengambil data galeri PKK.");
     }
-  };
-
-  const [members, setMembers] = useState([]);
-
-  const fetchMembers = async () => {
-    const response = await MemberApi.getMembers("PKK");
-    const responseBody = await response.json();
-    if (!response.ok) {
-      let errorMessage = "Gagal menyimpan perubahan.";
-
-      if (responseBody.error && Array.isArray(responseBody.error)) {
-        const errorMessages = responseBody.error.map((err) => {
-          if (err.path && err.path.length > 0) {
-            return `${err.path[0]}: ${err.message}`;
-          }
-          return err.message;
-        });
-        errorMessage = errorMessages.join(", ");
-      } else if (responseBody.error && typeof responseBody.error === "string") {
-        errorMessage = responseBody.error;
-      }
-      await alertError(errorMessage);
-      return;
-    }
-    setMembers(responseBody.members);
   };
 
   useEffect(() => {
-    fetchGalery();
+    AOS.init({ duration: 800, once: true });
+    AOS.refresh();
     fetchMembers();
+    fetchGalery();
   }, []);
 
   return (
-    <div className="font-poppins">
-      {/* ✅ HERO: Judul + Foto Setengah */}
-      <section className="relative w-full bg-gradient-to-r from-green-50 to-white py-16">
-        <div className="max-w-7xl mx-auto grid md:grid-cols-2 items-center gap-8 px-6">
-          {/* Teks */}
-          <div className="flex flex-col gap-4">
-            <h1 className="text-4xl md:text-5xl font-bold text-green-700 leading-tight">
-              Struktur & Galeri PKK Desa Babakan Asem
-            </h1>
-            <p className="text-gray-700 text-lg leading-relaxed">
-              Mengenal lebih dekat susunan organisasi PKK dan dokumentasi
-              kegiatan pemberdayaan keluarga di Desa Babakan Asem.
-            </p>
-
-            <Link
-              to="/pkk"
-              className="mt-4 inline-flex items-center gap-3 text-green-700 hover:text-green-900 font-semibold"
-            >
-              <FaArrowLeft /> Kembali ke Halaman PKK
-            </Link>
-          </div>
-
-          {/* Gambar Hero */}
-          <div className="relative">
-            <img
-              src="https://images.unsplash.com/photo-1509062522246-3755977927d7?w=1000"
-              alt="PKK Kegiatan"
-              className="rounded-2xl shadow-xl object-cover"
-            />
-          </div>
-        </div>
+    <div className="font-poppins text-gray-800 w-full">
+      {/* ✅ HERO Section */}
+      <section
+        className="relative bg-gradient-to-b from-green-50 to-white w-full py-16 text-center"
+        data-aos="fade-down"
+      >
+        <h1 className="text-4xl md:text-5xl font-extrabold text-green-700 mb-4">
+          Pemberdayaan Kesejahteraan Keluarga (PKK)
+        </h1>
+        <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+          Organisasi yang berperan meningkatkan kesejahteraan keluarga melalui
+          pemberdayaan masyarakat, pendidikan, dan kesehatan.
+        </p>
       </section>
 
-      {/* ✅ STRUKTUR ORGANISASI */}
-      <section className="max-w-6xl mx-auto px-4 py-16 text-center">
-        <h2 className="text-3xl font-bold text-green-700 mb-4">
+      {/* ✅ Struktur Organisasi PKK */}
+      <section className="max-w-screen-lg mx-auto px-6 py-12">
+        <h2
+          className="text-2xl md:text-3xl font-bold text-center text-green-700 mb-8"
+          data-aos="fade-up"
+        >
           Struktur Organisasi PKK
         </h2>
-        <p className="text-gray-600 max-w-2xl mx-auto mb-10">
-          Berikut adalah susunan struktur organisasi PKK Desa Babakan Asem yang
-          terdiri dari Ketua, Sekretaris, Bendahara, dan Pokja I-IV.
-        </p>
 
-        <div className="flex flex-col gap-6 items-center">
-          {/* Ketua */}
-          {members
-            .filter((m) => m.position.toLowerCase() === "ketua" && m.is_term)
-            .map((m) => (
-              <div
-                key={m.id}
-                className="bg-green-100 p-4 rounded-xl shadow-md w-72 text-center"
-              >
-                <FaUsers className="mx-auto text-3xl text-green-700 mb-2" />
-                <h3 className="font-bold text-lg">{m.position} PKK</h3>
-                <p className="text-sm text-gray-600">{m.name}</p>
-              </div>
-            ))}
-
-          {/* Sekretaris & Bendahara */}
-          <div className="flex flex-wrap justify-center gap-6">
-            {["Sekretaris", "Bendahara"].map((role) =>
-              members
-                .filter(
-                  (m) =>
-                    m.position.toLowerCase() === role.toLowerCase() && m.is_term
-                )
-                .map((m) => (
-                  <div
-                    key={m.id}
-                    className="bg-green-50 p-4 rounded-xl shadow w-56 text-center"
-                  >
-                    <FaSitemap className="mx-auto text-2xl text-green-600 mb-2" />
-                    <h4 className="font-semibold">{m.position}</h4>
-                    <p className="text-sm text-gray-600">{m.name}</p>
-                  </div>
-                ))
-            )}
-          </div>
-
-          {/* Pokja I - IV */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-            {["Pokja I", "Pokja II", "Pokja III", "Pokja IV"].map((pokja) =>
-              members
-                .filter(
-                  (m) =>
-                    m.position.toLowerCase() === pokja.toLowerCase() &&
-                    m.is_term
-                )
-                .map((m) => (
-                  <div
-                    key={m.id}
-                    className="bg-white border p-4 rounded-lg shadow hover:shadow-md transition text-center"
-                  >
-                    <h5 className="font-bold text-green-700">{m.position}</h5>
-                    <p className="text-xs text-gray-600 mt-1">{m.name}</p>
-                  </div>
-                ))
-            )}
-          </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {members.map((member, idx) => (
+            <div
+              key={member.id}
+              className="flex flex-col items-center bg-white border border-green-100 rounded-xl p-4 shadow-sm hover:shadow-md transition"
+              data-aos="fade-up"
+              data-aos-delay={idx * 100}
+            >
+              {/* ✅ Foto anggota PKK */}
+              <img
+                src={
+                  member.profile_photo
+                    ? `${import.meta.env.VITE_BASE_URL}/organizations/images/${member.profile_photo}`
+                    : "/default-user.png"
+                }
+                alt={member.name}
+                className="w-24 h-24 object-cover rounded-full border-2 border-green-300 mb-3"
+              />
+              <span className="font-semibold text-gray-800 text-lg text-center">
+                {member.name}
+              </span>
+              <span className="text-green-700 text-sm mt-1">
+                {member.position}
+              </span>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* ✅ GALERI PKK */}
-      <section className="max-w-6xl mx-auto px-4 py-16">
-        <h2 className="text-3xl font-bold text-green-700 text-center mb-4">
+      {/* ✅ Galeri PKK */}
+      <section className="max-w-screen-lg mx-auto px-6 py-12">
+        <h2
+          className="text-2xl md:text-3xl font-bold text-center text-green-700 mb-8"
+          data-aos="fade-up"
+        >
           Galeri Kegiatan PKK
         </h2>
-        <p className="text-gray-600 text-center mb-8 max-w-2xl mx-auto">
-          Dokumentasi kegiatan PKK Desa Babakan Asem yang mencerminkan semangat
-          kebersamaan dan pemberdayaan masyarakat.
-        </p>
 
-        {/* Grid Galeri */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {galery.map((item) => (
-            <div key={item.id} className="relative group">
+          {galery.map((item, idx) => (
+            <div
+              key={item.id}
+              className="relative group"
+              data-aos="zoom-in"
+              data-aos-delay={idx * 100}
+            >
               <img
-                src={`${import.meta.env.VITE_BASE_URL}/galeri/images/${
-                  item.image
-                }`}
+                src={`${import.meta.env.VITE_BASE_URL}/galeri/images/${item.image}`}
                 alt="Galeri PKK"
                 className="rounded-xl shadow-md w-full h-48 object-cover group-hover:opacity-80 transition"
               />
@@ -177,16 +120,6 @@ export default function StPkk() {
               </div>
             </div>
           ))}
-        </div>
-
-        {/* Tombol Kembali */}
-        <div className="text-center mt-10">
-          <Link
-            to="/pkk"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 hover:scale-105 transition shadow"
-          >
-            <FaArrowLeft /> Kembali ke Halaman PKK
-          </Link>
         </div>
       </section>
     </div>

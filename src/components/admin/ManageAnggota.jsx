@@ -8,6 +8,8 @@ import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 export default function ManageAnggota() {
   const [members, setMembers] = useState([]);
   const [kategori, setKategori] = useState("Semua");
+
+  // ✅ List kategori untuk tombol
   const kategoriList = [
     "Semua",
     "PKK",
@@ -16,6 +18,16 @@ export default function ManageAnggota() {
     "PEMERINTAH",
     "BPD",
   ];
+
+  // ✅ Mapping kategori frontend → backend
+  const kategoriMap = {
+    Semua: "",
+    PKK: "PKK",
+    "Karang Taruna": "KARANG_TARUNA",
+    DPD: "DPD",
+    PEMERINTAH: "PEMERINTAH",
+    BPD: "BPD",
+  };
 
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -152,7 +164,8 @@ export default function ManageAnggota() {
                 : "bg-gray-100 hover:bg-green-50 text-gray-700"
             }`}
           >
-            {k}
+            {/* ✅ Tampilin label lebih rapi (underscore → spasi) */}
+            {k.replace("_", " ")}
           </button>
         ))}
       </div>
@@ -172,7 +185,7 @@ export default function ManageAnggota() {
           >
             <img
               src={
-                member.profile_photo.startsWith("http")
+                member.profile_photo?.startsWith("http")
                   ? member.profile_photo
                   : `${import.meta.env.VITE_BASE_URL}/organizations/images/${
                       member.profile_photo
@@ -190,7 +203,7 @@ export default function ManageAnggota() {
 
               <div className="flex flex-wrap gap-2 mt-3 text-xs">
                 <span className="px-2 py-1 rounded bg-green-100 text-green-700">
-                  {member.organization_type}
+                  {member.organization_type.replace("_", " ")}
                 </span>
                 <span className="px-2 py-1 rounded bg-blue-100 text-blue-700">
                   {member.term_start} - {member.term_end}
