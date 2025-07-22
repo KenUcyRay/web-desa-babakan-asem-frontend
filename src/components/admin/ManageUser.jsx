@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { FaUserPlus, FaUserShield, FaExchangeAlt } from "react-icons/fa";
 import Pagination from "../ui/Pagination";
-import { alertConfirm } from "../../libs/alert";
-import toast, { Toaster } from "react-hot-toast"; // ✅ Tambah toast
+import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 import { UserApi } from "../../libs/api/UserApi";
 
 export default function ManageUser() {
@@ -19,7 +18,6 @@ export default function ManageUser() {
     confirm_password: "",
   });
 
-  // ✅ Ambil semua admin
   const fetchUsers = async () => {
     try {
       const response = await UserApi.getAllUsers(currentPage, 10);
@@ -29,7 +27,7 @@ export default function ManageUser() {
       setCurrentPage(resBody.page);
       setTotalPages(resBody.total_page);
     } catch (err) {
-      toast.error("❌ Gagal mengambil data pengguna!");
+      alertError("Gagal mengambil data pengguna!");
     }
   };
 
@@ -37,13 +35,12 @@ export default function ManageUser() {
     fetchUsers();
   }, [currentPage]);
 
-  // ✅ Tambah Admin Baru
   const handleAddAdmin = async (e) => {
     e.preventDefault();
     if (!(await alertConfirm("Yakin tambah admin baru?"))) return;
 
     if (form.confirm_password !== form.password) {
-      return toast.error("❌ Konfirmasi password tidak cocok!");
+      return alertError("Konfirmasi password tidak cocok!");
     }
 
     try {
@@ -54,13 +51,12 @@ export default function ManageUser() {
       setUsers([...users, resBody.user]);
       setShowAddForm(false);
       setForm({ name: "", email: "", password: "", confirm_password: "" });
-      toast.success("✅ Admin berhasil ditambahkan!");
+      alertSuccess("Admin berhasil ditambahkan!");
     } catch (err) {
-      toast.error(`❌ ${err.message}`);
+      alertError(err.message);
     }
   };
 
-  // ✅ Turunkan Admin → User
   const adminToUser = async (admin) => {
     if (!(await alertConfirm(`Ubah ${admin.name} menjadi user biasa?`))) return;
 
@@ -70,13 +66,12 @@ export default function ManageUser() {
       if (!response.ok) throw new Error(resBody.error || "Gagal mengubah role");
 
       setUsers(users.filter((u) => u.id !== admin.id));
-      toast.success(`✅ ${resBody.user.name} sekarang jadi user biasa.`);
+      alertSuccess(`${resBody.user.name} sekarang jadi user biasa.`);
     } catch (err) {
-      toast.error(`❌ ${err.message}`);
+      alertError(err.message);
     }
   };
 
-  // ✅ Naikkan User → Admin
   const handlePromoteUser = async (e) => {
     e.preventDefault();
     if (!(await alertConfirm("Yakin ubah user ini menjadi admin?"))) return;
@@ -91,19 +86,16 @@ export default function ManageUser() {
         throw new Error(resBody.error || "Gagal mempromosikan user");
 
       setUsers([...users, resBody.user]);
-      toast.success(`✅ ${resBody.user.name} sekarang jadi admin.`);
+      alertSuccess(`${resBody.user.name} sekarang jadi admin.`);
       setShowPromoteForm(false);
       e.target.reset();
     } catch (err) {
-      toast.error(`❌ ${err.message}`);
+      alertError(err.message);
     }
   };
 
   return (
     <div className="font-[Poppins,sans-serif]">
-      {/* ✅ Toast container */}
-      <Toaster position="top-right" />
-
       {/* ✅ Header + Tombol */}
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3 mb-6">
         <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
@@ -111,7 +103,6 @@ export default function ManageUser() {
         </h1>
 
         <div className="flex flex-wrap gap-2">
-          {/* Tombol Tambah Admin */}
           <button
             onClick={() => {
               setShowAddForm(!showAddForm);
@@ -122,7 +113,6 @@ export default function ManageUser() {
             <FaUserPlus /> Tambah Admin
           </button>
 
-          {/* Tombol Ubah User → Admin */}
           <button
             onClick={() => {
               setShowPromoteForm(!showPromoteForm);
@@ -232,7 +222,7 @@ export default function ManageUser() {
         </form>
       )}
 
-      {/* ✅ Table + Card responsif */}
+      {/* ✅ Table Desktop */}
       <div className="bg-white rounded-xl shadow overflow-x-auto hidden md:block">
         <table className="w-full text-left border-collapse min-w-[700px]">
           <thead className="bg-gray-100 text-gray-700">
@@ -280,10 +270,7 @@ export default function ManageUser() {
       {/* ✅ Mobile Card View */}
       <div className="md:hidden grid gap-4">
         {users.map((user, index) => (
-          <div
-            key={user.id}
-            className="bg-white p-4 rounded-lg shadow space-y-2"
-          >
+          <div key={user.id} className="bg-white p-4 rounded-lg shadow space-y-2">
             <p className="font-bold text-gray-800">
               {index + 1}. {user.name}
             </p>

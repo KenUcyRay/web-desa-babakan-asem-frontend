@@ -8,7 +8,6 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import toast from "react-hot-toast";
 
 export default function ManageIDM() {
   // ✅ Data grafik IDM
@@ -37,7 +36,6 @@ export default function ManageIDM() {
     setDimensiSosial(tempSosial);
     setDimensiEkonomi(tempEkonomi);
     setDimensiLingkungan(tempLingkungan);
-    toast.success("Perubahan status & dimensi IDM berhasil disimpan ✅");
   };
 
   // ✅ Modal tambah/edit skor IDM
@@ -64,59 +62,23 @@ export default function ManageIDM() {
   };
 
   const handleDelete = (index) => {
-    toast(
-      (t) => (
-        <div className="flex flex-col">
-          <span>Yakin hapus data tahun <b>{skorIDM[index].tahun}</b>?</span>
-          <div className="flex gap-2 mt-2">
-            <button
-              className="px-3 py-1 bg-red-500 text-white rounded"
-              onClick={() => {
-                setSkorIDM((prev) => prev.filter((_, i) => i !== index));
-                toast.dismiss(t.id);
-                toast.success("✅ Data berhasil dihapus");
-              }}
-            >
-              Hapus
-            </button>
-            <button
-              className="px-3 py-1 bg-gray-300 rounded"
-              onClick={() => toast.dismiss(t.id)}
-            >
-              Batal
-            </button>
-          </div>
-        </div>
-      ),
-      { duration: 5000 }
-    );
+    setSkorIDM((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleSave = () => {
     const tahunTrimmed = formData.tahun.trim();
     const skorNum = parseFloat(formData.skor);
 
-    if (!tahunTrimmed) {
-      toast.error("❌ Tahun harus diisi!");
-      return;
-    }
-    if (isNaN(skorNum) || skorNum < 0 || skorNum > 1) {
-      toast.error("❌ Skor harus angka antara 0 - 1!");
-      return;
-    }
+    if (!tahunTrimmed) return;
+    if (isNaN(skorNum) || skorNum < 0 || skorNum > 1) return;
 
     if (isAdding) {
-      if (skorIDM.some((d) => d.tahun === tahunTrimmed)) {
-        toast.error("⚠️ Data tahun ini sudah ada!");
-        return;
-      }
+      if (skorIDM.some((d) => d.tahun === tahunTrimmed)) return;
       setSkorIDM((prev) => [...prev, { tahun: tahunTrimmed, skor: skorNum }]);
-      toast.success("✅ Data IDM berhasil ditambahkan!");
     } else {
       const updated = [...skorIDM];
       updated[editingIndex] = { tahun: tahunTrimmed, skor: skorNum };
       setSkorIDM(updated);
-      toast.success("✅ Data IDM berhasil diperbarui!");
     }
     setShowForm(false);
   };
@@ -143,7 +105,6 @@ export default function ManageIDM() {
 
       {/* ✅ Kotak Statistik (edit & simpan) */}
       <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-6 mt-8">
-        {/* Status Desa */}
         <div className="flex flex-col items-center bg-white p-6 rounded-xl shadow">
           <p className="text-gray-600">Status Desa</p>
           <select
@@ -159,7 +120,6 @@ export default function ManageIDM() {
           </select>
         </div>
 
-        {/* Dimensi Sosial */}
         <div className="flex flex-col items-center bg-white p-6 rounded-xl shadow">
           <p className="text-gray-600">Dimensi Sosial</p>
           <input
@@ -173,7 +133,6 @@ export default function ManageIDM() {
           />
         </div>
 
-        {/* Dimensi Ekonomi */}
         <div className="flex flex-col items-center bg-white p-6 rounded-xl shadow">
           <p className="text-gray-600">Dimensi Ekonomi</p>
           <input
@@ -187,7 +146,6 @@ export default function ManageIDM() {
           />
         </div>
 
-        {/* Dimensi Lingkungan */}
         <div className="flex flex-col items-center bg-white p-6 rounded-xl shadow">
           <p className="text-gray-600">Dimensi Lingkungan</p>
           <input
@@ -296,7 +254,6 @@ export default function ManageIDM() {
               {isAdding ? "Tambah Data IDM" : "Edit Data IDM"}
             </h3>
 
-            {/* Tahun */}
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Tahun
             </label>
@@ -310,7 +267,6 @@ export default function ManageIDM() {
               placeholder="Contoh: 2025"
             />
 
-            {/* Skor */}
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Skor (0 - 1)
             </label>
@@ -327,7 +283,6 @@ export default function ManageIDM() {
               placeholder="Misal: 0.85"
             />
 
-            {/* Tombol */}
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => setShowForm(false)}
