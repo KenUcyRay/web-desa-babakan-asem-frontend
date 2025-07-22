@@ -8,6 +8,7 @@ import {
 import { useEffect, useState } from "react";
 import NProgress from "nprogress";
 import "nprogress/nprogress.css";
+import { Toaster } from "react-hot-toast"; // ✅ Tambah untuk toast
 
 // ✅ Navbar + Footer untuk umum
 import TopNavbar from "./components/layout/TopNavbar";
@@ -219,6 +220,33 @@ export default function App() {
     <Router>
       <ScrollToTop />
       <AppContent />
+
+      {/* ✅ Tambahan Toaster di root biar bisa dipakai di semua halaman */}
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          style: {
+            background: "#ffffff",
+            color: "#333",
+            padding: "12px 16px",
+            borderRadius: "10px",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+            fontFamily: "Poppins, sans-serif",
+          },
+          success: {
+            iconTheme: {
+              primary: "#22c55e", // Hijau soft
+              secondary: "#ffffff",
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: "#ef4444", // Merah soft
+              secondary: "#ffffff",
+            },
+          },
+        }}
+      />
     </Router>
   );
 }

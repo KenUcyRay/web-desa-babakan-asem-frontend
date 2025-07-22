@@ -8,8 +8,10 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import toast from "react-hot-toast";
 
-export default function IDM() {
+export default function ManageIDM() {
+  // ✅ Data grafik IDM
   const [skorIDM, setSkorIDM] = useState([
     { tahun: "2021", skor: 0.68 },
     { tahun: "2022", skor: 0.72 },
@@ -17,6 +19,28 @@ export default function IDM() {
     { tahun: "2024", skor: 0.8 },
   ]);
 
+  // ✅ Data utama yang ditampilkan
+  const [statusDesa, setStatusDesa] = useState("Maju");
+  const [dimensiSosial, setDimensiSosial] = useState(0.78);
+  const [dimensiEkonomi, setDimensiEkonomi] = useState(0.72);
+  const [dimensiLingkungan, setDimensiLingkungan] = useState(0.74);
+
+  // ✅ Data sementara (belum disimpan)
+  const [tempStatus, setTempStatus] = useState(statusDesa);
+  const [tempSosial, setTempSosial] = useState(dimensiSosial);
+  const [tempEkonomi, setTempEkonomi] = useState(dimensiEkonomi);
+  const [tempLingkungan, setTempLingkungan] = useState(dimensiLingkungan);
+
+  // ✅ Simpan perubahan kotak statistik
+  const handleSaveStatistik = () => {
+    setStatusDesa(tempStatus);
+    setDimensiSosial(tempSosial);
+    setDimensiEkonomi(tempEkonomi);
+    setDimensiLingkungan(tempLingkungan);
+    toast.success("Perubahan status & dimensi IDM berhasil disimpan ✅");
+  };
+
+  // ✅ Modal tambah/edit skor IDM
   const [showForm, setShowForm] = useState(false);
   const [isAdding, setIsAdding] = useState(true);
   const [editingIndex, setEditingIndex] = useState(null);
@@ -40,9 +64,32 @@ export default function IDM() {
   };
 
   const handleDelete = (index) => {
-    if (confirm(`Hapus data tahun ${skorIDM[index].tahun} ?`)) {
-      setSkorIDM((prev) => prev.filter((_, i) => i !== index));
-    }
+    toast(
+      (t) => (
+        <div className="flex flex-col">
+          <span>Yakin hapus data tahun <b>{skorIDM[index].tahun}</b>?</span>
+          <div className="flex gap-2 mt-2">
+            <button
+              className="px-3 py-1 bg-red-500 text-white rounded"
+              onClick={() => {
+                setSkorIDM((prev) => prev.filter((_, i) => i !== index));
+                toast.dismiss(t.id);
+                toast.success("✅ Data berhasil dihapus");
+              }}
+            >
+              Hapus
+            </button>
+            <button
+              className="px-3 py-1 bg-gray-300 rounded"
+              onClick={() => toast.dismiss(t.id)}
+            >
+              Batal
+            </button>
+          </div>
+        </div>
+      ),
+      { duration: 5000 }
+    );
   };
 
   const handleSave = () => {
@@ -50,24 +97,26 @@ export default function IDM() {
     const skorNum = parseFloat(formData.skor);
 
     if (!tahunTrimmed) {
-      alert("Tahun harus diisi!");
+      toast.error("❌ Tahun harus diisi!");
       return;
     }
     if (isNaN(skorNum) || skorNum < 0 || skorNum > 1) {
-      alert("Skor harus angka antara 0 - 1!");
+      toast.error("❌ Skor harus angka antara 0 - 1!");
       return;
     }
 
     if (isAdding) {
       if (skorIDM.some((d) => d.tahun === tahunTrimmed)) {
-        alert("Data tahun ini sudah ada!");
+        toast.error("⚠️ Data tahun ini sudah ada!");
         return;
       }
       setSkorIDM((prev) => [...prev, { tahun: tahunTrimmed, skor: skorNum }]);
+      toast.success("✅ Data IDM berhasil ditambahkan!");
     } else {
       const updated = [...skorIDM];
       updated[editingIndex] = { tahun: tahunTrimmed, skor: skorNum };
       setSkorIDM(updated);
+      toast.success("✅ Data IDM berhasil diperbarui!");
     }
     setShowForm(false);
   };
@@ -92,8 +141,87 @@ export default function IDM() {
         </button>
       </div>
 
+      {/* ✅ Kotak Statistik (edit & simpan) */}
+      <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-6 mt-8">
+        {/* Status Desa */}
+        <div className="flex flex-col items-center bg-white p-6 rounded-xl shadow">
+          <p className="text-gray-600">Status Desa</p>
+          <select
+            value={tempStatus}
+            onChange={(e) => setTempStatus(e.target.value)}
+            className="mt-2 border rounded px-3 py-2 text-gray-800"
+          >
+            <option value="Maju">Maju</option>
+            <option value="Berkembang">Berkembang</option>
+            <option value="Mandiri">Mandiri</option>
+            <option value="Tertinggal">Tertinggal</option>
+            <option value="Sangat Tertinggal">Sangat Tertinggal</option>
+          </select>
+        </div>
+
+        {/* Dimensi Sosial */}
+        <div className="flex flex-col items-center bg-white p-6 rounded-xl shadow">
+          <p className="text-gray-600">Dimensi Sosial</p>
+          <input
+            type="number"
+            step="0.01"
+            min="0"
+            max="1"
+            value={tempSosial}
+            onChange={(e) => setTempSosial(parseFloat(e.target.value))}
+            className="mt-2 border rounded px-3 py-2 w-20 text-center"
+          />
+        </div>
+
+        {/* Dimensi Ekonomi */}
+        <div className="flex flex-col items-center bg-white p-6 rounded-xl shadow">
+          <p className="text-gray-600">Dimensi Ekonomi</p>
+          <input
+            type="number"
+            step="0.01"
+            min="0"
+            max="1"
+            value={tempEkonomi}
+            onChange={(e) => setTempEkonomi(parseFloat(e.target.value))}
+            className="mt-2 border rounded px-3 py-2 w-20 text-center"
+          />
+        </div>
+
+        {/* Dimensi Lingkungan */}
+        <div className="flex flex-col items-center bg-white p-6 rounded-xl shadow">
+          <p className="text-gray-600">Dimensi Lingkungan</p>
+          <input
+            type="number"
+            step="0.01"
+            min="0"
+            max="1"
+            value={tempLingkungan}
+            onChange={(e) => setTempLingkungan(parseFloat(e.target.value))}
+            className="mt-2 border rounded px-3 py-2 w-20 text-center"
+          />
+        </div>
+      </div>
+
+      {/* ✅ Tombol Simpan Perubahan */}
+      <div className="flex justify-end mt-4">
+        <button
+          onClick={handleSaveStatistik}
+          className="px-5 py-2 bg-blue-500 text-white rounded-lg shadow hover:bg-blue-600 transition"
+        >
+          💾 Simpan Perubahan
+        </button>
+      </div>
+
+      {/* ✅ Tampilan nilai tersimpan */}
+      <div className="mt-4 text-gray-700">
+        <p><strong>Status Desa:</strong> {statusDesa}</p>
+        <p><strong>Dimensi Sosial:</strong> {dimensiSosial}</p>
+        <p><strong>Dimensi Ekonomi:</strong> {dimensiEkonomi}</p>
+        <p><strong>Dimensi Lingkungan:</strong> {dimensiLingkungan}</p>
+      </div>
+
       {/* ✅ Tabel Data */}
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto mt-8">
         <table className="w-full bg-white rounded-xl shadow">
           <thead className="bg-gray-100">
             <tr>
@@ -147,7 +275,7 @@ export default function IDM() {
           <LineChart data={skorIDM}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="tahun" />
-            <YAxis domain={[0, 1]} />
+            <YAxis domain={[0.6, 1]} />
             <Tooltip />
             <Line
               type="monotone"
@@ -160,7 +288,7 @@ export default function IDM() {
         </ResponsiveContainer>
       </div>
 
-      {/* ✅ Modal Form */}
+      {/* ✅ Modal Form Tambah/Edit Skor IDM */}
       {showForm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg p-6 w-80">
