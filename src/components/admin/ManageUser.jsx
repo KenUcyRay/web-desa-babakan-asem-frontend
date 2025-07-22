@@ -1,11 +1,8 @@
 import { useEffect, useState } from "react";
-import {
-  FaUserPlus,
-  FaUserShield,
-  FaExchangeAlt,
-} from "react-icons/fa";
+import { FaUserPlus, FaUserShield, FaExchangeAlt } from "react-icons/fa";
 import Pagination from "../ui/Pagination";
-import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
+import { alertConfirm } from "../../libs/alert";
+import toast, { Toaster } from "react-hot-toast"; // ✅ Tambah toast
 import { UserApi } from "../../libs/api/UserApi";
 
 export default function ManageUser() {
@@ -24,15 +21,16 @@ export default function ManageUser() {
 
   // ✅ Ambil semua admin
   const fetchUsers = async () => {
-    const response = await UserApi.getAllUsers(currentPage, 10);
-    const resBody = await response.json();
-    if (!response.ok) {
-      alertError("Gagal mengambil data pengguna.");
-      return;
+    try {
+      const response = await UserApi.getAllUsers(currentPage, 10);
+      const resBody = await response.json();
+      if (!response.ok) throw new Error("Gagal mengambil data pengguna");
+      setUsers(resBody.users);
+      setCurrentPage(resBody.page);
+      setTotalPages(resBody.total_page);
+    } catch (err) {
+      toast.error("❌ Gagal mengambil data pengguna!");
     }
-    setUsers(resBody.users);
-    setCurrentPage(resBody.page);
-    setTotalPages(resBody.total_page);
   };
 
   useEffect(() => {
@@ -45,47 +43,37 @@ export default function ManageUser() {
     if (!(await alertConfirm("Yakin tambah admin baru?"))) return;
 
     if (form.confirm_password !== form.password) {
-      return alertError("Konfirmasi password tidak cocok!");
+      return toast.error("❌ Konfirmasi password tidak cocok!");
     }
 
-    const response = await UserApi.createAdmin(form);
-    const resBody = await response.json();
+    try {
+      const response = await UserApi.createAdmin(form);
+      const resBody = await response.json();
+      if (!response.ok) throw new Error(resBody.error || "Gagal menambah admin");
 
-    if (!response.ok) {
-      let errorMessage = "Gagal menambah admin.";
-      if (resBody.error) {
-        errorMessage = Array.isArray(resBody.error)
-          ? resBody.error.map((err) => (err.path ? `${err.path[0]}: ${err.message}` : err.message)).join(", ")
-          : resBody.error;
-      }
-      return alertError(errorMessage);
+      setUsers([...users, resBody.user]);
+      setShowAddForm(false);
+      setForm({ name: "", email: "", password: "", confirm_password: "" });
+      toast.success("✅ Admin berhasil ditambahkan!");
+    } catch (err) {
+      toast.error(`❌ ${err.message}`);
     }
-
-    setUsers([...users, resBody.user]);
-    setShowAddForm(false);
-    setForm({ name: "", email: "", password: "", confirm_password: "" });
-    await alertSuccess("✅ Admin berhasil ditambahkan!");
   };
 
   // ✅ Turunkan Admin → User
   const adminToUser = async (admin) => {
     if (!(await alertConfirm(`Ubah ${admin.name} menjadi user biasa?`))) return;
 
-    const response = await UserApi.updateRoleById(admin.id, "REGULAR");
-    const resBody = await response.json();
+    try {
+      const response = await UserApi.updateRoleById(admin.id, "REGULAR");
+      const resBody = await response.json();
+      if (!response.ok) throw new Error(resBody.error || "Gagal mengubah role");
 
-    if (!response.ok) {
-      let errorMessage = "Gagal mengubah role.";
-      if (resBody.error) {
-        errorMessage = Array.isArray(resBody.error)
-          ? resBody.error.map((err) => (err.path ? `${err.path[0]}: ${err.message}` : err.message)).join(", ")
-          : resBody.error;
-      }
-      return alertError(errorMessage);
+      setUsers(users.filter((u) => u.id !== admin.id));
+      toast.success(`✅ ${resBody.user.name} sekarang jadi user biasa.`);
+    } catch (err) {
+      toast.error(`❌ ${err.message}`);
     }
-
-    setUsers(users.filter((u) => u.id !== admin.id));
-    alertSuccess(`${resBody.user.name} berhasil diubah menjadi user regular.`);
   };
 
   // ✅ Naikkan User → Admin
@@ -96,41 +84,40 @@ export default function ManageUser() {
     const formData = new FormData(e.target);
     const userId = formData.get("userId");
 
-    const response = await UserApi.updateRoleById(userId, "ADMIN");
-    const resBody = await response.json();
+    try {
+      const response = await UserApi.updateRoleById(userId, "ADMIN");
+      const resBody = await response.json();
+      if (!response.ok)
+        throw new Error(resBody.error || "Gagal mempromosikan user");
 
-    if (!response.ok) {
-      let errorMessage = "Gagal mempromosikan user.";
-      if (resBody.error) {
-        errorMessage = Array.isArray(resBody.error)
-          ? resBody.error.map((err) => (err.path ? `${err.path[0]}: ${err.message}` : err.message)).join(", ")
-          : resBody.error;
-      }
-      return alertError(errorMessage);
+      setUsers([...users, resBody.user]);
+      toast.success(`✅ ${resBody.user.name} sekarang jadi admin.`);
+      setShowPromoteForm(false);
+      e.target.reset();
+    } catch (err) {
+      toast.error(`❌ ${err.message}`);
     }
-
-    setUsers([...users, resBody.user]);
-    alertSuccess(`${resBody.user.name} berhasil menjadi admin.`);
-    setShowPromoteForm(false);
-    e.target.reset();
   };
 
   return (
     <div className="font-[Poppins,sans-serif]">
+      {/* ✅ Toast container */}
+      <Toaster position="top-right" />
+
       {/* ✅ Header + Tombol */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3 mb-6">
         <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
           <FaUserShield className="text-green-500" /> Kelola Akun Admin
         </h1>
 
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {/* Tombol Tambah Admin */}
           <button
             onClick={() => {
               setShowAddForm(!showAddForm);
               setShowPromoteForm(false);
             }}
-            className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded shadow"
+            className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded shadow text-sm"
           >
             <FaUserPlus /> Tambah Admin
           </button>
@@ -141,7 +128,7 @@ export default function ManageUser() {
               setShowPromoteForm(!showPromoteForm);
               setShowAddForm(false);
             }}
-            className="flex items-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded shadow"
+            className="flex items-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded shadow text-sm"
           >
             <FaExchangeAlt /> User → Admin
           </button>
@@ -154,7 +141,9 @@ export default function ManageUser() {
           onSubmit={handleAddAdmin}
           className="bg-white p-4 mb-4 rounded-lg shadow space-y-3"
         >
-          <h2 className="text-lg font-semibold text-gray-700">Tambah Admin Baru</h2>
+          <h2 className="text-lg font-semibold text-gray-700">
+            Tambah Admin Baru
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <input
               type="text"
@@ -186,7 +175,9 @@ export default function ManageUser() {
               className="border p-2 rounded"
               required
               value={form.confirm_password}
-              onChange={(e) => setForm({ ...form, confirm_password: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, confirm_password: e.target.value })
+              }
             />
           </div>
           <div className="flex justify-end gap-2 mt-3">
@@ -241,9 +232,9 @@ export default function ManageUser() {
         </form>
       )}
 
-      {/* ✅ Tabel Admin */}
-      <div className="bg-white rounded-xl shadow overflow-x-auto">
-        <table className="w-full text-left border-collapse">
+      {/* ✅ Table + Card responsif */}
+      <div className="bg-white rounded-xl shadow overflow-x-auto hidden md:block">
+        <table className="w-full text-left border-collapse min-w-[700px]">
           <thead className="bg-gray-100 text-gray-700">
             <tr>
               <th className="p-4">#</th>
@@ -284,6 +275,33 @@ export default function ManageUser() {
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* ✅ Mobile Card View */}
+      <div className="md:hidden grid gap-4">
+        {users.map((user, index) => (
+          <div
+            key={user.id}
+            className="bg-white p-4 rounded-lg shadow space-y-2"
+          >
+            <p className="font-bold text-gray-800">
+              {index + 1}. {user.name}
+            </p>
+            <p className="text-sm text-gray-600">{user.email}</p>
+            <p className="text-green-600 flex items-center gap-1 font-semibold">
+              <FaUserShield /> Admin
+            </p>
+            <button
+              onClick={() => adminToUser(user)}
+              className="mt-2 w-full px-3 py-2 rounded bg-yellow-500 hover:bg-yellow-600 text-white text-sm"
+            >
+              <FaExchangeAlt className="inline mr-1" /> Turunkan ke User
+            </button>
+          </div>
+        ))}
+        {users.length === 0 && (
+          <p className="text-center text-gray-500">Belum ada admin.</p>
+        )}
       </div>
 
       {/* ✅ Pagination */}
