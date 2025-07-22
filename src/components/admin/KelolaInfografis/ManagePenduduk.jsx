@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import pana from "../../../assets/pana.png";
 import { FaMale, FaFemale, FaChild, FaHome, FaEdit } from "react-icons/fa";
 import {
@@ -10,6 +10,8 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { InfografisApi } from "../../../libs/api/InfografisApi";
+import { alertError, alertSuccess } from "../../../libs/alert";
 
 export default function ManagePenduduk() {
   const iconOptions = [
@@ -22,13 +24,7 @@ export default function ManagePenduduk() {
   const getIconByKey = (key) =>
     iconOptions.find((opt) => opt.key === key)?.icon || <FaHome />;
 
-  const [data, setData] = useState([
-    { iconKey: "male", label: "Laki-laki", value: 320 },
-    { iconKey: "female", label: "Perempuan", value: 340 },
-    { iconKey: "home", label: "Kepala Keluarga", value: 120 },
-    { iconKey: "child", label: "Anak-anak", value: 210 },
-  ]);
-
+  const [data, setData] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
   const [jumlahBaru, setJumlahBaru] = useState("");
@@ -44,19 +40,70 @@ export default function ManagePenduduk() {
     setShowForm(true);
   };
 
-  const handleSave = () => {
-    const updatedData = [...data];
-    updatedData[editingIndex].value = parseInt(jumlahBaru);
-    setData(updatedData);
-    setShowForm(false);
+  const handleSave = async () => {
+    const jumlah = parseInt(jumlahBaru);
+    if (isNaN(jumlah) || jumlah < 0) {
+      alertError("Jumlah harus angka positif!");
+      return;
+    }
+
+    const item = data[editingIndex];
+    const response = await InfografisApi.updatePenduduk(item.id, {
+      amount: jumlah,
+    });
+
+    if (!response.ok) {
+      alertError("Gagal mengupdate jumlah penduduk!");
+    } else {
+      const updatedData = [...data];
+      updatedData[editingIndex].value = jumlah;
+      setData(updatedData);
+      alertSuccess("Data berhasil diperbarui!");
+      setShowForm(false);
+    }
   };
+
+  const fetchPenduduk = async () => {
+    const response = await InfografisApi.getPenduduk();
+
+    if (!response.ok) {
+      alertError("Gagal mengambil data penduduk");
+      return;
+    }
+
+    const result = await response.json();
+
+    const mapped = result.resident.map((item) => {
+      let iconKey = "";
+      if (item.title.toLowerCase().includes("laki")) iconKey = "male";
+      else if (item.title.toLowerCase().includes("perempuan"))
+        iconKey = "female";
+      else if (item.title.toLowerCase().includes("keluarga")) iconKey = "home";
+      else iconKey = "child";
+
+      return {
+        id: item.id,
+        iconKey,
+        label: item.title,
+        value: item.amount,
+      };
+    });
+
+    setData(mapped);
+  };
+
+  useEffect(() => {
+    fetchPenduduk();
+  }, []);
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-8 font-poppins bg-gray-50 min-h-screen">
-      {/* ✅ Header */}
+      {/* Header */}
       <div className="grid md:grid-cols-2 gap-6 items-center mb-8">
         <div>
-          <h2 className="text-3xl font-bold text-gray-800">Kelola Infografis Penduduk</h2>
+          <h2 className="text-3xl font-bold text-gray-800">
+            Kelola Infografis Penduduk
+          </h2>
           <p className="text-gray-600 mt-2 text-justify">
             Data demografi Desa Babakan, Anda bisa memperbarui jumlah kategori
             penduduk sesuai kondisi terkini.
@@ -69,21 +116,18 @@ export default function ManagePenduduk() {
         />
       </div>
 
-      {/* ✅ Grid Statistik */}
+      {/* Grid */}
       <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-6">
         {data.map((item, idx) => (
           <div
-            key={idx}
+            key={item.id}
             className="relative flex flex-col items-center bg-white p-6 rounded-xl shadow hover:shadow-lg hover:scale-[1.03] transition-all"
           >
-            {/* Icon */}
-            <div className="text-4xl text-[#B6F500]">{getIconByKey(item.iconKey)}</div>
-
-            {/* Label + angka */}
+            <div className="text-4xl text-[#B6F500]">
+              {getIconByKey(item.iconKey)}
+            </div>
             <p className="text-gray-600 mt-2 text-sm">{item.label}</p>
             <p className="text-2xl font-bold text-gray-800">{item.value}</p>
-
-            {/* Tombol Edit */}
             <button
               onClick={() => handleEdit(idx)}
               className="absolute top-3 right-3 text-blue-500 hover:text-blue-700"
@@ -94,7 +138,7 @@ export default function ManagePenduduk() {
         ))}
       </div>
 
-      {/* ✅ Grafik */}
+      {/* Grafik */}
       <div className="mt-12">
         <h3 className="text-2xl font-bold text-gray-800 text-center mb-6">
           Grafik Distribusi Penduduk
@@ -105,12 +149,17 @@ export default function ManagePenduduk() {
             <XAxis dataKey="name" />
             <YAxis />
             <Tooltip />
-            <Bar dataKey="jumlah" fill="#B6F500" barSize={40} radius={[6, 6, 0, 0]} />
+            <Bar
+              dataKey="jumlah"
+              fill="#B6F500"
+              barSize={40}
+              radius={[6, 6, 0, 0]}
+            />
           </BarChart>
         </ResponsiveContainer>
       </div>
 
-      {/* ✅ Modal Edit Jumlah */}
+      {/* Modal Edit */}
       {showForm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg p-6 w-80">

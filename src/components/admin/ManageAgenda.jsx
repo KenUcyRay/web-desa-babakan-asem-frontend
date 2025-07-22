@@ -83,6 +83,7 @@ export default function ManageAgenda() {
 
     if (editingId) {
       if (!(await alertConfirm("Yakin ingin mengedit agenda ini?"))) return;
+
       const response = await AgendaApi.updateAgenda(editingId, rawData);
       const resBody = await response.json();
       if (!response.ok) return alertError(resBody.error || "Gagal update.");
@@ -124,7 +125,9 @@ export default function ManageAgenda() {
       {/* ✅ Header */}
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800">📅 Manajemen Agenda</h1>
+          <h1 className="text-3xl font-bold text-gray-800">
+            📅 Manajemen Agenda
+          </h1>
           <p className="text-gray-500 text-sm mt-1">
             Kelola semua agenda desa dengan mudah
           </p>
@@ -154,7 +157,9 @@ export default function ManageAgenda() {
           </h2>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Judul Agenda</label>
+            <label className="block text-sm font-medium mb-1">
+              Judul Agenda
+            </label>
             <input
               className="w-full border rounded-lg p-3 focus:ring focus:ring-blue-200"
               value={title}
@@ -197,7 +202,9 @@ export default function ManageAgenda() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Lokasi Acara</label>
+            <label className="block text-sm font-medium mb-1">
+              Lokasi Acara
+            </label>
             <input
               className="w-full border rounded-lg p-3 focus:ring focus:ring-blue-200"
               value={location}
@@ -207,7 +214,9 @@ export default function ManageAgenda() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Tipe Agenda</label>
+            <label className="block text-sm font-medium mb-1">
+              Tipe Agenda
+            </label>
             <select
               className="w-full border rounded-lg p-3"
               value={typeSelected}
@@ -222,7 +231,9 @@ export default function ManageAgenda() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Upload Gambar</label>
+            <label className="block text-sm font-medium mb-1">
+              Upload Gambar
+            </label>
             <input
               type="file"
               accept="image/*"
@@ -296,7 +307,9 @@ export default function ManageAgenda() {
             className="bg-white rounded-xl shadow-md hover:shadow-lg transition transform hover:-translate-y-1"
           >
             <img
-              src={`${import.meta.env.VITE_BASE_URL}/agenda/images/${a.featured_image}`}
+              src={`${import.meta.env.VITE_BASE_URL}/agenda/images/${
+                a.featured_image
+              }`}
               alt={a.title}
               className="rounded-t-xl w-full h-44 object-cover"
             />

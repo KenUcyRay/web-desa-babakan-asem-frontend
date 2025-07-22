@@ -1,5 +1,5 @@
 export class InfografisApi {
-  static async upfdateBansos(id, data) {
+  static async updateBansos(id, data) {
     return fetch(
       `${import.meta.env.VITE_BASE_URL}/infografis/admin/bansos/${id}`,
       {
@@ -47,6 +47,21 @@ export class InfografisApi {
       },
     });
   }
+
+  static async updatePenduduk(id, data) {
+    return fetch(
+      `${import.meta.env.VITE_BASE_URL}/infografis/admin/penduduk/${id}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
+        },
+        body: JSON.stringify(data),
+      }
+    );
+  }
   static async getIdm() {
     return fetch(`${import.meta.env.VITE_BASE_URL}/infografis/idm`, {
       method: "GET",
@@ -70,5 +85,19 @@ export class InfografisApi {
         "Content-Type": "application/json",
       },
     });
+  }
+  static async updateSdg(id, data) {
+    return fetch(
+      `${import.meta.env.VITE_BASE_URL}/infografis/admin/sdg/${id}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
+        },
+        body: JSON.stringify(data),
+      }
+    );
   }
 }

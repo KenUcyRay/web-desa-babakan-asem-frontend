@@ -78,7 +78,7 @@ export default function Bansos() {
       setData((prev) => [newItem, ...prev]);
       alertSuccess("Data berhasil ditambahkan!");
     } else {
-      const response = await InfografisApi.upfdateBansos(formData.id, payload);
+      const response = await InfografisApi.updateBansos(formData.id, payload);
       if (!response.ok) {
         alertError("Gagal mengupdate data.");
         return;

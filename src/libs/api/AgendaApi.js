@@ -60,7 +60,7 @@ export class AgendaApi {
   static async updateAgenda(id, data) {
     const formData = new FormData();
     formData.append("title", data.title) ?? null;
-    formData.append("description", data.description ?? null);
+    formData.append("content", data.content ?? null);
     formData.append("start_time", data.start_time ?? null);
     formData.append("end_time", data.end_time ?? null);
     formData.append("location", data.location ?? null);

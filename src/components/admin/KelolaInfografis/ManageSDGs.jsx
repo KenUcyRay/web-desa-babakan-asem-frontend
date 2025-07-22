@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import cuate from "../../../assets/cuate.png";
 import {
   FaLeaf,
@@ -11,58 +11,60 @@ import {
   FaCity,
   FaBalanceScale,
   FaGlobeAmericas,
-  FaSolarPanel,
   FaHandshake,
   FaUniversity,
   FaRecycle,
   FaSeedling,
   FaUsers,
 } from "react-icons/fa";
+import { InfografisApi } from "../../../libs/api/InfografisApi";
+import { alertError, alertSuccess } from "../../../libs/alert";
 
 const iconMap = {
-  FaHeartbeat: <FaHeartbeat />,
-  FaLeaf: <FaLeaf />,
-  FaWater: <FaWater />,
-  FaLightbulb: <FaLightbulb />,
-  FaBook: <FaBook />,
-  FaUsers: <FaUsers />,
-  FaDollarSign: <FaDollarSign />,
-  FaIndustry: <FaIndustry />,
-  FaCity: <FaCity />,
-  FaBalanceScale: <FaBalanceScale />,
-  FaGlobeAmericas: <FaGlobeAmericas />,
-  FaHandshake: <FaHandshake />,
-  FaUniversity: <FaUniversity />,
-  FaRecycle: <FaRecycle />,
-  FaSeedling: <FaSeedling />,
+  "Tanpa Kemiskinan": <FaHeartbeat />,
+  "Tanpa Kelaparan": <FaLeaf />,
+  "Kesehatan & Kesejahteraan": <FaHeartbeat />,
+  "Pendidikan Berkualitas": <FaBook />,
+  "Kesetaraan Gender": <FaUsers />,
+  "Air Bersih & Sanitasi": <FaWater />,
+  "Energi Bersih & Terjangkau": <FaLightbulb />,
+  "Pekerjaan Layak & Ekonomi": <FaDollarSign />,
+  "Infrastruktur & Inovasi": <FaIndustry />,
+  "Mengurangi Ketimpangan": <FaBalanceScale />,
+  "Kota & Komunitas Berkelanjutan": <FaCity />,
+  "Konsumsi Bertanggung Jawab": <FaRecycle />,
+  "Aksi Iklim": <FaGlobeAmericas />,
+  "Ekosistem Lautan": <FaWater />,
+  "Ekosistem Daratan": <FaSeedling />,
+  "Perdamaian & Keadilan": <FaHandshake />,
+  "Kemitraan untuk Tujuan": <FaUniversity />,
 };
 
 export default function SDGs() {
-  const [data, setData] = useState([
-    { iconKey: "FaHeartbeat", label: "1. Tanpa Kemiskinan", value: "75%" },
-    { iconKey: "FaLeaf", label: "2. Tanpa Kelaparan", value: "80%" },
-    { iconKey: "FaHeartbeat", label: "3. Kesehatan & Kesejahteraan", value: "85%" },
-    { iconKey: "FaBook", label: "4. Pendidikan Berkualitas", value: "90%" },
-    { iconKey: "FaUsers", label: "5. Kesetaraan Gender", value: "70%" },
-    { iconKey: "FaWater", label: "6. Air Bersih & Sanitasi", value: "92%" },
-    { iconKey: "FaLightbulb", label: "7. Energi Bersih & Terjangkau", value: "65%" },
-    { iconKey: "FaDollarSign", label: "8. Pekerjaan Layak & Ekonomi", value: "78%" },
-    { iconKey: "FaIndustry", label: "9. Infrastruktur & Inovasi", value: "68%" },
-    { iconKey: "FaBalanceScale", label: "10. Mengurangi Ketimpangan", value: "60%" },
-    { iconKey: "FaCity", label: "11. Kota & Komunitas Berkelanjutan", value: "74%" },
-    { iconKey: "FaRecycle", label: "12. Konsumsi Bertanggung Jawab", value: "81%" },
-    { iconKey: "FaGlobeAmericas", label: "13. Aksi Iklim", value: "77%" },
-    { iconKey: "FaWater", label: "14. Ekosistem Lautan", value: "69%" },
-    { iconKey: "FaSeedling", label: "15. Ekosistem Daratan", value: "83%" },
-    { iconKey: "FaHandshake", label: "16. Perdamaian & Keadilan", value: "88%" },
-    { iconKey: "FaUniversity", label: "17. Kemitraan untuk Tujuan", value: "72%" },
-  ]);
-
+  const [data, setData] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
   const [progressBaru, setProgressBaru] = useState("");
 
-  const getIconByKey = (key) => iconMap[key] || <FaHeartbeat />;
+  const getIconByLabel = (label) => {
+    const cleanLabel = label.replace(/^\d+\.\s*/, "").trim();
+    return iconMap[cleanLabel] || <FaHeartbeat />;
+  };
+
+  const fetchData = async () => {
+    const res = await InfografisApi.getSdg();
+    const json = await res.json();
+    if (res.ok) {
+      const mapped = json.sdgs.map((item, idx) => ({
+        id: item.id,
+        label: `${idx + 1}. ${item.name}`,
+        value: `${item.progress}%`,
+      }));
+      setData(mapped);
+    } else {
+      alertError("Gagal mengambil data SDGs");
+    }
+  };
 
   const handleEdit = (index) => {
     setEditingIndex(index);
@@ -70,16 +72,31 @@ export default function SDGs() {
     setShowForm(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!progressBaru.trim() || isNaN(progressBaru)) {
       alert("Masukkan angka progress yang valid!");
       return;
     }
-    const updated = [...data];
-    updated[editingIndex].value = `${progressBaru}%`;
-    setData(updated);
-    setShowForm(false);
+
+    const id = data[editingIndex].id;
+    const body = { progress: parseInt(progressBaru) };
+
+    const res = await InfografisApi.updateSdg(id, body);
+
+    if (res.ok) {
+      const updated = [...data];
+      updated[editingIndex].value = `${progressBaru}%`;
+      setData(updated);
+      setShowForm(false);
+      alertSuccess("Progress berhasil diperbarui");
+    } else {
+      alertError("Gagal memperbarui data");
+    }
   };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-8 font-poppins bg-gray-50 min-h-screen">
@@ -88,7 +105,8 @@ export default function SDGs() {
         <div>
           <h2 className="text-3xl font-bold text-gray-800">SDGs Desa</h2>
           <p className="text-gray-600 mt-2">
-            17 Tujuan Pembangunan Berkelanjutan di Desa Babakan Asem.<br />
+            17 Tujuan Pembangunan Berkelanjutan di Desa Babakan Asem.
+            <br />
             Anda hanya bisa memperbarui progress (%) tiap tujuan.
           </p>
         </div>
@@ -99,27 +117,20 @@ export default function SDGs() {
       <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
         {data.map((item, idx) => (
           <div
-            key={idx}
+            key={item.id}
             className="flex flex-col items-center bg-white p-6 rounded-xl shadow hover:shadow-lg hover:scale-[1.03] transition-all relative"
           >
-            {/* Icon */}
-            <div className="text-3xl text-[#B6F500]">{getIconByKey(item.iconKey)}</div>
-
-            {/* Label */}
+            <div className="text-3xl text-[#B6F500]">
+              {getIconByLabel(item.label)}
+            </div>
             <p className="text-gray-600 mt-2 text-center">{item.label}</p>
-
-            {/* Progress */}
             <p className="text-xl font-bold text-gray-800">{item.value}</p>
-
-            {/* Progress Bar */}
             <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
               <div
                 className="bg-green-500 h-2 rounded-full"
                 style={{ width: item.value }}
               ></div>
             </div>
-
-            {/* Tombol Edit */}
             <button
               onClick={() => handleEdit(idx)}
               className="absolute top-3 right-3 text-blue-600 hover:underline text-sm"
@@ -137,7 +148,6 @@ export default function SDGs() {
             <h3 className="text-xl font-semibold mb-4">
               Edit Progress - {data[editingIndex].label}
             </h3>
-
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Progress (%) Baru
             </label>
@@ -150,7 +160,6 @@ export default function SDGs() {
               className="w-full p-2 border rounded mb-4"
               placeholder="contoh: 75"
             />
-
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => setShowForm(false)}
