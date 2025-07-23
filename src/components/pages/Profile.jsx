@@ -27,7 +27,6 @@ export default function Profile() {
     const responseBody = await response.json();
     setUser(responseBody.user);
 
-    // isi form saat pertama kali fetch
     setFormData({
       name: responseBody.user.name,
       email: responseBody.user.email,
@@ -90,7 +89,6 @@ export default function Profile() {
       email: formData.email,
     };
 
-    // hanya kirim password kalau diisi
     if (formData.password.trim() !== "") {
       if (formData.password !== formData.confirm_password) {
         payload.password = formData.password;
@@ -126,7 +124,31 @@ export default function Profile() {
 
     await alertSuccess("Profil berhasil diperbarui.");
     setEditMode(false);
-    await fetchProfile(); // refresh profil setelah update
+    await fetchProfile();
+  };
+
+  // ✅ Fungsi salin ID dengan fallback
+  const copyToClipboard = async (text) => {
+    if (navigator.clipboard && window.isSecureContext) {
+      try {
+        await navigator.clipboard.writeText(text);
+        alertSuccess("ID berhasil disalin ke clipboard ✅");
+      } catch (err) {
+        alertError("Gagal menyalin ID");
+      }
+    } else {
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      document.body.appendChild(textArea);
+      textArea.select();
+      try {
+        document.execCommand("copy");
+        alertSuccess("ID berhasil disalin ke clipboard ✅");
+      } catch (err) {
+        alertError("Gagal menyalin ID");
+      }
+      document.body.removeChild(textArea);
+    }
   };
 
   useEffect(() => {
@@ -164,10 +186,7 @@ export default function Profile() {
                   <span className="font-medium text-gray-800">{user.id}</span>
                   <button
                     className="text-xs text-green-600 underline"
-                    onClick={() => {
-                      navigator.clipboard.writeText(user.id);
-                      alertSuccess("ID berhasil disalin ke clipboard");
-                    }}
+                    onClick={() => copyToClipboard(user.id)}
                   >
                     Salin
                   </button>
@@ -266,7 +285,10 @@ export default function Profile() {
                 type="password"
                 value={formData.confirm_password}
                 onChange={(e) =>
-                  setFormData({ ...formData, confirm_password: e.target.value })
+                  setFormData({
+                    ...formData,
+                    confirm_password: e.target.value,
+                  })
                 }
                 className="w-full border rounded-lg p-2 mt-1"
                 placeholder="Biarkan kosong jika tidak ingin ganti password"

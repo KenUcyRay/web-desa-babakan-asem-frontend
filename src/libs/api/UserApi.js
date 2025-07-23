@@ -13,8 +13,8 @@ export class UserApi {
         Accept: "application/json",
       },
       body: JSON.stringify({
-        email: email === "" && undefined,
-        phone_number: phone_number,
+        email: email === "" ? undefined : email,
+        phone_number: phone_number === "" ? undefined : phone_number,
         password: password,
         remember_me: rememberMe,
         recaptcha_token: reCaptchaToken,
@@ -40,8 +40,8 @@ export class UserApi {
       },
       body: JSON.stringify({
         name: name,
-        email: email === "" && undefined,
-        phone_number: phone_number,
+        email: email === "" ? undefined : email,
+        phone_number: phone_number === "" ? undefined : phone_number,
         password: password,
         confirm_password: confirmPassword,
         remember_me: rememberMe,

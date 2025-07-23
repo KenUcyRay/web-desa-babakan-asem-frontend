@@ -8,6 +8,7 @@ import { alertError, alertSuccess } from "../../libs/alert";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { AnimatePresence, motion } from "framer-motion";
+import { Helper } from "../../utils/Helper";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -33,7 +34,7 @@ export default function Login() {
     const contactValue = email;
 
     const response = await UserApi.userLogin(
-      contactValue,
+      email,
       password,
       phone,
       rememberMe,
@@ -52,7 +53,8 @@ export default function Login() {
       }
       navigate("/");
     } else {
-      await alertError(responseBody.error || "Login gagal, silakan coba lagi.");
+      await Helper.errorResponseHandler(responseBody);
+      
     }
 
     setEmail("");
