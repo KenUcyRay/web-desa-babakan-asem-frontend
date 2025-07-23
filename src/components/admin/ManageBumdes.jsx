@@ -305,8 +305,128 @@ export default function ManageBumdes() {
           onSubmit={handleSubmit}
           className="bg-white p-6 rounded-xl shadow-md mb-6 space-y-4 max-w-2xl border"
         >
-          {/* FORM PRODUK SAMA SEPERTI SEBELUMNYA */}
-          {/* ... TIDAK BERUBAH ... */}
+          <div>
+            <label className="block font-medium text-gray-700 mb-1">
+              Nama Produk
+            </label>
+            <input
+              className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-green-300 outline-none"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Masukkan nama produk"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block font-medium text-gray-700 mb-1">
+              Deskripsi
+            </label>
+            <textarea
+              className="w-full border rounded-lg p-3 h-28 resize-none focus:ring-2 focus:ring-green-300 outline-none"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Tuliskan deskripsi produk..."
+              required
+            ></textarea>
+          </div>
+
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block font-medium text-gray-700 mb-1">
+                Harga
+              </label>
+              <input
+                type="number"
+                className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-green-300 outline-none"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                placeholder="0"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block font-medium text-gray-700 mb-1">
+                Kategori
+              </label>
+              <select
+                className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-green-300 outline-none"
+                value={categoryId}
+                onChange={(e) => setCategoryId(e.target.value)}
+                required
+              >
+                <option value="">-- Pilih Kategori --</option>
+                {categories.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label className="block font-medium text-gray-700 mb-1">
+              Link WhatsApp
+            </label>
+            <input
+              type="text"
+              className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-green-300 outline-none"
+              value={linkWhatsapp}
+              onChange={(e) => setLinkWhatsapp(e.target.value)}
+              placeholder="https://wa.me/62xxxx"
+            />
+          </div>
+
+          <div>
+            <label className="block font-medium text-gray-700 mb-1">
+              Upload Gambar Produk
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setFeaturedImage(e.target.files[0])}
+              className="w-full border p-2 rounded"
+            />
+            {(featuredImage ||
+              (editingId &&
+                products.find((p) => p.product.id === editingId)?.product
+                  ?.featured_image)) && (
+              <img
+                src={
+                  featuredImage
+                    ? URL.createObjectURL(featuredImage)
+                    : `${import.meta.env.VITE_BASE_URL}/products/images/${
+                        products.find((p) => p.product.id === editingId)?.product
+                          ?.featured_image
+                      }`
+                }
+                alt="preview"
+                className="mt-3 w-40 rounded-lg shadow-sm"
+              />
+            )}
+          </div>
+
+          {/* BUTTONS */}
+          <div className="flex gap-3">
+            <button
+              type="submit"
+              className="flex items-center gap-2 bg-green-500 text-white px-5 py-2 rounded-lg shadow hover:bg-green-600 transition"
+            >
+              <FaSave /> {editingId ? "Update Produk" : "Simpan Produk"}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                resetForm();
+                setShowForm(false);
+              }}
+              className="flex items-center gap-2 bg-gray-400 text-white px-4 py-2 rounded-lg hover:bg-gray-500 transition"
+            >
+              <FaTimes /> Batal
+            </button>
+          </div>
         </form>
       )}
 
