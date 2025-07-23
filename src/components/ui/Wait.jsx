@@ -11,7 +11,7 @@ export default function Wait() {
           className="w-48 h-48 mb-6 drop-shadow-lg"
         />
         <h2 className="text-2xl font-semibold text-gray-800 mb-2">
-          Silakan cek email kamu!
+          Silakan cek email Atau Nomer Telepon kamu!
         </h2>
         <p className="text-gray-600">
           Kami telah mengirimkan link untuk mengatur ulang password. Buka email

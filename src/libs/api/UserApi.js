@@ -1,5 +1,5 @@
 export class UserApi {
-  static async userLogin(email, password, rememberMe, reCaptchaToken) {
+  static async userLogin(email, password, phone_number, rememberMe, reCaptchaToken) {
     return await fetch(`${import.meta.env.VITE_BASE_URL}/users/login`, {
       method: "POST",
       headers: {
@@ -8,9 +8,10 @@ export class UserApi {
       },
       body: JSON.stringify({
         email: email,
+        phone_number: phone_number,
         password: password,
         remember_me: rememberMe,
-        re_captcha_token: reCaptchaToken,
+        recaptchatoken: reCaptchaToken,
       }),
     });
   }
