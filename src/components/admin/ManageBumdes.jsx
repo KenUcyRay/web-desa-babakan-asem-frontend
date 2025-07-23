@@ -4,13 +4,7 @@ import { CategoryApi } from "../../libs/api/CategoryApi";
 import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 import { Helper } from "../../utils/Helper";
 import Pagination from "../ui/Pagination";
-import {
-  FaPlus,
-  FaSave,
-  FaTimes,
-  FaEdit,
-  FaTrash,
-} from "react-icons/fa";
+import { FaPlus, FaSave, FaTimes, FaEdit, FaTrash } from "react-icons/fa";
 
 export default function ManageBumdes() {
   const [products, setProducts] = useState([]);
@@ -147,10 +141,13 @@ export default function ManageBumdes() {
 
     if (editingCategoryId) {
       if (!(await alertConfirm("Yakin ingin mengedit kategori ini?"))) return;
-      const response = await CategoryApi.updateCategory(editingCategoryId, rawData);
+      const response = await CategoryApi.updateCategory(
+        editingCategoryId,
+        rawData
+      );
       const body = await response.json();
       if (!response.ok) {
-        alertError(Helper.parseError(body));
+        alertError(body);
         return;
       }
       await alertSuccess("Kategori berhasil diperbarui!");
@@ -160,13 +157,13 @@ export default function ManageBumdes() {
       return;
     }
 
-    const response = await CategoryApi.createCategory(rawData);
+    const response = await CategoryApi.addCategory(rawData);
     const body = await response.json();
     if (response.ok) {
       await alertSuccess("Kategori berhasil ditambahkan!");
       fetchCategories();
     } else {
-      alertError(Helper.parseError(body));
+      alertError(body);
     }
     resetCategoryForm();
     setShowCategoryForm(false);
@@ -205,7 +202,9 @@ export default function ManageBumdes() {
       {/* === BAGIAN KATEGORI === */}
       <div className="bg-white p-4 rounded-xl shadow-md border mb-6">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-green-600">Kelola Kategori</h2>
+          <h2 className="text-xl font-semibold text-green-600">
+            Kelola Kategori
+          </h2>
           {!showCategoryForm && (
             <button
               onClick={() => {
@@ -239,7 +238,8 @@ export default function ManageBumdes() {
                 type="submit"
                 className="flex items-center gap-2 bg-green-500 text-white px-5 py-2 rounded-lg shadow hover:bg-green-600 transition"
               >
-                <FaSave /> {editingCategoryId ? "Update Kategori" : "Simpan Kategori"}
+                <FaSave />{" "}
+                {editingCategoryId ? "Update Kategori" : "Simpan Kategori"}
               </button>
               <button
                 type="button"
@@ -398,8 +398,8 @@ export default function ManageBumdes() {
                   featuredImage
                     ? URL.createObjectURL(featuredImage)
                     : `${import.meta.env.VITE_BASE_URL}/products/images/${
-                        products.find((p) => p.product.id === editingId)?.product
-                          ?.featured_image
+                        products.find((p) => p.product.id === editingId)
+                          ?.product?.featured_image
                       }`
                 }
                 alt="preview"
