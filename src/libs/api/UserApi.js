@@ -1,5 +1,11 @@
 export class UserApi {
-  static async userLogin(email, password, phone_number, rememberMe, reCaptchaToken) {
+  static async userLogin(
+    email,
+    password,
+    phone_number,
+    rememberMe,
+    reCaptchaToken
+  ) {
     return await fetch(`${import.meta.env.VITE_BASE_URL}/users/login`, {
       method: "POST",
       headers: {
@@ -7,22 +13,25 @@ export class UserApi {
         Accept: "application/json",
       },
       body: JSON.stringify({
-        email: email,
+        email: email === "" && undefined,
         phone_number: phone_number,
         password: password,
         remember_me: rememberMe,
-        recaptchatoken: reCaptchaToken,
+        recaptcha_token: reCaptchaToken,
       }),
     });
   }
   static async userRegister(
     name,
     email,
+    phone_number,
     password,
     confirmPassword,
     rememberMe,
     reCaptchaToken
   ) {
+    console.log(phone_number);
+    console.log(email);
     return await fetch(`${import.meta.env.VITE_BASE_URL}/users/register`, {
       method: "POST",
       headers: {
@@ -31,11 +40,12 @@ export class UserApi {
       },
       body: JSON.stringify({
         name: name,
-        email: email,
+        email: email === "" && undefined,
+        phone_number: phone_number,
         password: password,
         confirm_password: confirmPassword,
         remember_me: rememberMe,
-        re_captcha_token: reCaptchaToken,
+        recaptcha_token: reCaptchaToken,
       }),
     });
   }

@@ -8,6 +8,7 @@ import { alertError, alertSuccess } from "../../libs/alert";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { AnimatePresence, motion } from "framer-motion";
+import { Helper } from "../../utils/Helper";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -37,6 +38,7 @@ export default function Register() {
     const response = await UserApi.userRegister(
       name,
       contactValue,
+      phone,
       password,
       confirmPassword,
       rememberMe,
@@ -49,9 +51,8 @@ export default function Register() {
       await alertSuccess("Registrasi berhasil!");
       navigate("/");
     } else {
-      await alertError(
-        responseBody.error || "Registrasi gagal, silakan coba lagi."
-      );
+      await Helper.errorResponseHandler(responseBody);
+      return;
     }
 
     setName("");
@@ -179,6 +180,7 @@ export default function Register() {
                       className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-300 outline-none"
                       onChange={(e) => setPhone(e.target.value)}
                       value={phone}
+                      maxLength={20}
                     />
                   </motion.div>
                 )}

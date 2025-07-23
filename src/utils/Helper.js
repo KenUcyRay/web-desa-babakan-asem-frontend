@@ -1,3 +1,5 @@
+import { alertError } from "../libs/alert";
+
 export class Helper {
   static formatTanggal(isoString) {
     const date = new Date(isoString);
@@ -54,5 +56,19 @@ export class Helper {
       .split("_")
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ");
+  }
+
+  static async errorResponseHandler(responseBody) {
+    console.log("Error responseBody:", responseBody);
+    let errorMessage = "Gagal menyimpan perubahan.";
+    if (responseBody.error && Array.isArray(responseBody.error)) {
+      const errorMessages = responseBody.error.map((err) =>
+        err.path?.length ? `${err.path[0]}: ${err.message}` : err.message
+      );
+      errorMessage = errorMessages.join(", ");
+    } else if (typeof responseBody.error === "string") {
+      errorMessage = responseBody.error;
+    }
+    await alertError(errorMessage);
   }
 }
