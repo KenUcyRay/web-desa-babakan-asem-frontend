@@ -9,29 +9,6 @@ import "aos/dist/aos.css";
 export default function Dpd() {
   const navigate = useNavigate();
 
-  const anggota = [
-    {
-      nama: "Budi Santoso",
-      jabatan: "Ketua DPD",
-      foto: "https://images.unsplash.com/photo-1607746882042-944635dfe10e?w=400",
-    },
-    {
-      nama: "Siti Aminah",
-      jabatan: "Wakil Ketua",
-      foto: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400",
-    },
-    {
-      nama: "Rudi Hartono",
-      jabatan: "Sekretaris",
-      foto: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400",
-    },
-    {
-      nama: "Dewi Lestari",
-      jabatan: "Bendahara",
-      foto: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400",
-    },
-  ];
-
   const [agenda, setAgenda] = useState([]);
   const [members, setMembers] = useState([]);
 
@@ -49,7 +26,7 @@ export default function Dpd() {
     const response = await MemberApi.getMembers("DPD");
     const responseBody = await response.json();
     if (!response.ok) {
-      let errorMessage = "Gagal menyimpan perubahan.";
+      let errorMessage = "Gagal mengambil data anggota.";
 
       if (responseBody.error && Array.isArray(responseBody.error)) {
         const errorMessages = responseBody.error.map((err) => {
@@ -135,6 +112,7 @@ export default function Dpd() {
         >
           Struktur Organisasi
         </h2>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
           {members.map((member, idx) => (
             <div
@@ -143,22 +121,29 @@ export default function Dpd() {
               data-aos="fade-up"
               data-aos-delay={idx * 100}
             >
+              {/* ✅ Foto profil */}
               <img
-                src={`${import.meta.env.VITE_BASE_URL}/organizations/images/${
-                  member.profile_photo
-                }`}
-                alt={member.title}
+                src={`${import.meta.env.VITE_BASE_URL}/organizations/images/${member.profile_photo}`}
+                alt={member.name ?? member.title}
                 className="w-24 h-24 md:w-28 md:h-28 rounded-full mx-auto object-cover mb-4"
               />
-              <h3 className="text-base md:text-lg font-semibold">
-                {member.title}
+
+              {/* ✅ Nama lengkap anggota (fallback ke title kalau name kosong) */}
+              <h3 className="text-base md:text-lg font-bold text-gray-900">
+                {member.name ?? member.title}
               </h3>
-              <p className="text-xs md:text-sm text-gray-500">
+
+              {/* ✅ Jabatan / Posisi */}
+              <p className="text-sm md:text-base text-green-700 font-medium">
                 {member.position}
               </p>
-              <p className="text-xs text-gray-400">
-                {member.term_start} - {member.term_end}
-              </p>
+
+              {/* ✅ Masa Jabatan */}
+              {(member.term_start || member.term_end) && (
+                <p className="text-xs text-gray-500 mt-1">
+                  {member.term_start} - {member.term_end}
+                </p>
+              )}
             </div>
           ))}
         </div>
@@ -178,9 +163,7 @@ export default function Dpd() {
               data-aos-delay={idx * 150}
             >
               <img
-                src={`${import.meta.env.VITE_BASE_URL}/agenda/images/${
-                  item.agenda.featured_image
-                }`}
+                src={`${import.meta.env.VITE_BASE_URL}/agenda/images/${item.agenda.featured_image}`}
                 alt={item.agenda.title}
                 className="h-40 sm:h-48 md:h-56 w-full object-cover group-hover:scale-105 transition"
               />
