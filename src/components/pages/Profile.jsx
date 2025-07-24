@@ -89,6 +89,7 @@ export default function Profile() {
 
     const payload = {
       name: formData.name,
+      password: formData.password,
       email: formData.email || null,
       phone: formData.phone || null,
     };
@@ -105,7 +106,6 @@ export default function Profile() {
       payload.name,
       payload.email,
       payload.password,
-      payload.confirm_password,
       payload.phone
     );
 
@@ -128,7 +128,6 @@ export default function Profile() {
       alertError(errorMessage);
       return;
     }
-
     await alertSuccess("Profil berhasil diperbarui.");
     setEditMode(false);
     await fetchProfile();
@@ -186,7 +185,9 @@ export default function Profile() {
             <div className="w-20 h-20 mx-auto rounded-full bg-gray-200 flex items-center justify-center text-4xl font-bold text-gray-500">
               {user.name.charAt(0)}
             </div>
-            <h1 className="mt-4 text-2xl font-bold text-gray-800">{user.name}</h1>
+            <h1 className="mt-4 text-2xl font-bold text-gray-800">
+              {user.name}
+            </h1>
             {/* ✅ Kalau ada email tampilkan email, kalau login via no telp tampilkan no telp */}
             <p className="text-gray-500">
               {user.email ? user.email : user.phone ? user.phone : "-"}
@@ -227,7 +228,7 @@ export default function Profile() {
                 <div className="flex justify-between">
                   <span>No. Telepon</span>
                   <span className="font-medium text-gray-800">
-                    {user.phone ? user.phone : "-"}
+                    {user.phone_number ? user.phone_number : "-"}
                   </span>
                 </div>
 

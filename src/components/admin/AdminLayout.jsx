@@ -9,6 +9,7 @@ export default function AdminLayout() {
   const navigate = useNavigate();
   const { isLoggedIn } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { setAdminStatus } = useAuth();
 
   // ✅ Cek Auth & Role
   const checkAuth = async () => {
@@ -25,6 +26,7 @@ export default function AdminLayout() {
       }
       const data = await response.json();
       if (!data.user || data.user.role !== "ADMIN") {
+        setAdminStatus(false);
         navigate("/");
         return;
       }
@@ -47,7 +49,10 @@ export default function AdminLayout() {
         ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} 
         md:translate-x-0`}
       >
-        <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+        <AdminSidebar
+          isOpen={sidebarOpen}
+          onClose={() => setSidebarOpen(false)}
+        />
       </aside>
 
       {/* ✅ OVERLAY untuk mobile */}

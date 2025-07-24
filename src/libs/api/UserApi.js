@@ -104,7 +104,7 @@ export class UserApi {
       },
     });
   }
-  static async updateUser(name, email, password, confirmPassword) {
+  static async updateUser(name, email, password, phone) {
     return await fetch(`${import.meta.env.VITE_BASE_URL}/users/`, {
       method: "PATCH",
       headers: {
@@ -114,9 +114,9 @@ export class UserApi {
       },
       body: JSON.stringify({
         name: name,
-        email: email,
-        password: password,
-        // confirm_password: confirmPassword,
+        email: email !== null ? email : undefined,
+        password: password !== "" ? password : undefined,
+        phone_number: phone !== "" ? phone : undefined,
       }),
     });
   }
