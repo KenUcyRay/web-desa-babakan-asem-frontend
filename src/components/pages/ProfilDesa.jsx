@@ -200,7 +200,7 @@ export default function ProfilDesa() {
         <div className="rounded-2xl overflow-hidden shadow-xl border border-green-100" data-aos="zoom-in">
           <iframe
             title="Lokasi Desa Babakan Asem"
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7934.664371412895!2d106.65160769694418!3d-6.085869757207361!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e6a03b93c27479f%3A0xd8f1dcf4227df064!2sBabakan%20Asem%2C%20Kec.%20Teluknaga%2C%20Kabupaten%20Tangerang%2C%20Banten!5e0!3m2!1sid!2sid!4v1752824632488!5m2!1sid!2sid"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d50846.83215472047!2d108.04488070198364!3d-6.7568080545342095!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e6f2aaf583cd373%3A0x997e0a8c838d37df!2sBabakan%20Asem%2C%20Kec.%20Conggeang%2C%20Kabupaten%20Sumedang%2C%20Jawa%20Barat!5e0!3m2!1sid!2sid!4v1753327873604!5m2!1sid!2sid"
             width="100%"
             height="380"
             allowFullScreen=""
