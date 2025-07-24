@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import SidebarInfo from "../layout/SidebarInfo";
 import { NewsApi } from "../../libs/api/NewsApi";
-import { alertError, alertSuccess } from "../../libs/alert";
+import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 import { Helper } from "../../utils/Helper";
 import { CommentApi } from "../../libs/api/CommentApi";
 import { HiArrowLeft } from "react-icons/hi";
@@ -125,7 +125,7 @@ export default function DetailBerita() {
 
   // ✅ hapus komentar
   const handleDeleteComment = async (commentId) => {
-    if (!confirm("Yakin ingin menghapus komentar ini?")) return;
+    if (!(await alertConfirm("Yakin ingin menghapus komentar ini?"))) return;
 
     const response = await CommentApi.deleteComment(commentId);
     const resBody = await response.json();
@@ -239,7 +239,7 @@ export default function DetailBerita() {
                         )}
 
                         {/* Hapus bisa pemilik komentar atau ADMIN */}
-                        {user.id === c.user.id && (
+                        {(user.id === c.user.id || user.role === "ADMIN") && (
                           <button
                             onClick={() => handleDeleteComment(c.id)}
                             className="text-red-500 text-sm hover:underline"
