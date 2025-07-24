@@ -87,7 +87,7 @@ export default function Agenda() {
                 }}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
                   selectedCategory === kategori
-                    ? "bg-green-600 text-white shadow-md"
+                    ? "bg-gradient-to-r from-[#9BEC00] to-[#D2FF72] text-gray-800 shadow-md"
                     : "bg-white text-gray-700 border hover:bg-green-100"
                 }`}
               >
@@ -112,36 +112,43 @@ export default function Agenda() {
                 key={item.agenda.id}
                 className="block"
               >
-                <div
-                  className="flex items-center bg-white border-l-4 border-green-500 rounded-lg p-3 shadow hover:shadow-md transition-all duration-200"
-                  data-aos="fade-left"
-                  data-aos-delay={index * 100} // - animasi bertahap
-                >
-                  {/* Gambar agenda */}
-                  <img
-                    src={`${import.meta.env.VITE_BASE_URL}/agenda/images/${
-                      item.agenda.featured_image
-                    }`}
-                    alt={item.agenda.title}
-                    className="w-24 h-24 object-cover rounded-md mr-4"
-                  />
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <h2 className="text-lg font-semibold text-gray-800">
-                        {item.agenda.title}
-                      </h2>
-                      <span className="text-[11px] px-2 py-0.5 bg-green-100 text-green-700 rounded-full">
-                        {item.agenda.type || "Kegiatan"}
-                      </span>
+                {/* Wrapper dengan border kiri gradasi */}
+                <div className="relative rounded-lg shadow hover:shadow-md transition-all duration-200">
+                  {/* Border kiri gradasi */}
+                  <div className="absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-[#9BEC00] to-[#D2FF72] rounded-l-lg"></div>
+
+                  {/* Card utama */}
+                  <div
+                    className="flex items-center bg-white rounded-lg p-3 ml-1"
+                    data-aos="fade-left"
+                    data-aos-delay={index * 100}
+                  >
+                    {/* Gambar agenda */}
+                    <img
+                      src={`${import.meta.env.VITE_BASE_URL}/agenda/images/${
+                        item.agenda.featured_image
+                      }`}
+                      alt={item.agenda.title}
+                      className="w-24 h-24 object-cover rounded-md mr-4"
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between">
+                        <h2 className="text-lg font-semibold text-gray-800">
+                          {item.agenda.title}
+                        </h2>
+                        <span className="text-[11px] px-2 py-0.5 bg-gradient-to-r from-[#9BEC00] to-[#D2FF72] text-gray-800 rounded-full">
+                          {item.agenda.type || "Kegiatan"}
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-700 line-clamp-2 mt-1">
+                        {truncateText(item.agenda.content, 90)}
+                      </p>
+                      <p className="text-xs text-gray-500 flex items-center gap-1 mt-1">
+                        <FaCalendarAlt className="text-green-500" />
+                        {Helper.formatTanggal(item.agenda.start_time)} | 👁{" "}
+                        {item.agenda.view_count} kali
+                      </p>
                     </div>
-                    <p className="text-sm text-gray-700 line-clamp-2 mt-1">
-                      {truncateText(item.agenda.content, 90)}
-                    </p>
-                    <p className="text-xs text-gray-500 flex items-center gap-1 mt-1">
-                      <FaCalendarAlt className="text-green-500" />
-                      {Helper.formatTanggal(item.agenda.start_time)} | 👁{" "}
-                      {item.agenda.view_count} kali
-                    </p>
                   </div>
                 </div>
               </Link>
