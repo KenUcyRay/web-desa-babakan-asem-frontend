@@ -1,4 +1,5 @@
 export class CommentApi {
+  // ✅ Buat komentar baru
   static async createComment(id, type, content) {
     return await fetch(
       `${import.meta.env.VITE_BASE_URL}/comments/create/${id}`,
@@ -7,7 +8,7 @@ export class CommentApi {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
+          Authorization: `Bearer ${localStorage.getItem("token")?.slice(1, -1)}`,
         },
         body: JSON.stringify({
           target_type: type,
@@ -17,6 +18,7 @@ export class CommentApi {
     );
   }
 
+  // ✅ Ambil komentar berdasarkan target ID (berita/agenda)
   static async getComments(id, type) {
     return await fetch(`${import.meta.env.VITE_BASE_URL}/comments/${id}`, {
       method: "GET",
@@ -25,5 +27,38 @@ export class CommentApi {
         Accept: "application/json",
       },
     });
+  }
+
+  // ✅ Update komentar
+  static async updateComment(commentId, newContent) {
+    return await fetch(
+      `${import.meta.env.VITE_BASE_URL}/comments/update/${commentId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")?.slice(1, -1)}`,
+        },
+        body: JSON.stringify({
+          content: newContent,
+        }),
+      }
+    );
+  }
+
+  // ✅ Delete komentar
+  static async deleteComment(commentId) {
+    return await fetch(
+      `${import.meta.env.VITE_BASE_URL}/comments/delete/${commentId}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")?.slice(1, -1)}`,
+        },
+      }
+    );
   }
 }

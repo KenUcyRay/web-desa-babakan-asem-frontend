@@ -15,6 +15,13 @@ export default function DetailBerita() {
   const [comments, setComments] = useState([]);
   const [pesan, setPesan] = useState("");
 
+  // ✅ State edit komentar
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editingContent, setEditingContent] = useState("");
+
+  // ✅ Ambil user login dari localStorage
+  const loggedInUser = JSON.parse(localStorage.getItem("user"));
+
   const handleKomentar = async (e) => {
     e.preventDefault();
 
@@ -36,6 +43,7 @@ export default function DetailBerita() {
 
     await alertSuccess("Komentar berhasil dikirim!");
     setPesan("");
+    fetchComment(); // refresh komentar
   };
 
   const fetchDetailBerita = async () => {
@@ -46,7 +54,7 @@ export default function DetailBerita() {
       setUserCreated(responseBody.user_created);
       setComments(responseBody.comments);
     } else {
-      await alertError(`Gagal mengambil detail berita. Silakan coba lagi nanti.`);
+      await alertError("Gagal mengambil detail berita. Silakan coba lagi nanti.");
       navigate("/berita");
     }
   };
@@ -57,7 +65,7 @@ export default function DetailBerita() {
     if (response.status === 200) {
       setComments(responseBody.comments);
     } else {
-      await alertError(`Gagal mengambil comment. Silakan coba lagi nanti.`);
+      await alertError("Gagal mengambil comment. Silakan coba lagi nanti.");
     }
   };
 
@@ -78,11 +86,45 @@ export default function DetailBerita() {
     setTimeout(() => navigate("/berita"), 300);
   };
 
+  // ✅ mulai edit komentar
+  const startEditComment = (comment) => {
+    setEditingCommentId(comment.id);
+    setEditingContent(comment.content);
+  };
+
+  // ✅ simpan edit komentar
+  const handleUpdateComment = async (commentId) => {
+    const response = await CommentApi.updateComment(commentId, editingContent);
+    const resBody = await response.json();
+
+    if (response.status === 200) {
+      await alertSuccess("Komentar berhasil diupdate!");
+      setEditingCommentId(null);
+      fetchComment();
+    } else {
+      await alertError(`Gagal update komentar: ${resBody.error}`);
+    }
+  };
+
+  // ✅ hapus komentar
+  const handleDeleteComment = async (commentId) => {
+    if (!confirm("Yakin ingin menghapus komentar ini?")) return;
+
+    const response = await CommentApi.deleteComment(commentId);
+    const resBody = await response.json();
+
+    if (response.status === 200) {
+      await alertSuccess("Komentar berhasil dihapus!");
+      fetchComment();
+    } else {
+      await alertError(`Gagal hapus komentar: ${resBody.error}`);
+    }
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-4 gap-6 font-poppins">
       {/* ✅ Konten utama */}
       <div className="md:col-span-3">
-        {/* ✅ Tombol Back minimalis */}
         <button
           onClick={handleBack}
           className="mb-5 flex items-center gap-2 px-4 py-2 rounded-full border border-gray-300 text-gray-800 hover:bg-gray-900 hover:text-white hover:scale-105 transition-all duration-300"
@@ -91,21 +133,18 @@ export default function DetailBerita() {
           Kembali
         </button>
 
-        {/* ✅ Gambar Berita */}
         <img
           src={`${import.meta.env.VITE_BASE_URL}/news/images/${news.featured_image}`}
           alt="Detail Berita"
           className="w-full h-96 object-cover rounded-lg mb-6"
         />
 
-        {/* ✅ Judul + Info */}
         <h1 className="text-2xl font-bold mb-3">{news.title}</h1>
         <p className="text-sm text-gray-500 mb-6">
           Oleh {userCreated.name} | Tanggal:{" "}
           {Helper.formatTanggal(news.published_at)} | 👁 {news.view_count} Dilihat
         </p>
 
-        {/* ✅ Konten Berita */}
         <div className="space-y-4 text-gray-800 leading-relaxed">
           <p>{news.content}</p>
         </div>
@@ -135,10 +174,64 @@ export default function DetailBerita() {
           <div className="mt-6 space-y-4">
             {comments.map((c, i) => (
               <div key={i} className="p-4 bg-white rounded-lg shadow">
-                <p className="text-sm text-gray-700">{c.content}</p>
-                <p className="text-xs text-gray-500 mt-1">
-                  ✍ {c.user.name} • {Helper.formatTanggal(c.updated_at)}
-                </p>
+                {/* Jika sedang edit */}
+                {editingCommentId === c.id ? (
+                  <div className="space-y-2">
+                    <textarea
+                      className="w-full p-2 border rounded"
+                      rows="3"
+                      value={editingContent}
+                      onChange={(e) => setEditingContent(e.target.value)}
+                    />
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleUpdateComment(c.id)}
+                        className="px-4 py-1 bg-green-500 text-white rounded hover:bg-green-600"
+                      >
+                        Simpan
+                      </button>
+                      <button
+                        onClick={() => setEditingCommentId(null)}
+                        className="px-4 py-1 bg-gray-300 rounded hover:bg-gray-400"
+                      >
+                        Batal
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <p className="text-sm text-gray-700">{c.content}</p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      ✍ {c.user.name} • {Helper.formatTanggal(c.updated_at)}
+                    </p>
+
+                    {/* ✅ Tombol Edit & Hapus sesuai aturan */}
+                    {loggedInUser && (
+                      <div className="flex gap-3 mt-2">
+                        {/* Edit hanya pemilik komentar */}
+                        {loggedInUser.id === c.user.id && (
+                          <button
+                            onClick={() => startEditComment(c)}
+                            className="text-blue-500 text-sm hover:underline"
+                          >
+                            Edit
+                          </button>
+                        )}
+
+                        {/* Hapus bisa pemilik komentar atau ADMIN */}
+                        {(loggedInUser.id === c.user.id ||
+                          loggedInUser.role === "ADMIN") && (
+                          <button
+                            onClick={() => handleDeleteComment(c.id)}
+                            className="text-red-500 text-sm hover:underline"
+                          >
+                            Hapus
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
             ))}
             {comments.length === 0 && (
@@ -148,7 +241,6 @@ export default function DetailBerita() {
         </div>
       </div>
 
-      {/* ✅ Sidebar */}
       <aside>
         <SidebarInfo />
       </aside>

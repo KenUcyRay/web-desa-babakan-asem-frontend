@@ -24,9 +24,7 @@ export class ProductApi {
 
   static async getOwnProducts(page = 1, limit = 10) {
     return await fetch(
-      `${
-        import.meta.env.VITE_BASE_URL
-      }/products/admin/me?page=${page}&limit=${limit}`,
+      `${import.meta.env.VITE_BASE_URL}/products/admin/me?page=${page}&limit=${limit}`,
       {
         method: "GET",
         headers: {
@@ -45,7 +43,7 @@ export class ProductApi {
     formData.append("price", data.price);
     formData.append("link_whatsapp", data.link_whatsapp);
     formData.append("category_id", data.category_id);
-    formData.append("featured_image", data.featured_image); // File
+    formData.append("featured_image", data.featured_image);
 
     return await fetch(
       `${import.meta.env.VITE_BASE_URL}/products/admin/create`,
@@ -66,10 +64,7 @@ export class ProductApi {
     formData.append("price", data.price ?? null);
     formData.append("link_whatsapp", data.link_whatsapp ?? null);
     formData.append("category_id", data.category_id ?? null);
-    formData.append("featured_image", data.featured_image ?? null); // File
-
-    console.log(data.category_id ?? null);
-    console.log(id);
+    formData.append("featured_image", data.featured_image ?? null);
 
     return await fetch(
       `${import.meta.env.VITE_BASE_URL}/products/admin/update-by-product/${id}`,
@@ -96,6 +91,8 @@ export class ProductApi {
       }
     );
   }
+
+  // ✅ CREATE Rating
   static async createRating(productId, rating) {
     return await fetch(
       `${import.meta.env.VITE_BASE_URL}/products/rating/${productId}`,
@@ -110,11 +107,44 @@ export class ProductApi {
       }
     );
   }
+
+  // ✅ CHECK kalau user sudah pernah rating
   static async alreadyRated(productId) {
     return await fetch(
       `${import.meta.env.VITE_BASE_URL}/products/rating/${productId}`,
       {
         method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
+        },
+      }
+    );
+  }
+
+  // ✅ UPDATE Rating
+  static async updateRating(ratingId, rating) {
+    return await fetch(
+      `${import.meta.env.VITE_BASE_URL}/products/rating/${ratingId}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
+        },
+        body: JSON.stringify({ rating }),
+      }
+    );
+  }
+
+  // ✅ DELETE Rating
+  static async deleteRating(ratingId) {
+    return await fetch(
+      `${import.meta.env.VITE_BASE_URL}/products/rating/${ratingId}`,
+      {
+        method: "DELETE",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",

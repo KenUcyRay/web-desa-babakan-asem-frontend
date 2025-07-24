@@ -14,9 +14,13 @@ export default function DetailProduk() {
   const [product, setProduct] = useState({});
   const [comments, setComments] = useState([]);
   const [pesan, setPesan] = useState("");
+
   const [averageRating, setAverageRating] = useState(0);
+
+  // ⭐ State rating user
   const [userTempRating, setUserTempRating] = useState(0);
   const [userRated, setUserRated] = useState(false);
+  const [userRatingId, setUserRatingId] = useState(null); // simpan ID rating
   const [showSubmitRating, setShowSubmitRating] = useState(false);
 
   const userToken = JSON.parse(localStorage.getItem("token"));
@@ -29,9 +33,7 @@ export default function DetailProduk() {
       setAverageRating(responseBody.rating ?? 0);
       setComments(responseBody.comments ?? []);
     } else {
-      await alertError(
-        "Gagal mengambil detail product. Silakan coba lagi nanti."
-      );
+      await alertError("Gagal mengambil detail product. Silakan coba lagi nanti.");
       navigate("/bumdes");
     }
   };
@@ -48,9 +50,12 @@ export default function DetailProduk() {
     if (!userToken) return;
     const response = await ProductApi.alreadyRated(id);
     const responseBody = await response.json();
+
     if (response.ok && responseBody.rated) {
+      // ✅ User sudah pernah rating → simpan data rating
       setUserRated(true);
-      setUserTempRating(responseBody.rating); // tampilkan rating sebelumnya
+      setUserTempRating(responseBody.rating.value);
+      setUserRatingId(responseBody.rating.id);
     }
   };
 
@@ -58,6 +63,7 @@ export default function DetailProduk() {
     setProduct({});
     setUserTempRating(0);
     setUserRated(false);
+    setUserRatingId(null);
     setShowSubmitRating(false);
 
     fetchDetailProduct();
@@ -96,32 +102,54 @@ export default function DetailProduk() {
       navigate("/login");
       return;
     }
-    if (userRated) {
-      alert("Anda sudah memberi rating untuk produk ini!");
-      return;
-    }
+
     setUserTempRating(value);
     setShowSubmitRating(true);
   };
 
   const handleSubmitRating = async () => {
-    const response = await ProductApi.createRating(id, userTempRating);
+    // Jika user belum pernah rating → create
+    if (!userRated) {
+      const response = await ProductApi.createRating(id, userTempRating);
+      if (!response.ok) {
+        await alertError("Gagal mengirim rating. Silakan coba lagi.");
+        return;
+      }
+      await alertSuccess(`Terima kasih! Rating ${userTempRating} ⭐ telah dikirim.`);
+      setUserRated(true);
+    } else {
+      // Kalau sudah pernah rating → update
+      const response = await ProductApi.updateRating(userRatingId, userTempRating);
+      if (!response.ok) {
+        await alertError("Gagal mengupdate rating.");
+        return;
+      }
+      await alertSuccess(`Rating berhasil diupdate jadi ${userTempRating} ⭐`);
+    }
 
+    setShowSubmitRating(false);
+    fetchDetailProduct();
+    checkUserRated();
+  };
+
+  const handleDeleteRating = async () => {
+    if (!confirm("Yakin ingin menghapus rating kamu?")) return;
+
+    const response = await ProductApi.deleteRating(userRatingId);
     if (!response.ok) {
-      await alertError("Gagal mengirim rating. Silakan coba lagi.");
+      await alertError("Gagal menghapus rating.");
       return;
     }
 
-    await alertSuccess(
-      `Terima kasih! Rating ${userTempRating} ⭐ telah dikirim.`
-    );
-    setUserRated(true);
-    setShowSubmitRating(false);
+    await alertSuccess("Rating kamu berhasil dihapus.");
+    setUserRated(false);
+    setUserTempRating(0);
+    setUserRatingId(null);
     fetchDetailProduct();
   };
 
   const handleCancelRating = () => {
-    setUserTempRating(0);
+    setUserTempRating(userRated ? userTempRating : 0);
     setShowSubmitRating(false);
   };
 
@@ -136,7 +164,7 @@ export default function DetailProduk() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-4 gap-6 font-poppins">
       <div className="md:col-span-3">
-        {/* ✅ Tombol Back konsisten */}
+        {/* ✅ Tombol Back */}
         <button
           onClick={handleBack}
           className="mb-5 flex items-center gap-2 px-4 py-2 rounded-full border border-gray-300 text-gray-800 hover:bg-gray-900 hover:text-white hover:scale-105 transition-all duration-300"
@@ -147,9 +175,7 @@ export default function DetailProduk() {
 
         {/* ✅ Gambar Produk */}
         <img
-          src={`${import.meta.env.VITE_BASE_URL}/products/images/${
-            product.featured_image
-          }`}
+          src={`${import.meta.env.VITE_BASE_URL}/products/images/${product.featured_image}`}
           alt={product.title}
           className="w-full h-96 object-cover rounded-lg mb-6"
         />
@@ -202,16 +228,16 @@ export default function DetailProduk() {
         {/* ✅ Form Rating */}
         <div className="mt-6 p-4 bg-gray-50 rounded-lg shadow">
           <h2 className="text-lg font-semibold mb-2">
-            ⭐ Beri Penilaian Produk Ini
+            ⭐ {userRated ? "Rating Kamu" : "Beri Penilaian Produk Ini"}
           </h2>
+
+          {/* Kalau user sudah pernah rating → bintang aktif */}
           <div className="flex items-center gap-1">
             {[1, 2, 3, 4, 5].map((star) => (
               <span
                 key={star}
                 onClick={() => handleSelectStar(star)}
-                className={`cursor-pointer hover:scale-110 transition ${
-                  userRated ? "pointer-events-none" : ""
-                }`}
+                className="cursor-pointer hover:scale-110 transition"
               >
                 {star <= userTempRating ? (
                   <FaStar className="text-yellow-400" />
@@ -222,19 +248,32 @@ export default function DetailProduk() {
             ))}
           </div>
 
+          {/* Tombol aksi */}
           {showSubmitRating && (
             <div className="flex gap-2 mt-2">
               <button
                 onClick={handleSubmitRating}
                 className="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600"
               >
-                ✅ Kirim Rating {userTempRating} ⭐
+                ✅ {userRated ? "Update" : "Kirim"} Rating {userTempRating} ⭐
               </button>
               <button
                 onClick={handleCancelRating}
                 className="bg-gray-400 text-white px-4 py-1 rounded hover:bg-gray-500"
               >
                 Batal
+              </button>
+            </div>
+          )}
+
+          {/* Kalau sudah rating, kasih tombol hapus */}
+          {userRated && !showSubmitRating && (
+            <div className="mt-2 flex gap-2">
+              <button
+                onClick={handleDeleteRating}
+                className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+              >
+                ❌ Hapus Rating
               </button>
             </div>
           )}
