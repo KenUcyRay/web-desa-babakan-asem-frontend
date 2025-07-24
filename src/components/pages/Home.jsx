@@ -88,7 +88,9 @@ export default function Home() {
       const responseBody = await response.json();
       setProducts(responseBody.products);
     } else {
-      await alertError("Gagal mengambil data product. Silakan coba lagi nanti.");
+      await alertError(
+        "Gagal mengambil data product. Silakan coba lagi nanti."
+      );
     }
   };
 
@@ -220,7 +222,9 @@ export default function Home() {
               data-aos="zoom-in"
             >
               <img
-                src={`${import.meta.env.VITE_BASE_URL}/news/images/${item.news.featured_image}`}
+                src={`${import.meta.env.VITE_BASE_URL}/news/images/${
+                  item.news.featured_image
+                }`}
                 alt={item.news.title}
                 className="w-full h-[18vh] object-cover"
               />
@@ -268,7 +272,9 @@ export default function Home() {
               >
                 <Link to={`/bumdes/${item.product.id}`}>
                   <img
-                    src={`${import.meta.env.VITE_BASE_URL}/products/images/${item.product.featured_image}`}
+                    src={`${import.meta.env.VITE_BASE_URL}/products/images/${
+                      item.product.featured_image
+                    }`}
                     alt={item.product.title}
                     className="w-full h-48 object-cover rounded-t-2xl hover:opacity-90 transition"
                   />
@@ -337,8 +343,19 @@ export default function Home() {
               <YAxis />
               <Tooltip />
               <Legend />
-              <Bar dataKey="anggaran" barSize={30} fill="#4ade80" name="Anggaran" />
-              <Line type="monotone" dataKey="realisasi" stroke="#3b82f6" strokeWidth={2} name="Realisasi" />
+              <Bar
+                dataKey="anggaran"
+                barSize={30}
+                fill="#4ade80"
+                name="Anggaran"
+              />
+              <Line
+                type="monotone"
+                dataKey="realisasi"
+                stroke="#3b82f6"
+                strokeWidth={2}
+                name="Realisasi"
+              />
             </ComposedChart>
           </ResponsiveContainer>
         </div>
@@ -348,7 +365,7 @@ export default function Home() {
       <div className="relative h-[30vh] md:h-[40vh] w-full">
         <iframe
           title="Peta Desa Babakan Asem"
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3952.123456!2d110.123456!3d-7.123456!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2sDesa%20Babakan%20Asem!5e0!3m2!1sid!2sid!4v1234567890"
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d50846.83215472047!2d108.04488070198364!3d-6.7568080545342095!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e6f2aaf583cd373%3A0x997e0a8c838d37df!2sBabakan%20Asem%2C%20Kec.%20Conggeang%2C%20Kabupaten%20Sumedang%2C%20Jawa%20Barat!5e0!3m2!1sid!2sid!4v1753327873604!5m2!1sid!2sid"
           className="absolute top-0 left-0 w-full h-full border-0"
           loading="lazy"
         ></iframe>
