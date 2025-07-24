@@ -107,7 +107,7 @@ export default function ManageAgenda() {
       const response = await AgendaApi.updateAgenda(editingId, rawData);
       const resBody = await response.json();
       if (!response.ok) return alertError(resBody.error || "Gagal update.");
-      await alertSuccess("✅ Agenda berhasil diperbarui!");
+      await alertSuccess("- Agenda berhasil diperbarui!");
       resetForm();
       fetchAgenda();
       return;
@@ -116,7 +116,7 @@ export default function ManageAgenda() {
     const response = await AgendaApi.createAgenda(rawData);
     const resBody = await response.json();
     if (!response.ok) return alertError(resBody.error || "Gagal menambah.");
-    await alertSuccess("✅ Agenda berhasil ditambahkan!");
+    await alertSuccess("- Agenda berhasil ditambahkan!");
     setAgenda([...agenda, resBody.agenda]);
     resetForm();
   };
@@ -310,7 +310,7 @@ export default function ManageAgenda() {
                   : "bg-gray-200 text-gray-600"
               }`}
             >
-              ✅ Yes
+              - Yes
             </button>
             <button
               type="button"

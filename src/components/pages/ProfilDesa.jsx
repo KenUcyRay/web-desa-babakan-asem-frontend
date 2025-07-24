@@ -20,7 +20,7 @@ export default function ProfilDesa() {
 
   return (
     <div className="font-poppins bg-gray-50">
-      {/* ✅ HERO SECTION */}
+      {/* - HERO SECTION */}
       <section
         className="relative bg-[#FFFDF6]"
         data-aos="fade-up"
@@ -52,7 +52,7 @@ export default function ProfilDesa() {
         </div>
       </section>
 
-      {/* ✅ SEJARAH */}
+      {/* - SEJARAH */}
       <section className="bg-white py-14" data-aos="fade-up">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h2 className="text-3xl font-bold text-gray-900 mb-6">Sejarah Desa</h2>
@@ -62,7 +62,7 @@ export default function ProfilDesa() {
         </div>
       </section>
 
-      {/* ✅ VISI & MISI */}
+      {/* - VISI & MISI */}
       <section
         className="max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-2 gap-8"
         data-aos="fade-up"
@@ -84,7 +84,7 @@ export default function ProfilDesa() {
         </div>
       </section>
 
-      {/* ✅ STRUKTUR ORGANISASI */}
+      {/* - STRUKTUR ORGANISASI */}
       <section className="bg-green-50 py-14" data-aos="fade-up">
         <div className="max-w-5xl mx-auto px-6 text-center">
           <h2 className="text-3xl font-bold text-green-700 mb-10">Struktur Organisasi Desa</h2>
@@ -105,7 +105,7 @@ export default function ProfilDesa() {
         </div>
       </section>
 
-      {/* ✅ KONTAK & SOSMED ala versi awal */}
+      {/* - KONTAK & SOSMED ala versi awal */}
       <section className="bg-white py-16" data-aos="fade-up">
         <div className="max-w-6xl mx-auto px-6">
           <h2 className="text-3xl font-bold text-center text-green-700 mb-10">🌐 Hubungi & Ikuti Kami</h2>
@@ -186,7 +186,7 @@ export default function ProfilDesa() {
         </div>
       </section>
 
-      {/* ✅ MAP SIGMA */}
+      {/* - MAP SIGMA */}
       <section className="max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-2 gap-10 items-center" data-aos="fade-up">
         <div className="bg-gradient-to-br from-[#9BEC00]/10 to-[#D2FF72]/20 shadow-lg rounded-2xl p-10" data-aos="fade-right">
           <h3 className="text-3xl font-bold text-green-700 mb-6">Batas Wilayah Desa</h3>

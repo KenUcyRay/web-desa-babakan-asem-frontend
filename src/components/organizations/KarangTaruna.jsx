@@ -61,7 +61,7 @@ export default function KarangTaruna() {
   return (
     <div className="bg-gray-50 py-12 w-full max-w-screen-2xl mx-auto px-4 sm:px-6 md:px-8 font-poppins">
       
-      {/* ✅ HERO / INTRO */}
+      {/* - HERO / INTRO */}
       <div className="text-center mb-16" data-aos="fade-down">
         <h1 className="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-[#9BEC00] to-[#1ee432] bg-clip-text text-transparent">
           Karang Taruna Desa Babakan Asem
@@ -72,7 +72,7 @@ export default function KarangTaruna() {
         </p>
       </div>
 
-      {/* ✅ Hero Image */}
+      {/* -\ Hero Image */}
       <div className="rounded-2xl overflow-hidden shadow-xl mb-16" data-aos="zoom-in">
         <img
           src="https://picsum.photos/1200/500?random=12"
@@ -81,7 +81,7 @@ export default function KarangTaruna() {
         />
       </div>
 
-      {/* ✅ VISI & MISI */}
+      {/* -\ VISI & MISI */}
       <div className="grid md:grid-cols-2 gap-8 mb-20">
         <div
           className="p-8 rounded-2xl bg-gradient-to-r from-[#9BEC00] to-[#D2FF72] shadow-md text-center hover:shadow-xl transition"
@@ -107,7 +107,7 @@ export default function KarangTaruna() {
         </div>
       </div>
 
-      {/* ✅ STRUKTUR ORGANISASI */}
+      {/* - STRUKTUR ORGANISASI */}
       <div
         className="bg-white rounded-2xl shadow-lg p-10 mb-20"
         data-aos="fade-up"
@@ -135,7 +135,7 @@ export default function KarangTaruna() {
         </div>
       </div>
 
-      {/* ✅ DOKUMENTASI KEGIATAN */}
+      {/* - DOKUMENTASI KEGIATAN */}
       <div>
         <h2
           className="text-3xl font-bold text-center mb-4 bg-gradient-to-r from-[#000000] to-[#000000] bg-clip-text text-transparent"
@@ -147,7 +147,7 @@ export default function KarangTaruna() {
           Berikut beberapa kegiatan terbaru Karang Taruna Desa Babakan Asem.
         </p>
 
-        {/* ✅ Card Grid Kegiatan */}
+        {/* - Card Grid Kegiatan */}
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {agenda.map((item, idx) => (
             <div
@@ -190,7 +190,7 @@ export default function KarangTaruna() {
           ))}
         </div>
 
-        {/* ✅ Pagination */}
+        {/* - Pagination */}
         <div className="mt-12 flex justify-center" data-aos="fade-up">
           <Pagination
             currentPage={currentPage}

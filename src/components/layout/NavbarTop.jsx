@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useLocation, NavLink, Link, useNavigate } from "react-router-dom";
 import { FiMenu, FiX } from "react-icons/fi";
-import { FaUserCircle } from "react-icons/fa"; // ✅ ikon user
+import { FaUserCircle } from "react-icons/fa"; // - ikon user
 import logo from "../../assets/logo.png";
 import { useAuth } from "../../contexts/AuthContext";
 import { alertConfirm, alertSuccess } from "../../libs/alert";
@@ -55,7 +55,7 @@ export default function NavbarTop() {
 
     return (
       <div className="relative">
-        {/* ✅ Avatar Icon */}
+        {/* - Avatar Icon */}
         <button
           onClick={() => setAvatarMenuOpen((prev) => !prev)}
           className="flex items-center gap-2 text-gray-700  hover:text-[#B6F500] transition"
@@ -63,7 +63,7 @@ export default function NavbarTop() {
           <FaUserCircle size={28} />
         </button>
 
-        {/* ✅ Dropdown Menu */}
+        {/* - Dropdown Menu */}
         {avatarMenuOpen && (
           <div className="absolute right-0 mt-2 w-40 bg-white  shadow-md rounded-md py-2 z-50">
             <button
@@ -150,7 +150,7 @@ export default function NavbarTop() {
   return (
     <div className="w-full sticky top-0 bg-white  shadow z-50 font-poppins">
       <div className="w-full flex items-center justify-between px-6 lg:px-12 py-4">
-        {/* ✅ Logo klik ke home */}
+        {/* - Logo klik ke home */}
         <Link to="/" className="flex items-center gap-3">
           <img src={logo} alt="Logo Desa" className="h-12 w-auto" />
           <div className="text-gray-800  text-base sm:text-lg font-bold leading-tight">
@@ -161,7 +161,7 @@ export default function NavbarTop() {
           </div>
         </Link>
 
-        {/* ✅ MENU DESKTOP */}
+        {/* - MENU DESKTOP */}
         <div className="hidden md:flex items-center gap-6 text-gray-700  font-medium relative">
           <NavLink
             to="/"
@@ -247,11 +247,11 @@ export default function NavbarTop() {
             Kontak Kami
           </NavLink>
 
-          {/* ✅ Avatar/Dropdown atau tombol Masuk */}
+          {/* - Avatar/Dropdown atau tombol Masuk */}
           {button()}
         </div>
 
-        {/* ✅ HAMBURGER BUTTON (mobile) */}
+        {/* - HAMBURGER BUTTON (mobile) */}
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
           className="md:hidden text-2xl text-gray-800 "
@@ -260,7 +260,7 @@ export default function NavbarTop() {
         </button>
       </div>
 
-      {/* ✅ MENU MOBILE */}
+      {/* - MENU MOBILE */}
       {mobileOpen && (
         <div className="md:hidden flex flex-col gap-4 px-6 py-4 bg-gradient-to-b from-white to-[#f7f7f7]   text-gray-800 ">
           <NavLink
@@ -348,7 +348,7 @@ export default function NavbarTop() {
             Kontak Kami
           </NavLink>
 
-          {/* ✅ Mobile User Menu */}
+          {/* - Mobile User Menu */}
           {buttomMobile()}
         </div>
       )}

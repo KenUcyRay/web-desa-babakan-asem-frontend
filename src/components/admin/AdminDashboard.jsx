@@ -44,7 +44,7 @@ export default function AdminDashboard() {
   const [galeriPreview, setGaleriPreview] = useState([]);
   const [pkkPreview, setPkkPreview] = useState([]);
 
-  // ✅ DATA DEMO PENDUDUK
+  // - DATA DEMO PENDUDUK
   const pendudukData = [
     { name: "Laki-laki", jumlah: 320 },
     { name: "Perempuan", jumlah: 340 },
@@ -52,7 +52,7 @@ export default function AdminDashboard() {
     { name: "Anak-anak", jumlah: 210 },
   ];
 
-  // ✅ Fetch TOTAL data
+  // - Fetch TOTAL data
   const fetchNews = async () => {
     const res = await NewsApi.getOwnNews(); 
     if (!res.ok) return alertError("Gagal ambil berita");
@@ -81,7 +81,7 @@ export default function AdminDashboard() {
     setUserCount(data.users?.length || 0);
   };
 
-  // ✅ Preview 3 item
+  // - Preview 3 item
   const fetchBumdesPreview = async () => {
     const res = await ProductApi.getOwnProducts(1, 3);
     if (!res.ok) return alertError("Gagal ambil produk BUMDes");
@@ -137,7 +137,7 @@ export default function AdminDashboard() {
         Dashboard Admin
       </h1>
 
-      {/* ✅ GRID STATISTIK */}
+      {/* - GRID STATISTIK */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <StatCard
           icon={<FaNewspaper className="text-green-500" />}
@@ -165,7 +165,7 @@ export default function AdminDashboard() {
         />
       </div>
 
-      {/* ✅ INFROGRAFIS PENDUDUK - TANPA LINK */}
+      {/* - INFROGRAFIS PENDUDUK - TANPA LINK */}
       <div className="bg-white rounded-xl shadow-md p-6 mb-8">
         <h2 className="text-xl font-semibold text-gray-800 mb-4">
           Infografis Penduduk
@@ -189,7 +189,7 @@ export default function AdminDashboard() {
         </p>
       </div>
 
-      {/* ✅ PREVIEW SECTIONS */}
+      {/* - PREVIEW SECTIONS */}
       <PreviewSection
         title="Produk BUMDes"
         icon={<FaStore />}
@@ -235,7 +235,7 @@ export default function AdminDashboard() {
   );
 }
 
-// ✅ MINI CARD STATISTIK
+// - MINI CARD STATISTIK
 function StatCard({ icon, title, count, onClick }) {
   return (
     <div
@@ -249,7 +249,7 @@ function StatCard({ icon, title, count, onClick }) {
   );
 }
 
-// ✅ PREVIEW SECTION LIST
+// - PREVIEW SECTION LIST
 function PreviewSection({ title, icon, data, onClick }) {
   return (
     <div className="bg-white rounded-xl shadow-md p-5 mb-6">

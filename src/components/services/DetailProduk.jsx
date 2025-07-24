@@ -165,13 +165,13 @@ export default function DetailProduk() {
     setTimeout(() => navigate(-1), 300);
   };
 
-  // ✅ mulai edit
+  // - mulai edit
   const startEditComment = (comment) => {
     setEditingCommentId(comment.id);
     setEditingContent(comment.content);
   };
 
-  // ✅ simpan edit
+  // - simpan edit
   const handleUpdateComment = async (commentId) => {
     const response = await CommentApi.updateComment(commentId, editingContent);
     const resBody = await response.json();
@@ -185,7 +185,7 @@ export default function DetailProduk() {
     }
   };
 
-  // ✅ hapus komentar
+  // - hapus komentar
   const handleDeleteComment = async (commentId) => {
     if (!(await alertConfirm("Yakin ingin menghapus komentar ini?"))) return;
 
@@ -200,13 +200,13 @@ export default function DetailProduk() {
     }
   };
 
-  // ✅ User login dari localStorage
+  // - User login dari localStorage
   const loggedInUser = JSON.parse(localStorage.getItem("user"));
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-4 gap-6 font-poppins">
       <div className="md:col-span-3">
-        {/* ✅ Tombol Back */}
+        {/* - Tombol Back */}
         <button
           onClick={handleBack}
           className="mb-5 flex items-center gap-2 px-4 py-2 rounded-full border border-gray-300 text-gray-800 hover:bg-gray-900 hover:text-white hover:scale-105 transition-all duration-300"
@@ -215,7 +215,7 @@ export default function DetailProduk() {
           Kembali
         </button>
 
-        {/* ✅ Gambar Produk pakai object-contain */}
+        {/* - Gambar Produk pakai object-contain */}
         <div className="w-full h-96 flex items-center justify-center bg-white rounded-lg mb-6">
           <img
             src={`${import.meta.env.VITE_BASE_URL}/products/images/${
@@ -226,7 +226,7 @@ export default function DetailProduk() {
           />
         </div>
 
-        {/* ✅ Info Produk */}
+        {/* - Info Produk */}
         <h1 className="text-2xl font-bold mb-3">{product.title}</h1>
         <p className="text-sm text-gray-500 mb-2">
           Oleh BUMDes Babakan Asem | Harga :{" "}
@@ -235,7 +235,7 @@ export default function DetailProduk() {
           </span>
         </p>
 
-        {/* ✅ Rating Produk */}
+        {/* - Rating Produk */}
         <div className="flex items-center gap-1 mt-2">
           {[1, 2, 3, 4, 5].map((star) => {
             let icon;
@@ -253,13 +253,13 @@ export default function DetailProduk() {
           </span>
         </div>
 
-        {/* ✅ Deskripsi Produk */}
+        {/* - Deskripsi Produk */}
         <div className="space-y-4 text-gray-800 leading-relaxed mt-4">
           <p>{product.description}</p>
           <p>Produk ini 100% hasil desa dan dikelola oleh masyarakat lokal.</p>
         </div>
 
-        {/* ✅ Tombol Pesan WA */}
+        {/* - Tombol Pesan WA */}
         <div className="mt-6">
           <a
             href={product.link_whatsapp}
@@ -271,7 +271,7 @@ export default function DetailProduk() {
           </a>
         </div>
 
-        {/* ✅ Form Rating */}
+        {/* - Form Rating */}
         <div className="mt-6 p-4 bg-gray-50 rounded-lg shadow">
           <h2 className="text-lg font-semibold mb-2">
             ⭐ {userRated ? "Rating Kamu" : "Beri Penilaian Produk Ini"}
@@ -299,7 +299,7 @@ export default function DetailProduk() {
                 onClick={handleSubmitRating}
                 className="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600"
               >
-                ✅ {userRated ? "Update" : "Kirim"} Rating {userTempRating} ⭐
+                - {userRated ? "Update" : "Kirim"} Rating {userTempRating} ⭐
               </button>
               <button
                 onClick={handleCancelRating}
@@ -322,7 +322,7 @@ export default function DetailProduk() {
           )}
         </div>
 
-        {/* ✅ Komentar */}
+        {/* - Komentar */}
         <div className="mt-10 p-6 bg-gray-50 rounded-lg shadow">
           <h2 className="text-xl font-semibold mb-4">💬 Tinggalkan Komentar</h2>
 

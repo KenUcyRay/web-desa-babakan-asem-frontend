@@ -133,7 +133,7 @@ export default function ManageAdministrasi() {
         📋 Permohonan Layanan & Surat
       </h1>
 
-      {/* ✅ Filter kategori */}
+      {/* - Filter kategori */}
       <div className="flex flex-wrap gap-2 mb-4">
         {[
           { key: "Form Online", label: "Form Online" },
@@ -158,7 +158,7 @@ export default function ManageAdministrasi() {
         ))}
       </div>
 
-      {/* ✅ Filter status */}
+      {/* - Filter status */}
       <div className="mb-6 flex flex-col sm:flex-row sm:items-center gap-3">
         <label className="text-gray-700 font-medium">Filter Status:</label>
         <select
@@ -176,7 +176,7 @@ export default function ManageAdministrasi() {
         </select>
       </div>
 
-      {/* ✅ Desktop: Table */}
+      {/* - Desktop: Table */}
       <div className="hidden md:block bg-white rounded-xl shadow-lg overflow-x-auto">
         <table className="w-full min-w-[800px] text-left">
           <thead className="bg-gray-100 text-gray-700 text-sm uppercase">
@@ -220,7 +220,7 @@ export default function ManageAdministrasi() {
                         </span>
                       ) : (
                         <span className="inline-block px-3 py-1 text-xs rounded-full bg-green-100 text-green-700 font-semibold">
-                          ✅ Sudah Diterima
+                          - Sudah Diterima
                         </span>
                       )}
                     </td>
@@ -294,7 +294,7 @@ export default function ManageAdministrasi() {
         </table>
       </div>
 
-      {/* ✅ Mobile: Card List */}
+      {/* - Mobile: Card List */}
       <div className="md:hidden grid gap-4">
         {currentData.map((item, idx) => (
           <div
@@ -310,7 +310,7 @@ export default function ManageAdministrasi() {
                     : "bg-green-100 text-green-700"
                 }`}
               >
-                {item.status === "pending" ? "⏳ Pending" : "✅ Diterima"}
+                {item.status === "pending" ? "⏳ Pending" : "- Diterima"}
               </span>
             </div>
             <p className="text-sm text-gray-600">
@@ -342,7 +342,7 @@ export default function ManageAdministrasi() {
                 onClick={() => handleTerima(idx)}
                 className="w-full mt-2 px-3 py-2 rounded-lg bg-blue-500 hover:bg-blue-600 text-white text-sm"
               >
-                ✅ Terima
+                - Terima
               </button>
             )}
           </div>
@@ -353,7 +353,7 @@ export default function ManageAdministrasi() {
         )}
       </div>
 
-      {/* ✅ Pagination */}
+      {/* - Pagination */}
       {filteredData.length > perPage && (
         <div className="mt-6">
           <Pagination

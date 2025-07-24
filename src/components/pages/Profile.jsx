@@ -137,7 +137,7 @@ export default function Profile() {
     if (navigator.clipboard && window.isSecureContext) {
       try {
         await navigator.clipboard.writeText(text);
-        alertSuccess("ID berhasil disalin ke clipboard ✅");
+        alertSuccess("ID berhasil disalin ke clipboard -");
       } catch (err) {
         alertError("Gagal menyalin ID");
       }
@@ -148,7 +148,7 @@ export default function Profile() {
       textArea.select();
       try {
         document.execCommand("copy");
-        alertSuccess("ID berhasil disalin ke clipboard ✅");
+        alertSuccess("ID berhasil disalin ke clipboard -");
       } catch (err) {
         alertError("Gagal menyalin ID");
       }
@@ -171,7 +171,7 @@ export default function Profile() {
   return (
     <div className="min-h-screen bg-gray-50 flex justify-center items-center px-4 py-12">
       <div className="w-full max-w-lg">
-        {/* ✅ Tombol Back pakai icon */}
+        {/* - Tombol Back pakai icon */}
         <button
           onClick={() => navigate(-1)}
           className="mb-4 flex items-center gap-2 text-blue-600 hover:text-blue-800 transition"
@@ -180,7 +180,7 @@ export default function Profile() {
         </button>
 
         <div className="bg-white rounded-xl shadow-lg p-6">
-          {/* ✅ Header Profil */}
+          {/* - Header Profil */}
           <div className="text-center mb-6">
             <div className="w-20 h-20 mx-auto rounded-full bg-gray-200 flex items-center justify-center text-4xl font-bold text-gray-500">
               {user.name.charAt(0)}
@@ -196,7 +196,7 @@ export default function Profile() {
 
           {!editMode && (
             <>
-              {/* ✅ Info Detail */}
+              {/* - Info Detail */}
               <div className="space-y-3 text-sm text-gray-600">
                 <div className="flex justify-between">
                   <span>ID Pengguna</span>
@@ -216,7 +216,7 @@ export default function Profile() {
                   <span className="font-medium text-gray-800">{user.name}</span>
                 </div>
 
-                {/* ✅ Email tampil kalau ada, kalau nggak strip */}
+                {/* - Email tampil kalau ada, kalau nggak strip */}
                 <div className="flex justify-between">
                   <span>Email</span>
                   <span className="font-medium text-gray-800">
@@ -224,7 +224,7 @@ export default function Profile() {
                   </span>
                 </div>
 
-                {/* ✅ No Telp tampil kalau ada, kalau nggak strip */}
+                {/* - No Telp tampil kalau ada, kalau nggak strip */}
                 <div className="flex justify-between">
                   <span>No. Telepon</span>
                   <span className="font-medium text-gray-800">
@@ -240,7 +240,7 @@ export default function Profile() {
                 </div>
               </div>
 
-              {/* ✅ Tombol Aksi */}
+              {/* - Tombol Aksi */}
               <div className="mt-8 flex flex-col gap-3">
                 <button
                   onClick={() => setEditMode(true)}
@@ -281,7 +281,7 @@ export default function Profile() {
                 />
               </div>
 
-              {/* ✅ Input email (boleh kosong kalau login pakai no telp) */}
+              {/* - Input email (boleh kosong kalau login pakai no telp) */}
               <div>
                 <label className="block text-sm font-medium text-gray-600">
                   Email
@@ -297,7 +297,7 @@ export default function Profile() {
                 />
               </div>
 
-              {/* ✅ Input No Telp (boleh kosong kalau login pakai email) */}
+              {/* - Input No Telp (boleh kosong kalau login pakai email) */}
               <div>
                 <label className="block text-sm font-medium text-gray-600">
                   No. Telepon

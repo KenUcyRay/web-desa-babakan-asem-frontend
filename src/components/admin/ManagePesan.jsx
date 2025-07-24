@@ -7,13 +7,13 @@ import Pagination from "../ui/Pagination";
 export default function ManagePesan() {
   const [messages, setMessages] = useState([]);
   const [filter, setFilter] = useState("all");
-  const [totalPages, setTotalPages] = useState(1); // ✅ ini baru // all | read | unread
+  const [totalPages, setTotalPages] = useState(1); // - ini baru // all | read | unread
   const [page, setPage] = useState(1);
   const perPage = 5;
 
   const fetchMessages = async () => {
     try {
-      // ✅ kalau API mendukung query
+      // - kalau API mendukung query
       const query = `?page=${page}&limit=${perPage}${
         filter === "read"
           ? "&is_read=true"
@@ -57,26 +57,26 @@ export default function ManagePesan() {
   };
 
   const handleMarkRead = async (id) => {
-    // ✅ update state agar langsung terlihat
+    // - update state agar langsung terlihat
     const updated = messages.map((m) =>
       m.id === id ? { ...m, is_read: true } : m
     );
     setMessages(updated);
 
-    // ✅ panggil API mark as read kalau ada
+    // - panggil API mark as read kalau ada
     await MessageApi.markAsRead(id);
   };
 
   return (
     <div className="font-[Poppins,sans-serif]">
-      {/* ✅ Header */}
+      {/* - Header */}
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold text-gray-800">
           📩 Kelola Pesan Masuk
         </h1>
       </div>
 
-      {/* ✅ FILTER BUTTONS */}
+      {/* - FILTER BUTTONS */}
       <div className="flex gap-2 mb-4">
         {["all", "read", "unread"].map((f) => (
           <button
@@ -100,7 +100,7 @@ export default function ManagePesan() {
         ))}
       </div>
 
-      {/* ✅ LIST PESAN */}
+      {/* - LIST PESAN */}
       <div className="space-y-4">
         {messages.length === 0 ? (
           <p className="text-gray-500 italic">Tidak ada pesan</p>
@@ -138,7 +138,7 @@ export default function ManagePesan() {
         )}
       </div>
 
-      {/* ✅ PAGINATION */}
+      {/* - PAGINATION */}
       <div className="mt-6 flex justify-center">
         <Pagination
           currentPage={page}

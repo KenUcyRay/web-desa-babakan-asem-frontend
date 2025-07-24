@@ -15,7 +15,7 @@ export default function Agenda() {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
 
-  // ✅ Tambahkan state kategori
+  // - Tambahkan state kategori
   const kategoriList = [
     "Semua",
     "REGULAR",
@@ -26,7 +26,7 @@ export default function Agenda() {
   ];
   const [selectedCategory, setSelectedCategory] = useState("Semua");
 
-  // ✅ Fetch agenda support kategori
+  // - Fetch agenda support kategori
   const fetchAgenda = async (
     page = currentPage,
     limit = 10,
@@ -58,7 +58,7 @@ export default function Agenda() {
   useEffect(() => {
     fetchAgenda(currentPage, 10, selectedCategory);
 
-    // ✅ Inisialisasi AOS
+    // - Inisialisasi AOS
     AOS.init({
       duration: 800,
       easing: "ease-in-out",
@@ -75,7 +75,7 @@ export default function Agenda() {
             Agenda Desa Babakan Asem
           </h1>
 
-          {/* ✅ FILTER KATEGORI */}
+          {/* - FILTER KATEGORI */}
           <div className="flex flex-wrap gap-3 my-4">
             {kategoriList.map((kategori) => (
               <button
@@ -115,7 +115,7 @@ export default function Agenda() {
                 <div
                   className="flex items-center bg-white border-l-4 border-green-500 rounded-lg p-3 shadow hover:shadow-md transition-all duration-200"
                   data-aos="fade-left"
-                  data-aos-delay={index * 100} // ✅ animasi bertahap
+                  data-aos-delay={index * 100} // - animasi bertahap
                 >
                   {/* Gambar agenda */}
                   <img
@@ -148,7 +148,7 @@ export default function Agenda() {
             ))
           )}
 
-          {/* ✅ Pagination cuma muncul kalau totalPages > 1 */}
+          {/* - Pagination cuma muncul kalau totalPages > 1 */}
           {totalPages > 1 && (
             <Pagination
               currentPage={currentPage}

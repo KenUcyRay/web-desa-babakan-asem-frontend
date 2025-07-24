@@ -36,7 +36,7 @@ export default function ForgotPassword() {
 
   return (
     <div className="flex min-h-screen font-poppins">
-      {/* ✅ Bagian Kiri: Form Forgot Password */}
+      {/* - Bagian Kiri: Form Forgot Password */}
       <div className="flex w-full md:w-1/2 items-center justify-center bg-gradient-to-b from-[#B6F500] to-[#FFFCE2] px-8 py-12">
         <div className="bg-white/90 backdrop-blur-md shadow-xl rounded-2xl w-full max-w-md p-8">
           {/* Judul */}
@@ -63,7 +63,7 @@ export default function ForgotPassword() {
               />
             </div>
 
-            {/* ✅ Tombol Gradien */}
+            {/* - Tombol Gradien */}
             <button
               type="submit"
               className="w-full py-3 bg-gradient-to-r from-green-400 to-[#B6F500] text-white font-semibold rounded-lg hover:opacity-90 transition duration-200"
@@ -74,7 +74,7 @@ export default function ForgotPassword() {
         </div>
       </div>
 
-      {/* ✅ Bagian Kanan: Ilustrasi Forgot Password */}
+      {/* - Bagian Kanan: Ilustrasi Forgot Password */}
       <div className="hidden md:flex w-1/2 items-center justify-center bg-gradient-to-b from-[#B6F500] to-[#FFFCE2] px-8 py-12">
         <img
           src={forgotImage}

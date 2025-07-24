@@ -30,7 +30,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
   const { logout, setAdminStatus } = useAuth();
   const [openInfografis, setOpenInfografis] = useState(false);
 
-  // ✅ supaya sidebar mobile gak langsung hilang
+  // - supaya sidebar mobile gak langsung hilang
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -242,12 +242,12 @@ export default function AdminSidebar({ isOpen, onClose }) {
         }
       `}</style>
 
-      {/* ✅ Sidebar versi desktop */}
+      {/* - Sidebar versi desktop */}
       <div className="hidden md:flex fixed top-0 left-0 h-screen w-64 bg-white shadow-lg flex-col border-r z-50">
         {renderSidebarContent()}
       </div>
 
-      {/* ✅ Sidebar versi mobile */}
+      {/* - Sidebar versi mobile */}
       {isVisible && (
         <div
           className={`fixed top-0 left-0 h-screen w-64 bg-white shadow-lg flex flex-col border-r z-50 md:hidden sidebar-mobile ${

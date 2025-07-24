@@ -73,7 +73,7 @@ export default function Login() {
 
   return (
     <div className="flex min-h-screen font-poppins">
-      {/* ✅ Bagian Kiri: Form Login */}
+      {/* - Bagian Kiri: Form Login */}
       <div className="flex w-full md:w-1/2 items-center justify-center bg-gradient-to-b from-[#B6F500] to-[#FFFCE2] px-8 py-12">
         <div
           className="bg-white/90 backdrop-blur-md shadow-xl rounded-2xl w-full max-w-md p-8"
@@ -87,7 +87,7 @@ export default function Login() {
           </p>
 
           <form className="space-y-4" onSubmit={handleSubmit}>
-            {/* ✅ Radio Email/HP */}
+            {/* - Radio Email/HP */}
             <div>
               <div className="flex justify-between items-center mb-1">
                 <label className="block text-gray-700 font-medium">
@@ -132,7 +132,7 @@ export default function Login() {
                 </div>
               </div>
 
-              {/* ✅ Input dinamis + animasi */}
+              {/* - Input dinamis + animasi */}
               <AnimatePresence mode="wait">
                 {loginMethod === "email" ? (
                   <motion.div
@@ -171,7 +171,7 @@ export default function Login() {
               </AnimatePresence>
             </div>
 
-            {/* ✅ Password */}
+            {/* - Password */}
             <div>
               <label className="block text-gray-700 font-medium mb-1">
                 Password
@@ -186,7 +186,7 @@ export default function Login() {
               />
             </div>
 
-            {/* ✅ Remember Me + Lupa Password */}
+            {/* - Remember Me + Lupa Password */}
             <div className="flex items-center justify-between text-sm">
               <label className="flex items-center gap-2">
                 <input
@@ -206,7 +206,7 @@ export default function Login() {
               </Link>
             </div>
 
-            {/* ✅ reCAPTCHA */}
+            {/* - reCAPTCHA */}
             <div className="min-w-ful flex items-center justify-center my-8 ">
               <ReCAPTCHA
                 ref={recaptchaRef}
@@ -243,7 +243,7 @@ export default function Login() {
         </div>
       </div>
 
-      {/* ✅ Bagian Kanan: Background tetap, hanya gambar animasi */}
+      {/* - Bagian Kanan: Background tetap, hanya gambar animasi */}
       <div className="hidden md:flex w-1/2 items-center justify-center bg-gradient-to-b from-[#B6F500] to-[#FFFCE2] px-8 py-12">
         <motion.img
           src={loginImage}

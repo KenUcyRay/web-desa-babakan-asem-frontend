@@ -25,7 +25,7 @@ export default function Berita() {
     }
   };
 
-  // ✅ Batasi deskripsi berita
+  // - Batasi deskripsi berita
   const truncateText = (text, maxLength = 100) => {
     if (!text) return "";
     return text.length > maxLength
@@ -36,7 +36,7 @@ export default function Berita() {
   useEffect(() => {
     fetchNews();
 
-    // ✅ Inisialisasi AOS saat halaman dimuat
+    // - Inisialisasi AOS saat halaman dimuat
     AOS.init({
       duration: 800, // durasi animasi
       easing: "ease-in-out", // efek transisi
@@ -60,7 +60,7 @@ export default function Berita() {
                 <div
                   className="bg-white rounded-xl shadow hover:shadow-md transition p-4 h-full flex flex-col"
                   data-aos="fade-up"
-                  data-aos-delay={index * 100} // ✅ Biar muncul bertahap
+                  data-aos-delay={index * 100} // - Biar muncul bertahap
                 >
                   {/* Gambar Berita */}
                   <img
@@ -92,7 +92,7 @@ export default function Berita() {
             ))}
           </div>
 
-          {/* ✅ Pagination */}
+          {/* - Pagination */}
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}

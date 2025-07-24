@@ -92,7 +92,7 @@ export class ProductApi {
     );
   }
 
-  // ✅ CREATE Rating
+  // - CREATE Rating
   static async createRating(productId, rating) {
     return await fetch(
       `${import.meta.env.VITE_BASE_URL}/products/rating/${productId}`,
@@ -108,7 +108,7 @@ export class ProductApi {
     );
   }
 
-  // ✅ CHECK kalau user sudah pernah rating
+  // - CHECK kalau user sudah pernah rating
   static async alreadyRated(productId) {
     return await fetch(
       `${import.meta.env.VITE_BASE_URL}/products/rating/${productId}`,
@@ -123,7 +123,7 @@ export class ProductApi {
     );
   }
 
-  // ✅ UPDATE Rating
+  // - UPDATE Rating
   static async updateRating(ratingId, rating) {
     return await fetch(
       `${import.meta.env.VITE_BASE_URL}/products/rating/${ratingId}`,
@@ -139,7 +139,7 @@ export class ProductApi {
     );
   }
 
-  // ✅ DELETE Rating
+  // - DELETE Rating
   static async deleteRating(ratingId) {
     return await fetch(
       `${import.meta.env.VITE_BASE_URL}/products/rating/${ratingId}`,

@@ -5,7 +5,7 @@ import { alertError } from "../../libs/alert";
 import { MemberApi } from "../../libs/api/MemberApi";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import logo from "../../assets/logo.png"; // ✅ Logo Desa
+import logo from "../../assets/logo.png"; // - Logo Desa
 
 export default function Pemerintahan() {
   const navigate = useNavigate();
@@ -66,12 +66,12 @@ export default function Pemerintahan() {
 
   return (
     <div className="font-poppins bg-gray-50">
-      {/* ✅ HERO SECTION - Layout sesuai contoh */}
+      {/* - HERO SECTION - Layout sesuai contoh */}
       <section className="bg-white py-16" data-aos="fade-up">
         <div className="max-w-6xl mx-auto px-6">
           <div className="grid md:grid-cols-3 gap-8 items-center">
             
-            {/* ✅ Judul Kiri */}
+            {/* - Judul Kiri */}
             <div data-aos="fade-right" className="text-left">
               <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
                 Pemerintah <br /> 
@@ -83,7 +83,7 @@ export default function Pemerintahan() {
               </p>
             </div>
 
-            {/* ✅ Logo Tengah */}
+            {/* - Logo Tengah */}
             <div className="flex justify-center" data-aos="zoom-in">
               <div className="rounded-2xl overflow-hidden shadow-xl p-6 bg-white">
                 <img 
@@ -94,7 +94,7 @@ export default function Pemerintahan() {
               </div>
             </div>
 
-            {/* ✅ Sambutan Kanan */}
+            {/* - Sambutan Kanan */}
                   <div data-aos="fade-left" className="text-left">
             <h2 className="text-2xl font-bold text-green-700 mb-3 tracking-wide">
             Sambutan Kepala Desa
@@ -112,7 +112,7 @@ export default function Pemerintahan() {
         </div>
       </section>
 
-      {/* ✅ STRUKTUR ORGANISASI (tetap sama) */}
+      {/* - STRUKTUR ORGANISASI (tetap sama) */}
       <section className="bg-green-50 py-14" data-aos="fade-up">
         <div className="max-w-5xl mx-auto px-6 text-center">
           <h2 className="text-3xl font-bold text-green-700 mb-10">Struktur Organisasi</h2>
@@ -139,7 +139,7 @@ export default function Pemerintahan() {
         </div>
       </section>
 
-      {/* ✅ LEMBAGA & LAYANAN (tetap sama) */}
+      {/* - LEMBAGA & LAYANAN (tetap sama) */}
       <section
         className="max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-2 gap-8"
         data-aos="fade-up"
@@ -184,7 +184,7 @@ export default function Pemerintahan() {
         </div>
       </section>
 
-      {/* ✅ REGULASI (tetap sama) */}
+      {/* - REGULASI (tetap sama) */}
       <section className="bg-white py-14" data-aos="fade-up">
         <div className="max-w-6xl mx-auto px-6 text-center">
           <h2 className="text-3xl font-bold text-gray-900 mb-8">

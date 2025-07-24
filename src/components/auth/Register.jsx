@@ -73,7 +73,7 @@ export default function Register() {
 
   return (
     <div className="flex min-h-screen font-poppins">
-      {/* ✅ Bagian Kiri: Form Register */}
+      {/* - Bagian Kiri: Form Register */}
       <div className="flex w-full md:w-1/2 items-center justify-center bg-gradient-to-b from-[#B6F500] to-[#FFFCE2] px-8 py-12">
         <div
           className="bg-white/90 backdrop-blur-md shadow-xl rounded-2xl w-full max-w-md p-8"
@@ -102,7 +102,7 @@ export default function Register() {
               />
             </div>
 
-            {/* ✅ Radio Email/HP */}
+            {/* - Radio Email/HP */}
             <div>
               <div className="flex justify-between items-center mb-1">
                 <label className="block text-gray-700 font-medium">
@@ -147,7 +147,7 @@ export default function Register() {
                 </div>
               </div>
 
-              {/* ✅ Input dinamis + animasi */}
+              {/* - Input dinamis + animasi */}
               <AnimatePresence mode="wait">
                 {loginMethod === "email" ? (
                   <motion.div
@@ -227,7 +227,7 @@ export default function Register() {
               Remember Me
             </label>
 
-            {/* ✅ reCAPTCHA */}
+            {/* - reCAPTCHA */}
             <div className="min-w-ful flex items-center justify-center my-8 ">
               <ReCAPTCHA
                 ref={recaptchaRef}
@@ -264,7 +264,7 @@ export default function Register() {
         </div>
       </div>
 
-      {/* ✅ Bagian Kanan: Background tetap, hanya gambar animasi */}
+      {/* - Bagian Kanan: Background tetap, hanya gambar animasi */}
       <div className="hidden md:flex w-1/2 items-center justify-center bg-gradient-to-b from-[#B6F500] to-[#FFFCE2] px-8 py-12">
         <motion.img
           src={registerImage}

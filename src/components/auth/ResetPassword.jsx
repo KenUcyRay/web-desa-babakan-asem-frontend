@@ -7,7 +7,7 @@ import { UserApi } from "../../libs/api/UserApi";
 export default function ResetPassword() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const token = searchParams.get("token"); // ✅ Ambil token dari URL
+  const token = searchParams.get("token"); // - Ambil token dari URL
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
@@ -45,7 +45,7 @@ export default function ResetPassword() {
 
   return (
     <div className="flex min-h-screen font-poppins">
-      {/* ✅ Bagian Kiri: Form Reset Password */}
+      {/* - Bagian Kiri: Form Reset Password */}
       <div className="flex w-full md:w-1/2 items-center justify-center bg-gradient-to-b from-[#B6F500] to-[#FFFCE2] px-8 py-12">
         <div className="bg-white/90 backdrop-blur-md shadow-xl rounded-2xl w-full max-w-md p-8">
           {/* Judul */}
@@ -86,11 +86,11 @@ export default function ResetPassword() {
               />
             </div>
 
-            {/* ✅ Tombol Gradien */}
+            {/* - Tombol Gradien */}
             <button
               type="submit"
               className="w-full py-3 bg-gradient-to-r from-green-400 to-[#B6F500] text-white font-semibold rounded-lg hover:opacity-90 transition duration-200"
-              disabled={!token} // ✅ Token wajib ada
+              disabled={!token} // - Token wajib ada
             >
               Simpan Password
             </button>
@@ -98,7 +98,7 @@ export default function ResetPassword() {
         </div>
       </div>
 
-      {/* ✅ Bagian Kanan: Ilustrasi Reset Password */}
+      {/* - Bagian Kanan: Ilustrasi Reset Password */}
       <div className="hidden md:flex w-1/2 items-center justify-center bg-gradient-to-b from-[#B6F500] to-[#FFFCE2] px-8 py-12">
         <img
           src={resetImage}

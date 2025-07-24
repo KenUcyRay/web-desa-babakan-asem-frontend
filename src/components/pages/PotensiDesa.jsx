@@ -5,26 +5,32 @@ import "react-responsive-carousel/lib/styles/carousel.min.css";
 import AOS from "aos";
 import "aos/dist/aos.css";
 
+// ✅ Import gambar lokal
+import tani from "../../assets/sawah.jpeg";
+import sapi from "../../assets/sapi.jpeg";
+import kebun from "../../assets/kebun.jpeg";
+
 export default function PotensiDesa() {
   useEffect(() => {
     AOS.init({ duration: 800, once: true });
   }, []);
 
+  // ✅ Ganti foto carousel ke gambar lokal
   const potensiImages = [
     {
-      src: "https://picsum.photos/1000/400?random=11",
+      src: tani,
       title: "Pertanian Subur",
-      desc: "Padi, jagung, ubi kayu, kacang tanah, dan sayuran segar dari lahan terbaik.",
+      desc: "Sawah luas menghasilkan padi, jagung, ubi kayu, dan sayuran segar.",
     },
     {
-      src: "https://picsum.photos/1000/400?random=12",
+      src: sapi,
       title: "Peternakan Terawat",
-      desc: "Sapi, kambing, ayam, dan domba yang menunjang ekonomi warga desa.",
+      desc: "Sapi, kambing, ayam, dan domba menunjang ketahanan pangan desa.",
     },
     {
-      src: "https://picsum.photos/1000/400?random=13",
+      src: kebun,
       title: "Perkebunan Hijau",
-      desc: "Mangga, pisang, dan tanaman hortikultura penghasilan tambahan warga.",
+      desc: "Perkebunan mangga, pisang, dan hortikultura menambah penghasilan warga.",
     },
   ];
 
@@ -33,19 +39,29 @@ export default function PotensiDesa() {
       <div className="max-w-7xl mx-auto px-4 md:px-8">
 
         {/* ✅ JUDUL */}
-        <h1 className="text-3xl md:text-4xl font-bold text-center text-gray-900" data-aos="fade-up">
+        <h1
+          className="text-3xl md:text-4xl font-bold text-center text-gray-900"
+          data-aos="fade-up"
+        >
           Potensi Desa Babakan Asem
         </h1>
-        <p className="text-center text-gray-600 mt-3 mb-10 max-w-2xl mx-auto" data-aos="fade-up" data-aos-delay="100">
+        <p
+          className="text-center text-gray-600 mt-3 mb-10 max-w-2xl mx-auto"
+          data-aos="fade-up"
+          data-aos-delay="100"
+        >
           Mayoritas warga bekerja sebagai petani, peternak, dan pekebun dengan hasil pangan yang berkualitas dan alami.
         </p>
 
         {/* ✅ GRID POTENSI */}
         <div className="grid gap-6 grid-cols-[repeat(auto-fit,minmax(320px,1fr))] mb-16">
           {/* Pertanian */}
-          <div className="bg-gradient-to-r from-[#9BEC00] to-[#D2FF72] p-6 rounded-lg shadow flex gap-4 items-center hover:shadow-xl transition" data-aos="fade-right">
+          <div
+            className="bg-gradient-to-r from-[#9BEC00] to-[#D2FF72] p-6 rounded-lg shadow flex gap-4 items-center hover:shadow-xl transition"
+            data-aos="fade-right"
+          >
             <img
-              src="https://picsum.photos/200/150?random=21"
+              src={tani}
               alt="Pertanian"
               className="rounded-md w-40 h-28 object-cover"
             />
@@ -60,10 +76,12 @@ export default function PotensiDesa() {
           </div>
 
           {/* Peternakan */}
-          <div className="bg-orange-50 p-6 rounded-lg shadow flex gap-4 items-center hover:shadow-xl transition" data-aos="fade-up">
-
+          <div
+            className="bg-orange-50 p-6 rounded-lg shadow flex gap-4 items-center hover:shadow-xl transition"
+            data-aos="fade-up"
+          >
             <img
-              src="https://picsum.photos/200/150?random=22"
+              src={sapi}
               alt="Peternakan"
               className="rounded-md w-40 h-28 object-cover"
             />
@@ -78,9 +96,12 @@ export default function PotensiDesa() {
           </div>
 
           {/* Perkebunan */}
-         <div className="bg-blue-50 p-6 rounded-lg shadow flex gap-4 items-center hover:shadow-xl transition md:col-span-2" data-aos="fade-left">
+          <div
+            className="bg-blue-50 p-6 rounded-lg shadow flex gap-4 items-center hover:shadow-xl transition md:col-span-2"
+            data-aos="fade-left"
+          >
             <img
-              src="https://picsum.photos/200/150?random=23"
+              src={kebun}
               alt="Perkebunan"
               className="rounded-md w-40 h-28 object-cover"
             />
