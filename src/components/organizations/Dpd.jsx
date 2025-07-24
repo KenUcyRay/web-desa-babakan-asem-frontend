@@ -54,7 +54,7 @@ export default function Dpd() {
 
   return (
     <div className="font-poppins text-gray-800 w-full">
-      {/* ✅ HERO Section */}
+      {/* - HERO Section */}
       <section className="relative bg-gradient-to-br from-green-50 to-yellow-50 w-full">
         <div className="w-full max-w-screen-2xl mx-auto px-4 md:px-8 py-12 flex flex-col md:flex-row items-center gap-10">
           <div className="flex-1 min-w-0" data-aos="fade-right">
@@ -77,7 +77,7 @@ export default function Dpd() {
         </div>
       </section>
 
-      {/* ✅ Statistik */}
+      {/* - Statistik */}
       <section className="w-full max-w-screen-2xl mx-auto px-4 md:px-8 py-12 grid sm:grid-cols-2 md:grid-cols-3 gap-6">
         <div
           className="bg-yellow-100 p-8 rounded-2xl shadow text-center hover:scale-105 transition"
@@ -104,7 +104,7 @@ export default function Dpd() {
         </div>
       </section>
 
-      {/* ✅ Struktur Organisasi */}
+      {/* - Struktur Organisasi */}
       <section className="w-full max-w-screen-2xl mx-auto px-4 md:px-8 py-12">
         <h2
           className="text-2xl md:text-3xl font-bold text-center mb-8"
@@ -121,24 +121,24 @@ export default function Dpd() {
               data-aos="fade-up"
               data-aos-delay={idx * 100}
             >
-              {/* ✅ Foto profil */}
+              {/* - Foto profil */}
               <img
                 src={`${import.meta.env.VITE_BASE_URL}/organizations/images/${member.profile_photo}`}
                 alt={member.name ?? member.title}
                 className="w-24 h-24 md:w-28 md:h-28 rounded-full mx-auto object-cover mb-4"
               />
 
-              {/* ✅ Nama lengkap anggota (fallback ke title kalau name kosong) */}
+              {/* - Nama lengkap anggota (fallback ke title kalau name kosong) */}
               <h3 className="text-base md:text-lg font-bold text-gray-900">
                 {member.name ?? member.title}
               </h3>
 
-              {/* ✅ Jabatan / Posisi */}
+              {/* - Jabatan / Posisi */}
               <p className="text-sm md:text-base text-green-700 font-medium">
                 {member.position}
               </p>
 
-              {/* ✅ Masa Jabatan */}
+              {/* - Masa Jabatan */}
               {(member.term_start || member.term_end) && (
                 <p className="text-xs text-gray-500 mt-1">
                   {member.term_start} - {member.term_end}
@@ -149,7 +149,7 @@ export default function Dpd() {
         </div>
       </section>
 
-      {/* ✅ Agenda Preview */}
+      {/* - Agenda Preview */}
       <section className="w-full max-w-screen-2xl mx-auto px-4 md:px-8 py-12 text-center">
         <h2 className="text-2xl md:text-3xl font-bold mb-8" data-aos="fade-up">
           Agenda Mendatang
@@ -186,7 +186,7 @@ export default function Dpd() {
           ))}
         </div>
 
-        {/* ✅ Tombol ke Detail */}
+        {/* - Tombol ke Detail */}
         <button
           onClick={() => navigate("/detail-dpd")}
           className="px-6 py-3 rounded-full bg-gradient-to-r from-[#9BEC00] to-[#D2FF72] shadow-md hover:shadow-lg hover:scale-105 transition font-semibold text-green-900"

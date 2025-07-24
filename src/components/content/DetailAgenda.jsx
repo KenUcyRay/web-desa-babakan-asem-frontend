@@ -14,7 +14,7 @@ export default function DetailAgenda() {
   const [comments, setComments] = useState([]);
   const [pesan, setPesan] = useState("");
 
-  // ✅ State edit komentar
+  // - State edit komentar
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editingContent, setEditingContent] = useState("");
 
@@ -81,13 +81,13 @@ export default function DetailAgenda() {
     setTimeout(() => navigate("/agenda"), 300);
   };
 
-  // ✅ mulai edit
+  // - mulai edit
   const startEditComment = (comment) => {
     setEditingCommentId(comment.id);
     setEditingContent(comment.content);
   };
 
-  // ✅ simpan edit
+  // - simpan edit
   const handleUpdateComment = async (commentId) => {
     const response = await CommentApi.updateComment(commentId, editingContent);
     const resBody = await response.json();
@@ -101,7 +101,7 @@ export default function DetailAgenda() {
     }
   };
 
-  // ✅ hapus komentar
+  // - hapus komentar
   const handleDeleteComment = async (commentId) => {
     if (!(await alertConfirm("Yakin ingin menghapus komentar ini?"))) return;
 
@@ -116,7 +116,7 @@ export default function DetailAgenda() {
     }
   };
 
-  // ✅ User login dari localStorage
+  // - User login dari localStorage
   const loggedInUser = JSON.parse(localStorage.getItem("user"));
 
   return (

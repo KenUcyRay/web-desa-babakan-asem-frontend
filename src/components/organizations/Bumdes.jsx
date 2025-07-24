@@ -34,7 +34,7 @@ export default function Bumdes() {
 
   return (
     <div className="font-poppins bg-[#f7ffe5] min-h-screen">
-      {/* ✅ HERO SECTION */}
+      {/* - HERO SECTION */}
       <div className="bg-gradient-to-r from-[#9BEC00] to-[#D2FF72] py-16 text-center shadow-sm">
         <div className="max-w-4xl mx-auto px-6">
           <h1
@@ -53,7 +53,7 @@ export default function Bumdes() {
         </div>
       </div>
 
-      {/* ✅ GRID PRODUK */}
+      {/* - GRID PRODUK */}
       <div className="max-w-6xl mx-auto px-4 py-12">
         {products.length === 0 ? (
           <p className="text-center text-gray-500 text-lg">
@@ -129,7 +129,7 @@ export default function Bumdes() {
           </div>
         )}
 
-        {/* ✅ PAGINATION */}
+        {/* - PAGINATION */}
         {products.length > 0 && (
           <div className="mt-10 flex justify-center" data-aos="fade-up">
             <Pagination
@@ -141,7 +141,7 @@ export default function Bumdes() {
         )}
       </div>
 
-      {/* ✅ FOOTER BUMDes */}
+      {/* - FOOTER BUMDes */}
       <div className="bg-gradient-to-r from-[#9BEC00] to-[#D2FF72] py-12 mt-12 text-center shadow-inner">
         <h2
           className="text-3xl md:text-4xl font-bold text-gray-900"

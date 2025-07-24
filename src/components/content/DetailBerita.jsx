@@ -16,11 +16,11 @@ export default function DetailBerita() {
   const [comments, setComments] = useState([]);
   const [pesan, setPesan] = useState("");
 
-  // ✅ State edit komentar
+  // - State edit komentar
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editingContent, setEditingContent] = useState("");
 
-  // ✅ Ambil user login dari localStorage
+  // - Ambil user login dari localStorage
   const loggedInUser = JSON.parse(localStorage.getItem("user"));
 
   const handleKomentar = async (e) => {
@@ -103,13 +103,13 @@ export default function DetailBerita() {
     setTimeout(() => navigate("/berita"), 300);
   };
 
-  // ✅ mulai edit komentar
+  // - mulai edit komentar
   const startEditComment = (comment) => {
     setEditingCommentId(comment.id);
     setEditingContent(comment.content);
   };
 
-  // ✅ simpan edit komentar
+  // - simpan edit komentar
   const handleUpdateComment = async (commentId) => {
     const response = await CommentApi.updateComment(commentId, editingContent);
     const resBody = await response.json();
@@ -123,7 +123,7 @@ export default function DetailBerita() {
     }
   };
 
-  // ✅ hapus komentar
+  // - hapus komentar
   const handleDeleteComment = async (commentId) => {
     if (!(await alertConfirm("Yakin ingin menghapus komentar ini?"))) return;
 
@@ -140,7 +140,7 @@ export default function DetailBerita() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-4 gap-6 font-poppins">
-      {/* ✅ Konten utama */}
+      {/* - Konten utama */}
       <div className="md:col-span-3">
         <button
           onClick={handleBack}
@@ -169,7 +169,7 @@ export default function DetailBerita() {
           <p>{news.content}</p>
         </div>
 
-        {/* ✅ Komentar */}
+        {/* - Komentar */}
         <div className="mt-10 p-6 bg-gray-50 rounded-lg shadow">
           <h2 className="text-xl font-semibold mb-4">💬 Tinggalkan Komentar</h2>
 
@@ -190,7 +190,7 @@ export default function DetailBerita() {
             </button>
           </form>
 
-          {/* ✅ List Komentar */}
+          {/* - List Komentar */}
           <div className="mt-6 space-y-4">
             {comments.map((c, i) => (
               <div key={i} className="p-4 bg-white rounded-lg shadow">
@@ -225,7 +225,7 @@ export default function DetailBerita() {
                       ✍ {c.user.name} • {Helper.formatTanggal(c.updated_at)}
                     </p>
 
-                    {/* ✅ Tombol Edit & Hapus sesuai aturan */}
+                    {/* - Tombol Edit & Hapus sesuai aturan */}
                     {user != {} && (
                       <div className="flex gap-3 mt-2">
                         {/* Edit hanya pemilik komentar */}

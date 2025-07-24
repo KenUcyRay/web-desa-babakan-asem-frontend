@@ -1,5 +1,5 @@
 export class CommentApi {
-  // ✅ Buat komentar baru
+  // - Buat komentar baru
   static async createComment(id, type, content) {
     return await fetch(
       `${import.meta.env.VITE_BASE_URL}/comments/create/${id}`,
@@ -18,7 +18,7 @@ export class CommentApi {
     );
   }
 
-  // ✅ Ambil komentar berdasarkan target ID (berita/agenda)
+  // - Ambil komentar berdasarkan target ID (berita/agenda)
   static async getComments(id, type) {
     return await fetch(`${import.meta.env.VITE_BASE_URL}/comments/${id}`, {
       method: "GET",
@@ -29,7 +29,7 @@ export class CommentApi {
     });
   }
 
-  // ✅ Update komentar
+  // - Update komentar
   static async updateComment(commentId, newContent) {
     return await fetch(
       `${import.meta.env.VITE_BASE_URL}/comments/update/${commentId}`,
@@ -47,7 +47,7 @@ export class CommentApi {
     );
   }
 
-  // ✅ Delete komentar
+  // - Delete komentar
   static async deleteComment(commentId) {
     return await fetch(
       `${import.meta.env.VITE_BASE_URL}/comments/delete/${commentId}`,

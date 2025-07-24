@@ -122,7 +122,7 @@ export default function Bansos() {
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-8 font-poppins bg-gray-50 min-h-screen">
-      {/* ✅ Header + tombol tambah */}
+      {/* - Header + tombol tambah */}
       <div className="flex justify-between items-center mb-8">
         <div>
           <h2 className="text-3xl font-bold text-gray-800">
@@ -140,7 +140,7 @@ export default function Bansos() {
         </button>
       </div>
 
-      {/* ✅ Grid data bansos */}
+      {/* - Grid data bansos */}
       <div className="grid sm:grid-cols-2 md:grid-cols-2 gap-6">
         {data.length > 0 ? (
           data.map((item, idx) => (
@@ -181,7 +181,7 @@ export default function Bansos() {
         )}
       </div>
 
-      {/* ✅ Modal form tambah/edit */}
+      {/* - Modal form tambah/edit */}
       {showForm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg p-6 w-80">

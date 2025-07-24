@@ -100,7 +100,7 @@ export default function SDGs() {
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-8 font-poppins bg-gray-50 min-h-screen">
-      {/* ✅ Header */}
+      {/* - Header */}
       <div className="grid md:grid-cols-2 gap-6 items-center mb-8">
         <div>
           <h2 className="text-3xl font-bold text-gray-800">SDGs Desa</h2>
@@ -113,7 +113,7 @@ export default function SDGs() {
         <img src={cuate} alt="SDGs" className="w-full max-w-md mx-auto" />
       </div>
 
-      {/* ✅ Grid data */}
+      {/* - Grid data */}
       <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
         {data.map((item, idx) => (
           <div
@@ -141,7 +141,7 @@ export default function SDGs() {
         ))}
       </div>
 
-      {/* ✅ Modal Edit Progress */}
+      {/* - Modal Edit Progress */}
       {showForm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg p-6 w-80">

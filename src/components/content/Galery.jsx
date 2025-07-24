@@ -34,7 +34,7 @@ export default function Galery() {
   return (
     <div className="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 md:px-8 py-10 font-poppins">
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 w-full">
-        {/* ✅ Galeri Utama */}
+        {/* - Galeri Utama */}
         <div className="lg:col-span-3 w-full">
           <h1
             className="text-3xl md:text-4xl font-extrabold text-center md:text-left mb-10 bg-gradient-to-r from-[#000000] to-[#ffffff] bg-clip-text text-transparent"
@@ -43,7 +43,7 @@ export default function Galery() {
             Galeri Kegiatan Desa
           </h1>
 
-          {/* ✅ Grid Galeri Auto-fit */}
+          {/* - Grid Galeri Auto-fit */}
           <div className="grid gap-6 grid-cols-[repeat(auto-fit,minmax(220px,1fr))]">
             {galery.map((img, idx) => (
               <div
@@ -70,7 +70,7 @@ export default function Galery() {
             ))}
           </div>
 
-          {/* ✅ Pagination */}
+          {/* - Pagination */}
           <div className="mt-10 flex justify-center" data-aos="fade-up">
             <Pagination
               currentPage={currentPage}
@@ -80,7 +80,7 @@ export default function Galery() {
           </div>
         </div>
 
-        {/* ✅ Sidebar */}
+        {/* - Sidebar */}
         <aside className="w-full" data-aos="fade-left">
           <SidebarInfo />
         </aside>

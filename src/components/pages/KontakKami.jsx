@@ -33,7 +33,7 @@ export default function KontakKami() {
 
   return (
     <div className="font-poppins">
-      {/* ✅ Banner dengan gradien hijau */}
+      {/* - Banner dengan gradien hijau */}
       <div className="bg-gradient-to-r from-[#9BEC00] to-[#D2FF72] py-16 text-center">
         <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
           Jangan Ragu untuk Terhubung dengan Kami
@@ -44,9 +44,9 @@ export default function KontakKami() {
         </p>
       </div>
 
-      {/* ✅ Konten utama */}
+      {/* - Konten utama */}
       <div className="max-w-6xl mx-auto mt-12 grid md:grid-cols-2 gap-10 px-4">
-        {/* ✅ FORM DALAM CARD SEPERTI CONTOH */}
+        {/* - FORM DALAM CARD SEPERTI CONTOH */}
         <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
           {/* Header form */}
           <div className="bg-gray-50 p-6 border-b text-center">
@@ -100,7 +100,7 @@ export default function KontakKami() {
                   required
                 ></textarea>
               </div>
-              {/* ✅ Tombol lebih elegan */}
+              {/* - Tombol lebih elegan */}
               <div className="text-center">
                 <button
                   type="submit"
@@ -113,7 +113,7 @@ export default function KontakKami() {
           </div>
         </div>
 
-        {/* ✅ BAGIAN KANAN INFO KONTAK LEBIH CLEAN */}
+        {/* - BAGIAN KANAN INFO KONTAK LEBIH CLEAN */}
         <div className="flex flex-col gap-6">
           {/* Alamat */}
           <div className="p-6 rounded-xl shadow-lg bg-white flex items-start gap-4 hover:shadow-xl transition">

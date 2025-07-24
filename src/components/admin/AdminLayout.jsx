@@ -10,7 +10,7 @@ export default function AdminLayout() {
   const { isLoggedIn } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // ✅ Cek Auth & Role
+  // - Cek Auth & Role
   const checkAuth = async () => {
     if (!isLoggedIn) {
       navigate("/login");
@@ -41,7 +41,7 @@ export default function AdminLayout() {
 
   return (
     <div className="flex min-h-screen bg-gray-100">
-      {/* ✅ SIDEBAR (desktop selalu tampil) */}
+      {/* - SIDEBAR (desktop selalu tampil) */}
       <aside
         className={`fixed top-0 left-0 z-40 w-64 h-full bg-white shadow-lg transform transition-transform duration-300 
         ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} 
@@ -50,7 +50,7 @@ export default function AdminLayout() {
         <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       </aside>
 
-      {/* ✅ OVERLAY untuk mobile */}
+      {/* - OVERLAY untuk mobile */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black/40 z-30 md:hidden"
@@ -58,9 +58,9 @@ export default function AdminLayout() {
         />
       )}
 
-      {/* ✅ MAIN CONTENT */}
+      {/* - MAIN CONTENT */}
       <div className="flex-1 flex flex-col md:ml-64 min-h-screen">
-        {/* ✅ Topbar khusus mobile */}
+        {/* - Topbar khusus mobile */}
         <div className="md:hidden flex items-center justify-between p-4 bg-white shadow">
           <button
             className="text-gray-700 text-xl"
@@ -72,7 +72,7 @@ export default function AdminLayout() {
           <div className="w-6" /> {/* Spacer biar balance */}
         </div>
 
-        {/* ✅ Outlet render halaman admin */}
+        {/* - Outlet render halaman admin */}
         <main className="flex-1 p-6">
           <Outlet />
         </main>

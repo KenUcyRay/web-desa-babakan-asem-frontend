@@ -12,23 +12,23 @@ import { alertConfirm, alertError, alertSuccess } from "../../../libs/alert";
 import { InfografisApi } from "../../../libs/api/InfografisApi";
 
 export default function ManageIDM() {
-  // ✅ Data grafik IDM
+  // - Data grafik IDM
   const [skorIDM, setSkorIDM] = useState([]);
   const [extraIdmId, setExtraIdmId] = useState(null);
 
-  // ✅ Data utama yang ditampilkan
+  // - Data utama yang ditampilkan
   const [statusDesa, setStatusDesa] = useState("Maju");
   const [dimensiSosial, setDimensiSosial] = useState(0.78);
   const [dimensiEkonomi, setDimensiEkonomi] = useState(0.72);
   const [dimensiLingkungan, setDimensiLingkungan] = useState(0.74);
 
-  // ✅ Data sementara (belum disimpan)
+  // - Data sementara (belum disimpan)
   const [tempStatus, setTempStatus] = useState(statusDesa);
   const [tempSosial, setTempSosial] = useState(dimensiSosial);
   const [tempEkonomi, setTempEkonomi] = useState(dimensiEkonomi);
   const [tempLingkungan, setTempLingkungan] = useState(dimensiLingkungan);
 
-  // ✅ Simpan perubahan kotak statistik
+  // - Simpan perubahan kotak statistik
   const handleSaveStatistik = async () => {
     if (!extraIdmId) return alertError("ID data statistik tidak ditemukan.");
 
@@ -54,7 +54,7 @@ export default function ManageIDM() {
     alertSuccess("Data statistik berhasil diperbarui.");
   };
 
-  // ✅ Modal tambah/edit skor IDM
+  // - Modal tambah/edit skor IDM
   const [showForm, setShowForm] = useState(false);
   const [isAdding, setIsAdding] = useState(true);
   const [editingIndex, setEditingIndex] = useState(null);
@@ -206,7 +206,7 @@ export default function ManageIDM() {
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-8 font-poppins bg-gray-50 min-h-screen">
-      {/* ✅ Header */}
+      {/* - Header */}
       <div className="flex justify-between items-center mb-8">
         <div>
           <h2 className="text-3xl font-bold text-gray-800">
@@ -225,7 +225,7 @@ export default function ManageIDM() {
         </button>
       </div>
 
-      {/* ✅ Kotak Statistik (edit & simpan) */}
+      {/* - Kotak Statistik (edit & simpan) */}
       <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-6 mt-8">
         <div className="flex flex-col items-center bg-white p-6 rounded-xl shadow">
           <p className="text-gray-600">Status Desa</p>
@@ -282,7 +282,7 @@ export default function ManageIDM() {
         </div>
       </div>
 
-      {/* ✅ Tombol Simpan Perubahan */}
+      {/* - Tombol Simpan Perubahan */}
       <div className="flex justify-end mt-4">
         <button
           onClick={handleSaveStatistik}
@@ -292,7 +292,7 @@ export default function ManageIDM() {
         </button>
       </div>
 
-      {/* ✅ Tampilan nilai tersimpan */}
+      {/* - Tampilan nilai tersimpan */}
       <div className="mt-4 text-gray-700">
         <p>
           <strong>Status Desa:</strong> {statusDesa}
@@ -308,7 +308,7 @@ export default function ManageIDM() {
         </p>
       </div>
 
-      {/* ✅ Tabel Data */}
+      {/* - Tabel Data */}
       <div className="overflow-x-auto mt-8">
         <table className="w-full bg-white rounded-xl shadow">
           <thead className="bg-gray-100">
@@ -357,7 +357,7 @@ export default function ManageIDM() {
         </table>
       </div>
 
-      {/* ✅ Grafik Line */}
+      {/* - Grafik Line */}
       <div className="mt-12">
         <h3 className="text-2xl font-bold text-gray-800 text-center mb-6">
           Grafik Perkembangan Skor IDM
@@ -379,7 +379,7 @@ export default function ManageIDM() {
         </ResponsiveContainer>
       </div>
 
-      {/* ✅ Modal Form Tambah/Edit Skor IDM */}
+      {/* - Modal Form Tambah/Edit Skor IDM */}
       {showForm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg p-6 w-80">

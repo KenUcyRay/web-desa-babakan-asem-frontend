@@ -72,7 +72,7 @@ export default function Home() {
     },
   ];
 
-  // ✅ Data Chart untuk ComboChart
+  // - Data Chart untuk ComboChart
   const apbData = [
     { name: "Pendapatan", anggaran: 350, realisasi: 300 },
     { name: "Belanja", anggaran: 280, realisasi: 250 },
@@ -111,7 +111,7 @@ export default function Home() {
 
   return (
     <div className="font-[Poppins] w-full">
-      {/* ✅ HERO VIDEO */}
+      {/* - HERO VIDEO */}
       <div className="relative h-screen w-full">
         <video
           autoPlay
@@ -147,7 +147,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ✅ QUICK MENU */}
+      {/* - QUICK MENU */}
       <div className="w-full px-[5%] py-10 grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-6">
         {quickMenu.map((item, idx) => (
           <Link
@@ -167,7 +167,7 @@ export default function Home() {
         ))}
       </div>
 
-      {/* ✅ TENTANG DESA */}
+      {/* - TENTANG DESA */}
       <div
         className="bg-green-50 py-[clamp(2rem,6vh,4rem)] px-[5%]"
         data-aos="fade-up"
@@ -199,7 +199,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ✅ BERITA TERBARU */}
+      {/* - BERITA TERBARU */}
       <div className="w-full px-[5%] py-[clamp(2rem,6vh,4rem)]">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-[clamp(1.1rem,1.8vw,1.5rem)] font-bold">
@@ -241,7 +241,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ✅ PRODUK BUMDes PREVIEW (CARD PERSIS BUMDes.jsx) */}
+      {/* - PRODUK BUMDes PREVIEW (CARD PERSIS BUMDes.jsx) */}
       <div
         className="bg-green-50 py-[clamp(2rem,6vh,4rem)] px-[5%]"
         data-aos="fade-up"
@@ -326,7 +326,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ✅ APB Desa Combo Chart */}
+      {/* - APB Desa Combo Chart */}
       <div className="w-full px-[5%] py-[clamp(2rem,6vh,4rem)]">
         <h2
           className="text-[clamp(1.3rem,2.2vw,1.8rem)] font-bold text-center text-green-700 mb-8"
@@ -361,7 +361,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ✅ MAP DESA */}
+      {/* - MAP DESA */}
       <div className="relative h-[30vh] md:h-[40vh] w-full">
         <iframe
           title="Peta Desa Babakan Asem"

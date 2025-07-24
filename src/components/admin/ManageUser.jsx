@@ -96,7 +96,7 @@ export default function ManageUser() {
 
   return (
     <div className="font-[Poppins,sans-serif]">
-      {/* ✅ Header + Tombol */}
+      {/* - Header + Tombol */}
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3 mb-6">
         <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
           <FaUserShield className="text-green-500" /> Kelola Akun Admin
@@ -125,7 +125,7 @@ export default function ManageUser() {
         </div>
       </div>
 
-      {/* ✅ Form Tambah Admin */}
+      {/* - Form Tambah Admin */}
       {showAddForm && (
         <form
           onSubmit={handleAddAdmin}
@@ -188,7 +188,7 @@ export default function ManageUser() {
         </form>
       )}
 
-      {/* ✅ Form Promote User */}
+      {/* - Form Promote User */}
       {showPromoteForm && (
         <form
           onSubmit={handlePromoteUser}
@@ -222,7 +222,7 @@ export default function ManageUser() {
         </form>
       )}
 
-      {/* ✅ Table Desktop */}
+      {/* - Table Desktop */}
       <div className="bg-white rounded-xl shadow overflow-x-auto hidden md:block">
         <table className="w-full text-left border-collapse min-w-[700px]">
           <thead className="bg-gray-100 text-gray-700">
@@ -267,7 +267,7 @@ export default function ManageUser() {
         </table>
       </div>
 
-      {/* ✅ Mobile Card View */}
+      {/* - Mobile Card View */}
       <div className="md:hidden grid gap-4">
         {users.map((user, index) => (
           <div key={user.id} className="bg-white p-4 rounded-lg shadow space-y-2">
@@ -291,7 +291,7 @@ export default function ManageUser() {
         )}
       </div>
 
-      {/* ✅ Pagination */}
+      {/* - Pagination */}
       <div className="mt-4">
         <Pagination
           currentPage={currentPage}
