@@ -4,7 +4,7 @@ import { FaWhatsapp, FaStar, FaRegStar, FaStarHalfAlt } from "react-icons/fa";
 import { HiArrowLeft } from "react-icons/hi";
 import SidebarProduk from "../layout/SidebarProduk";
 import { Helper } from "../../utils/Helper";
-import { alertError, alertSuccess } from "../../libs/alert";
+import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 import { CommentApi } from "../../libs/api/CommentApi";
 import { ProductApi } from "../../libs/api/ProductApi";
 
@@ -21,6 +21,9 @@ export default function DetailProduk() {
   const [userRatingId, setUserRatingId] = useState(null);
   const [showSubmitRating, setShowSubmitRating] = useState(false);
 
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editingContent, setEditingContent] = useState("");
+
   const userToken = JSON.parse(localStorage.getItem("token"));
 
   const fetchDetailProduct = async () => {
@@ -31,7 +34,9 @@ export default function DetailProduk() {
       setAverageRating(responseBody.rating ?? 0);
       setComments(responseBody.comments ?? []);
     } else {
-      await alertError("Gagal mengambil detail product. Silakan coba lagi nanti.");
+      await alertError(
+        "Gagal mengambil detail product. Silakan coba lagi nanti."
+      );
       navigate("/bumdes");
     }
   };
@@ -49,10 +54,10 @@ export default function DetailProduk() {
     const response = await ProductApi.alreadyRated(id);
     const responseBody = await response.json();
 
-    if (response.ok && responseBody.rated) {
+    if (response.ok) {
       setUserRated(true);
-      setUserTempRating(responseBody.rating.value);
-      setUserRatingId(responseBody.rating.id);
+      setUserTempRating(responseBody.rating);
+      setUserRatingId(responseBody.id);
     }
   };
 
@@ -75,7 +80,7 @@ export default function DetailProduk() {
   const handleKomentar = async (e) => {
     e.preventDefault();
     if (!userToken) {
-      alert("⚠ Silakan login dulu untuk memberikan komentar!");
+      await alertError("⚠ Silakan login dulu untuk memberikan komentar!");
       navigate("/login");
       return;
     }
@@ -93,9 +98,9 @@ export default function DetailProduk() {
     fetchComment();
   };
 
-  const handleSelectStar = (value) => {
+  const handleSelectStar = async (value) => {
     if (!userToken) {
-      alert("Silakan login dulu untuk memberi rating!");
+      await alertError("Silakan login dulu untuk memberi rating!");
       navigate("/login");
       return;
     }
@@ -110,10 +115,15 @@ export default function DetailProduk() {
         await alertError("Gagal mengirim rating. Silakan coba lagi.");
         return;
       }
-      await alertSuccess(`Terima kasih! Rating ${userTempRating} ⭐ telah dikirim.`);
+      await alertSuccess(
+        `Terima kasih! Rating ${userTempRating} ⭐ telah dikirim.`
+      );
       setUserRated(true);
     } else {
-      const response = await ProductApi.updateRating(userRatingId, userTempRating);
+      const response = await ProductApi.updateRating(
+        userRatingId,
+        userTempRating
+      );
       if (!response.ok) {
         await alertError("Gagal mengupdate rating.");
         return;
@@ -127,7 +137,7 @@ export default function DetailProduk() {
   };
 
   const handleDeleteRating = async () => {
-    if (!confirm("Yakin ingin menghapus rating kamu?")) return;
+    if (!alertConfirm("Yakin ingin menghapus rating kamu?")) return;
 
     const response = await ProductApi.deleteRating(userRatingId);
     if (!response.ok) {
@@ -155,6 +165,44 @@ export default function DetailProduk() {
     setTimeout(() => navigate(-1), 300);
   };
 
+  // ✅ mulai edit
+  const startEditComment = (comment) => {
+    setEditingCommentId(comment.id);
+    setEditingContent(comment.content);
+  };
+
+  // ✅ simpan edit
+  const handleUpdateComment = async (commentId) => {
+    const response = await CommentApi.updateComment(commentId, editingContent);
+    const resBody = await response.json();
+
+    if (response.status === 200) {
+      await alertSuccess("Komentar berhasil diupdate!");
+      setEditingCommentId(null);
+      fetchComments();
+    } else {
+      await alertError(`Gagal update komentar: ${resBody.error}`);
+    }
+  };
+
+  // ✅ hapus komentar
+  const handleDeleteComment = async (commentId) => {
+    if (!(await alertConfirm("Yakin ingin menghapus komentar ini?"))) return;
+
+    const response = await CommentApi.deleteComment(commentId);
+    const resBody = await response.json();
+
+    if (response.status === 200) {
+      await alertSuccess("Komentar berhasil dihapus!");
+      await fetchComment();
+    } else {
+      await alertError(`Gagal hapus komentar: ${resBody.error}`);
+    }
+  };
+
+  // ✅ User login dari localStorage
+  const loggedInUser = JSON.parse(localStorage.getItem("user"));
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-4 gap-6 font-poppins">
       <div className="md:col-span-3">
@@ -170,7 +218,9 @@ export default function DetailProduk() {
         {/* ✅ Gambar Produk pakai object-contain */}
         <div className="w-full h-96 flex items-center justify-center bg-white rounded-lg mb-6">
           <img
-            src={`${import.meta.env.VITE_BASE_URL}/products/images/${product.featured_image}`}
+            src={`${import.meta.env.VITE_BASE_URL}/products/images/${
+              product.featured_image
+            }`}
             alt={product.title}
             className="max-h-full max-w-full object-contain"
           />
@@ -296,11 +346,63 @@ export default function DetailProduk() {
           <div className="mt-6 space-y-4">
             {comments.map((c, i) => (
               <div key={i} className="p-4 bg-white rounded-lg shadow">
-                <p className="text-sm text-gray-700">{c.content}</p>
-                <p className="text-xs text-gray-500 mt-1">
-                  ✍ {c.user?.name ?? "Anonim"} •{" "}
-                  {Helper.formatTanggal(c.updated_at)}
-                </p>
+                {/* Kalau sedang edit */}
+                {editingCommentId === c.id ? (
+                  <div className="space-y-2">
+                    <textarea
+                      className="w-full p-2 border rounded"
+                      rows="3"
+                      value={editingContent}
+                      onChange={(e) => setEditingContent(e.target.value)}
+                    />
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleUpdateComment(c.id)}
+                        className="px-4 py-1 bg-green-500 text-white rounded hover:bg-green-600"
+                      >
+                        Simpan
+                      </button>
+                      <button
+                        onClick={() => setEditingCommentId(null)}
+                        className="px-4 py-1 bg-gray-300 rounded hover:bg-gray-400"
+                      >
+                        Batal
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <p className="text-sm text-gray-700">{c.content}</p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      ✍ {c.user.name} • {Helper.formatTanggal(c.updated_at)}
+                    </p>
+
+                    {loggedInUser && (
+                      <div className="flex gap-3 mt-2">
+                        {/* Edit hanya bisa dilakukan oleh pemilik komentar */}
+                        {loggedInUser.id === c.user.id && (
+                          <button
+                            onClick={() => startEditComment(c)}
+                            className="text-blue-500 text-sm hover:underline"
+                          >
+                            Edit
+                          </button>
+                        )}
+
+                        {/* Hapus bisa dilakukan oleh pemilik komentar atau admin */}
+                        {(loggedInUser.id === c.user.id ||
+                          loggedInUser.role === "ADMIN") && (
+                          <button
+                            onClick={() => handleDeleteComment(c.id)}
+                            className="text-red-500 text-sm hover:underline"
+                          >
+                            Hapus
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
             ))}
             {comments.length === 0 && (

@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import SidebarInfo from "../layout/SidebarInfo";
 import { AgendaApi } from "../../libs/api/AgendaApi";
 import { CommentApi } from "../../libs/api/CommentApi";
-import { alertError, alertSuccess } from "../../libs/alert";
+import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 import { Helper } from "../../utils/Helper";
 import { HiArrowLeft } from "react-icons/hi";
 
@@ -49,7 +49,9 @@ export default function DetailAgenda() {
       setAgenda(responseBody.agenda);
       setComments(responseBody.comments);
     } else {
-      await alertError(`Gagal mengambil detail agenda. Silakan coba lagi nanti.`);
+      await alertError(
+        `Gagal mengambil detail agenda. Silakan coba lagi nanti.`
+      );
       navigate("/agenda");
     }
   };
@@ -101,7 +103,7 @@ export default function DetailAgenda() {
 
   // ✅ hapus komentar
   const handleDeleteComment = async (commentId) => {
-    if (!confirm("Yakin ingin menghapus komentar ini?")) return;
+    if (!(await alertConfirm("Yakin ingin menghapus komentar ini?"))) return;
 
     const response = await CommentApi.deleteComment(commentId);
     const resBody = await response.json();
@@ -131,7 +133,9 @@ export default function DetailAgenda() {
 
         {/* Gambar */}
         <img
-          src={`${import.meta.env.VITE_BASE_URL}/agenda/images/${agenda.featured_image}`}
+          src={`${import.meta.env.VITE_BASE_URL}/agenda/images/${
+            agenda.featured_image
+          }`}
           alt="Detail Agenda"
           className="w-full h-96 object-cover rounded-lg mb-6"
         />
@@ -204,21 +208,28 @@ export default function DetailAgenda() {
                       ✍ {c.user.name} • {Helper.formatTanggal(c.updated_at)}
                     </p>
 
-                    {/* Tombol hanya muncul di komen milik sendiri */}
-                    {loggedInUser && loggedInUser.id === c.user.id && (
+                    {loggedInUser && (
                       <div className="flex gap-3 mt-2">
-                        <button
-                          onClick={() => startEditComment(c)}
-                          className="text-blue-500 text-sm hover:underline"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDeleteComment(c.id)}
-                          className="text-red-500 text-sm hover:underline"
-                        >
-                          Hapus
-                        </button>
+                        {/* Edit hanya bisa dilakukan oleh pemilik komentar */}
+                        {loggedInUser.id === c.user.id && (
+                          <button
+                            onClick={() => startEditComment(c)}
+                            className="text-blue-500 text-sm hover:underline"
+                          >
+                            Edit
+                          </button>
+                        )}
+
+                        {/* Hapus bisa dilakukan oleh pemilik komentar atau admin */}
+                        {(loggedInUser.id === c.user.id ||
+                          loggedInUser.role === "ADMIN") && (
+                          <button
+                            onClick={() => handleDeleteComment(c.id)}
+                            className="text-red-500 text-sm hover:underline"
+                          >
+                            Hapus
+                          </button>
+                        )}
                       </div>
                     )}
                   </>
