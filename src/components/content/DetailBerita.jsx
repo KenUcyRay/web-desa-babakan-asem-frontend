@@ -6,6 +6,7 @@ import { alertError, alertSuccess } from "../../libs/alert";
 import { Helper } from "../../utils/Helper";
 import { CommentApi } from "../../libs/api/CommentApi";
 import { HiArrowLeft } from "react-icons/hi";
+import { UserApi } from "../../libs/api/UserApi";
 
 export default function DetailBerita() {
   const { id } = useParams();
@@ -54,7 +55,9 @@ export default function DetailBerita() {
       setUserCreated(responseBody.user_created);
       setComments(responseBody.comments);
     } else {
-      await alertError("Gagal mengambil detail berita. Silakan coba lagi nanti.");
+      await alertError(
+        "Gagal mengambil detail berita. Silakan coba lagi nanti."
+      );
       navigate("/berita");
     }
   };
@@ -72,6 +75,20 @@ export default function DetailBerita() {
   useEffect(() => {
     fetchDetailBerita();
   }, [id]);
+
+  const [user, setUser] = useState({});
+
+  const fetchUser = async () => {
+    const response = await UserApi.getUserProfile();
+    const responseBody = await response.json();
+    if (response.status === 200) {
+      setUser(responseBody.user);
+    }
+  };
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -134,7 +151,9 @@ export default function DetailBerita() {
         </button>
 
         <img
-          src={`${import.meta.env.VITE_BASE_URL}/news/images/${news.featured_image}`}
+          src={`${import.meta.env.VITE_BASE_URL}/news/images/${
+            news.featured_image
+          }`}
           alt="Detail Berita"
           className="w-full h-96 object-cover rounded-lg mb-6"
         />
@@ -142,7 +161,8 @@ export default function DetailBerita() {
         <h1 className="text-2xl font-bold mb-3">{news.title}</h1>
         <p className="text-sm text-gray-500 mb-6">
           Oleh {userCreated.name} | Tanggal:{" "}
-          {Helper.formatTanggal(news.published_at)} | 👁 {news.view_count} Dilihat
+          {Helper.formatTanggal(news.published_at)} | 👁 {news.view_count}{" "}
+          Dilihat
         </p>
 
         <div className="space-y-4 text-gray-800 leading-relaxed">
@@ -206,10 +226,10 @@ export default function DetailBerita() {
                     </p>
 
                     {/* ✅ Tombol Edit & Hapus sesuai aturan */}
-                    {loggedInUser && (
+                    {user != {} && (
                       <div className="flex gap-3 mt-2">
                         {/* Edit hanya pemilik komentar */}
-                        {loggedInUser.id === c.user.id && (
+                        {user.id === c.user.id && (
                           <button
                             onClick={() => startEditComment(c)}
                             className="text-blue-500 text-sm hover:underline"
@@ -219,8 +239,7 @@ export default function DetailBerita() {
                         )}
 
                         {/* Hapus bisa pemilik komentar atau ADMIN */}
-                        {(loggedInUser.id === c.user.id ||
-                          loggedInUser.role === "ADMIN") && (
+                        {user.id === c.user.id && (
                           <button
                             onClick={() => handleDeleteComment(c.id)}
                             className="text-red-500 text-sm hover:underline"
