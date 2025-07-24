@@ -5,6 +5,8 @@ import Pagination from "../ui/Pagination";
 import { NewsApi } from "../../libs/api/NewsApi";
 import { Helper } from "../../utils/Helper";
 import { alertError } from "../../libs/alert";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 export default function Berita() {
   const [news, setNews] = useState([]);
@@ -33,6 +35,13 @@ export default function Berita() {
 
   useEffect(() => {
     fetchNews();
+
+    // ✅ Inisialisasi AOS saat halaman dimuat
+    AOS.init({
+      duration: 800, // durasi animasi
+      easing: "ease-in-out", // efek transisi
+      once: true, // animasi hanya sekali
+    });
   }, [currentPage]);
 
   return (
@@ -46,9 +55,13 @@ export default function Berita() {
 
           {/* Grid daftar berita */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {news.map((n) => (
+            {news.map((n, index) => (
               <Link to={`/berita/${n.news.id}`} key={n.news.id}>
-                <div className="bg-white rounded-xl shadow hover:shadow-md transition p-4 h-full flex flex-col">
+                <div
+                  className="bg-white rounded-xl shadow hover:shadow-md transition p-4 h-full flex flex-col"
+                  data-aos="fade-up"
+                  data-aos-delay={index * 100} // ✅ Biar muncul bertahap
+                >
                   {/* Gambar Berita */}
                   <img
                     src={`${import.meta.env.VITE_BASE_URL}/news/images/${

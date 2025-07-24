@@ -1,47 +1,51 @@
+import React, { useEffect } from "react";
 import { FaSeedling, FaHorse, FaTree } from "react-icons/fa";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
-import { useNavigate } from "react-router-dom";
-import { HiHome } from "react-icons/hi";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 export default function PotensiDesa() {
-  const navigate = useNavigate();
+  useEffect(() => {
+    AOS.init({ duration: 800, once: true });
+  }, []);
 
-  const carouselImages = [
+  const potensiImages = [
     {
-      src: "https://picsum.photos/1000/400?random=1",
-      caption: "Wisata Desa - Alam yang Asri",
+      src: "https://picsum.photos/1000/400?random=11",
+      title: "Pertanian Subur",
+      desc: "Padi, jagung, ubi kayu, kacang tanah, dan sayuran segar dari lahan terbaik.",
     },
     {
-      src: "https://picsum.photos/1000/400?random=2",
-      caption: "Kerajinan Tangan Warga",
+      src: "https://picsum.photos/1000/400?random=12",
+      title: "Peternakan Terawat",
+      desc: "Sapi, kambing, ayam, dan domba yang menunjang ekonomi warga desa.",
     },
     {
-      src: "https://picsum.photos/1000/400?random=3",
-      caption: "Hasil Panen Desa",
+      src: "https://picsum.photos/1000/400?random=13",
+      title: "Perkebunan Hijau",
+      desc: "Mangga, pisang, dan tanaman hortikultura penghasilan tambahan warga.",
     },
   ];
 
   return (
-    <div className="bg-gray-50 py-10 font-poppins">
+    <div className="bg-gray-50 py-12 font-poppins">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
-        
-        {/* Judul Halaman */}
-        <h1 className="text-3xl font-bold text-center text-gray-900">
-          Potensi Desa
+
+        {/* ✅ JUDUL */}
+        <h1 className="text-3xl md:text-4xl font-bold text-center text-gray-900" data-aos="fade-up">
+          Potensi Desa Babakan Asem
         </h1>
-        <p className="text-center text-gray-600 mt-2 mb-10">
-          Mata pencaharian utama penduduk Desa Babakan Asem adalah sebagai
-          petani baik buruh tani maupun petani mandiri yang menggarap lahan
-          milik sendiri.
+        <p className="text-center text-gray-600 mt-3 mb-10 max-w-2xl mx-auto" data-aos="fade-up" data-aos-delay="100">
+          Mayoritas warga bekerja sebagai petani, peternak, dan pekebun dengan hasil pangan yang berkualitas dan alami.
         </p>
 
-        {/* ✅ Potensi Utama */}
-        <div className="grid gap-6 grid-cols-[repeat(auto-fit,minmax(320px,1fr))] mb-10">
+        {/* ✅ GRID POTENSI */}
+        <div className="grid gap-6 grid-cols-[repeat(auto-fit,minmax(320px,1fr))] mb-16">
           {/* Pertanian */}
-          <div className="bg-[#B6F500] p-6 rounded-lg shadow flex gap-4 items-center hover:shadow-xl transition">
+          <div className="bg-gradient-to-r from-[#9BEC00] to-[#D2FF72] p-6 rounded-lg shadow flex gap-4 items-center hover:shadow-xl transition" data-aos="fade-right">
             <img
-              src="https://picsum.photos/200/150?random=4"
+              src="https://picsum.photos/200/150?random=21"
               alt="Pertanian"
               className="rounded-md w-40 h-28 object-cover"
             />
@@ -50,16 +54,15 @@ export default function PotensiDesa() {
                 <FaSeedling /> Pertanian
               </h2>
               <p className="text-sm mt-2 text-gray-800">
-                Mayoritas penduduk bekerja di sektor pertanian seperti padi,
-                jagung, ubi kayu, kacang tanah, dan sayuran.
+                Padi, jagung, ubi kayu, kacang tanah, dan sayuran menjadi andalan desa.
               </p>
             </div>
           </div>
 
           {/* Peternakan */}
-          <div className="bg-orange-200 p-6 rounded-lg shadow flex gap-4 items-center hover:shadow-xl transition">
+          <div className="bg-orange-200 p-6 rounded-lg shadow flex gap-4 items-center hover:shadow-xl transition" data-aos="fade-up">
             <img
-              src="https://picsum.photos/200/150?random=5"
+              src="https://picsum.photos/200/150?random=22"
               alt="Peternakan"
               className="rounded-md w-40 h-28 object-cover"
             />
@@ -68,16 +71,15 @@ export default function PotensiDesa() {
                 <FaHorse /> Peternakan
               </h2>
               <p className="text-sm mt-2 text-gray-800">
-                Peternakan sapi, kambing, ayam, & domba untuk konsumsi lokal
-                serta penunjang ekonomi warga.
+                Sapi, kambing, ayam, & domba untuk konsumsi lokal dan meningkatkan ekonomi warga.
               </p>
             </div>
           </div>
 
           {/* Perkebunan */}
-          <div className="bg-blue-100 p-6 rounded-lg shadow flex gap-4 items-center hover:shadow-xl transition md:col-span-2">
+          <div className="bg-blue-100 p-6 rounded-lg shadow flex gap-4 items-center hover:shadow-xl transition md:col-span-2" data-aos="fade-left">
             <img
-              src="https://picsum.photos/200/150?random=6"
+              src="https://picsum.photos/200/150?random=23"
               alt="Perkebunan"
               className="rounded-md w-40 h-28 object-cover"
             />
@@ -86,38 +88,43 @@ export default function PotensiDesa() {
                 <FaTree /> Perkebunan
               </h2>
               <p className="text-sm mt-2 text-gray-800">
-                Perkebunan mangga, pisang, dan tanaman hortikultura untuk
-                tambahan penghasilan warga.
+                Mangga, pisang, dan tanaman hortikultura menjadi tambahan penghasilan warga.
               </p>
             </div>
           </div>
         </div>
 
-        {/* ✅ Wisata Desa */}
-        <h2 className="text-2xl font-bold text-center mb-4">Wisata Desa</h2>
-        <p className="text-center text-gray-600 mb-6">
-          Semua individu pasti butuh hiburan – Wisata Alam Khas Desa Babakan
-          Asem
-        </p>
+        {/* ✅ CAROUSEL FOTO POTENSI */}
+        <div data-aos="zoom-in">
+          <h2 className="text-2xl md:text-3xl font-bold text-center mb-4">
+            Dari bumi subur dan ternak terawat, <br className="hidden md:block" />
+            kami hadirkan pangan berkualitas untuk keluarga Anda
+          </h2>
+          <p className="text-center text-gray-600 mb-6">
+            Lihat langsung potensi unggulan desa kami melalui galeri foto di bawah ini.
+          </p>
 
-        <Carousel
-          autoPlay
-          infiniteLoop
-          showThumbs={false}
-          showStatus={false}
-          interval={3000}
-        >
-          {carouselImages.map((item, index) => (
-            <div key={index}>
-              <img
-                src={item.src}
-                alt={item.caption}
-                className="rounded-lg shadow-md"
-              />
-              <p className="legend">{item.caption}</p>
-            </div>
-          ))}
-        </Carousel>
+          <Carousel
+            autoPlay
+            infiniteLoop
+            showThumbs={false}
+            showStatus={false}
+            interval={3000}
+          >
+            {potensiImages.map((item, index) => (
+              <div key={index}>
+                <img
+                  src={item.src}
+                  alt={item.title}
+                  className="rounded-lg shadow-md"
+                />
+                <p className="legend">
+                  <strong>{item.title}</strong> – {item.desc}
+                </p>
+              </div>
+            ))}
+          </Carousel>
+        </div>
       </div>
     </div>
   );

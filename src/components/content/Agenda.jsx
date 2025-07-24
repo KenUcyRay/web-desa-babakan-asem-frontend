@@ -6,6 +6,8 @@ import { FaCalendarAlt } from "react-icons/fa";
 import { AgendaApi } from "../../libs/api/AgendaApi";
 import { alertError } from "../../libs/alert";
 import { Helper } from "../../utils/Helper";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 export default function Agenda() {
   const [agenda, setAgenda] = useState([]);
@@ -13,8 +15,28 @@ export default function Agenda() {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
 
-  const fetchAgenda = async () => {
-    const response = await AgendaApi.getAgenda(currentPage);
+  // ✅ Tambahkan state kategori
+  const kategoriList = [
+    "Semua",
+    "REGULAR",
+    "PKK",
+    "KARANG_TARUNA",
+    "DPD",
+    "BPD",
+  ];
+  const [selectedCategory, setSelectedCategory] = useState("Semua");
+
+  // ✅ Fetch agenda support kategori
+  const fetchAgenda = async (
+    page = currentPage,
+    limit = 10,
+    category = selectedCategory
+  ) => {
+    setLoading(true);
+
+    const typeParam = category === "Semua" ? "" : category;
+    const response = await AgendaApi.getAgenda(page, limit, typeParam);
+
     if (response.status === 200) {
       const responseBody = await response.json();
       setTotalPages(responseBody.total_page);
@@ -34,7 +56,14 @@ export default function Agenda() {
   };
 
   useEffect(() => {
-    fetchAgenda();
+    fetchAgenda(currentPage, 10, selectedCategory);
+
+    // ✅ Inisialisasi AOS
+    AOS.init({
+      duration: 800,
+      easing: "ease-in-out",
+      once: true,
+    });
   }, [currentPage]);
 
   return (
@@ -42,10 +71,30 @@ export default function Agenda() {
       <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-6">
         {/* KONTEN UTAMA */}
         <div className="md:col-span-3 space-y-4">
-          {/* ✅ Judul ke kiri seperti berita */}
           <h1 className="text-3xl font-bold text-gray-800">
             Agenda Desa Babakan Asem
           </h1>
+
+          {/* ✅ FILTER KATEGORI */}
+          <div className="flex flex-wrap gap-3 my-4">
+            {kategoriList.map((kategori) => (
+              <button
+                key={kategori}
+                onClick={() => {
+                  setSelectedCategory(kategori);
+                  setCurrentPage(1);
+                  fetchAgenda(1, 10, kategori);
+                }}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+                  selectedCategory === kategori
+                    ? "bg-green-600 text-white shadow-md"
+                    : "bg-white text-gray-700 border hover:bg-green-100"
+                }`}
+              >
+                {kategori.replace("_", " ")}
+              </button>
+            ))}
+          </div>
 
           {/* List Agenda */}
           {loading ? (
@@ -57,13 +106,17 @@ export default function Agenda() {
               📭 Belum ada agenda untuk ditampilkan.
             </p>
           ) : (
-            agenda.map((item) => (
+            agenda.map((item, index) => (
               <Link
                 to={`/agenda/${item.agenda.id}`}
                 key={item.agenda.id}
                 className="block"
               >
-                <div className="flex items-center bg-white border-l-4 border-green-500 rounded-lg p-3 shadow hover:shadow-md transition-all duration-200">
+                <div
+                  className="flex items-center bg-white border-l-4 border-green-500 rounded-lg p-3 shadow hover:shadow-md transition-all duration-200"
+                  data-aos="fade-left"
+                  data-aos-delay={index * 100} // ✅ animasi bertahap
+                >
                   {/* Gambar agenda */}
                   <img
                     src={`${import.meta.env.VITE_BASE_URL}/agenda/images/${
