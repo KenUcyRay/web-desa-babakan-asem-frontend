@@ -16,11 +16,9 @@ export default function DetailProduk() {
   const [pesan, setPesan] = useState("");
 
   const [averageRating, setAverageRating] = useState(0);
-
-  // ⭐ State rating user
   const [userTempRating, setUserTempRating] = useState(0);
   const [userRated, setUserRated] = useState(false);
-  const [userRatingId, setUserRatingId] = useState(null); // simpan ID rating
+  const [userRatingId, setUserRatingId] = useState(null);
   const [showSubmitRating, setShowSubmitRating] = useState(false);
 
   const userToken = JSON.parse(localStorage.getItem("token"));
@@ -52,7 +50,6 @@ export default function DetailProduk() {
     const responseBody = await response.json();
 
     if (response.ok && responseBody.rated) {
-      // ✅ User sudah pernah rating → simpan data rating
       setUserRated(true);
       setUserTempRating(responseBody.rating.value);
       setUserRatingId(responseBody.rating.id);
@@ -102,13 +99,11 @@ export default function DetailProduk() {
       navigate("/login");
       return;
     }
-
     setUserTempRating(value);
     setShowSubmitRating(true);
   };
 
   const handleSubmitRating = async () => {
-    // Jika user belum pernah rating → create
     if (!userRated) {
       const response = await ProductApi.createRating(id, userTempRating);
       if (!response.ok) {
@@ -118,7 +113,6 @@ export default function DetailProduk() {
       await alertSuccess(`Terima kasih! Rating ${userTempRating} ⭐ telah dikirim.`);
       setUserRated(true);
     } else {
-      // Kalau sudah pernah rating → update
       const response = await ProductApi.updateRating(userRatingId, userTempRating);
       if (!response.ok) {
         await alertError("Gagal mengupdate rating.");
@@ -173,12 +167,14 @@ export default function DetailProduk() {
           Kembali
         </button>
 
-        {/* ✅ Gambar Produk */}
-        <img
-          src={`${import.meta.env.VITE_BASE_URL}/products/images/${product.featured_image}`}
-          alt={product.title}
-          className="w-full h-96 object-cover rounded-lg mb-6"
-        />
+        {/* ✅ Gambar Produk pakai object-contain */}
+        <div className="w-full h-96 flex items-center justify-center bg-white rounded-lg mb-6">
+          <img
+            src={`${import.meta.env.VITE_BASE_URL}/products/images/${product.featured_image}`}
+            alt={product.title}
+            className="max-h-full max-w-full object-contain"
+          />
+        </div>
 
         {/* ✅ Info Produk */}
         <h1 className="text-2xl font-bold mb-3">{product.title}</h1>
@@ -231,7 +227,6 @@ export default function DetailProduk() {
             ⭐ {userRated ? "Rating Kamu" : "Beri Penilaian Produk Ini"}
           </h2>
 
-          {/* Kalau user sudah pernah rating → bintang aktif */}
           <div className="flex items-center gap-1">
             {[1, 2, 3, 4, 5].map((star) => (
               <span
@@ -248,7 +243,6 @@ export default function DetailProduk() {
             ))}
           </div>
 
-          {/* Tombol aksi */}
           {showSubmitRating && (
             <div className="flex gap-2 mt-2">
               <button
@@ -266,7 +260,6 @@ export default function DetailProduk() {
             </div>
           )}
 
-          {/* Kalau sudah rating, kasih tombol hapus */}
           {userRated && !showSubmitRating && (
             <div className="mt-2 flex gap-2">
               <button
@@ -300,7 +293,6 @@ export default function DetailProduk() {
             </button>
           </form>
 
-          {/* ✅ List Komentar */}
           <div className="mt-6 space-y-4">
             {comments.map((c, i) => (
               <div key={i} className="p-4 bg-white rounded-lg shadow">
@@ -318,7 +310,6 @@ export default function DetailProduk() {
         </div>
       </div>
 
-      {/* ✅ Sidebar Produk */}
       <aside>
         <SidebarProduk />
       </aside>

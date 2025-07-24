@@ -33,9 +33,9 @@ export default function Bumdes() {
   }, []);
 
   return (
-    <div className="font-poppins bg-gray-50 min-h-screen">
+    <div className="font-poppins bg-[#f7ffe5] min-h-screen">
       {/* ✅ HERO SECTION */}
-      <div className="bg-gradient-to-r from-[#9BEC00] to-[#D2FF72] py-16 text-center">
+      <div className="bg-gradient-to-r from-[#9BEC00] to-[#D2FF72] py-16 text-center shadow-sm">
         <div className="max-w-4xl mx-auto px-6">
           <h1
             className="text-4xl md:text-5xl font-extrabold text-gray-900 drop-shadow-sm"
@@ -44,7 +44,7 @@ export default function Bumdes() {
             Badan Usaha Milik Desa (BUMDes)
           </h1>
           <p
-            className="text-gray-800 mt-4 text-lg leading-relaxed"
+            className="text-gray-700 mt-4 text-lg leading-relaxed"
             data-aos="fade-up"
           >
             Produk unggulan Desa Babakan Asem yang dikelola oleh masyarakat
@@ -68,7 +68,7 @@ export default function Bumdes() {
               return (
                 <div
                   key={item.product.id}
-                  className="bg-white rounded-2xl shadow-md hover:shadow-xl transition transform hover:-translate-y-1 flex flex-col"
+                  className="bg-white rounded-xl shadow-md hover:shadow-lg transition transform hover:-translate-y-1 flex flex-col border border-green-100"
                   data-aos="fade-up"
                   data-aos-delay={idx * 100}
                 >
@@ -77,7 +77,7 @@ export default function Bumdes() {
                     <img
                       src={`${import.meta.env.VITE_BASE_URL}/products/images/${item.product.featured_image}`}
                       alt={item.product.title}
-                      className="w-full h-56 object-cover rounded-t-2xl hover:opacity-90 transition"
+                      className="w-full h-56 object-cover rounded-t-xl hover:opacity-95 transition"
                     />
                   </Link>
 
@@ -142,7 +142,7 @@ export default function Bumdes() {
       </div>
 
       {/* ✅ FOOTER BUMDes */}
-      <div className="bg-gradient-to-r from-[#9BEC00] to-[#D2FF72] py-12 mt-12 text-center">
+      <div className="bg-gradient-to-r from-[#9BEC00] to-[#D2FF72] py-12 mt-12 text-center shadow-inner">
         <h2
           className="text-3xl md:text-4xl font-bold text-gray-900"
           data-aos="zoom-in"
@@ -150,7 +150,7 @@ export default function Bumdes() {
           🌱 Lumbung Ekonomi Desa
         </h2>
         <p
-          className="text-gray-800 mt-3 text-lg max-w-2xl mx-auto"
+          className="text-gray-700 mt-3 text-lg max-w-2xl mx-auto"
           data-aos="zoom-in"
           data-aos-delay="200"
         >
