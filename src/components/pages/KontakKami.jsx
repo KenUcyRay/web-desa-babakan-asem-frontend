@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   FaMapMarkerAlt,
   FaPhoneAlt,
@@ -8,11 +8,17 @@ import {
 import "@fontsource/poppins";
 import { MessageApi } from "../../libs/api/MessageApi";
 import { alertSuccess, alertError } from "../../libs/alert";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 export default function KontakKami() {
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [message, setMessage] = React.useState("");
+
+  useEffect(() => {
+    AOS.init({ duration: 800, once: true });
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,8 +39,11 @@ export default function KontakKami() {
 
   return (
     <div className="font-poppins">
-      {/* ✅ Banner dengan gradien hijau */}
-      <div className="bg-gradient-to-r from-[#9BEC00] to-[#D2FF72] py-16 text-center">
+      {/* ✅ Banner tetap warna hijau */}
+      <div
+        className="bg-gradient-to-r from-[#9BEC00] to-[#D2FF72] py-16 text-center"
+        data-aos="fade-down"
+      >
         <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
           Jangan Ragu untuk Terhubung dengan Kami
         </h1>
@@ -46,8 +55,11 @@ export default function KontakKami() {
 
       {/* ✅ Konten utama */}
       <div className="max-w-6xl mx-auto mt-12 grid md:grid-cols-2 gap-10 px-4">
-        {/* ✅ FORM DALAM CARD SEPERTI CONTOH */}
-        <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
+        {/* ✅ FORM DALAM CARD */}
+        <div
+          className="bg-white rounded-2xl shadow-2xl overflow-hidden"
+          data-aos="fade-right"
+        >
           {/* Header form */}
           <div className="bg-gray-50 p-6 border-b text-center">
             <h2 className="text-2xl font-bold text-gray-900">
@@ -61,7 +73,7 @@ export default function KontakKami() {
           {/* Bagian form */}
           <div className="p-6 bg-gradient-to-br from-[#9BEC00] to-[#D2FF72]">
             <form className="space-y-4" onSubmit={handleSubmit}>
-              <div>
+              <div data-aos="fade-up" data-aos-delay="100">
                 <label className="block text-gray-900 font-medium mb-1">
                   Nama
                 </label>
@@ -74,7 +86,7 @@ export default function KontakKami() {
                   required
                 />
               </div>
-              <div>
+              <div data-aos="fade-up" data-aos-delay="200">
                 <label className="block text-gray-900 font-medium mb-1">
                   Email
                 </label>
@@ -87,7 +99,7 @@ export default function KontakKami() {
                   required
                 />
               </div>
-              <div>
+              <div data-aos="fade-up" data-aos-delay="300">
                 <label className="block text-gray-900 font-medium mb-1">
                   Pesan
                 </label>
@@ -100,8 +112,12 @@ export default function KontakKami() {
                   required
                 ></textarea>
               </div>
-              {/* ✅ Tombol lebih elegan */}
-              <div className="text-center">
+              {/* ✅ Tombol */}
+              <div
+                className="text-center"
+                data-aos="zoom-in"
+                data-aos-delay="400"
+              >
                 <button
                   type="submit"
                   className="px-8 py-3 bg-gray-900 text-white font-semibold rounded-lg hover:scale-105 hover:brightness-110 transition duration-200"
@@ -113,10 +129,13 @@ export default function KontakKami() {
           </div>
         </div>
 
-        {/* ✅ BAGIAN KANAN INFO KONTAK LEBIH CLEAN */}
+        {/* ✅ BAGIAN KANAN INFO KONTAK */}
         <div className="flex flex-col gap-6">
           {/* Alamat */}
-          <div className="p-6 rounded-xl shadow-lg bg-white flex items-start gap-4 hover:shadow-xl transition">
+          <div
+            className="p-6 rounded-xl shadow-lg bg-white flex items-start gap-4 hover:shadow-xl transition"
+            data-aos="fade-left"
+          >
             <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-[#9BEC00] to-[#D2FF72] shadow text-gray-900">
               <FaMapMarkerAlt size={20} />
             </div>
@@ -131,11 +150,12 @@ export default function KontakKami() {
             </div>
           </div>
 
-          {/* Telepon & WA sejajar */}
+          {/* Telepon & WA */}
           <div className="grid grid-cols-2 gap-4">
             <a
               href="tel:085330192025"
               className="p-5 rounded-xl shadow-md bg-white flex flex-col items-start gap-2 hover:shadow-xl transition"
+              data-aos="fade-up"
             >
               <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-br from-[#9BEC00] to-[#D2FF72] shadow text-gray-900">
                 <FaPhoneAlt />
@@ -149,6 +169,8 @@ export default function KontakKami() {
             <a
               href="https://wa.me/6285330192025"
               className="p-5 rounded-xl shadow-md bg-white flex flex-col items-start gap-2 hover:shadow-xl transition"
+              data-aos="fade-up"
+              data-aos-delay="150"
             >
               <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-br from-[#9BEC00] to-[#D2FF72] shadow text-gray-900">
                 <FaWhatsapp />
@@ -164,6 +186,8 @@ export default function KontakKami() {
           <a
             href="mailto:babakanasem@gmail.com"
             className="p-5 rounded-xl shadow-md bg-white flex items-center gap-4 hover:shadow-xl transition"
+            data-aos="fade-up"
+            data-aos-delay="300"
           >
             <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-br from-[#9BEC00] to-[#D2FF72] shadow text-gray-900">
               <FaEnvelope />

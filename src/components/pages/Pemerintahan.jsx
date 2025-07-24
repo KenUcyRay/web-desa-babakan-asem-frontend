@@ -5,6 +5,7 @@ import { alertError } from "../../libs/alert";
 import { MemberApi } from "../../libs/api/MemberApi";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import logo from "../../assets/logo.png"; // ✅ Logo Desa
 
 export default function Pemerintahan() {
   const navigate = useNavigate();
@@ -65,47 +66,53 @@ export default function Pemerintahan() {
 
   return (
     <div className="font-poppins bg-gray-50">
-      {/* ✅ HERO SECTION */}
-      <section className="relative bg-[#FFFDF6]" data-aos="fade-up">
-        <div className="max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-2 gap-10 items-center">
-          {/* Text */}
-          <div data-aos="fade-right">
-            <span className="inline-block px-4 py-1 text-sm font-medium rounded-full bg-gradient-to-r from-[#9BEC00] to-[#D2FF72] text-gray-900 mb-4 shadow">
-              Pemerintah Desa
-            </span>
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight mb-6">
-              Pemerintah <span className="text-green-600">Babakan Asem</span>
-            </h1>
-            <p className="text-gray-700 text-lg leading-relaxed">
-              Pemerintah Desa Babakan Asem berkomitmen pada transparansi, pelayanan publik, 
-              dan pemberdayaan masyarakat untuk mencapai desa yang mandiri, maju, dan sejahtera.
-            </p>
-          </div>
-
-          {/* Ikon/Ilustrasi */}
-          <div className="relative flex justify-center" data-aos="zoom-in">
-            <div className="rounded-2xl overflow-hidden shadow-xl w-full md:w-4/5 flex items-center justify-center bg-gradient-to-br from-green-100 to-green-50 py-16">
-              <FaFlag className="text-green-600 text-7xl" />
+      {/* ✅ HERO SECTION - Layout sesuai contoh */}
+      <section className="bg-white py-16" data-aos="fade-up">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="grid md:grid-cols-3 gap-8 items-center">
+            
+            {/* ✅ Judul Kiri */}
+            <div data-aos="fade-right" className="text-left">
+              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
+                Pemerintah <br /> 
+                <span className="text-green-600">Desa Babakan Asem</span>
+              </h1>
+              <p className="text-gray-600 mt-4 text-lg leading-relaxed">
+                Desa Babakan Asem <br /> 
+                Menuju Desa Mandiri, Maju & Sejahtera
+              </p>
             </div>
-          </div>
-        </div>
-      </section>
 
-      {/* ✅ SAMBUTAN */}
-      <section className="bg-white py-14" data-aos="fade-up">
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          <FaQuoteLeft className="text-green-500 text-4xl mx-auto mb-4" />
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">Sambutan Kepala Desa</h2>
-          <p className="text-gray-700 leading-relaxed text-justify">
-            “Kami mengajak seluruh masyarakat Desa Babakan Asem untuk terus bergotong royong 
-            membangun desa yang lebih maju, mandiri, dan sejahtera. 
+            {/* ✅ Logo Tengah */}
+            <div className="flex justify-center" data-aos="zoom-in">
+              <div className="rounded-2xl overflow-hidden shadow-xl p-6 bg-white">
+                <img 
+                  src={logo} 
+                  alt="Logo Desa" 
+                  className="w-40 h-40 object-contain mx-auto" 
+                />
+              </div>
+            </div>
+
+            {/* ✅ Sambutan Kanan */}
+                  <div data-aos="fade-left" className="text-left">
+            <h2 className="text-2xl font-bold text-green-700 mb-3 tracking-wide">
+            Sambutan Kepala Desa
+          </h2>
+          <p className="text-gray-700 leading-relaxed text-justify italic font-serif text-[17px]">
+            “Kami mengajak seluruh masyarakat Desa Babakan Asem untuk terus bergotong royong membangun desa yang lebih maju, mandiri, dan sejahtera. 
             Partisipasi aktif masyarakat adalah kunci keberhasilan pembangunan desa.”
           </p>
-          <p className="mt-4 font-medium text-green-700">- Kepala Desa Babakan Asem</p>
+          <p className="mt-4 font-semibold text-green-800 text-lg">
+            – Kepala Desa Babakan Asem
+          </p>
+        </div>
+
+          </div>
         </div>
       </section>
 
-      {/* ✅ STRUKTUR ORGANISASI */}
+      {/* ✅ STRUKTUR ORGANISASI (tetap sama) */}
       <section className="bg-green-50 py-14" data-aos="fade-up">
         <div className="max-w-5xl mx-auto px-6 text-center">
           <h2 className="text-3xl font-bold text-green-700 mb-10">Struktur Organisasi</h2>
@@ -132,12 +139,11 @@ export default function Pemerintahan() {
         </div>
       </section>
 
-      {/* ✅ LEMBAGA & LAYANAN */}
+      {/* ✅ LEMBAGA & LAYANAN (tetap sama) */}
       <section
         className="max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-2 gap-8"
         data-aos="fade-up"
       >
-        {/* Lembaga Desa */}
         <div
           className="bg-gradient-to-br from-[#f7ffe5] to-white shadow-md rounded-2xl p-8"
           data-aos="fade-right"
@@ -159,7 +165,6 @@ export default function Pemerintahan() {
           </div>
         </div>
 
-        {/* Layanan Administrasi */}
         <div
           className="bg-gradient-to-br from-[#f7ffe5] to-white shadow-md rounded-2xl p-8"
           data-aos="fade-left"
@@ -179,7 +184,7 @@ export default function Pemerintahan() {
         </div>
       </section>
 
-      {/* ✅ REGULASI */}
+      {/* ✅ REGULASI (tetap sama) */}
       <section className="bg-white py-14" data-aos="fade-up">
         <div className="max-w-6xl mx-auto px-6 text-center">
           <h2 className="text-3xl font-bold text-gray-900 mb-8">
