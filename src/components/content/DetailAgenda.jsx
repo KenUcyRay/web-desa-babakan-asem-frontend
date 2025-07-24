@@ -6,6 +6,7 @@ import { CommentApi } from "../../libs/api/CommentApi";
 import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 import { Helper } from "../../utils/Helper";
 import { HiArrowLeft } from "react-icons/hi";
+import { UserApi } from "../../libs/api/UserApi";
 
 export default function DetailAgenda() {
   const { id } = useParams();
@@ -119,6 +120,20 @@ export default function DetailAgenda() {
   // - User login dari localStorage
   const loggedInUser = JSON.parse(localStorage.getItem("user"));
 
+  const [user, setUser] = useState({});
+
+  const fetchUser = async () => {
+    const response = await UserApi.getUserProfile();
+    const responseBody = await response.json();
+    if (response.status === 200) {
+      setUser(responseBody.user);
+    }
+  };
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-4 gap-6 font-poppins">
       {/* Konten utama */}
@@ -208,10 +223,12 @@ export default function DetailAgenda() {
                       ✍ {c.user.name} • {Helper.formatTanggal(c.updated_at)}
                     </p>
 
-                    {loggedInUser && (
+                    {user && (
                       <div className="flex gap-3 mt-2">
-                        {/* Edit hanya bisa dilakukan oleh pemilik komentar */}
-                        {loggedInUser.id === c.user.id && (
+                        {/* DEBUG LOG */}
+
+                        {/* Edit: Hanya pemilik komentar (termasuk admin jika dia yg nulis) */}
+                        {user.id === c.user.id && (
                           <button
                             onClick={() => startEditComment(c)}
                             className="text-blue-500 text-sm hover:underline"
@@ -220,9 +237,8 @@ export default function DetailAgenda() {
                           </button>
                         )}
 
-                        {/* Hapus bisa dilakukan oleh pemilik komentar atau admin */}
-                        {(loggedInUser.id === c.user.id ||
-                          loggedInUser.role === "ADMIN") && (
+                        {/* Hapus: Pemilik atau admin */}
+                        {(user.id === c.user.id || user.role === "ADMIN") && (
                           <button
                             onClick={() => handleDeleteComment(c.id)}
                             className="text-red-500 text-sm hover:underline"

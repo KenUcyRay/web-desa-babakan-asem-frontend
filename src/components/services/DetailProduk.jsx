@@ -7,6 +7,7 @@ import { Helper } from "../../utils/Helper";
 import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 import { CommentApi } from "../../libs/api/CommentApi";
 import { ProductApi } from "../../libs/api/ProductApi";
+import { UserApi } from "../../libs/api/UserApi";
 
 export default function DetailProduk() {
   const { id } = useParams();
@@ -179,7 +180,7 @@ export default function DetailProduk() {
     if (response.status === 200) {
       await alertSuccess("Komentar berhasil diupdate!");
       setEditingCommentId(null);
-      fetchComments();
+      fetchComment();
     } else {
       await alertError(`Gagal update komentar: ${resBody.error}`);
     }
@@ -199,6 +200,20 @@ export default function DetailProduk() {
       await alertError(`Gagal hapus komentar: ${resBody.error}`);
     }
   };
+
+  const [user, setUser] = useState({});
+
+  const fetchUser = async () => {
+    const response = await UserApi.getUserProfile();
+    const responseBody = await response.json();
+    if (response.status === 200) {
+      setUser(responseBody.user);
+    }
+  };
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
 
   // - User login dari localStorage
   const loggedInUser = JSON.parse(localStorage.getItem("user"));
@@ -377,10 +392,12 @@ export default function DetailProduk() {
                       ✍ {c.user.name} • {Helper.formatTanggal(c.updated_at)}
                     </p>
 
-                    {loggedInUser && (
+                    {user && (
                       <div className="flex gap-3 mt-2">
-                        {/* Edit hanya bisa dilakukan oleh pemilik komentar */}
-                        {loggedInUser.id === c.user.id && (
+                        {/* DEBUG LOG */}
+
+                        {/* Edit: Hanya pemilik komentar (termasuk admin jika dia yg nulis) */}
+                        {user.id === c.user.id && (
                           <button
                             onClick={() => startEditComment(c)}
                             className="text-blue-500 text-sm hover:underline"
@@ -389,9 +406,8 @@ export default function DetailProduk() {
                           </button>
                         )}
 
-                        {/* Hapus bisa dilakukan oleh pemilik komentar atau admin */}
-                        {(loggedInUser.id === c.user.id ||
-                          loggedInUser.role === "ADMIN") && (
+                        {/* Hapus: Pemilik atau admin */}
+                        {(user.id === c.user.id || user.role === "ADMIN") && (
                           <button
                             onClick={() => handleDeleteComment(c.id)}
                             className="text-red-500 text-sm hover:underline"
