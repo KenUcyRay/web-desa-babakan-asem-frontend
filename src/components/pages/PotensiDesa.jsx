@@ -60,7 +60,8 @@ export default function PotensiDesa() {
           </div>
 
           {/* Peternakan */}
-          <div className="bg-orange-200 p-6 rounded-lg shadow flex gap-4 items-center hover:shadow-xl transition" data-aos="fade-up">
+          <div className="bg-orange-50 p-6 rounded-lg shadow flex gap-4 items-center hover:shadow-xl transition" data-aos="fade-up">
+
             <img
               src="https://picsum.photos/200/150?random=22"
               alt="Peternakan"
@@ -77,7 +78,7 @@ export default function PotensiDesa() {
           </div>
 
           {/* Perkebunan */}
-          <div className="bg-blue-100 p-6 rounded-lg shadow flex gap-4 items-center hover:shadow-xl transition md:col-span-2" data-aos="fade-left">
+         <div className="bg-blue-50 p-6 rounded-lg shadow flex gap-4 items-center hover:shadow-xl transition md:col-span-2" data-aos="fade-left">
             <img
               src="https://picsum.photos/200/150?random=23"
               alt="Perkebunan"
