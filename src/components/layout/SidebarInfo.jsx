@@ -1,7 +1,7 @@
 import berita1 from "../../assets/berita1.jpeg";
 import { Link } from "react-router-dom";
 import { HiOutlineMail } from "react-icons/hi";
-import { FaUsers, FaWhatsapp } from "react-icons/fa";
+import { FaUsers, FaWhatsapp, FaPhoneAlt, FaEnvelope } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { NewsApi } from "../../libs/api/NewsApi";
 import { Helper } from "../../utils/Helper";
@@ -99,38 +99,49 @@ export default function SidebarInfo() {
         ))}
       </div>
 
-      {/* ✅ Kartu Kontak Kami */}
+      {/* ✅ Kartu Kontak Kami (MIRIP YANG DICONTOHKAN) */}
       <div className="space-y-4">
-        {[
-          {
-            icon: <FaWhatsapp className="w-6 h-6" />,
-            label: "WhatsApp",
-            value: "0812-3456-7890",
-          },
-          {
-            icon: <FaUsers className="w-6 h-6" />,
-            label: "Telepon",
-            value: "(0261) 123456",
-          },
-          {
-            icon: <HiOutlineMail className="w-6 h-6" />,
-            label: "Email",
-            value: "info@babakanasem.id",
-          },
-        ].map((item, idx) => (
-          <div
-            key={idx}
-            className="bg-gradient-to-r from-[#B6F500] to-[#FFFCE2] p-4 rounded-xl shadow hover:shadow-lg hover:scale-[1.02] transition-all duration-300 flex items-center gap-4"
-          >
-            <div className="bg-white p-2 rounded-full text-green-600">
-              {item.icon}
-            </div>
-            <div>
-              <p className="text-sm font-semibold">{item.label}</p>
-              <p className="text-xs text-gray-700">{item.value}</p>
-            </div>
+        {/* Telepon */}
+        <a
+          href="tel:081234567890"
+          className="p-5 rounded-xl shadow-md bg-white flex items-center gap-4 hover:shadow-xl transition"
+        >
+          <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-br from-[#9BEC00] to-[#D2FF72] shadow text-gray-900">
+            <FaPhoneAlt />
           </div>
-        ))}
+          <div>
+            <h4 className="font-bold text-gray-900 text-sm">Telepon</h4>
+            <p className="text-xs text-gray-700">(0261) 123456</p>
+          </div>
+        </a>
+
+        {/* WhatsApp */}
+        <a
+          href="https://wa.me/6281234567890"
+          className="p-5 rounded-xl shadow-md bg-white flex items-center gap-4 hover:shadow-xl transition"
+        >
+          <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-br from-[#9BEC00] to-[#D2FF72] shadow text-gray-900">
+            <FaWhatsapp />
+          </div>
+          <div>
+            <h4 className="font-bold text-gray-900 text-sm">WhatsApp</h4>
+            <p className="text-xs text-gray-700">0812‑3456‑7890</p>
+          </div>
+        </a>
+
+        {/* Email */}
+        <a
+          href="mailto:info@babakanasem.id"
+          className="p-5 rounded-xl shadow-md bg-white flex items-center gap-4 hover:shadow-xl transition"
+        >
+          <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-br from-[#9BEC00] to-[#D2FF72] shadow text-gray-900">
+            <FaEnvelope />
+          </div>
+          <div>
+            <h4 className="font-bold text-gray-900 text-sm">Email Kami</h4>
+            <p className="text-xs text-gray-700">info@babakanasem.id</p>
+          </div>
+        </a>
       </div>
     </div>
   );

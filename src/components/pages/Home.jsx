@@ -62,7 +62,8 @@ export default function Home() {
       link: "/infografis/penduduk",
     },
   ];
-  // - Data Chart untuk ComboChart
+
+  // ✅ Data Chart APB (dalam juta)
   const apbData = [
     { name: "Pendapatan", anggaran: 350, realisasi: 300 },
     { name: "Belanja", anggaran: 280, realisasi: 250 },
@@ -212,12 +213,13 @@ export default function Home() {
               className="bg-white shadow rounded-xl overflow-hidden hover:shadow-xl hover:scale-[1.03] transition-transform"
               data-aos="zoom-in"
             >
+              {/* ✅ Tinggi gambar diperbesar */}
               <img
                 src={`${import.meta.env.VITE_BASE_URL}/news/images/${
                   item.news.featured_image
                 }`}
                 alt={item.news.title}
-                className="w-full h-[18vh] object-cover"
+                className="w-full h-[30vh] object-cover"
               />
               <div className="p-4">
                 <p className="text-xs text-gray-500">
@@ -232,7 +234,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* - PRODUK BUMDes PREVIEW (CARD PERSIS BUMDes.jsx) */}
+      {/* - PRODUK BUMDes */}
       <div
         className="bg-green-50 py-[clamp(2rem,6vh,4rem)] px-[5%]"
         data-aos="fade-up"
@@ -262,12 +264,13 @@ export default function Home() {
                 data-aos-delay={idx * 100}
               >
                 <Link to={`/bumdes/${item.product.id}`}>
+                  {/* ✅ Tinggi gambar diperbesar */}
                   <img
                     src={`${import.meta.env.VITE_BASE_URL}/products/images/${
                       item.product.featured_image
                     }`}
                     alt={item.product.title}
-                    className="w-full h-48 object-cover rounded-t-2xl hover:opacity-90 transition"
+                    className="w-full h-60 object-cover rounded-t-2xl hover:opacity-90 transition"
                   />
                 </Link>
 
@@ -331,8 +334,10 @@ export default function Home() {
             <ComposedChart data={apbData}>
               <CartesianGrid stroke="#f5f5f5" />
               <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
+              <YAxis
+                tickFormatter={(v) => `${v} JT`}
+              />
+              <Tooltip formatter={(v) => `${v} Juta`} />
               <Legend />
               <Bar
                 dataKey="anggaran"

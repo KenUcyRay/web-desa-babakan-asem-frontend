@@ -8,14 +8,17 @@ import {
 import { useEffect, useState } from "react";
 import NProgress from "nprogress";
 import "nprogress/nprogress.css";
-import { Toaster } from "react-hot-toast"; // ✅ Tambah untuk toast
+import { Toaster } from "react-hot-toast";
 
-// ✅ Navbar + Footer untuk umum
+// - Navbar + Footer untuk umum
 import TopNavbar from "./components/layout/TopNavbar";
 import NavbarTop from "./components/layout/NavbarTop";
 import Footer from "./components/layout/Footer";
 
-// ✅ Halaman Umum
+// - Floating Menu
+import FloatingMenu from "./components/layout/FloatingMenu";
+
+// - Halaman Umum
 import Home from "./components/pages/Home";
 import Administrasi from "./components/services/Administrasi";
 import Agenda from "./components/content/Agenda";
@@ -33,31 +36,31 @@ import Pemerintahan from "./components/pages/Pemerintahan";
 import KontakKami from "./components/pages/KontakKami";
 import ProfilDesa from "./components/pages/ProfilDesa";
 
-// ✅ Autentikasi
+// - Autentikasi
 import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";
 import ForgotPassword from "./components/auth/ForgotPassword";
 import ResetPassword from "./components/auth/ResetPassword";
 import Wait from "./components/ui/Wait";
 
-// ✅ Infografis Nested
+// - Infografis Nested
 import InfografisLayout from "./components/Infografis/InfografisLayout";
 import Penduduk from "./components/Infografis/Penduduk";
 import IDM from "./components/Infografis/IDM";
 import Bansos from "./components/Infografis/Bansos";
 import SDGs from "./components/Infografis/SDGs";
 
-// ✅ Halaman DPD
+// - Halaman DPD
 import Bpd from "./components/organizations/Bpd";
 import Dpd from "./components/organizations/Dpd";
 import DetailDpd from "./components/organizations/DetailDpd";
 
-// ✅ Form Administrasi
+// - Form Administrasi
 import SuratPengantar from "./components/forms/SuratPengantar";
 import FormulirLayanan from "./components/forms/FormulirLayanan";
 import FormOnline from "./components/forms/FormOnline";
 
-// ✅ Admin Panel
+// - Admin Panel
 import AdminDashboard from "./components/admin/AdminDashboard";
 import ManageBerita from "./components/admin/ManageBerita";
 import ManageAgenda from "./components/admin/ManageAgenda";
@@ -69,45 +72,45 @@ import ManageAnggota from "./components/admin/ManageAnggota";
 import ManageAdministrasi from "./components/admin/ManageAdministrasi";
 import ManagePkk from "./components/admin/ManagePkk";
 
-// ✅ Pengaturan Admin
+// - Pengaturan Admin
 import PengaturanProfil from "./components/admin/settings/PengaturanProfil";
 import AdminLayout from "./components/admin/AdminLayout";
 import StPkk from "./components/organizations/StPkk";
 
-// ✅ Profil User
+// - Profil User
 import Profile from "./components/pages/Profile";
 import ScrollToTop from "./components/layout/ScrollToTop";
 
-// ✅ Kelola Infografis Admin
+// - Kelola Infografis Admin
 import ManagePenduduk from "./components/admin/KelolaInfografis/ManagePenduduk";
 import ManageIDM from "./components/admin/KelolaInfografis/ManageIDM";
 import ManageSDGs from "./components/admin/KelolaInfografis/ManageSDGs";
 import ManageBansos from "./components/admin/KelolaInfografis/ManageBansos";
 
-
-// ✅ Layout Umum (Navbar & Footer aktif)
+// ✅ Layout Umum (Navbar + Footer aktif + Floating Menu)
 function LayoutUmum() {
   return (
     <>
       <TopNavbar />
       <div className="pt-[36px] animate-fade">
         <NavbarTop />
+
         <Routes>
-          {/* ✅ Halaman Utama */}
+          {/* - Halaman Utama */}
           <Route path="/" element={<Home />} />
           <Route path="/administrasi" element={<Administrasi />} />
 
-          {/* ✅ Agenda & Berita */}
+          {/* - Agenda & Berita */}
           <Route path="/agenda" element={<Agenda />} />
           <Route path="/agenda/:id" element={<DetailAgenda />} />
           <Route path="/berita" element={<Berita />} />
           <Route path="/berita/:id" element={<DetailBerita />} />
 
-          {/* ✅ Produk BUMDes */}
+          {/* - Produk BUMDes */}
           <Route path="/bumdes" element={<Bumdes />} />
           <Route path="/bumdes/:id" element={<DetailProduk />} />
 
-          {/* ✅ Halaman Umum lainnya */}
+          {/* - Halaman Umum lainnya */}
           <Route path="/panduan" element={<Panduan />} />
           <Route path="/galeri" element={<Galery />} />
           <Route path="/karang-taruna" element={<KarangTaruna />} />
@@ -121,17 +124,17 @@ function LayoutUmum() {
           <Route path="/pkk/struktur" element={<StPkk />} />
           <Route path="/detail-dpd" element={<DetailDpd />} />
 
-          {/* ✅ Profil User */}
+          {/* - Profil User */}
           <Route path="/profile" element={<Profile />} />
 
-          {/* ✅ Auth */}
+          {/* - Auth */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/wait" element={<Wait />} />
           <Route path="/reset-password" element={<ResetPassword />} />
 
-          {/* ✅ Infografis Nested */}
+          {/* - Infografis Nested */}
           <Route path="/infografis" element={<InfografisLayout />}>
             <Route index element={<Navigate to="penduduk" replace />} />
             <Route path="penduduk" element={<Penduduk />} />
@@ -140,27 +143,30 @@ function LayoutUmum() {
             <Route path="sdgs" element={<SDGs />} />
           </Route>
 
-          {/* ✅ Form Administrasi */}
+          {/* - Form Administrasi */}
           <Route path="/surat-pengantar" element={<SuratPengantar />} />
           <Route path="/formulir-layanan" element={<FormulirLayanan />} />
           <Route path="/layanan-online" element={<FormOnline />} />
         </Routes>
+
+        {/* ✅ Floating Menu tampil di semua halaman umum */}
+        <FloatingMenu />
+
+        {/* ✅ Footer tetap di bawah */}
         <Footer />
       </div>
     </>
   );
 }
 
-// ✅ Layout Admin (FIXED)
+// ✅ Layout Admin (tanpa FloatingMenu & Footer)
 function LayoutAdmin() {
   return (
     <Routes>
-      {/* Parent Route untuk Admin */}
       <Route path="/admin" element={<AdminLayout />}>
-        {/* Default Dashboard */}
         <Route index element={<AdminDashboard />} />
 
-        {/* ✅ Menu Admin */}
+        {/* - Menu Admin */}
         <Route path="manage-berita" element={<ManageBerita />} />
         <Route path="manage-agenda" element={<ManageAgenda />} />
         <Route path="manage-pesan" element={<ManagePesan />} />
@@ -171,16 +177,16 @@ function LayoutAdmin() {
         <Route path="manage-administrasi" element={<ManageAdministrasi />} />
         <Route path="manage-pkk" element={<ManagePkk />} />
 
-        {/* ✅ Kelola Infografis */}
+        {/* - Kelola Infografis */}
         <Route path="kelola-infografis/penduduk" element={<ManagePenduduk />} />
         <Route path="kelola-infografis/idm" element={<ManageIDM />} />
         <Route path="kelola-infografis/sdgs" element={<ManageSDGs />} />
         <Route path="kelola-infografis/bansos" element={<ManageBansos />} />
 
-        {/* ✅ Pengaturan Admin */}
+        {/* - Pengaturan Admin */}
         <Route path="pengaturan/profil" element={<PengaturanProfil />} />
 
-        {/* ✅ Redirect default kalau salah path */}
+        {/* - Redirect default kalau salah path */}
         <Route path="*" element={<Navigate to="/admin" replace />} />
       </Route>
     </Routes>
@@ -223,7 +229,7 @@ export default function App() {
       <ScrollToTop />
       <AppContent />
 
-      {/* ✅ Tambahan Toaster di root biar bisa dipakai di semua halaman */}
+      {/* ✅ Tambahan Toaster biar bisa dipakai di semua halaman */}
       <Toaster
         position="top-right"
         toastOptions={{
@@ -237,13 +243,13 @@ export default function App() {
           },
           success: {
             iconTheme: {
-              primary: "#22c55e", // Hijau soft
+              primary: "#22c55e",
               secondary: "#ffffff",
             },
           },
           error: {
             iconTheme: {
-              primary: "#ef4444", // Merah soft
+              primary: "#ef4444",
               secondary: "#ffffff",
             },
           },
