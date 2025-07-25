@@ -92,7 +92,7 @@ function LayoutUmum() {
   return (
     <>
       <NavbarTop />
-      <div className="pt-[74px] lg:pt-[50px] animate-fade">
+      <div className="pt-[60px] lg:pt-[40px] animate-fade">
         <NavbarBottom />
 
         <Routes>

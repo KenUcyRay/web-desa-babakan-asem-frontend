@@ -59,7 +59,6 @@ export class Helper {
   }
 
   static async errorResponseHandler(responseBody) {
-    console.log("Error responseBody:", responseBody);
     let errorMessage = "Gagal menyimpan perubahan.";
     if (responseBody.error && Array.isArray(responseBody.error)) {
       const errorMessages = responseBody.error.map((err) =>
