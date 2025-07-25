@@ -8,11 +8,13 @@ import {
 import "@fontsource/poppins";
 import { MessageApi } from "../../libs/api/MessageApi";
 import { alertSuccess, alertError } from "../../libs/alert";
+import { useTranslation } from "react-i18next";
 
 export default function KontakKami() {
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [message, setMessage] = React.useState("");
+  const { t } = useTranslation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,12 +38,9 @@ export default function KontakKami() {
       {/* - Banner dengan gradien hijau */}
       <div className="bg-gradient-to-r from-[#9BEC00] to-[#D2FF72] py-16 text-center">
         <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
-          Jangan Ragu untuk Terhubung dengan Kami
+          {t("contact.title")}
         </h1>
-        <p className="mt-2 text-gray-800 text-lg">
-          Selamat datang di halaman Kontak Desa Babakan Asem. <br /> Kami siap
-          mendengar keluhan & saran Anda.
-        </p>
+        <p className="mt-2 text-gray-800 text-lg">{t("contact.subtitle")}</p>
       </div>
 
       {/* - Konten utama */}
@@ -51,10 +50,10 @@ export default function KontakKami() {
           {/* Header form */}
           <div className="bg-gray-50 p-6 border-b text-center">
             <h2 className="text-2xl font-bold text-gray-900">
-              Tinggalkan Pesan Anda
+              {t("contact.formTitle")}
             </h2>
             <p className="text-gray-500 text-sm mt-1">
-              Kami akan membalas secepat mungkin
+              {t("contact.formSubtitle")}
             </p>
           </div>
 
@@ -63,7 +62,7 @@ export default function KontakKami() {
             <form className="space-y-4" onSubmit={handleSubmit}>
               <div>
                 <label className="block text-gray-900 font-medium mb-1">
-                  Nama
+                  {t("contact.formName")}
                 </label>
                 <input
                   type="text"
@@ -76,7 +75,7 @@ export default function KontakKami() {
               </div>
               <div>
                 <label className="block text-gray-900 font-medium mb-1">
-                  Email
+                  {t("contact.formEmail")}
                 </label>
                 <input
                   type="email"
@@ -89,7 +88,7 @@ export default function KontakKami() {
               </div>
               <div>
                 <label className="block text-gray-900 font-medium mb-1">
-                  Pesan
+                  {t("contact.formMessage")}
                 </label>
                 <textarea
                   rows="4"
@@ -106,7 +105,7 @@ export default function KontakKami() {
                   type="submit"
                   className="px-8 py-3 bg-gray-900 text-white font-semibold rounded-lg hover:scale-105 hover:brightness-110 transition duration-200"
                 >
-                  Kirim Pesan
+                  {t("contact.formButton")}
                 </button>
               </div>
             </form>
@@ -122,11 +121,10 @@ export default function KontakKami() {
             </div>
             <div>
               <h4 className="font-bold text-gray-900 text-lg">
-                Desa Babakan Asem
+                {t("contact.address.title")}
               </h4>
               <p className="text-sm text-gray-600 leading-relaxed">
-                Jalan Babakan Asem No. 142 Desa Babakan Asem, Kecamatan
-                Conggeang, Kabupaten Sumedang, Jawa Barat 45391
+                {t("contact.address.subtitle")}
               </p>
             </div>
           </div>
@@ -141,7 +139,9 @@ export default function KontakKami() {
                 <FaPhoneAlt />
               </div>
               <div>
-                <h4 className="font-bold text-gray-900 text-sm">Telepon</h4>
+                <h4 className="font-bold text-gray-900 text-sm">
+                  {t("contact.phone.title")}
+                </h4>
                 <p className="text-xs text-gray-700">0853-3019-2025</p>
               </div>
             </a>
@@ -169,7 +169,7 @@ export default function KontakKami() {
               <FaEnvelope />
             </div>
             <div>
-              <h4 className="font-bold text-gray-900">Email Kami</h4>
+              <h4 className="font-bold text-gray-900">{t("contact.email.title")}</h4>
               <p className="text-sm text-gray-700">babakanasem@gmail.com</p>
             </div>
           </a>

@@ -9,8 +9,11 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import { AnimatePresence, motion } from "framer-motion";
 import { Helper } from "../../utils/Helper";
+import { useTranslation } from "react-i18next";
 
 export default function Login() {
+  const { t } = useTranslation();
+
   const navigate = useNavigate();
   const recaptchaRef = useRef(null);
 
@@ -54,7 +57,6 @@ export default function Login() {
       navigate("/");
     } else {
       await Helper.errorResponseHandler(responseBody);
-      
     }
 
     setEmail("");
@@ -82,9 +84,7 @@ export default function Login() {
           <h2 className="text-3xl text-gray-900 font-normal text-center mb-2">
             Hallo, Senang Melihatmu Kembali!
           </h2>
-          <p className="text-gray-600 text-center mb-6">
-            Masuk ke Portal Desa Babakan Asem
-          </p>
+          <p className="text-gray-600 text-center mb-6">{t("welcome")}</p>
 
           <form className="space-y-4" onSubmit={handleSubmit}>
             {/* - Radio Email/HP */}

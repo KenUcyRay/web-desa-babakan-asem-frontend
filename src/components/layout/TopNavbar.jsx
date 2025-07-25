@@ -1,35 +1,55 @@
 import { Link } from "react-router-dom";
-import {
-  FaFacebookF,
-  FaInstagram,
-  FaTiktok,
-  FaWhatsapp,
-} from "react-icons/fa";
+import { FaFacebookF, FaInstagram, FaTiktok, FaWhatsapp } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
+import { useTranslation } from "react-i18next";
 
 export default function TopNavbar() {
+  const { t, i18n } = useTranslation();
+
+  const changeLanguage = (lng) => {
+    i18n.changeLanguage(lng);
+  };
   return (
     <div className="w-full fixed top-0 left-0 bg-white shadow z-50">
       <div className="w-full flex flex-wrap items-center justify-between px-6 xl:px-16 py-3 text-xs sm:text-sm font-medium text-gray-700">
-        
         {/* ✅ Menu kiri dengan scroll horizontal di mobile */}
         <div className="flex gap-6 justify-start w-full sm:w-auto overflow-x-auto scrollbar-hide">
-          <Link to="/pkk" className="whitespace-nowrap hover:text-[#B6F500] transition">
+          <button onClick={() => changeLanguage("en")}>🇬🇧 English</button>
+          <button onClick={() => changeLanguage("id")}>🇮🇩 Indonesia</button>
+          <Link
+            to="/pkk"
+            className="whitespace-nowrap hover:text-[#B6F500] transition"
+          >
             PKK
           </Link>
-          <Link to="/bumdes" className="whitespace-nowrap hover:text-[#B6F500] transition">
+          <Link
+            to="/bumdes"
+            className="whitespace-nowrap hover:text-[#B6F500] transition"
+          >
             BUMDES
           </Link>
-          <Link to="/karang-taruna" className="whitespace-nowrap hover:text-[#B6F500] transition">
+          <Link
+            to="/karang-taruna"
+            className="whitespace-nowrap hover:text-[#B6F500] transition"
+          >
             Karang Taruna
           </Link>
-          <Link to="/galeri" className="whitespace-nowrap hover:text-[#B6F500] transition">
+          <Link
+            to="/galeri"
+            className="whitespace-nowrap hover:text-[#B6F500] transition"
+          >
             Galeri
           </Link>
-          <Link to="/dpd" className="whitespace-nowrap hover:text-[#B6F500] transition font-semibold">
+          <Link
+            to="/dpd"
+            className="whitespace-nowrap hover:text-[#B6F500] transition font-semibold"
+          >
             DPD
           </Link>
-          <Link to="/bpd" className="whitespace-nowrap hover:text-[#B6F500] transition font-semibold">
+          <Link
+            to="/bpd"
+            className="whitespace-nowrap hover:text-[#B6F500] transition font-semibold"
+          >
             BPD
           </Link>
         </div>

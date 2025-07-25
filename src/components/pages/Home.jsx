@@ -30,57 +30,44 @@ import { NewsApi } from "../../libs/api/NewsApi";
 import { Helper } from "../../utils/Helper";
 import { alertError } from "../../libs/alert";
 import { ProductApi } from "../../libs/api/ProductApi";
+import { useTranslation } from "react-i18next";
 
 export default function Home() {
-  useEffect(() => {
-    AOS.init({ duration: 800, once: true });
-    AOS.refresh();
-
-    const link = document.createElement("link");
-    link.href =
-      "https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap";
-    link.rel = "stylesheet";
-    document.head.appendChild(link);
-
-    document.body.style.fontFamily = "'Poppins', sans-serif";
-  }, []);
-
+  const { t } = useTranslation();
+  const [products, setProducts] = useState([]);
+  const [news, setNews] = useState([]);
   const quickMenu = [
     {
-      title: "Profil Desa",
-      desc: "Sejarah, visi & misi desa",
+      title: t("quickMenu.profil.title"),
+      desc: t("quickMenu.profil.desc"),
       icon: <FaMapMarkerAlt className="text-green-600 text-4xl" />,
       link: "/profil",
     },
     {
-      title: "Berita Desa",
-      desc: "Informasi terkini",
+      title: t("quickMenu.berita.title"),
+      desc: t("quickMenu.berita.desc"),
       icon: <FaNewspaper className="text-blue-600 text-4xl" />,
       link: "/berita",
     },
     {
-      title: "Layanan Publik",
-      desc: "Pengajuan surat & layanan",
+      title: t("quickMenu.layanan.title"),
+      desc: t("quickMenu.layanan.desc"),
       icon: <FaHandsHelping className="text-yellow-600 text-4xl" />,
       link: "/administrasi",
     },
     {
-      title: "Infografis",
-      desc: "Data statistik desa",
+      title: t("quickMenu.infografis.title"),
+      desc: t("quickMenu.infografis.desc"),
       icon: <FaChartBar className="text-purple-600 text-4xl" />,
       link: "/infografis/penduduk",
     },
   ];
-
   // - Data Chart untuk ComboChart
   const apbData = [
     { name: "Pendapatan", anggaran: 350, realisasi: 300 },
     { name: "Belanja", anggaran: 280, realisasi: 250 },
     { name: "Sisa", anggaran: 70, realisasi: 50 },
   ];
-
-  const [products, setProducts] = useState([]);
-  const [news, setNews] = useState([]);
 
   const fetchProduct = async () => {
     const response = await ProductApi.getProducts(1, 3);
@@ -93,7 +80,6 @@ export default function Home() {
       );
     }
   };
-
   const fetchNews = async () => {
     const response = await NewsApi.getNews(1, 3);
     if (response.status === 200) {
@@ -107,6 +93,16 @@ export default function Home() {
   useEffect(() => {
     fetchNews();
     fetchProduct();
+    AOS.init({ duration: 800, once: true });
+    AOS.refresh();
+
+    const link = document.createElement("link");
+    link.href =
+      "https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap";
+    link.rel = "stylesheet";
+    document.head.appendChild(link);
+
+    document.body.style.fontFamily = "'Poppins', sans-serif";
   }, []);
 
   return (
@@ -130,19 +126,19 @@ export default function Home() {
             className="text-[clamp(1.8rem,4vw,3rem)] font-bold"
             data-aos="fade-down"
           >
-            Selamat Datang di Desa Babakan Asem
+            {t("welcome")}
           </h1>
           <p
             className="mt-3 text-[clamp(0.9rem,1.6vw,1.2rem)] max-w-xl leading-relaxed"
             data-aos="fade-up"
           >
-            Desa yang asri, ramah, dan penuh gotong royong.
+            {t("hero.subtitle")}
           </p>
           <p
             className="mt-1 text-[clamp(0.8rem,1.4vw,1rem)] opacity-90"
             data-aos="fade-up"
           >
-            Kabupaten Sumedang
+            {t("hero.location")}
           </p>
         </div>
       </div>
@@ -175,18 +171,13 @@ export default function Home() {
         <div className="grid md:grid-cols-2 gap-8 items-center">
           <div>
             <h2 className="text-[clamp(1.3rem,2.2vw,1.8rem)] font-bold text-green-700 mb-4">
-              Tentang Desa Babakan Asem
+              {t("tentang.title")}
             </h2>
             <p className="text-gray-700 leading-relaxed text-[clamp(0.85rem,1.2vw,1rem)]">
-              Desa Babakan Asem merupakan desa yang terletak di kawasan asri
-              dengan mayoritas penduduk bermata pencaharian sebagai petani dan
-              pengrajin. Desa ini memiliki potensi alam yang melimpah, budaya
-              gotong royong yang kuat, serta berbagai produk unggulan yang
-              dikelola oleh Badan Usaha Milik Desa (BUMDes).
+              {t("tentang.paragraf1")}
             </p>
             <p className="mt-3 text-gray-700 leading-relaxed text-[clamp(0.85rem,1.2vw,1rem)]">
-              Kami terus berkomitmen untuk membangun desa yang mandiri, berdaya
-              saing, dan sejahtera melalui pemberdayaan masyarakat lokal.
+              {t("tentang.paragraf2")}
             </p>
           </div>
           <div className="flex justify-center">
@@ -203,13 +194,13 @@ export default function Home() {
       <div className="w-full px-[5%] py-[clamp(2rem,6vh,4rem)]">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-[clamp(1.1rem,1.8vw,1.5rem)] font-bold">
-            Berita Terbaru
+            {t("berita.terbaru")}
           </h2>
           <Link
             to="/berita"
             className="text-green-600 hover:underline text-[clamp(0.8rem,1.1vw,0.95rem)]"
           >
-            Lihat Semua →
+            {t("berita.lihatSemua")}
           </Link>
         </div>
 
@@ -248,13 +239,13 @@ export default function Home() {
       >
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-[clamp(1.1rem,1.8vw,1.5rem)] font-bold">
-            Produk BUMDes
+            {t("produk.judul")}
           </h2>
           <Link
             to="/bumdes"
             className="text-green-600 hover:underline text-[clamp(0.8rem,1.1vw,0.95rem)]"
           >
-            Lihat Semua →
+            {t("produk.lihatSemua")}
           </Link>
         </div>
 
@@ -316,7 +307,7 @@ export default function Home() {
                       rel="noreferrer"
                       className="flex items-center gap-1 text-white bg-green-500 hover:bg-green-600 px-3 py-1.5 rounded-lg shadow hover:shadow-md transition text-sm"
                     >
-                      <FaWhatsapp /> Pesan
+                      <FaWhatsapp /> {t("produk.pesan")}
                     </a>
                   </div>
                 </div>
@@ -332,7 +323,7 @@ export default function Home() {
           className="text-[clamp(1.3rem,2.2vw,1.8rem)] font-bold text-center text-green-700 mb-8"
           data-aos="fade-up"
         >
-          📊 APB Desa Tahun 2025
+          {t("apb.judul")}
         </h2>
 
         <div className="bg-white rounded-2xl shadow-lg p-[clamp(1rem,3vw,2rem)]">
@@ -347,14 +338,14 @@ export default function Home() {
                 dataKey="anggaran"
                 barSize={30}
                 fill="#4ade80"
-                name="Anggaran"
+                name={t("apb.anggaran")}
               />
               <Line
                 type="monotone"
                 dataKey="realisasi"
                 stroke="#3b82f6"
                 strokeWidth={2}
-                name="Realisasi"
+                name={t("apb.realisasi")}
               />
             </ComposedChart>
           </ResponsiveContainer>
