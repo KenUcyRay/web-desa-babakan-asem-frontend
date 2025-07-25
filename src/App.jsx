@@ -11,8 +11,8 @@ import "nprogress/nprogress.css";
 import { Toaster } from "react-hot-toast";
 
 // - Navbar + Footer untuk umum
-import TopNavbar from "./components/layout/TopNavbar";
 import NavbarTop from "./components/layout/NavbarTop";
+import NavbarBottom from "./components/layout/NavbarBottom";
 import Footer from "./components/layout/Footer";
 
 // - Floating Menu
@@ -91,9 +91,9 @@ import ManageBansos from "./components/admin/KelolaInfografis/ManageBansos";
 function LayoutUmum() {
   return (
     <>
-      <TopNavbar />
+      <NavbarTop />
       <div className="pt-[74px] lg:pt-[50px] animate-fade">
-        <NavbarTop />
+        <NavbarBottom />
 
         <Routes>
           {/* - Halaman Utama */}
