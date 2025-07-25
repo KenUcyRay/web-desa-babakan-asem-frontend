@@ -73,7 +73,7 @@ export default function TopNavbar() {
         </div>
 
         {/* ✅ ROW 2: Sosmed + Bahasa */}
-        <div className="flex flex-wrap justify-center md:justify-end items-center gap-3">
+        <div className="flex flex-wrap justify-center md:justify-end items-center gap-4">
           {/* Icons */}
           <div className="flex gap-3">
             {[
