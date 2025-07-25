@@ -47,7 +47,7 @@ export default function Pkk() {
         data-aos="fade-up"
       >
         <h1 className="text-4xl md:text-5xl font-extrabold text-green-700 leading-tight">
-          PKK <span className="text-green-500">Desa Babakan Asem</span>
+          PKK <span className="text-green-500">{t("pkk.title")}</span>
         </h1>
         <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
           {t("pkk.subtitle")}
