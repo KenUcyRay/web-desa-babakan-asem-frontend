@@ -19,8 +19,10 @@ import {
 } from "react-icons/fa";
 import { InfografisApi } from "../../libs/api/InfografisApi";
 import { alertError } from "../../libs/alert";
+import { useTranslation } from "react-i18next";
 
 export default function SDGs() {
+  const { t } = useTranslation();
   const iconList = [
     <FaHeartbeat />, // 1. Tanpa Kemiskinan
     <FaLeaf />, // 2. Tanpa Kelaparan
@@ -50,7 +52,7 @@ export default function SDGs() {
       alertError("Gagal mengambil data SDGs.");
       return;
     }
-    setSdg(responseBody.sdgs); // ✅ Pastikan `sdgs`, bukan `sdg`
+    setSdg(responseBody.sdgs);
   };
 
   useEffect(() => {
@@ -62,10 +64,10 @@ export default function SDGs() {
       {/* Judul + Gambar */}
       <div className="grid md:grid-cols-2 gap-6 items-center">
         <div>
-          <h2 className="text-3xl font-bold text-gray-800">SDGs Desa</h2>
-          <p className="mt-2 text-gray-600">
-            17 Tujuan Pembangunan Berkelanjutan di Desa Babakan Asem.
-          </p>
+          <h2 className="text-3xl font-bold text-gray-800">
+            {t("sdgs.title")}
+          </h2>
+          <p className="mt-2 text-gray-600">{t("sdgs.description")}</p>
         </div>
         <img src={cuate} alt="SDGs" className="w-full max-w-md mx-auto" />
       </div>
@@ -80,9 +82,9 @@ export default function SDGs() {
             <div className="text-3xl text-[#B6F500]">
               {iconList[idx] || <FaHeartbeat />}
             </div>
-            <p className="text-gray-600 mt-2 text-center">{`${idx + 1}. ${
-              item.name
-            }`}</p>
+            <p className="text-gray-600 mt-2 text-center">
+              {`${idx + 1}. ${item.name}`}
+            </p>
             <p className="text-xl font-bold text-gray-800">{item.progress}%</p>
           </div>
         ))}

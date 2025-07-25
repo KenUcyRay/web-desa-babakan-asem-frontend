@@ -2,14 +2,16 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AdministrasiApi } from "../../libs/api/AdministrasiApi";
 import { alertError, alertSuccess } from "../../libs/alert";
+import { useTranslation } from "react-i18next";
 
 export default function FormulirLayanan() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     type: "",
-    message: "",
+    message: ""
   });
 
   const handleChange = (e) => {
@@ -19,9 +21,9 @@ export default function FormulirLayanan() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const response = await AdministrasiApi.createLayanan(formData);
     const responseBody = await response.json();
+
     if (!response.ok) {
       let errorMessage = "Gagal menyimpan perubahan.";
       if (responseBody.error && Array.isArray(responseBody.error)) {
@@ -35,6 +37,7 @@ export default function FormulirLayanan() {
       await alertError(errorMessage);
       return;
     }
+
     await alertSuccess("Pengajuan surat layanan berhasil dikirim!");
     navigate("/administrasi");
   };
@@ -43,14 +46,14 @@ export default function FormulirLayanan() {
     <div className="bg-gray-50 min-h-screen py-10 px-4">
       <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-md p-8">
         <h1 className="text-2xl font-bold text-gray-800 mb-6 text-center">
-          Formulir Layanan Desa
+          {t("formLayanan.title")}
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Nama */}
           <div>
             <label className="block text-gray-700 font-medium mb-1">
-              Nama Lengkap
+              {t("formLayanan.form.nameLabel")}
             </label>
             <input
               type="text"
@@ -58,7 +61,7 @@ export default function FormulirLayanan() {
               value={formData.name}
               onChange={handleChange}
               required
-              placeholder="Masukkan nama lengkap"
+              placeholder={t("formLayanan.form.namePlaceholder")}
               className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-400"
             />
           </div>
@@ -66,7 +69,7 @@ export default function FormulirLayanan() {
           {/* Email */}
           <div>
             <label className="block text-gray-700 font-medium mb-1">
-              Email Aktif
+              {t("formLayanan.form.emailLabel")}
             </label>
             <input
               type="email"
@@ -74,7 +77,7 @@ export default function FormulirLayanan() {
               value={formData.email}
               onChange={handleChange}
               required
-              placeholder="contoh@email.com"
+              placeholder={t("formLayanan.form.emailPlaceholder")}
               className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-400"
             />
           </div>
@@ -82,7 +85,7 @@ export default function FormulirLayanan() {
           {/* Jenis Layanan */}
           <div>
             <label className="block text-gray-700 font-medium mb-1">
-              Pilih Layanan
+              {t("formLayanan.form.typeLabel")}
             </label>
             <select
               name="type"
@@ -91,23 +94,23 @@ export default function FormulirLayanan() {
               required
               className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-400"
             >
-              <option value="">-- Pilih Layanan --</option>
-              <option value="PENGADUAN">Pengaduan</option>
-              <option value="PERMOHONAN">Permohonan</option>
-              <option value="LAINNYA">Lainnya</option>
+              <option value="">{t("formLayanan.form.typeDefault")}</option>
+              <option value="PENGADUAN">{t("formLayanan.form.typeOptions.PENGADUAN")}</option>
+              <option value="PERMOHONAN">{t("formLayanan.form.typeOptions.PERMOHONAN")}</option>
+              <option value="LAINNYA">{t("formLayanan.form.typeOptions.LAINNYA")}</option>
             </select>
           </div>
 
           {/* Pesan */}
           <div>
             <label className="block text-gray-700 font-medium mb-1">
-              Pesan / Permintaan
+              {t("formLayanan.form.messageLabel")}
             </label>
             <textarea
               name="message"
               value={formData.message}
               onChange={handleChange}
-              placeholder="Tuliskan permintaan layanan Anda..."
+              placeholder={t("formLayanan.form.messagePlaceholder")}
               rows="4"
               className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-400"
             ></textarea>
@@ -120,13 +123,13 @@ export default function FormulirLayanan() {
               onClick={() => navigate(-1)}
               className="px-6 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 transition"
             >
-              Batal
+              {t("formLayanan.form.cancel")}
             </button>
             <button
               type="submit"
               className="px-6 py-2 rounded-lg bg-green-500 hover:bg-green-600 text-white font-semibold"
             >
-              Kirim Formulir
+              {t("formLayanan.form.submit")}
             </button>
           </div>
         </form>

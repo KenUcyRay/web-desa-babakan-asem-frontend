@@ -1,64 +1,86 @@
 {
-  "welcome": "Welcome To Babakan Asem Village",
-  "quickMenu": {
-    "profil": {
-      "title": "Village Profile",
-      "desc": "History, vision & mission"
+  "home": {
+    "hero": {
+      "title": "Welcome to Babakan Asem Village",
+      "description": "A green, friendly village full of mutual cooperation.",
+      "location": "Sumedang Regency"
     },
-    "berita": {
-      "title": "Village News",
-      "desc": "Latest information"
+    "quickmenu": {
+      "profile": {
+        "title": "Village Profile",
+        "desc": "History, vision & mission"
+      },
+      "news": {
+        "title": "Village News",
+        "desc": "Latest information"
+      },
+      "service": {
+        "title": "Public Services",
+        "desc": "Document submission & services"
+      },
+      "infografis": {
+        "title": "Infographics",
+        "desc": "Village statistics data"
+      }
     },
-    "layanan": {
-      "title": "Public Services",
-      "desc": "Letter submission & services"
+    "about": {
+      "title": "About Babakan Asem Village",
+      "desc1": "Babakan Asem is a village located in a lush area where most residents are farmers and artisans. It has abundant natural potential, a strong culture of mutual cooperation, and various featured products managed by the Village-Owned Enterprise (BUMDes).",
+      "desc2": "We are committed to building an independent, competitive, and prosperous village through local community empowerment."
     },
-    "infografis": {
-      "title": "Infographics",
-      "desc": "Village statistics data"
+    "latestnews": {
+      "title": "Latest News",
+      "seeall": "See All →"
+    },
+    "bumdes": {
+      "title": "BUMDes Products",
+      "seeall": "See All →",
+      "order": "Order"
+    },
+    "apb": {
+      "title": "📊 Village Budget 2025",
+      "budget": "Budget",
+      "realization": "Realization"
+    },
+    "map": {
+      "title": "Babakan Asem Village Map"
     }
   },
-  "hero": {
-    "subtitle": "A lush, friendly village full of mutual cooperation.",
-    "location": "Sumedang Regency"
-  },
-  "tentang": {
-    "title": "About Babakan Asem Village",
-    "paragraf1": "Babakan Asem Village is located in a lush area with most residents working as farmers and craftsmen. The village has abundant natural resources, a strong culture of mutual cooperation, and various flagship products managed by the Village-Owned Enterprises (BUMDes).",
-    "paragraf2": "We are committed to building an independent, competitive, and prosperous village through community empowerment."
-  },
-  "berita": {
-    "terbaru": "Latest News",
-    "lihatSemua": "See All →"
-  },
-  "produk": {
-    "judul": "BUMDes Products",
-    "lihatSemua": "See All →",
-    "pesan": "Order"
-  },
-  "apb": {
-    "judul": "📊 Village Budget (APB) for 2025",
-    "anggaran": "Budget",
-    "realisasi": "Realization"
-  },
   "contact": {
-    "title": "Don't Hesitate to Connect with Us",
-    "subtitle": "Welcome to the Contact Page of Babakan Asem Village. We are ready to listen to your feedback and suggestions.",
-    "formTitle": "Leave Your Message",
-    "formSubtitle": "We will respond as soon as possible",
-    "formName": "Name",
-    "formEmail": "Email",
-    "formMessage": "Message",
-    "formButton": "Send Message",
-    "address": {
-      "title": "Babakan Asem Village",
-      "subtitle": "Jalan Babakan Asem No. 142, Babakan Asem Village, Conggeang Subdistrict, Sumedang Regency, West Java 45391"
+    "hero": {
+      "title": "Don't Hesitate to Get in Touch with Us",
+      "description": "Welcome to the Contact Page of Babakan Asem Village. <br /> We are ready to hear your complaints & suggestions."
     },
-    "phone": {
-      "title": "Phone"
+    "form": {
+      "title": "Leave Your Message",
+      "description": "We will respond as soon as possible",
+      "name": "Name",
+      "email": "Email",
+      "message": "Message",
+      "placeholder_name": "Your name...",
+      "placeholder_email": "Your email...",
+      "placeholder_message": "Enter your message..",
+      "submit": "Send Message",
+      "success": "Message sent successfully!",
+      "error": "Failed to send message: "
     },
-    "email": {
-      "title": "Our Email"
+    "info": {
+      "address": {
+        "title": "Babakan Asem Village",
+        "detail": "Jalan Babakan Asem No. 142, Babakan Asem Village, Conggeang District, Sumedang Regency, West Java 45391"
+      },
+      "phone": {
+        "title": "Phone",
+        "number": "0853-3019-2025"
+      },
+      "whatsapp": {
+        "title": "WhatsApp",
+        "number": "+62 853‑3019‑2025"
+      },
+      "email": {
+        "title": "Our Email",
+        "address": "babakanasem@gmail.com"
+      }
     }
   },
   "navbarTop": {
@@ -115,5 +137,563 @@
     "mapSouth": "<strong>South:</strong> Bugel Village",
     "mapWest": "<strong>West:</strong> Cacaban & Prasih Villages",
     "mapEast": "<strong>East:</strong> Cipelang Village & BPM Taman area"
+  },
+  "government": {
+    "title": "Government <br /> <span class='text-green-600'>Babakan Asem Village</span>",
+    "subtitle": "Babakan Asem Village <br /> Towards an Independent, Advanced & Prosperous Village",
+    "greetingTitle": "Headman's Welcome",
+    "greetingMessage": "“We invite all residents of Babakan Asem Village to continue working together to build a more advanced, independent, and prosperous village. Active community participation is the key to the success of village development.”",
+    "greetingBy": "– Head of Babakan Asem Village",
+    "structureTitle": "Organizational Structure",
+    "orgTitle": "Village Institutions",
+    "org1": "BUMDes",
+    "org2": "Village Council (DPD)",
+    "org3": "Youth Organization",
+    "serviceTitle": "Administrative Services",
+    "service1": "Introduction Letter",
+    "service2": "Service Form",
+    "service3": "Online Services",
+    "regulationTitle": "Village Regulations",
+    "regulation1Title": "Village Regulation on Governance",
+    "regulation2Title": "Development Plan Regulation",
+    "tableTitle": "Regulation Title",
+    "tableYear": "No. / Year",
+    "tableDownload": "Download",
+    "download": "Download"
+  },
+  "villagePotential": {
+    "title": "Village Potentials of Babakan Asem",
+    "subtitle": "Most residents work as farmers, livestock breeders, and gardeners producing high-quality natural food.",
+    "agricultureTitle": "Agriculture",
+    "agricultureDesc": "Rice, corn, cassava, peanuts, and vegetables are the village's mainstay.",
+    "livestockTitle": "Livestock",
+    "livestockDesc": "Cattle, goats, chickens & sheep for local consumption and boosting villagers' economy.",
+    "plantationTitle": "Plantation",
+    "plantationDesc": "Mangoes, bananas, and horticultural crops provide additional income for residents.",
+    "carouselTitle": "From fertile land and well-kept livestock,\nwe present quality food for your family",
+    "carouselSubtitle": "Explore our village's top potential through the photo gallery below.",
+    "carousel1Title": "Fertile Agriculture",
+    "carousel1Desc": "Vast fields yield rice, corn, cassava, and fresh vegetables.",
+    "carousel2Title": "Well-Maintained Livestock",
+    "carousel2Desc": "Cows, goats, chickens, and sheep support village food security.",
+    "carousel3Title": "Green Plantations",
+    "carousel3Desc": "Plantations of mangoes, bananas, and horticulture increase community income."
+  },
+  "pkk": {
+    "subtitle": "Empowering Families Towards Prosperous & Independent Villages",
+    "description": "The PKK movement is a national initiative that grows from the community to build faithful, prosperous, and independent families through active participation of all village residents.",
+    "vision": "Vision",
+    "visionDesc": "To realize faithful, prosperous, and independent families, with the values of mutual cooperation and active community participation.",
+    "mission": "Mission",
+    "missionList": [
+      "Improve quality of life and family welfare",
+      "Encourage active participation in village development",
+      "Develop family creative economy through MSMEs",
+      "Foster environmental awareness & family health"
+    ],
+    "programTitle": "Main PKK Programs",
+    "agendaTitle": "Important PKK Agendas",
+    "ctaTitle": "Want to See PKK Gallery & Structure?",
+    "ctaDesc": "See PKK activity documentation and full organizational structure that actively contributes to village development.",
+    "ctaButton": "View Gallery & PKK Structure",
+    "agendaError": "Failed to fetch agenda data. Please try again later.",
+    "programError": "Failed to fetch program data. Please try again later."
+  },
+  "detailPkk": {
+    "title": "Family Welfare Empowerment (PKK)",
+    "subtitle": "An organization that plays a role in improving family welfare through community empowerment, education, and health.",
+    "structureTitle": "PKK Organizational Structure",
+    "galleryTitle": "PKK Activity Gallery",
+    "galleryLabel": "PKK Activities",
+    "errorMembers": "Failed to fetch PKK members.",
+    "errorGalery": "Failed to fetch PKK gallery."
+  },
+  "bumdes": {
+    "title": "Village-Owned Enterprise (BUMDes)",
+    "subtitle": "Featured products from Babakan Asem Village managed by local communities. Supporting independent economy & village empowerment.",
+    "empty": "No products available yet.",
+    "order": "Order",
+    "footerTitle": "Village Economic Hub",
+    "footerText": "All products here are authentic works of Babakan Asem villagers – supporting self-sufficiency & community welfare.",
+    "error": "Failed to fetch products. Please try again later."
+  },
+  "karangTaruna": {
+    "title": "Babakan Asem Village Karang Taruna Organization",
+    "subtitle": "Karang Taruna in Action, Village in Glory. A forum for fostering and developing young generations in social, youth, and community fields.",
+    "visionTitle": "Vision",
+    "vision": "To become active, creative, and caring youth who contribute to village development.",
+    "missionTitle": "Mission",
+    "mission": {
+      "1": "Develop youth potential",
+      "2": "Organize social and cultural activities",
+      "3": "Be the driving force of village development"
+    },
+    "structure": "Karang Taruna Organization Structure",
+    "galleryTitle": "Karang Taruna Organization Activity Documentation",
+    "gallerySubtitle": "Here are some of the latest activities of the Babakan Asem Village Karang Taruna Organization.",
+    "galleryLabel": "Activity",
+    "error": "Failed to retrieve agenda data. Please try again later."
+  },
+  "bpd": {
+    "hero": {
+      "title": "Village Consultative Body",
+      "description": "A village representative institution that collects community aspirations, oversees village governance, and ensures development transparency."
+    },
+    "role": {
+      "title": "Main Roles & Duties of BPD",
+      "description": "The Village Consultative Body (BPD) is the village government's partner in village administration. It functions as an institution that gathers and delivers community aspirations, discusses and approves village regulations, and monitors the performance of the village government.",
+      "tasks": {
+        "1": "Gather aspirations and needs of the village community.",
+        "2": "Oversee the village government transparently.",
+        "3": "Provide input in village budget and regulation planning.",
+        "4": "Act as a bridge between the village government and the people."
+      }
+    },
+    "stats": {
+      "1": { "angka": "7", "label": "Active Members" },
+      "2": { "angka": "4", "label": "Annual Programs" },
+      "3": { "angka": "90+", "label": "Community Aspirations" }
+    },
+    "structure": {
+      "title": "BPD Organizational Structure"
+    },
+    "agenda": {
+      "title": "Upcoming Agenda"
+    },
+    "error": {
+      "members": "Failed to retrieve BPD member data.",
+      "agenda": "Failed to retrieve BPD agenda data."
+    }
+  },
+  "dpd": {
+    "hero": {
+      "title": "Village Representative Council",
+      "description": "Accommodates the aspirations of citizens, oversees village governance, and ensures transparent village development."
+    },
+    "stats": {
+      "1": { "angka": "6", "label": "Active Members" },
+      "2": { "angka": "3", "label": "Annual Programs" },
+      "3": { "angka": "120+", "label": "Aspirations Received" }
+    },
+    "structure": {
+      "title": "Organizational Structure"
+    },
+    "agenda": {
+      "title": "Upcoming Agendas",
+      "button": "View Full Agenda →"
+    },
+    "error": {
+      "agenda": "Failed to retrieve agenda data. Please try again later.",
+      "members": "Failed to fetch member data."
+    }
+  },
+  "detailDpd": {
+    "hero.title": "Full Agenda & Gallery",
+    "hero.description": "All upcoming agendas and documentation of activities by the <strong>Village Representative Council of Babakan Asem</strong>.",
+    "back": "Back to DPD",
+    "agendaTitle": "Full Agenda List",
+    "galleryTitle": "DPD Activity Gallery",
+    "error.agenda": "Failed to fetch agenda data. Please try again later.",
+    "error.galeri": "Failed to fetch gallery data. Please try again later."
+  },
+  "guide": {
+    "button": "Submit Now",
+    "title": "Village Administration Service Guide",
+    "description": "Below are the general steps to manage various letters and documents at Babakan Asem Village easily and quickly.",
+    "stepsTitle": "General Service Submission Steps",
+    "steps": [
+      "Prepare the required documents according to the service type.",
+      "Visit the village office or use the online service.",
+      "Submit the documents and fill out the required form.",
+      "Wait for verification by the village staff.",
+      "Collect the completed letter or document."
+    ],
+    "servicesTitle": "Available Services",
+    "services": [
+      "Introductory Letter for KTP/KK",
+      "Introductory Letter for SKCK",
+      "Domicile Letter & Business Certificate",
+      "Certificate of Inability",
+      "Small Business (UMKM) Application",
+      "Population Data Request"
+    ],
+    "note": "<strong>Note:</strong> Services are only available on weekdays (Monday - Friday) from 08.00 to 15.00 WIB. Please bring original and photocopy documents."
+  },
+  "administrasi": {
+    "topButtons": {
+      "ajukan": "Submit Now",
+      "panduan": "Service Guide"
+    },
+    "services": [
+      {
+        "title": "Introductory Letter",
+        "desc": "For ID card, Family Card, Police Certificate, etc.",
+        "button": "View Details"
+      },
+      {
+        "title": "Service Form",
+        "desc": "Fill Out the Application Form",
+        "button": "Fill Form"
+      },
+      {
+        "title": "Population Info",
+        "desc": "Resident Details",
+        "button": "View Data"
+      },
+      {
+        "title": "Online Services",
+        "desc": "Submit & Track Online",
+        "button": "Go to Portal"
+      }
+    ]
+  },
+  "formOnline": {
+    "title": "Village Online Services",
+    "form": {
+      "nameLabel": "Full Name",
+      "namePlaceholder": "Enter full name",
+      "emailLabel": "Active Email",
+      "emailPlaceholder": "example@email.com",
+      "phoneLabel": "WhatsApp Number",
+      "phonePlaceholder": "08xxxxxxxxxx",
+      "typeLabel": "Choose Online Service Type",
+      "typeDefault": "-- Select --",
+      "typeOptions": {
+        "TRACKING_SURAT": "Track Document",
+        "CEK_STATUS_LAYANAN": "Check Service Status",
+        "PERMOHONAN": "Submit a Request"
+      },
+      "cancel": "Cancel",
+      "submit": "Submit Request"
+    }
+  },
+  "formLayanan": {
+    "title": "Village Service Form",
+    "form": {
+      "nameLabel": "Full Name",
+      "namePlaceholder": "Enter full name",
+      "emailLabel": "Active Email",
+      "emailPlaceholder": "example@email.com",
+      "typeLabel": "Select Service",
+      "typeDefault": "-- Select Service --",
+      "typeOptions": {
+        "PENGADUAN": "Complaint",
+        "PERMOHONAN": "Request",
+        "LAINNYA": "Others"
+      },
+      "messageLabel": "Message / Request",
+      "messagePlaceholder": "Write your service request...",
+      "cancel": "Cancel",
+      "submit": "Submit Form"
+    }
+  },
+  "formLetter": {
+    "title": "Letter Application Form",
+    "form": {
+      "nameLabel": "Full Name",
+      "namePlaceholder": "Enter full name",
+      "nikLabel": "National Identity Number (NIK)",
+      "nikPlaceholder": "Enter your NIK",
+      "typeLabel": "Letter Type",
+      "typeDefault": "-- Select Letter Type --",
+      "typeOptions": {
+        "KTP": "KTP Recommendation Letter",
+        "KK": "KK Recommendation Letter",
+        "SKCK": "SKCK Recommendation Letter",
+        "LAINNYA": "Others"
+      },
+      "noteLabel": "Additional Notes",
+      "notePlaceholder": "Write additional notes...",
+      "cancel": "Cancel",
+      "submit": "Submit Application"
+    }
+  },
+  "resident": {
+    "title": "Village Population Demographics",
+    "description": {
+      "paragraph1": "Below is an overview of the number of residents in Babakan Village divided by gender, number of heads of households, and children. This data is used for development planning, public services, and better village management.",
+      "paragraph2": "*Data is dynamic from the village information system."
+    },
+    "chart": {
+      "title": "Population Distribution Chart",
+      "description": "This chart shows the number of village residents in several main categories. From this chart, we can see a comparison of the number of males, females, heads of households, and children."
+    }
+  },
+  "idm": {
+    "title": "IDM Score of Babakan Asem Village",
+    "description": "Village Development Index (IDM) over the years.",
+    "box": {
+      "status": "Village Status",
+      "sosial": "Social Dimension",
+      "ekonomi": "Economic Dimension",
+      "lingkungan": "Environmental Dimension"
+    },
+    "chart": {
+      "title": "IDM Score Progress"
+    }
+  },
+  "bansos": {
+    "title": "Social Assistance Data",
+    "description": "List of social assistance received by village residents.",
+    "jumlah": "Number of Recipients"
+  },
+  "sdgs": {
+    "title": "Village SDGs",
+    "description": "17 Sustainable Development Goals in Babakan Asem Village."
+  },
+  "infografis": {
+    "layout": {
+      "title": "VILLAGE INFOGRAPHICS OF BABAKAN ASEM",
+      "subtitle": "Complete village data in an easy-to-understand format.",
+      "menu": {
+        "resident": "Residents",
+        "idm": "IDM",
+        "bansos": "Social Aid",
+        "sdgs": "SDGs"
+      }
+    }
+  },
+  "agenda": {
+    "title": "Agenda of Babakan Asem Village",
+    "loading": "⏳ Loading agenda...",
+    "empty": "📭 No agenda available to display.",
+    "category": {
+      "Semua": "All",
+      "REGULAR": "Regular",
+      "PKK": "PKK",
+      "KARANG_TARUNA": "Karang Taruna",
+      "DPD": "DPD",
+      "BPD": "BPD"
+    },
+    "viewCount": "times"
+  },
+  "news": {
+    "title": "News of Babakan Asem Village",
+    "readMore": "Read more →",
+    "viewed": "Viewed",
+    "times": "Times"
+  },
+  "galery": {
+    "title": "Village Activity Gallery",
+    "overlay": "📸 Village Activities"
+  },
+  "login": {
+    "title": "Hello, Good to See You Again!",
+    "description": "Login to the Babakan Asem Village Portal",
+    "method": {
+      "email": "Email",
+      "phone": "Phone"
+    },
+    "placeholder": {
+      "email": "Enter email",
+      "phone": "Enter phone number",
+      "password": "Enter password"
+    },
+    "password": "Password",
+    "remember": "Remember Me",
+    "forgot": "Forgot password?",
+    "submit": "Login",
+    "or": "or",
+    "no_account": "Don't have an account?",
+    "register_here": "Register here",
+    "success": "Login successful!",
+    "admin_welcome": "Welcome, Admin!"
+  },
+  "register": {
+    "welcomeTitle": "Hello, Welcome!",
+    "welcomeSubtitle": "Join the Babakan Asem Village Portal",
+    "fullNameLabel": "Full Name",
+    "fullNamePlaceholder": "Enter full name",
+    "emailLabel": "Email",
+    "emailPlaceholder": "Enter your email",
+    "phoneLabel": "Phone Number",
+    "phonePlaceholder": "Enter your phone number",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Create a password",
+    "confirmPasswordLabel": "Confirm Password",
+    "confirmPasswordPlaceholder": "Repeat your password",
+    "rememberMe": "Remember Me",
+    "registerButton": "Register Now",
+    "or": "or",
+    "alreadyHaveAccount": "Already have an account?",
+    "loginHere": "Login here",
+    "successRegister": "Registration successful!"
+  },
+  "forgotPassword": {
+    "title": "Forgot Password?",
+    "subtitle": "Enter your email, we will send a link to reset your password",
+    "emailLabel": "Email",
+    "emailPlaceholder": "Enter your email",
+    "button": "Send Reset Link",
+    "successSend": "Password reset email has been sent. Please check your inbox.",
+    "failedSend": "Failed to send password reset email. Please try again.",
+    "loading": "Loading..."
+  },
+  "wait": {
+    "title": "Please check your email or phone number!",
+    "description": "We have sent a <strong>link</strong> to reset your password. Open your email and click the provided link."
+  },
+  "resetPassword": {
+    "title": "Reset Password",
+    "subtitle": "Enter your <strong>new password</strong> for your account",
+    "newPasswordLabel": "New Password",
+    "newPasswordPlaceholder": "Enter new password",
+    "confirmPasswordLabel": "Confirm Password",
+    "confirmPasswordPlaceholder": "Repeat new password",
+    "button": "Save Password",
+    "success": "Password successfully changed! Please login again.",
+    "failed": "Failed to reset password. Make sure the token is valid and try again.",
+    "tokenInvalid": "Token not found. Please open the link from your email."
+  },
+  "profile": {
+    "back": "Back",
+    "title": "User Profile",
+    "loading": "Loading profile...",
+    "id": "User ID",
+    "name": "Full Name",
+    "email": "Email",
+    "phone": "Phone Number",
+    "joined": "Joined",
+    "copy": "Copy",
+    "copied": "ID copied to clipboard -",
+    "copyFail": "Failed to copy ID",
+    "edit": "Edit Profile",
+    "logout": "Logout",
+    "logoutConfirm": "Are you sure you want to logout?",
+    "logoutSuccess": "You have been logged out.",
+    "delete": "Delete Account",
+    "deleteConfirm": "❌ Are you sure you want to delete this account? This action cannot be undone!",
+    "deleteFail": "Failed to delete.",
+    "deleteSuccess": "Account successfully deleted.",
+    "updateFail": "Failed to update profile.",
+    "updateConfirm": "Are you sure you want to save these changes?",
+    "updateSuccess": "Profile successfully updated.",
+    "passwordMismatch": "Password confirmation does not match.",
+    "form": {
+      "emailPlaceholder": "Leave empty if using only phone",
+      "phonePlaceholder": "Leave empty if using only email",
+      "passwordPlaceholder": "Leave empty if you don't want to change password",
+      "cancel": "Cancel",
+      "save": "Save Changes"
+    }
+  },
+  "detailAgenda": {
+    "back": "Back",
+    "viewed": "Viewed",
+    "leaveComment": "💬 Leave a Comment",
+    "placeholder": "Write your comment...",
+    "sendComment": "Send Comment",
+    "noComment": "No comments yet",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "cancel": "Cancel",
+    "alert": {
+      "mustLogin": "⚠ Please <strong>login</strong> first to post a comment!",
+      "sendSuccess": "Comment sent successfully!",
+      "sendFailed": "Failed to send comment. Please try again later. {{error}}",
+      "loadFailed": "Failed to load agenda details. Please try again later.",
+      "updateSuccess": "Comment updated successfully!",
+      "updateFailed": "Failed to update comment: {{error}}",
+      "deleteConfirm": "Are you sure you want to delete this comment?",
+      "deleteSuccess": "Comment deleted successfully!",
+      "deleteFailed": "Failed to delete comment: {{error}}"
+    }
+  },
+  "detailNews": {
+    "back": "Back",
+    "postedBy": "By {{name}} | Date: {{date}} | 👁 {{views}} Views",
+    "leaveComment": "💬 Leave a Comment",
+    "writeComment": "Write your comment...",
+    "sendComment": "Send Comment",
+    "noComment": "No comments yet",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "cancel": "Cancel",
+    "alert": {
+      "needLogin": "⚠ <strong>Please login first</strong> to post a comment!",
+      "fetchError": "Failed to fetch news detail. Please try again later.",
+      "fetchCommentError": "Failed to fetch comments. Please try again later.",
+      "commentSuccess": "Comment posted successfully!",
+      "commentFail": "Failed to post comment. Please try again later. {{error}}",
+      "commentUpdateSuccess": "Comment updated successfully!",
+      "commentUpdateFail": "Failed to update comment: {{error}}",
+      "confirmDelete": "Are you sure you want to delete this comment?",
+      "commentDeleteSuccess": "Comment deleted successfully!",
+      "commentDeleteFail": "Failed to delete comment: {{error}}"
+    }
+  },
+  "detailProduct": {
+    "back": "Back",
+    "by": "By BUMDes Babakan Asem",
+    "price": "Price",
+    "descriptionNote": "This product is <strong>100% village-made</strong> and managed by local communities.",
+    "orderWhatsapp": "Order via WhatsApp",
+    "ratingTitleRated": "Your Rating",
+    "ratingTitleUnrated": "Rate This Product",
+    "updateRating": "Update Rating",
+    "sendRating": "Submit Rating",
+    "cancel": "Cancel",
+    "deleteRating": "Delete Rating",
+    "leaveComment": "Leave a Comment",
+    "commentPlaceholder": "Write your comment...",
+    "sendComment": "Send Comment",
+    "edit": "Edit",
+    "delete": "Delete",
+    "noComments": "No comments yet",
+    "editComment": "Save",
+    "cancelEdit": "Cancel"
+  },
+  "floatingMenu": {
+    "greeting": "👋 <strong>Need help?</strong>",
+    "subGreeting": "Contact Admin, just click here",
+    "whatsapp": "WhatsApp",
+    "phone": "Phone"
+  },
+  "footer": {
+    "village_name": "Babakan Asem Village",
+    "address": "Jalan Babakan Asem No. 142 Babakan Asem Village,\nConggeang District, Sumedang Regency,\nWest Java 45391",
+    "contact_us": "Contact Us",
+    "phone": "0853-3019-2025",
+    "email": "Babakanasem@gmail.com",
+    "services": "Services",
+    "service_1": "Jumadi / Kesik Village Head",
+    "service_2": "Yayan / Kesik Ambulance",
+    "explore": "Explore",
+    "explore_1": "Kemendesa Website",
+    "explore_2": "Kemendagri Website",
+    "explore_3": "Sumedang Website",
+    "explore_4": "Kartanegara",
+    "supported_by": "Supported by",
+    "copyright": "© 2025 Babakan Asem Village. All rights reserved."
+  },
+  "sidebarInfo": {
+    "latest_news": "Latest News",
+    "latest_agenda": "Latest Agenda",
+    "contact_cards": {
+      "phone": {
+        "title": "Phone",
+        "number": "(0261) 123456"
+      },
+      "whatsapp": {
+        "title": "WhatsApp",
+        "number": "0812‑3456‑7890"
+      },
+      "email": {
+        "title": "Email Us",
+        "address": "info@babakanasem.id"
+      }
+    },
+    "alert": {
+      "news_error": "Failed to fetch news data. Please try again later.",
+      "agenda_error": "Failed to fetch agenda data. Please try again later."
+    }
+  },
+  "sidebarProduct": {
+    "other_products": "Other Products",
+    "alert": {
+      "product_error": "Failed to fetch product data. Please try again later."
+    }
   }
 }

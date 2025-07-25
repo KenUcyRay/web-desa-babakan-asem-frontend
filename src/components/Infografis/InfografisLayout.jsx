@@ -1,4 +1,5 @@
 import { Outlet, NavLink } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   FaUsers,
   FaChartLine,
@@ -7,11 +8,29 @@ import {
 } from "react-icons/fa";
 
 export default function InfografisLayout() {
+  const { t } = useTranslation();
+
   const menu = [
-    { to: "penduduk", label: "Penduduk", icon: <FaUsers /> },
-    { to: "idm", label: "IDM", icon: <FaChartLine /> },
-    { to: "bansos", label: "Bansos", icon: <FaHandsHelping /> },
-    { to: "sdgs", label: "SDGs", icon: <FaSeedling /> },
+    {
+      to: "penduduk",
+      label: t("infografis.layout.menu.resident"),
+      icon: <FaUsers />,
+    },
+    {
+      to: "idm",
+      label: t("infografis.layout.menu.idm"),
+      icon: <FaChartLine />,
+    },
+    {
+      to: "bansos",
+      label: t("infografis.layout.menu.bansos"),
+      icon: <FaHandsHelping />,
+    },
+    {
+      to: "sdgs",
+      label: t("infografis.layout.menu.sdgs"),
+      icon: <FaSeedling />,
+    },
   ];
 
   return (
@@ -22,10 +41,10 @@ export default function InfografisLayout() {
           {/* Judul di kiri */}
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
-              INFOGRAFIS DESA BABAKAN ASEM
+              {t("infografis.layout.title")}
             </h1>
             <p className="text-gray-600 mt-1 text-sm md:text-base">
-              Data lengkap desa yang mudah dipahami.
+              {t("infografis.layout.subtitle")}
             </p>
           </div>
 

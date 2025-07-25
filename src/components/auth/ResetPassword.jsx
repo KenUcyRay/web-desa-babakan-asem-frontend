@@ -3,11 +3,14 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import resetImage from "../../assets/reset.png";
 import { alertError, alertSuccess } from "../../libs/alert";
 import { UserApi } from "../../libs/api/UserApi";
+import { useTranslation, Trans } from "react-i18next";
 
 export default function ResetPassword() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const token = searchParams.get("token"); // - Ambil token dari URL
+  const token = searchParams.get("token");
+
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
@@ -19,52 +22,52 @@ export default function ResetPassword() {
       password,
       confirmPassword
     );
+
     if (response.status === 204) {
-      await alertSuccess("Password berhasil diubah! Silakan login kembali.");
+      await alertSuccess(t("resetPassword.success"));
       navigate("/login");
     } else {
-      await alertError(
-        "Gagal mengubah password. Pastikan token valid dan coba lagi."
-      );
+      await alertError(t("resetPassword.failed"));
     }
+
     setPassword("");
     setConfirmPassword("");
   };
 
-  const vefifyToken = async () => {
+  const verifyToken = async () => {
     const response = await UserApi.verifyResetToken(token);
     if (!response.ok) {
-      await alertError("Token tidak ditemukan. Pastikan buka link dari email.");
+      await alertError(t("resetPassword.tokenInvalid"));
       navigate("/forgot-password");
     }
   };
 
   useEffect(() => {
-    vefifyToken();
+    verifyToken();
   }, []);
 
   return (
     <div className="flex min-h-screen font-poppins">
-      {/* - Bagian Kiri: Form Reset Password */}
       <div className="flex w-full md:w-1/2 items-center justify-center bg-gradient-to-b from-[#B6F500] to-[#FFFCE2] px-8 py-12">
         <div className="bg-white/90 backdrop-blur-md shadow-xl rounded-2xl w-full max-w-md p-8">
-          {/* Judul */}
           <h2 className="text-3xl text-gray-900 font-normal mb-2 text-center">
-            Atur Ulang Password
+            {t("resetPassword.title")}
           </h2>
           <p className="text-gray-600 text-center mb-6">
-            Masukkan password baru untuk akunmu
+            <Trans
+              i18nKey="resetPassword.subtitle"
+              components={{ strong: <strong className="font-semibold" /> }}
+            />
           </p>
 
-          {/* Form */}
           <form className="space-y-4" onSubmit={handleReset}>
             <div>
               <label className="block text-gray-700 font-medium mb-1">
-                Password Baru
+                {t("resetPassword.newPasswordLabel")}
               </label>
               <input
                 type="password"
-                placeholder="Masukkan password baru"
+                placeholder={t("resetPassword.newPasswordPlaceholder")}
                 className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-300 outline-none"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -74,11 +77,11 @@ export default function ResetPassword() {
 
             <div>
               <label className="block text-gray-700 font-medium mb-1">
-                Konfirmasi Password
+                {t("resetPassword.confirmPasswordLabel")}
               </label>
               <input
                 type="password"
-                placeholder="Ulangi password baru"
+                placeholder={t("resetPassword.confirmPasswordPlaceholder")}
                 className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-300 outline-none"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
@@ -86,19 +89,17 @@ export default function ResetPassword() {
               />
             </div>
 
-            {/* - Tombol Gradien */}
             <button
               type="submit"
               className="w-full py-3 bg-gradient-to-r from-green-400 to-[#B6F500] text-white font-semibold rounded-lg hover:opacity-90 transition duration-200"
-              disabled={!token} // - Token wajib ada
+              disabled={!token}
             >
-              Simpan Password
+              {t("resetPassword.button")}
             </button>
           </form>
         </div>
       </div>
 
-      {/* - Bagian Kanan: Ilustrasi Reset Password */}
       <div className="hidden md:flex w-1/2 items-center justify-center bg-gradient-to-b from-[#B6F500] to-[#FFFCE2] px-8 py-12">
         <img
           src={resetImage}

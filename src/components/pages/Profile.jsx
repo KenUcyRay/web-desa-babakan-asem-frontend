@@ -5,8 +5,10 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useNavigate } from "react-router";
 import { Helper } from "../../utils/Helper";
 import { FiArrowLeft } from "react-icons/fi";
+import { useTranslation } from "react-i18next";
 
 export default function Profile() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const { logout, setAdminStatus } = useAuth();
@@ -23,7 +25,7 @@ export default function Profile() {
   const fetchProfile = async () => {
     const response = await UserApi.getUserProfile();
     if (!response.ok) {
-      alertError("Gagal mengambil profil pengguna.");
+      alertError(t("profile.updateFail"));
       return;
     }
     const responseBody = await response.json();
@@ -39,25 +41,23 @@ export default function Profile() {
   };
 
   const handleLogout = async () => {
-    const confirm = await alertConfirm("Apakah Anda yakin ingin keluar?");
+    const confirm = await alertConfirm(t("profile.logoutConfirm"));
     if (!confirm) return;
 
     setAdminStatus(false);
     logout();
-    await alertSuccess("Anda telah keluar.");
+    await alertSuccess(t("profile.logoutSuccess"));
     navigate("/login");
   };
 
   const handleDelete = async () => {
-    const confirm = await alertConfirm(
-      "❌ Apakah Anda yakin ingin menghapus akun ini? Tindakan ini tidak dapat dibatalkan!"
-    );
+    const confirm = await alertConfirm(t("profile.deleteConfirm"));
     if (!confirm) return;
 
     const response = await UserApi.deleteUser(user.id);
     if (!response.ok) {
       const responseBody = await response.json();
-      let errorMessage = "Gagal Menghapus.";
+      let errorMessage = t("profile.deleteFail");
 
       if (responseBody.error && Array.isArray(responseBody.error)) {
         const errorMessages = responseBody.error.map((err) => {
@@ -77,14 +77,14 @@ export default function Profile() {
 
     setAdminStatus(false);
     logout();
-    await alertSuccess("Akun berhasil dihapus.");
+    await alertSuccess(t("profile.deleteSuccess"));
     navigate("/");
   };
 
   const handleUpdate = async (e) => {
     e.preventDefault();
 
-    const confirm = await alertConfirm("Yakin simpan perubahan ini?");
+    const confirm = await alertConfirm(t("profile.updateConfirm"));
     if (!confirm) return;
 
     const payload = {
@@ -96,7 +96,7 @@ export default function Profile() {
 
     if (formData.password.trim() !== "") {
       if (formData.password !== formData.confirm_password) {
-        return alertError("Konfirmasi password tidak cocok.");
+        return alertError(t("profile.passwordMismatch"));
       } else {
         payload.password = formData.password;
       }
@@ -111,7 +111,7 @@ export default function Profile() {
 
     if (!response.ok) {
       const responseBody = await response.json();
-      let errorMessage = "Gagal memperbarui profil.";
+      let errorMessage = t("profile.updateFail");
 
       if (responseBody.error && Array.isArray(responseBody.error)) {
         const errorMessages = responseBody.error.map((err) => {
@@ -128,7 +128,7 @@ export default function Profile() {
       alertError(errorMessage);
       return;
     }
-    await alertSuccess("Profil berhasil diperbarui.");
+    await alertSuccess(t("profile.updateSuccess"));
     setEditMode(false);
     await fetchProfile();
   };
@@ -137,9 +137,9 @@ export default function Profile() {
     if (navigator.clipboard && window.isSecureContext) {
       try {
         await navigator.clipboard.writeText(text);
-        alertSuccess("ID berhasil disalin ke clipboard -");
+        alertSuccess(t("profile.copied"));
       } catch (err) {
-        alertError("Gagal menyalin ID");
+        alertError(t("profile.copyFail"));
       }
     } else {
       const textArea = document.createElement("textarea");
@@ -148,9 +148,9 @@ export default function Profile() {
       textArea.select();
       try {
         document.execCommand("copy");
-        alertSuccess("ID berhasil disalin ke clipboard -");
+        alertSuccess(t("profile.copied"));
       } catch (err) {
-        alertError("Gagal menyalin ID");
+        alertError(t("profile.copyFail"));
       }
       document.body.removeChild(textArea);
     }
@@ -163,7 +163,7 @@ export default function Profile() {
   if (!user) {
     return (
       <div className="min-h-screen flex justify-center items-center text-gray-500">
-        Memuat profil...
+        {t("profile.loading")}
       </div>
     );
   }
@@ -171,16 +171,14 @@ export default function Profile() {
   return (
     <div className="min-h-screen bg-gray-50 flex justify-center items-center px-4 py-12">
       <div className="w-full max-w-lg">
-        {/* - Tombol Back pakai icon */}
         <button
           onClick={() => navigate(-1)}
           className="mb-4 flex items-center gap-2 text-blue-600 hover:text-blue-800 transition"
         >
-          <FiArrowLeft className="text-lg" /> Kembali
+          <FiArrowLeft className="text-lg" /> {t("profile.back")}
         </button>
 
         <div className="bg-white rounded-xl shadow-lg p-6">
-          {/* - Header Profil */}
           <div className="text-center mb-6">
             <div className="w-20 h-20 mx-auto rounded-full bg-gray-200 flex items-center justify-center text-4xl font-bold text-gray-500">
               {user.name.charAt(0)}
@@ -188,7 +186,6 @@ export default function Profile() {
             <h1 className="mt-4 text-2xl font-bold text-gray-800">
               {user.name}
             </h1>
-            {/* ✅ Kalau ada email tampilkan email, kalau login via no telp tampilkan no telp */}
             <p className="text-gray-500">
               {user.email ? user.email : user.phone ? user.phone : "-"}
             </p>
@@ -196,69 +193,61 @@ export default function Profile() {
 
           {!editMode && (
             <>
-              {/* - Info Detail */}
               <div className="space-y-3 text-sm text-gray-600">
                 <div className="flex justify-between">
-                  <span>ID Pengguna</span>
+                  <span>{t("profile.id")}</span>
                   <div className="flex gap-2 items-center">
                     <span className="font-medium text-gray-800">{user.id}</span>
                     <button
                       className="text-xs text-green-600 underline"
                       onClick={() => copyToClipboard(user.id)}
                     >
-                      Salin
+                      {t("profile.copy")}
                     </button>
                   </div>
                 </div>
-
                 <div className="flex justify-between">
-                  <span>Nama Lengkap</span>
+                  <span>{t("profile.name")}</span>
                   <span className="font-medium text-gray-800">{user.name}</span>
                 </div>
-
-                {/* - Email tampil kalau ada, kalau nggak strip */}
                 <div className="flex justify-between">
-                  <span>Email</span>
+                  <span>{t("profile.email")}</span>
                   <span className="font-medium text-gray-800">
                     {user.email ? user.email : "-"}
                   </span>
                 </div>
-
-                {/* - No Telp tampil kalau ada, kalau nggak strip */}
                 <div className="flex justify-between">
-                  <span>No. Telepon</span>
+                  <span>{t("profile.phone")}</span>
                   <span className="font-medium text-gray-800">
                     {user.phone_number ? user.phone_number : "-"}
                   </span>
                 </div>
-
                 <div className="flex justify-between">
-                  <span>Bergabung</span>
+                  <span>{t("profile.joined")}</span>
                   <span className="font-medium text-gray-800">
                     {Helper.formatTanggal(user.created_at)}
                   </span>
                 </div>
               </div>
 
-              {/* - Tombol Aksi */}
               <div className="mt-8 flex flex-col gap-3">
                 <button
                   onClick={() => setEditMode(true)}
                   className="w-full py-3 rounded-lg bg-blue-500 text-white font-semibold hover:opacity-90 transition"
                 >
-                  Edit Profil
+                  {t("profile.edit")}
                 </button>
                 <button
                   onClick={handleLogout}
                   className="w-full py-3 rounded-lg bg-gradient-to-r from-green-400 to-[#B6F500] text-white font-semibold hover:opacity-90 transition"
                 >
-                  Logout
+                  {t("profile.logout")}
                 </button>
                 <button
                   onClick={handleDelete}
                   className="w-full py-3 rounded-lg border border-red-400 text-red-500 font-semibold hover:bg-red-50 transition"
                 >
-                  Hapus Akun
+                  {t("profile.delete")}
                 </button>
               </div>
             </>
@@ -268,51 +257,40 @@ export default function Profile() {
             <form onSubmit={handleUpdate} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-600">
-                  Nama Lengkap
+                  {t("profile.name")}
                 </label>
                 <input
                   type="text"
                   value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   className="w-full border rounded-lg p-2 mt-1"
                   required
                 />
               </div>
-
-              {/* - Input email (boleh kosong kalau login pakai no telp) */}
               <div>
                 <label className="block text-sm font-medium text-gray-600">
-                  Email
+                  {t("profile.email")}
                 </label>
                 <input
                   type="email"
                   value={formData.email}
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="w-full border rounded-lg p-2 mt-1"
-                  placeholder="Kosongkan jika hanya pakai No. Telp"
+                  placeholder={t("profile.form.emailPlaceholder")}
                 />
               </div>
-
-              {/* - Input No Telp (boleh kosong kalau login pakai email) */}
               <div>
                 <label className="block text-sm font-medium text-gray-600">
-                  No. Telepon
+                  {t("profile.phone")}
                 </label>
                 <input
                   type="text"
                   value={formData.phone}
-                  onChange={(e) =>
-                    setFormData({ ...formData, phone: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   className="w-full border rounded-lg p-2 mt-1"
-                  placeholder="Kosongkan jika hanya pakai Email"
+                  placeholder={t("profile.form.phonePlaceholder")}
                 />
               </div>
-
               <div>
                 <label className="block text-sm font-medium text-gray-600">
                   Password Baru
@@ -320,11 +298,9 @@ export default function Profile() {
                 <input
                   type="password"
                   value={formData.password}
-                  onChange={(e) =>
-                    setFormData({ ...formData, password: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   className="w-full border rounded-lg p-2 mt-1"
-                  placeholder="Biarkan kosong jika tidak ingin ganti password"
+                  placeholder={t("profile.form.passwordPlaceholder")}
                 />
               </div>
               <div>
@@ -334,14 +310,9 @@ export default function Profile() {
                 <input
                   type="password"
                   value={formData.confirm_password}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      confirm_password: e.target.value,
-                    })
-                  }
+                  onChange={(e) => setFormData({ ...formData, confirm_password: e.target.value })}
                   className="w-full border rounded-lg p-2 mt-1"
-                  placeholder="Biarkan kosong jika tidak ingin ganti password"
+                  placeholder={t("profile.form.passwordPlaceholder")}
                 />
               </div>
 
@@ -359,13 +330,13 @@ export default function Profile() {
                   }}
                   className="w-1/2 py-3 rounded-lg bg-gray-300 hover:bg-gray-400"
                 >
-                  Batal
+                  {t("profile.form.cancel")}
                 </button>
                 <button
                   type="submit"
                   className="w-1/2 py-3 rounded-lg bg-green-500 text-white font-semibold hover:opacity-90 transition"
                 >
-                  Simpan Perubahan
+                  {t("profile.form.save")}
                 </button>
               </div>
             </form>

@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import { useTranslation } from "react-i18next";
+
 import { MemberApi } from "../../libs/api/MemberApi";
 import { alertError } from "../../libs/alert";
 import { AgendaApi } from "../../libs/api/AgendaApi";
@@ -9,18 +11,19 @@ import { Helper } from "../../utils/Helper";
 export default function Bpd() {
   const [agenda, setAgenda] = useState([]);
   const [members, setMembers] = useState([]);
+  const { t } = useTranslation();
 
   const fetchAgenda = async () => {
     const response = await AgendaApi.getAgenda(1, 3, "BPD");
     const responseBody = await response.json();
-    if (!response.ok) return alertError("Gagal mengambil data agenda BPD.");
+    if (!response.ok) return alertError(t("bpd.error.agenda"));
     setAgenda(responseBody.agenda);
   };
 
   const fetchMembers = async () => {
     const response = await MemberApi.getMembers("BPD");
     const responseBody = await response.json();
-    if (!response.ok) return alertError("Gagal mengambil data anggota BPD.");
+    if (!response.ok) return alertError(t("bpd.error.members"));
     setMembers(responseBody.members);
   };
 
@@ -39,12 +42,10 @@ export default function Bpd() {
         data-aos="fade-down"
       >
         <h1 className="text-3xl md:text-5xl font-extrabold text-green-700 mb-4 leading-tight">
-          Badan Permusyawaratan Desa
+          {t("bpd.hero.title")}
         </h1>
         <p className="text-base md:text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
-          Lembaga perwakilan masyarakat desa yang berfungsi menampung aspirasi
-          warga, mengawasi jalannya pemerintahan desa, serta memastikan
-          transparansi pembangunan.
+          {t("bpd.hero.description")}
         </p>
       </section>
 
@@ -54,29 +55,20 @@ export default function Bpd() {
         data-aos="fade-up"
       >
         <h2 className="text-2xl md:text-3xl font-bold text-green-700 mb-6">
-          Peran & Tugas Utama BPD
+          {t("bpd.role.title")}
         </h2>
         <p className="text-gray-700 text-base md:text-lg leading-relaxed mb-6">
-          Badan Permusyawaratan Desa (BPD) merupakan mitra pemerintah desa dalam
-          penyelenggaraan pemerintahan desa. BPD berfungsi sebagai lembaga yang
-          menampung dan menyalurkan aspirasi masyarakat, membahas dan
-          menyepakati rancangan peraturan desa, serta melakukan pengawasan
-          terhadap kinerja pemerintah desa.
+          {t("bpd.role.description")}
         </p>
         <ul className="text-left max-w-2xl mx-auto mt-6 space-y-4">
-          {[
-            "Menampung aspirasi dan kebutuhan masyarakat desa.",
-            "Mengawasi jalannya pemerintahan desa secara transparan.",
-            "Memberikan masukan dalam penyusunan APB Desa dan peraturan desa.",
-            "Menjadi jembatan komunikasi antara pemerintah desa dan masyarakat.",
-          ].map((tugas, i) => (
+          {[1, 2, 3, 4].map((num, i) => (
             <li
               key={i}
               className="flex items-start gap-3 text-sm md:text-base"
               data-aos="fade-right"
               data-aos-delay={i * 100}
             >
-              ✅ <span>{tugas}</span>
+              ✅ <span>{t(`bpd.role.tasks.${num}`)}</span>
             </li>
           ))}
         </ul>
@@ -85,19 +77,19 @@ export default function Bpd() {
       {/* ✅ Statistik */}
       <section className="max-w-6xl mx-auto px-4 md:px-8 py-10 md:py-14">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 text-center">
-          {[
-            { angka: "7", label: "Anggota Aktif" },
-            { angka: "4", label: "Program Tahunan" },
-            { angka: "90+", label: "Aspirasi Warga" },
-          ].map((stat, i) => (
+          {[1, 2, 3].map((num, i) => (
             <div
               key={i}
               className="border border-green-200 rounded-xl p-6 shadow-sm hover:shadow-md transition"
               data-aos="zoom-in"
               data-aos-delay={i * 150}
             >
-              <h3 className="text-3xl font-bold text-green-700">{stat.angka}</h3>
-              <p className="text-gray-600 mt-2">{stat.label}</p>
+              <h3 className="text-3xl font-bold text-green-700">
+                {t(`bpd.stats.${num}.angka`)}
+              </h3>
+              <p className="text-gray-600 mt-2">
+                {t(`bpd.stats.${num}.label`)}
+              </p>
             </div>
           ))}
         </div>
@@ -109,7 +101,7 @@ export default function Bpd() {
           className="text-2xl md:text-3xl font-bold text-center text-green-700 mb-8"
           data-aos="fade-up"
         >
-          Struktur Organisasi BPD
+          {t("bpd.structure.title")}
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
           {members.map((member, idx) => (
@@ -122,7 +114,9 @@ export default function Bpd() {
               <img
                 src={
                   member.profile_photo
-                    ? `${import.meta.env.VITE_BASE_URL}/organizations/images/${member.profile_photo}`
+                    ? `${import.meta.env.VITE_BASE_URL}/organizations/images/${
+                        member.profile_photo
+                      }`
                     : "/default-user.png"
                 }
                 alt={member.name}
@@ -145,7 +139,7 @@ export default function Bpd() {
           className="text-2xl md:text-3xl font-bold text-center text-green-700 mb-8"
           data-aos="fade-up"
         >
-          Agenda Mendatang
+          {t("bpd.agenda.title")}
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {agenda.map((item, idx) => (
@@ -158,7 +152,9 @@ export default function Bpd() {
               <img
                 src={
                   item.agenda.featured_image
-                    ? `${import.meta.env.VITE_BASE_URL}/agenda/images/${item.agenda.featured_image}`
+                    ? `${import.meta.env.VITE_BASE_URL}/agenda/images/${
+                        item.agenda.featured_image
+                      }`
                     : "/default-agenda.jpg"
                 }
                 alt={item.agenda.title}

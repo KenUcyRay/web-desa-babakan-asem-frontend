@@ -1,9 +1,11 @@
+// VillagePotential.jsx
 import React, { useEffect } from "react";
 import { FaSeedling, FaHorse, FaTree } from "react-icons/fa";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import { useTranslation } from "react-i18next";
 
 // ✅ Import gambar lokal
 import tani from "../../assets/sawah.jpeg";
@@ -11,46 +13,46 @@ import sapi from "../../assets/sapi.jpeg";
 import kebun from "../../assets/kebun.jpeg";
 
 export default function PotensiDesa() {
+  const { t } = useTranslation();
+
   useEffect(() => {
     AOS.init({ duration: 800, once: true });
   }, []);
 
-  // ✅ Ganti foto carousel ke gambar lokal
   const potensiImages = [
     {
       src: tani,
-      title: "Pertanian Subur",
-      desc: "Sawah luas menghasilkan padi, jagung, ubi kayu, dan sayuran segar.",
+      title: t("villagePotential.carousel1Title"),
+      desc: t("villagePotential.carousel1Desc"),
     },
     {
       src: sapi,
-      title: "Peternakan Terawat",
-      desc: "Sapi, kambing, ayam, dan domba menunjang ketahanan pangan desa.",
+      title: t("villagePotential.carousel2Title"),
+      desc: t("villagePotential.carousel2Desc"),
     },
     {
       src: kebun,
-      title: "Perkebunan Hijau",
-      desc: "Perkebunan mangga, pisang, dan hortikultura menambah penghasilan warga.",
+      title: t("villagePotential.carousel3Title"),
+      desc: t("villagePotential.carousel3Desc"),
     },
   ];
 
   return (
     <div className="bg-gray-50 py-12 font-poppins">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
-
         {/* ✅ JUDUL */}
         <h1
           className="text-3xl md:text-4xl font-bold text-center text-gray-900"
           data-aos="fade-up"
         >
-          Potensi Desa Babakan Asem
+          {t("villagePotential.title")}
         </h1>
         <p
           className="text-center text-gray-600 mt-3 mb-10 max-w-2xl mx-auto"
           data-aos="fade-up"
           data-aos-delay="100"
         >
-          Mayoritas warga bekerja sebagai petani, peternak, dan pekebun dengan hasil pangan yang berkualitas dan alami.
+          {t("villagePotential.subtitle")}
         </p>
 
         {/* ✅ GRID POTENSI */}
@@ -67,10 +69,10 @@ export default function PotensiDesa() {
             />
             <div>
               <h2 className="text-xl font-semibold flex items-center gap-2">
-                <FaSeedling /> Pertanian
+                <FaSeedling /> {t("villagePotential.agricultureTitle")}
               </h2>
               <p className="text-sm mt-2 text-gray-800">
-                Padi, jagung, ubi kayu, kacang tanah, dan sayuran menjadi andalan desa.
+                {t("villagePotential.agricultureDesc")}
               </p>
             </div>
           </div>
@@ -87,10 +89,10 @@ export default function PotensiDesa() {
             />
             <div>
               <h2 className="text-xl font-semibold flex items-center gap-2">
-                <FaHorse /> Peternakan
+                <FaHorse /> {t("villagePotential.livestockTitle")}
               </h2>
               <p className="text-sm mt-2 text-gray-800">
-                Sapi, kambing, ayam, & domba untuk konsumsi lokal dan meningkatkan ekonomi warga.
+                {t("villagePotential.livestockDesc")}
               </p>
             </div>
           </div>
@@ -107,10 +109,10 @@ export default function PotensiDesa() {
             />
             <div>
               <h2 className="text-xl font-semibold flex items-center gap-2">
-                <FaTree /> Perkebunan
+                <FaTree /> {t("villagePotential.plantationTitle")}
               </h2>
               <p className="text-sm mt-2 text-gray-800">
-                Mangga, pisang, dan tanaman hortikultura menjadi tambahan penghasilan warga.
+                {t("villagePotential.plantationDesc")}
               </p>
             </div>
           </div>
@@ -119,11 +121,10 @@ export default function PotensiDesa() {
         {/* ✅ CAROUSEL FOTO POTENSI */}
         <div data-aos="zoom-in">
           <h2 className="text-2xl md:text-3xl font-bold text-center mb-4">
-            Dari bumi subur dan ternak terawat, <br className="hidden md:block" />
-            kami hadirkan pangan berkualitas untuk keluarga Anda
+            {t("villagePotential.carouselTitle")}
           </h2>
           <p className="text-center text-gray-600 mb-6">
-            Lihat langsung potensi unggulan desa kami melalui galeri foto di bawah ini.
+            {t("villagePotential.carouselSubtitle")}
           </p>
 
           <Carousel

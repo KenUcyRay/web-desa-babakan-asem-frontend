@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { useTranslation, Trans } from "react-i18next";
 import { FaWhatsapp, FaStar, FaRegStar, FaStarHalfAlt } from "react-icons/fa";
 import { HiArrowLeft } from "react-icons/hi";
 import SidebarProduk from "../layout/SidebarProduk";
@@ -10,65 +11,57 @@ import { ProductApi } from "../../libs/api/ProductApi";
 import { UserApi } from "../../libs/api/UserApi";
 
 export default function DetailProduk() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
+
   const [product, setProduct] = useState({});
   const [comments, setComments] = useState([]);
   const [pesan, setPesan] = useState("");
-
   const [averageRating, setAverageRating] = useState(0);
   const [userTempRating, setUserTempRating] = useState(0);
   const [userRated, setUserRated] = useState(false);
   const [userRatingId, setUserRatingId] = useState(null);
   const [showSubmitRating, setShowSubmitRating] = useState(false);
-
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editingContent, setEditingContent] = useState("");
-
+  const [user, setUser] = useState({});
   const userToken = JSON.parse(localStorage.getItem("token"));
+  const loggedInUser = JSON.parse(localStorage.getItem("user"));
 
   const fetchDetailProduct = async () => {
-    const response = await ProductApi.getDetailProduct(id);
-    const responseBody = await response.json();
-    if (response.status === 200) {
-      setProduct(responseBody.product);
-      setAverageRating(responseBody.rating ?? 0);
-      setComments(responseBody.comments ?? []);
+    const res = await ProductApi.getDetailProduct(id);
+    const body = await res.json();
+    if (res.status === 200) {
+      setProduct(body.product);
+      setAverageRating(body.rating ?? 0);
+      setComments(body.comments ?? []);
     } else {
-      await alertError(
-        "Gagal mengambil detail product. Silakan coba lagi nanti."
-      );
+      await alertError("Gagal mengambil detail product.");
       navigate("/bumdes");
     }
   };
 
   const fetchComment = async () => {
-    const response = await CommentApi.getComments(id);
-    const responseBody = await response.json();
-    if (response.status === 200) {
-      setComments(responseBody.comments);
+    const res = await CommentApi.getComments(id);
+    const body = await res.json();
+    if (res.status === 200) {
+      setComments(body.comments);
     }
   };
 
   const checkUserRated = async () => {
     if (!userToken) return;
-    const response = await ProductApi.alreadyRated(id);
-    const responseBody = await response.json();
-
-    if (response.ok) {
+    const res = await ProductApi.alreadyRated(id);
+    const body = await res.json();
+    if (res.ok) {
       setUserRated(true);
-      setUserTempRating(responseBody.rating);
-      setUserRatingId(responseBody.id);
+      setUserTempRating(body.rating);
+      setUserRatingId(body.id);
     }
   };
 
   useEffect(() => {
-    setProduct({});
-    setUserTempRating(0);
-    setUserRated(false);
-    setUserRatingId(null);
-    setShowSubmitRating(false);
-
     fetchDetailProduct();
     checkUserRated();
   }, [id]);
@@ -78,75 +71,64 @@ export default function DetailProduk() {
     return () => clearInterval(interval);
   }, [id]);
 
+  const fetchUser = async () => {
+    const res = await UserApi.getUserProfile();
+    const body = await res.json();
+    if (res.status === 200) {
+      setUser(body.user);
+    }
+  };
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
+
   const handleKomentar = async (e) => {
     e.preventDefault();
     if (!userToken) {
-      await alertError("⚠ Silakan login dulu untuk memberikan komentar!");
-      navigate("/login");
-      return;
+      await alertError("⚠ Silakan login dulu.");
+      return navigate("/login");
     }
-
-    const response = await CommentApi.createComment(id, "PRODUCT", pesan);
-    const responseBody = await response.json();
-
-    if (response.status !== 201) {
-      await alertError(`Gagal mengirim komentar. ${responseBody.error}`);
-      return;
+    const res = await CommentApi.createComment(id, "PRODUCT", pesan);
+    const body = await res.json();
+    if (res.status !== 201) {
+      return await alertError(`Gagal kirim: ${body.error}`);
     }
-
     await alertSuccess("Komentar berhasil dikirim!");
     setPesan("");
     fetchComment();
   };
 
-  const handleSelectStar = async (value) => {
+  const handleSelectStar = (val) => {
     if (!userToken) {
-      await alertError("Silakan login dulu untuk memberi rating!");
-      navigate("/login");
-      return;
+      alertError("Silakan login dulu.");
+      return navigate("/login");
     }
-    setUserTempRating(value);
+    setUserTempRating(val);
     setShowSubmitRating(true);
   };
 
   const handleSubmitRating = async () => {
+    let res;
     if (!userRated) {
-      const response = await ProductApi.createRating(id, userTempRating);
-      if (!response.ok) {
-        await alertError("Gagal mengirim rating. Silakan coba lagi.");
-        return;
-      }
-      await alertSuccess(
-        `Terima kasih! Rating ${userTempRating} ⭐ telah dikirim.`
-      );
-      setUserRated(true);
+      res = await ProductApi.createRating(id, userTempRating);
+      if (!res.ok) return alertError("Gagal kirim rating.");
+      alertSuccess(`Terima kasih! ${userTempRating} ⭐`);
     } else {
-      const response = await ProductApi.updateRating(
-        userRatingId,
-        userTempRating
-      );
-      if (!response.ok) {
-        await alertError("Gagal mengupdate rating.");
-        return;
-      }
-      await alertSuccess(`Rating berhasil diupdate jadi ${userTempRating} ⭐`);
+      res = await ProductApi.updateRating(userRatingId, userTempRating);
+      if (!res.ok) return alertError("Gagal update rating.");
+      alertSuccess(`Rating diupdate jadi ${userTempRating} ⭐`);
     }
-
     setShowSubmitRating(false);
     fetchDetailProduct();
     checkUserRated();
   };
 
   const handleDeleteRating = async () => {
-    if (!alertConfirm("Yakin ingin menghapus rating kamu?")) return;
-
-    const response = await ProductApi.deleteRating(userRatingId);
-    if (!response.ok) {
-      await alertError("Gagal menghapus rating.");
-      return;
-    }
-
-    await alertSuccess("Rating kamu berhasil dihapus.");
+    if (!alertConfirm("Yakin hapus rating?")) return;
+    const res = await ProductApi.deleteRating(userRatingId);
+    if (!res.ok) return alertError("Gagal hapus rating.");
+    alertSuccess("Rating dihapus.");
     setUserRated(false);
     setUserTempRating(0);
     setUserRatingId(null);
@@ -158,79 +140,54 @@ export default function DetailProduk() {
     setShowSubmitRating(false);
   };
 
-  const full = Math.floor(averageRating);
-  const half = averageRating - full >= 0.5;
-
   const handleBack = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
     setTimeout(() => navigate(-1), 300);
   };
 
-  // - mulai edit
-  const startEditComment = (comment) => {
-    setEditingCommentId(comment.id);
-    setEditingContent(comment.content);
+  const startEditComment = (c) => {
+    setEditingCommentId(c.id);
+    setEditingContent(c.content);
   };
 
-  // - simpan edit
-  const handleUpdateComment = async (commentId) => {
-    const response = await CommentApi.updateComment(commentId, editingContent);
-    const resBody = await response.json();
-
-    if (response.status === 200) {
-      await alertSuccess("Komentar berhasil diupdate!");
+  const handleUpdateComment = async (id) => {
+    const res = await CommentApi.updateComment(id, editingContent);
+    const body = await res.json();
+    if (res.status === 200) {
+      alertSuccess("Komentar diupdate.");
       setEditingCommentId(null);
       fetchComment();
     } else {
-      await alertError(`Gagal update komentar: ${resBody.error}`);
+      alertError(`Gagal update: ${body.error}`);
     }
   };
 
-  // - hapus komentar
-  const handleDeleteComment = async (commentId) => {
-    if (!(await alertConfirm("Yakin ingin menghapus komentar ini?"))) return;
-
-    const response = await CommentApi.deleteComment(commentId);
-    const resBody = await response.json();
-
-    if (response.status === 200) {
-      await alertSuccess("Komentar berhasil dihapus!");
-      await fetchComment();
+  const handleDeleteComment = async (id) => {
+    if (!(await alertConfirm("Yakin hapus komentar?"))) return;
+    const res = await CommentApi.deleteComment(id);
+    const body = await res.json();
+    if (res.status === 200) {
+      alertSuccess("Komentar dihapus!");
+      fetchComment();
     } else {
-      await alertError(`Gagal hapus komentar: ${resBody.error}`);
+      alertError(`Gagal hapus: ${body.error}`);
     }
   };
 
-  const [user, setUser] = useState({});
-
-  const fetchUser = async () => {
-    const response = await UserApi.getUserProfile();
-    const responseBody = await response.json();
-    if (response.status === 200) {
-      setUser(responseBody.user);
-    }
-  };
-
-  useEffect(() => {
-    fetchUser();
-  }, []);
-
-  // - User login dari localStorage
-  const loggedInUser = JSON.parse(localStorage.getItem("user"));
+  const full = Math.floor(averageRating);
+  const half = averageRating - full >= 0.5;
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-4 gap-6 font-poppins">
       <div className="md:col-span-3">
-        {/* - Tombol Back */}
         <button
           onClick={handleBack}
           className="mb-5 flex items-center gap-2 px-4 py-2 rounded-full border border-gray-300 text-gray-800 hover:bg-gray-900 hover:text-white hover:scale-105 transition-all duration-300"
         >
           <HiArrowLeft className="text-lg" />
-          Kembali
+          {t("detailProduct.back")}
         </button>
 
-        {/* - Gambar Produk pakai object-contain */}
         <div className="w-full h-96 flex items-center justify-center bg-white rounded-lg mb-6">
           <img
             src={`${import.meta.env.VITE_BASE_URL}/products/images/${
@@ -241,26 +198,21 @@ export default function DetailProduk() {
           />
         </div>
 
-        {/* - Info Produk */}
         <h1 className="text-2xl font-bold mb-3">{product.title}</h1>
         <p className="text-sm text-gray-500 mb-2">
-          Oleh BUMDes Babakan Asem | Harga :{" "}
+          {t("detailProduct.by")} | {t("detailProduct.price")} :{" "}
           <span className="font-semibold text-black">
             {Helper.formatRupiah(product.price)}
           </span>
         </p>
 
-        {/* - Rating Produk */}
         <div className="flex items-center gap-1 mt-2">
           {[1, 2, 3, 4, 5].map((star) => {
             let icon;
-            if (star <= full) {
-              icon = <FaStar className="text-yellow-400" />;
-            } else if (star === full + 1 && half) {
+            if (star <= full) icon = <FaStar className="text-yellow-400" />;
+            else if (star === full + 1 && half)
               icon = <FaStarHalfAlt className="text-yellow-400" />;
-            } else {
-              icon = <FaRegStar className="text-gray-300" />;
-            }
+            else icon = <FaRegStar className="text-gray-300" />;
             return <span key={star}>{icon}</span>;
           })}
           <span className="text-sm text-gray-500 ml-2">
@@ -268,13 +220,13 @@ export default function DetailProduk() {
           </span>
         </div>
 
-        {/* - Deskripsi Produk */}
         <div className="space-y-4 text-gray-800 leading-relaxed mt-4">
           <p>{product.description}</p>
-          <p>Produk ini 100% hasil desa dan dikelola oleh masyarakat lokal.</p>
+          <p>
+            <Trans i18nKey="detailProduct.descriptionNote" />
+          </p>
         </div>
 
-        {/* - Tombol Pesan WA */}
         <div className="mt-6">
           <a
             href={product.link_whatsapp}
@@ -282,16 +234,17 @@ export default function DetailProduk() {
             rel="noreferrer"
             className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition"
           >
-            <FaWhatsapp /> Pesan via WhatsApp
+            <FaWhatsapp /> {t("detailProduct.orderWhatsapp")}
           </a>
         </div>
 
-        {/* - Form Rating */}
         <div className="mt-6 p-4 bg-gray-50 rounded-lg shadow">
           <h2 className="text-lg font-semibold mb-2">
-            ⭐ {userRated ? "Rating Kamu" : "Beri Penilaian Produk Ini"}
+            ⭐{" "}
+            {userRated
+              ? t("detailProduct.ratingTitleRated")
+              : t("detailProduct.ratingTitleUnrated")}
           </h2>
-
           <div className="flex items-center gap-1">
             {[1, 2, 3, 4, 5].map((star) => (
               <span
@@ -314,13 +267,16 @@ export default function DetailProduk() {
                 onClick={handleSubmitRating}
                 className="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600"
               >
-                - {userRated ? "Update" : "Kirim"} Rating {userTempRating} ⭐
+                {userRated
+                  ? t("detailProduct.updateRating")
+                  : t("detailProduct.sendRating")}{" "}
+                {userTempRating} ⭐
               </button>
               <button
                 onClick={handleCancelRating}
                 className="bg-gray-400 text-white px-4 py-1 rounded hover:bg-gray-500"
               >
-                Batal
+                {t("detailProduct.cancel")}
               </button>
             </div>
           )}
@@ -331,19 +287,20 @@ export default function DetailProduk() {
                 onClick={handleDeleteRating}
                 className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
               >
-                ❌ Hapus Rating
+                ❌ {t("detailProduct.deleteRating")}
               </button>
             </div>
           )}
         </div>
 
-        {/* - Komentar */}
         <div className="mt-10 p-6 bg-gray-50 rounded-lg shadow">
-          <h2 className="text-xl font-semibold mb-4">💬 Tinggalkan Komentar</h2>
+          <h2 className="text-xl font-semibold mb-4">
+            💬 {t("detailProduct.leaveComment")}
+          </h2>
 
           <form onSubmit={handleKomentar} className="space-y-4">
             <textarea
-              placeholder="Tulis komentar kamu..."
+              placeholder={t("detailProduct.commentPlaceholder")}
               rows="4"
               value={pesan}
               onChange={(e) => setPesan(e.target.value)}
@@ -354,14 +311,13 @@ export default function DetailProduk() {
               type="submit"
               className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition"
             >
-              Kirim Komentar
+              {t("detailProduct.sendComment")}
             </button>
           </form>
 
           <div className="mt-6 space-y-4">
             {comments.map((c, i) => (
               <div key={i} className="p-4 bg-white rounded-lg shadow">
-                {/* Kalau sedang edit */}
                 {editingCommentId === c.id ? (
                   <div className="space-y-2">
                     <textarea
@@ -375,13 +331,13 @@ export default function DetailProduk() {
                         onClick={() => handleUpdateComment(c.id)}
                         className="px-4 py-1 bg-green-500 text-white rounded hover:bg-green-600"
                       >
-                        Simpan
+                        {t("detailProduct.editComment")}
                       </button>
                       <button
                         onClick={() => setEditingCommentId(null)}
                         className="px-4 py-1 bg-gray-300 rounded hover:bg-gray-400"
                       >
-                        Batal
+                        {t("detailProduct.cancelEdit")}
                       </button>
                     </div>
                   </div>
@@ -394,25 +350,20 @@ export default function DetailProduk() {
 
                     {user && (
                       <div className="flex gap-3 mt-2">
-                        {/* DEBUG LOG */}
-
-                        {/* Edit: Hanya pemilik komentar (termasuk admin jika dia yg nulis) */}
                         {user.id === c.user.id && (
                           <button
                             onClick={() => startEditComment(c)}
                             className="text-blue-500 text-sm hover:underline"
                           >
-                            Edit
+                            {t("detailProduct.edit")}
                           </button>
                         )}
-
-                        {/* Hapus: Pemilik atau admin */}
                         {(user.id === c.user.id || user.role === "ADMIN") && (
                           <button
                             onClick={() => handleDeleteComment(c.id)}
                             className="text-red-500 text-sm hover:underline"
                           >
-                            Hapus
+                            {t("detailProduct.delete")}
                           </button>
                         )}
                       </div>
@@ -422,12 +373,13 @@ export default function DetailProduk() {
               </div>
             ))}
             {comments.length === 0 && (
-              <p className="text-center text-gray-400">Belum ada komentar</p>
+              <p className="text-center text-gray-400">
+                {t("detailProduct.noComments")}
+              </p>
             )}
           </div>
         </div>
       </div>
-
       <aside>
         <SidebarProduk />
       </aside>

@@ -2,9 +2,11 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AdministrasiApi } from "../../libs/api/AdministrasiApi";
 import { alertError, alertSuccess } from "../../libs/alert";
+import { useTranslation } from "react-i18next";
 
 export default function SuratPengantar() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     name: "",
     nik: "",
@@ -19,9 +21,9 @@ export default function SuratPengantar() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const response = await AdministrasiApi.createPengantar(formData);
     const responseBody = await response.json();
+
     if (!response.ok) {
       let errorMessage = "Gagal menyimpan perubahan.";
       if (responseBody.error && Array.isArray(responseBody.error)) {
@@ -35,6 +37,7 @@ export default function SuratPengantar() {
       await alertError(errorMessage);
       return;
     }
+
     await alertSuccess("Pengajuan surat pengantar berhasil dikirim!");
     navigate("/administrasi");
   };
@@ -43,14 +46,14 @@ export default function SuratPengantar() {
     <div className="bg-gray-50 min-h-screen py-10 px-4">
       <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-md p-8">
         <h1 className="text-2xl font-bold text-gray-800 mb-6 text-center">
-          Form Pengajuan Surat Pengantar
+          {t("formLetter.title")}
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Nama */}
           <div>
             <label className="block text-gray-700 font-medium mb-1">
-              Nama Lengkap
+              {t("formLetter.form.nameLabel")}
             </label>
             <input
               type="text"
@@ -58,7 +61,7 @@ export default function SuratPengantar() {
               value={formData.name}
               onChange={handleChange}
               required
-              placeholder="Masukkan nama lengkap"
+              placeholder={t("formLetter.form.namePlaceholder")}
               className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-400"
             />
           </div>
@@ -66,7 +69,7 @@ export default function SuratPengantar() {
           {/* NIK */}
           <div>
             <label className="block text-gray-700 font-medium mb-1">
-              Nomor Induk Kependudukan (NIK)
+              {t("formLetter.form.nikLabel")}
             </label>
             <input
               type="text"
@@ -74,7 +77,7 @@ export default function SuratPengantar() {
               value={formData.nik}
               onChange={handleChange}
               required
-              placeholder="Masukkan NIK"
+              placeholder={t("formLetter.form.nikPlaceholder")}
               className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-400"
             />
           </div>
@@ -82,7 +85,7 @@ export default function SuratPengantar() {
           {/* Jenis Surat */}
           <div>
             <label className="block text-gray-700 font-medium mb-1">
-              Jenis Surat
+              {t("formLetter.form.typeLabel")}
             </label>
             <select
               name="type"
@@ -91,24 +94,30 @@ export default function SuratPengantar() {
               required
               className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-400"
             >
-              <option value="">-- Pilih Jenis Surat --</option>
-              <option value="KTP">Surat Pengantar KTP</option>
-              <option value="KK">Surat Pengantar KK</option>
-              <option value="SKCK">Surat Pengantar SKCK</option>
-              <option value="LAINNYA">Lainnya</option>
+              <option value="">{t("formLetter.form.typeDefault")}</option>
+              <option value="KTP">
+                {t("formLetter.form.typeOptions.KTP")}
+              </option>
+              <option value="KK">{t("formLetter.form.typeOptions.KK")}</option>
+              <option value="SKCK">
+                {t("formLetter.form.typeOptions.SKCK")}
+              </option>
+              <option value="LAINNYA">
+                {t("formLetter.form.typeOptions.LAINNYA")}
+              </option>
             </select>
           </div>
 
           {/* Keterangan */}
           <div>
             <label className="block text-gray-700 font-medium mb-1">
-              Keterangan Tambahan
+              {t("formLetter.form.noteLabel")}
             </label>
             <textarea
               name="keterangan"
               value={formData.keterangan}
               onChange={handleChange}
-              placeholder="Tuliskan keterangan tambahan..."
+              placeholder={t("formLetter.form.notePlaceholder")}
               rows="4"
               className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-400"
             ></textarea>
@@ -121,13 +130,13 @@ export default function SuratPengantar() {
               onClick={() => navigate(-1)}
               className="px-6 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 transition"
             >
-              Batal
+              {t("formLetter.form.cancel")}
             </button>
             <button
               type="submit"
               className="px-6 py-2 rounded-lg bg-green-500 hover:bg-green-600 text-white font-semibold"
             >
-              Kirim Pengajuan
+              {t("formLetter.form.submit")}
             </button>
           </div>
         </form>

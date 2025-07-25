@@ -12,15 +12,13 @@ import { Helper } from "../../utils/Helper";
 import { useTranslation } from "react-i18next";
 
 export default function Login() {
-  const { t } = useTranslation();
-
   const navigate = useNavigate();
   const recaptchaRef = useRef(null);
+  const { t } = useTranslation();
 
   const [loginMethod, setLoginMethod] = useState("email");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [reCaptchaToken, setReCaptchaToken] = useState("");
@@ -33,9 +31,6 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // sementara backend masih pakai email
-    const contactValue = email;
-
     const response = await UserApi.userLogin(
       email,
       password,
@@ -47,9 +42,9 @@ export default function Login() {
     const responseBody = await response.json();
     if (response.status === 200) {
       login(responseBody.token);
-      await alertSuccess("Login berhasil!");
+      await alertSuccess(t("login.success"));
       if (responseBody.user.role === "ADMIN") {
-        await alertSuccess("Selamat datang, Admin!");
+        await alertSuccess(t("login.admin_welcome"));
         setAdminStatus(true);
         navigate("/admin");
         return;
@@ -68,30 +63,32 @@ export default function Login() {
   };
 
   useEffect(() => {
-    if (isLoggedIn) {
-      navigate("/");
-    }
+    if (isLoggedIn) navigate("/");
   }, [isLoggedIn, navigate]);
 
   return (
     <div className="flex min-h-screen font-poppins">
-      {/* - Bagian Kiri: Form Login */}
       <div className="flex w-full md:w-1/2 items-center justify-center bg-gradient-to-b from-[#B6F500] to-[#FFFCE2] px-8 py-12">
         <div
           className="bg-white/90 backdrop-blur-md shadow-xl rounded-2xl w-full max-w-md p-8"
           data-aos="fade-up"
         >
-          <h2 className="text-3xl text-gray-900 font-normal text-center mb-2">
-            Hallo, Senang Melihatmu Kembali!
-          </h2>
-          <p className="text-gray-600 text-center mb-6">{t("welcome")}</p>
+          <h2
+            className="text-3xl text-gray-900 font-normal text-center mb-2"
+            dangerouslySetInnerHTML={{ __html: t("login.title") }}
+          />
+          <p
+            className="text-gray-600 text-center mb-6"
+            dangerouslySetInnerHTML={{ __html: t("login.description") }}
+          />
 
           <form className="space-y-4" onSubmit={handleSubmit}>
-            {/* - Radio Email/HP */}
             <div>
               <div className="flex justify-between items-center mb-1">
                 <label className="block text-gray-700 font-medium">
-                  {loginMethod === "email" ? "Email" : "No HP"}
+                  {loginMethod === "email"
+                    ? t("login.method.email")
+                    : t("login.method.phone")}
                 </label>
                 <div className="flex gap-4">
                   <label
@@ -109,7 +106,9 @@ export default function Login() {
                         <span className="w-2.5 h-2.5 rounded-full bg-gradient-to-r from-green-400 to-[#B6F500]" />
                       )}
                     </span>
-                    <span className="text-xs text-gray-700">Email</span>
+                    <span className="text-xs text-gray-700">
+                      {t("login.method.email")}
+                    </span>
                   </label>
 
                   <label
@@ -127,12 +126,13 @@ export default function Login() {
                         <span className="w-2.5 h-2.5 rounded-full bg-gradient-to-r from-green-400 to-[#B6F500]" />
                       )}
                     </span>
-                    <span className="text-xs text-gray-700">No Telp</span>
+                    <span className="text-xs text-gray-700">
+                      {t("login.method.phone")}
+                    </span>
                   </label>
                 </div>
               </div>
 
-              {/* - Input dinamis + animasi */}
               <AnimatePresence mode="wait">
                 {loginMethod === "email" ? (
                   <motion.div
@@ -144,7 +144,7 @@ export default function Login() {
                   >
                     <input
                       type="email"
-                      placeholder="Masukkan email"
+                      placeholder={t("login.placeholder.email")}
                       className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-300 outline-none"
                       onChange={(e) => setEmail(e.target.value)}
                       value={email}
@@ -161,7 +161,7 @@ export default function Login() {
                   >
                     <input
                       type="tel"
-                      placeholder="Masukkan nomor HP"
+                      placeholder={t("login.placeholder.phone")}
                       className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-300 outline-none"
                       onChange={(e) => setPhone(e.target.value)}
                       value={phone}
@@ -171,14 +171,13 @@ export default function Login() {
               </AnimatePresence>
             </div>
 
-            {/* - Password */}
             <div>
               <label className="block text-gray-700 font-medium mb-1">
-                Password
+                {t("login.password")}
               </label>
               <input
                 type="password"
-                placeholder="Masukkan password"
+                placeholder={t("login.placeholder.password")}
                 className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-300 outline-none"
                 onChange={(e) => setPassword(e.target.value)}
                 value={password}
@@ -186,7 +185,6 @@ export default function Login() {
               />
             </div>
 
-            {/* - Remember Me + Lupa Password */}
             <div className="flex items-center justify-between text-sm">
               <label className="flex items-center gap-2">
                 <input
@@ -195,19 +193,18 @@ export default function Login() {
                   onChange={() => setRememberMe(!rememberMe)}
                   className="w-4 h-4 text-green-500"
                 />
-                Remember Me
+                {t("login.remember")}
               </label>
               <Link
                 to="/forgot-password"
                 className="text-green-700 hover:underline"
                 data-aos="fade-left"
               >
-                Lupa password?
+                {t("login.forgot")}
               </Link>
             </div>
 
-            {/* - reCAPTCHA */}
-            <div className="min-w-ful flex items-center justify-center my-8 ">
+            <div className="min-w-ful flex items-center justify-center my-8">
               <ReCAPTCHA
                 ref={recaptchaRef}
                 sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
@@ -220,30 +217,29 @@ export default function Login() {
               type="submit"
               className="w-full py-3 bg-gradient-to-r from-green-400 to-[#B6F500] text-white font-semibold rounded-lg hover:opacity-90 transition duration-200"
             >
-              Masuk
+              {t("login.submit")}
             </button>
           </form>
 
           <div className="flex items-center my-6">
             <span className="flex-1 h-px bg-gray-200"></span>
-            <span className="px-4 text-sm text-gray-400">atau</span>
+            <span className="px-4 text-sm text-gray-400">{t("login.or")}</span>
             <span className="flex-1 h-px bg-gray-200"></span>
           </div>
 
           <p className="text-center text-sm text-gray-700 mt-6">
-            Belum punya akun?{" "}
+            {t("login.no_account")}{" "}
             <Link
               to="/register"
               className="text-blue-500 hover:underline"
               data-aos="fade-right"
             >
-              Daftar di sini
+              {t("login.register_here")}
             </Link>
           </p>
         </div>
       </div>
 
-      {/* - Bagian Kanan: Background tetap, hanya gambar animasi */}
       <div className="hidden md:flex w-1/2 items-center justify-center bg-gradient-to-b from-[#B6F500] to-[#FFFCE2] px-8 py-12">
         <motion.img
           src={loginImage}

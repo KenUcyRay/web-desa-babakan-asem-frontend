@@ -3,9 +3,11 @@ import { useEffect, useState } from "react";
 import { ProductApi } from "../../libs/api/ProductApi";
 import { Helper } from "../../utils/Helper";
 import { Link } from "react-router";
+import { useTranslation } from "react-i18next";
 
 export default function SidebarProduk() {
   const [products, setProducts] = useState([]);
+  const { t } = useTranslation();
 
   const fetchProduct = async () => {
     const response = await ProductApi.getProducts(1, 4);
@@ -13,9 +15,7 @@ export default function SidebarProduk() {
       const responseBody = await response.json();
       setProducts(responseBody.products);
     } else {
-      await alertError(
-        "Gagal mengambil data product. Silakan coba lagi nanti."
-      );
+      await alertError(t("sidebarProduct.alert.product_error"));
     }
   };
 
@@ -25,9 +25,11 @@ export default function SidebarProduk() {
 
   return (
     <div className="space-y-6">
-      {/* Produk Lainnya */}
+      {/* ✅ Produk Lainnya */}
       <div className="bg-white p-4 rounded-xl shadow-lg">
-        <h2 className="font-bold text-lg mb-4 border-b pb-2">Produk Lainnya</h2>
+        <h2 className="font-bold text-lg mb-4 border-b pb-2">
+          {t("sidebarProduct.other_products")}
+        </h2>
         {products.map((item) => (
           <div key={item.product.id} className="relative">
             <Link

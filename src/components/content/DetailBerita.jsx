@@ -7,8 +7,10 @@ import { Helper } from "../../utils/Helper";
 import { CommentApi } from "../../libs/api/CommentApi";
 import { HiArrowLeft } from "react-icons/hi";
 import { UserApi } from "../../libs/api/UserApi";
+import { useTranslation } from "react-i18next";
 
 export default function DetailBerita() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const [news, setNews] = useState({});
@@ -16,19 +18,17 @@ export default function DetailBerita() {
   const [comments, setComments] = useState([]);
   const [pesan, setPesan] = useState("");
 
-  // - State edit komentar
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editingContent, setEditingContent] = useState("");
 
-  // - Ambil user login dari localStorage
   const loggedInUser = JSON.parse(localStorage.getItem("user"));
 
   const handleKomentar = async (e) => {
     e.preventDefault();
 
-    const user = JSON.parse(localStorage.getItem("token"));
-    if (!user) {
-      alert("⚠ Silakan login dulu untuk memberikan komentar!");
+    const token = JSON.parse(localStorage.getItem("token"));
+    if (!token) {
+      alert(t("detailNews.alert.needLogin"));
       navigate("/login");
       return;
     }
@@ -37,14 +37,14 @@ export default function DetailBerita() {
     const responseBody = await response.json();
     if (response.status !== 201) {
       await alertError(
-        `Gagal mengirim komentar. Silakan coba lagi nanti. ${responseBody.error}`
+        t("detailNews.alert.commentFail", { error: responseBody.error })
       );
       return;
     }
 
-    await alertSuccess("Komentar berhasil dikirim!");
+    await alertSuccess(t("detailNews.alert.commentSuccess"));
     setPesan("");
-    fetchComment(); // refresh komentar
+    fetchComment();
   };
 
   const fetchDetailBerita = async () => {
@@ -55,9 +55,7 @@ export default function DetailBerita() {
       setUserCreated(responseBody.user_created);
       setComments(responseBody.comments);
     } else {
-      await alertError(
-        "Gagal mengambil detail berita. Silakan coba lagi nanti."
-      );
+      await alertError(t("detailNews.alert.fetchError"));
       navigate("/berita");
     }
   };
@@ -68,7 +66,7 @@ export default function DetailBerita() {
     if (response.status === 200) {
       setComments(responseBody.comments);
     } else {
-      await alertError("Gagal mengambil comment. Silakan coba lagi nanti.");
+      await alertError(t("detailNews.alert.fetchCommentError"));
     }
   };
 
@@ -94,7 +92,6 @@ export default function DetailBerita() {
     const interval = setInterval(() => {
       fetchComment();
     }, 5000);
-
     return () => clearInterval(interval);
   }, [id]);
 
@@ -103,51 +100,51 @@ export default function DetailBerita() {
     setTimeout(() => navigate("/berita"), 300);
   };
 
-  // - mulai edit komentar
   const startEditComment = (comment) => {
     setEditingCommentId(comment.id);
     setEditingContent(comment.content);
   };
 
-  // - simpan edit komentar
   const handleUpdateComment = async (commentId) => {
     const response = await CommentApi.updateComment(commentId, editingContent);
     const resBody = await response.json();
 
     if (response.status === 200) {
-      await alertSuccess("Komentar berhasil diupdate!");
+      await alertSuccess(t("detailNews.alert.commentUpdateSuccess"));
       setEditingCommentId(null);
       fetchComment();
     } else {
-      await alertError(`Gagal update komentar: ${resBody.error}`);
+      await alertError(
+        t("detailNews.alert.commentUpdateFail", { error: resBody.error })
+      );
     }
   };
 
-  // - hapus komentar
   const handleDeleteComment = async (commentId) => {
-    if (!(await alertConfirm("Yakin ingin menghapus komentar ini?"))) return;
+    if (!(await alertConfirm(t("detailNews.alert.confirmDelete")))) return;
 
     const response = await CommentApi.deleteComment(commentId);
     const resBody = await response.json();
 
     if (response.status === 200) {
-      await alertSuccess("Komentar berhasil dihapus!");
+      await alertSuccess(t("detailNews.alert.commentDeleteSuccess"));
       fetchComment();
     } else {
-      await alertError(`Gagal hapus komentar: ${resBody.error}`);
+      await alertError(
+        t("detailNews.alert.commentDeleteFail", { error: resBody.error })
+      );
     }
   };
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-4 gap-6 font-poppins">
-      {/* - Konten utama */}
       <div className="md:col-span-3">
         <button
           onClick={handleBack}
           className="mb-5 flex items-center gap-2 px-4 py-2 rounded-full border border-gray-300 text-gray-800 hover:bg-gray-900 hover:text-white hover:scale-105 transition-all duration-300"
         >
           <HiArrowLeft className="text-lg" />
-          Kembali
+          {t("detailNews.back")}
         </button>
 
         <img
@@ -160,22 +157,25 @@ export default function DetailBerita() {
 
         <h1 className="text-2xl font-bold mb-3">{news.title}</h1>
         <p className="text-sm text-gray-500 mb-6">
-          Oleh {userCreated.name} | Tanggal:{" "}
-          {Helper.formatTanggal(news.published_at)} | 👁 {news.view_count}{" "}
-          Dilihat
+          {t("detailNews.postedBy", {
+            name: userCreated.name,
+            date: Helper.formatTanggal(news.published_at),
+            views: news.view_count,
+          })}
         </p>
 
         <div className="space-y-4 text-gray-800 leading-relaxed">
           <p>{news.content}</p>
         </div>
 
-        {/* - Komentar */}
         <div className="mt-10 p-6 bg-gray-50 rounded-lg shadow">
-          <h2 className="text-xl font-semibold mb-4">💬 Tinggalkan Komentar</h2>
+          <h2 className="text-xl font-semibold mb-4">
+            {t("detailNews.leaveComment")}
+          </h2>
 
           <form className="space-y-4" onSubmit={handleKomentar}>
             <textarea
-              placeholder="Tulis komentar kamu..."
+              placeholder={t("detailNews.writeComment")}
               rows="4"
               value={pesan}
               onChange={(e) => setPesan(e.target.value)}
@@ -186,15 +186,13 @@ export default function DetailBerita() {
               type="submit"
               className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition"
             >
-              Kirim Komentar
+              {t("detailNews.sendComment")}
             </button>
           </form>
 
-          {/* - List Komentar */}
           <div className="mt-6 space-y-4">
             {comments.map((c, i) => (
               <div key={i} className="p-4 bg-white rounded-lg shadow">
-                {/* Jika sedang edit */}
                 {editingCommentId === c.id ? (
                   <div className="space-y-2">
                     <textarea
@@ -208,13 +206,13 @@ export default function DetailBerita() {
                         onClick={() => handleUpdateComment(c.id)}
                         className="px-4 py-1 bg-green-500 text-white rounded hover:bg-green-600"
                       >
-                        Simpan
+                        {t("detailNews.save")}
                       </button>
                       <button
                         onClick={() => setEditingCommentId(null)}
                         className="px-4 py-1 bg-gray-300 rounded hover:bg-gray-400"
                       >
-                        Batal
+                        {t("detailNews.cancel")}
                       </button>
                     </div>
                   </div>
@@ -225,26 +223,23 @@ export default function DetailBerita() {
                       ✍ {c.user.name} • {Helper.formatTanggal(c.updated_at)}
                     </p>
 
-                    {/* - Tombol Edit & Hapus sesuai aturan */}
-                    {user != {} && (
+                    {user && (
                       <div className="flex gap-3 mt-2">
-                        {/* Edit hanya pemilik komentar */}
                         {user.id === c.user.id && (
                           <button
                             onClick={() => startEditComment(c)}
                             className="text-blue-500 text-sm hover:underline"
                           >
-                            Edit
+                            {t("detailNews.edit")}
                           </button>
                         )}
 
-                        {/* Hapus bisa pemilik komentar atau ADMIN */}
                         {(user.id === c.user.id || user.role === "ADMIN") && (
                           <button
                             onClick={() => handleDeleteComment(c.id)}
                             className="text-red-500 text-sm hover:underline"
                           >
-                            Hapus
+                            {t("detailNews.delete")}
                           </button>
                         )}
                       </div>
@@ -254,7 +249,9 @@ export default function DetailBerita() {
               </div>
             ))}
             {comments.length === 0 && (
-              <p className="text-center text-gray-400">Belum ada komentar</p>
+              <p className="text-center text-gray-400">
+                {t("detailNews.noComment")}
+              </p>
             )}
           </div>
         </div>

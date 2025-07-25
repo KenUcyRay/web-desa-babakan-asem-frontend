@@ -7,24 +7,28 @@ import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 import { Helper } from "../../utils/Helper";
 import { HiArrowLeft } from "react-icons/hi";
 import { UserApi } from "../../libs/api/UserApi";
+import { useTranslation, Trans } from "react-i18next";
 
 export default function DetailAgenda() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const [agenda, setAgenda] = useState({});
   const [comments, setComments] = useState([]);
   const [pesan, setPesan] = useState("");
-
-  // - State edit komentar
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editingContent, setEditingContent] = useState("");
+  const [user, setUser] = useState({});
 
   const handleKomentar = async (e) => {
     e.preventDefault();
-
-    const user = JSON.parse(localStorage.getItem("token"));
-    if (!user) {
-      alert("⚠ Silakan login dulu untuk memberikan komentar!");
+    const token = JSON.parse(localStorage.getItem("token"));
+    if (!token) {
+      alert(
+        <Trans i18nKey="detailAgenda.alert.mustLogin">
+          ⚠ Please <strong>login</strong> first to post a comment!
+        </Trans>
+      );
       navigate("/login");
       return;
     }
@@ -32,15 +36,13 @@ export default function DetailAgenda() {
     const response = await CommentApi.createComment(id, "AGENDA", pesan);
     const responseBody = await response.json();
     if (response.status !== 201) {
-      await alertError(
-        `Gagal mengirim komentar. Silakan coba lagi nanti. ${responseBody.error}`
-      );
+      await alertError(t("detailAgenda.alert.sendFailed", { error: responseBody.error }));
       return;
     }
 
-    await alertSuccess("Komentar berhasil dikirim!");
+    await alertSuccess(t("detailAgenda.alert.sendSuccess"));
     setPesan("");
-    fetchComments(); // refresh
+    fetchComments();
   };
 
   const fetchDetailAgenda = async () => {
@@ -50,9 +52,7 @@ export default function DetailAgenda() {
       setAgenda(responseBody.agenda);
       setComments(responseBody.comments);
     } else {
-      await alertError(
-        `Gagal mengambil detail agenda. Silakan coba lagi nanti.`
-      );
+      await alertError(t("detailAgenda.alert.loadFailed"));
       navigate("/agenda");
     }
   };
@@ -65,11 +65,18 @@ export default function DetailAgenda() {
     }
   };
 
-  useEffect(() => {
-    fetchDetailAgenda();
-  }, [id]);
+  const fetchUser = async () => {
+    const response = await UserApi.getUserProfile();
+    const responseBody = await response.json();
+    if (response.status === 200) {
+      setUser(responseBody.user);
+    }
+  };
 
   useEffect(() => {
+    fetchDetailAgenda();
+    fetchUser();
+
     const interval = setInterval(() => {
       fetchComments();
     }, 5000);
@@ -82,98 +89,73 @@ export default function DetailAgenda() {
     setTimeout(() => navigate("/agenda"), 300);
   };
 
-  // - mulai edit
   const startEditComment = (comment) => {
     setEditingCommentId(comment.id);
     setEditingContent(comment.content);
   };
 
-  // - simpan edit
   const handleUpdateComment = async (commentId) => {
     const response = await CommentApi.updateComment(commentId, editingContent);
     const resBody = await response.json();
 
     if (response.status === 200) {
-      await alertSuccess("Komentar berhasil diupdate!");
+      await alertSuccess(t("detailAgenda.alert.updateSuccess"));
       setEditingCommentId(null);
       fetchComments();
     } else {
-      await alertError(`Gagal update komentar: ${resBody.error}`);
+      await alertError(t("detailAgenda.alert.updateFailed", { error: resBody.error }));
     }
   };
 
-  // - hapus komentar
   const handleDeleteComment = async (commentId) => {
-    if (!(await alertConfirm("Yakin ingin menghapus komentar ini?"))) return;
+    const confirm = await alertConfirm(t("detailAgenda.alert.deleteConfirm"));
+    if (!confirm) return;
 
     const response = await CommentApi.deleteComment(commentId);
     const resBody = await response.json();
 
     if (response.status === 200) {
-      await alertSuccess("Komentar berhasil dihapus!");
+      await alertSuccess(t("detailAgenda.alert.deleteSuccess"));
       fetchComments();
     } else {
-      await alertError(`Gagal hapus komentar: ${resBody.error}`);
+      await alertError(t("detailAgenda.alert.deleteFailed", { error: resBody.error }));
     }
   };
-
-  // - User login dari localStorage
-  const loggedInUser = JSON.parse(localStorage.getItem("user"));
-
-  const [user, setUser] = useState({});
-
-  const fetchUser = async () => {
-    const response = await UserApi.getUserProfile();
-    const responseBody = await response.json();
-    if (response.status === 200) {
-      setUser(responseBody.user);
-    }
-  };
-
-  useEffect(() => {
-    fetchUser();
-  }, []);
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-4 gap-6 font-poppins">
-      {/* Konten utama */}
       <div className="md:col-span-3">
         <button
           onClick={handleBack}
           className="mb-5 flex items-center gap-2 px-4 py-2 rounded-full border border-gray-300 text-gray-800 hover:bg-gray-900 hover:text-white hover:scale-105 transition-all duration-300"
         >
           <HiArrowLeft className="text-lg" />
-          Kembali
+          {t("detailAgenda.back")}
         </button>
 
-        {/* Gambar */}
         <img
-          src={`${import.meta.env.VITE_BASE_URL}/agenda/images/${
-            agenda.featured_image
-          }`}
+          src={`${import.meta.env.VITE_BASE_URL}/agenda/images/${agenda.featured_image}`}
           alt="Detail Agenda"
           className="w-full h-96 object-cover rounded-lg mb-6"
         />
 
-        {/* Judul & info */}
         <h1 className="text-2xl font-bold mb-3">{agenda.title}</h1>
         <p className="text-sm text-gray-500 mb-6">
           📅 {Helper.formatTanggal(agenda.start_time)} -{" "}
           {Helper.formatTanggal(agenda.end_time)} | 📍 {agenda.location} | 👁{" "}
-          {agenda.view_count} Dilihat
+          {agenda.view_count} {t("detailAgenda.viewed")}
         </p>
 
         <div className="space-y-4 text-gray-800 leading-relaxed">
           <p>{agenda.content}</p>
         </div>
 
-        {/* Komentar */}
         <div className="mt-10 p-6 bg-gray-50 rounded-lg shadow">
-          <h2 className="text-xl font-semibold mb-4">💬 Tinggalkan Komentar</h2>
+          <h2 className="text-xl font-semibold mb-4">{t("detailAgenda.leaveComment")}</h2>
 
           <form className="space-y-4" onSubmit={handleKomentar}>
             <textarea
-              placeholder="Tulis komentar kamu..."
+              placeholder={t("detailAgenda.placeholder")}
               rows="4"
               value={pesan}
               onChange={(e) => setPesan(e.target.value)}
@@ -184,15 +166,13 @@ export default function DetailAgenda() {
               type="submit"
               className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition"
             >
-              Kirim Komentar
+              {t("detailAgenda.sendComment")}
             </button>
           </form>
 
-          {/* List Komentar */}
           <div className="mt-6 space-y-4">
             {comments.map((c, i) => (
               <div key={i} className="p-4 bg-white rounded-lg shadow">
-                {/* Kalau sedang edit */}
                 {editingCommentId === c.id ? (
                   <div className="space-y-2">
                     <textarea
@@ -206,13 +186,13 @@ export default function DetailAgenda() {
                         onClick={() => handleUpdateComment(c.id)}
                         className="px-4 py-1 bg-green-500 text-white rounded hover:bg-green-600"
                       >
-                        Simpan
+                        {t("detailAgenda.save")}
                       </button>
                       <button
                         onClick={() => setEditingCommentId(null)}
                         className="px-4 py-1 bg-gray-300 rounded hover:bg-gray-400"
                       >
-                        Batal
+                        {t("detailAgenda.cancel")}
                       </button>
                     </div>
                   </div>
@@ -225,25 +205,20 @@ export default function DetailAgenda() {
 
                     {user && (
                       <div className="flex gap-3 mt-2">
-                        {/* DEBUG LOG */}
-
-                        {/* Edit: Hanya pemilik komentar (termasuk admin jika dia yg nulis) */}
                         {user.id === c.user.id && (
                           <button
                             onClick={() => startEditComment(c)}
                             className="text-blue-500 text-sm hover:underline"
                           >
-                            Edit
+                            {t("detailAgenda.edit")}
                           </button>
                         )}
-
-                        {/* Hapus: Pemilik atau admin */}
                         {(user.id === c.user.id || user.role === "ADMIN") && (
                           <button
                             onClick={() => handleDeleteComment(c.id)}
                             className="text-red-500 text-sm hover:underline"
                           >
-                            Hapus
+                            {t("detailAgenda.delete")}
                           </button>
                         )}
                       </div>
@@ -253,7 +228,7 @@ export default function DetailAgenda() {
               </div>
             ))}
             {comments.length === 0 && (
-              <p className="text-center text-gray-400">Belum ada komentar</p>
+              <p className="text-center text-gray-400">{t("detailAgenda.noComment")}</p>
             )}
           </div>
         </div>

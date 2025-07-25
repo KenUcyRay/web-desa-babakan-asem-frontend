@@ -12,8 +12,10 @@ import {
 } from "recharts";
 import { InfografisApi } from "../../libs/api/InfografisApi";
 import { alertError } from "../../libs/alert";
+import { useTranslation } from "react-i18next";
 
 export default function Penduduk() {
+  const { t } = useTranslation();
   const iconOptions = [
     { key: "male", label: "Laki-laki", icon: <FaMale /> },
     { key: "female", label: "Perempuan", icon: <FaFemale /> },
@@ -43,7 +45,8 @@ export default function Penduduk() {
     const mapped = result.resident.map((item) => {
       let iconKey = "";
       if (item.title.toLowerCase().includes("laki")) iconKey = "male";
-      else if (item.title.toLowerCase().includes("perempuan")) iconKey = "female";
+      else if (item.title.toLowerCase().includes("perempuan"))
+        iconKey = "female";
       else if (item.title.toLowerCase().includes("keluarga")) iconKey = "home";
       else iconKey = "child";
 
@@ -68,16 +71,13 @@ export default function Penduduk() {
       <div className="grid md:grid-cols-2 gap-8 items-center">
         <div>
           <h2 className="text-4xl font-extrabold text-gray-800 leading-snug">
-            Demografi Penduduk Desa Babakan
+            {t("resident.title")}
           </h2>
           <p className="mt-4 text-gray-600 text-justify">
-            Berikut adalah gambaran umum tentang jumlah penduduk Desa Babakan
-            yang terbagi berdasarkan jenis kelamin, jumlah kepala keluarga, dan
-            anak-anak. Data ini digunakan untuk keperluan perencanaan pembangunan,
-            layanan masyarakat, dan pengelolaan desa secara lebih baik.
+            {t("resident.description.paragraph1")}
           </p>
           <p className="mt-2 text-gray-500 italic text-sm">
-            *Data bersifat dinamis dari sistem informasi desa.
+            {t("resident.description.paragraph2")}
           </p>
         </div>
         <img
@@ -104,12 +104,10 @@ export default function Penduduk() {
       {/* Grafik */}
       <div className="mt-14">
         <h3 className="text-3xl font-bold text-gray-800 text-center mb-6">
-          Grafik Distribusi Penduduk
+          {t("resident.chart.title")}
         </h3>
         <p className="text-center text-gray-600 mb-8 max-w-2xl mx-auto">
-          Grafik ini menunjukkan jumlah penduduk desa dalam beberapa kategori utama.
-          Dari grafik ini kita bisa melihat perbandingan jumlah laki-laki, perempuan,
-          kepala keluarga, serta anak-anak.
+          {t("resident.chart.description")}
         </p>
 
         <ResponsiveContainer width="100%" height={250}>
@@ -118,7 +116,12 @@ export default function Penduduk() {
             <XAxis dataKey="name" />
             <YAxis />
             <Tooltip />
-            <Bar dataKey="jumlah" fill="#B6F500" barSize={40} radius={[6, 6, 0, 0]} />
+            <Bar
+              dataKey="jumlah"
+              fill="#B6F500"
+              barSize={40}
+              radius={[6, 6, 0, 0]}
+            />
           </BarChart>
         </ResponsiveContainer>
       </div>

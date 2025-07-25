@@ -5,34 +5,36 @@ import { alertError } from "../../libs/alert";
 import { MemberApi } from "../../libs/api/MemberApi";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import logo from "../../assets/logo.png"; // - Logo Desa
+import logo from "../../assets/logo.png";
+import { useTranslation } from "react-i18next";
 
 export default function Pemerintahan() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const regulasi = [
     {
-      judul: "Perdes Tentang Desa",
+      judul: t("government.regulation1Title"),
       tahun: "01/2021",
       file: "/files/regulasi/perdes-tentang-desa.pdf",
     },
     {
-      judul: "Perdes Rencana Pembangunan",
+      judul: t("government.regulation2Title"),
       tahun: "02/2023",
       file: "/files/regulasi/perdes-rencana-pembangunan.pdf",
     },
   ];
 
   const lembagaDesa = [
-    { nama: "BUMDes", icon: <FaFlag />, path: "/bumdes" },
-    { nama: "DPD", icon: <FaUsers />, path: "/dpd" },
-    { nama: "Karang Taruna", icon: <FaHome />, path: "/karang-taruna" },
+    { nama: t("government.org1"), icon: <FaFlag />, path: "/bumdes" },
+    { nama: t("government.org2"), icon: <FaUsers />, path: "/dpd" },
+    { nama: t("government.org3"), icon: <FaHome />, path: "/karang-taruna" },
   ];
 
   const layananAdmin = [
-    { nama: "Surat Pengantar", path: "/surat-pengantar" },
-    { nama: "Formulir Layanan", path: "/formulir-layanan" },
-    { nama: "Layanan Online", path: "/layanan-online" },
+    { nama: t("government.service1"), path: "/surat-pengantar" },
+    { nama: t("government.service2"), path: "/formulir-layanan" },
+    { nama: t("government.service3"), path: "/layanan-online" },
   ];
 
   const [members, setMembers] = useState([]);
@@ -66,63 +68,35 @@ export default function Pemerintahan() {
 
   return (
     <div className="font-poppins bg-gray-50">
-      {/* - HERO SECTION - Layout sesuai contoh */}
       <section className="bg-white py-16" data-aos="fade-up">
         <div className="max-w-6xl mx-auto px-6">
           <div className="grid md:grid-cols-3 gap-8 items-center">
-            
-            {/* - Judul Kiri */}
             <div data-aos="fade-right" className="text-left">
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
-                Pemerintah <br /> 
-                <span className="text-green-600">Desa Babakan Asem</span>
-              </h1>
-              <p className="text-gray-600 mt-4 text-lg leading-relaxed">
-                Desa Babakan Asem <br /> 
-                Menuju Desa Mandiri, Maju & Sejahtera
-              </p>
+              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight" dangerouslySetInnerHTML={{ __html: t("government.title") }} />
+              <p className="text-gray-600 mt-4 text-lg leading-relaxed" dangerouslySetInnerHTML={{ __html: t("government.subtitle") }} />
             </div>
-
-            {/* - Logo Tengah */}
             <div className="flex justify-center" data-aos="zoom-in">
               <div className="rounded-2xl overflow-hidden shadow-xl p-6 bg-white">
-                <img 
-                  src={logo} 
-                  alt="Logo Desa" 
-                  className="w-40 h-40 object-contain mx-auto" 
-                />
+                <img src={logo} alt="Logo Desa" className="w-40 h-40 object-contain mx-auto" />
               </div>
             </div>
-
-            {/* - Sambutan Kanan */}
-                  <div data-aos="fade-left" className="text-left">
-            <h2 className="text-2xl font-bold text-green-700 mb-3 tracking-wide">
-            Sambutan Kepala Desa
-          </h2>
-          <p className="text-gray-700 leading-relaxed text-justify italic font-serif text-[17px]">
-            “Kami mengajak seluruh masyarakat Desa Babakan Asem untuk terus bergotong royong membangun desa yang lebih maju, mandiri, dan sejahtera. 
-            Partisipasi aktif masyarakat adalah kunci keberhasilan pembangunan desa.”
-          </p>
-          <p className="mt-4 font-semibold text-green-800 text-lg">
-            – Kepala Desa Babakan Asem
-          </p>
-        </div>
-
+            <div data-aos="fade-left" className="text-left">
+              <h2 className="text-2xl font-bold text-green-700 mb-3 tracking-wide">{t("government.greetingTitle")}</h2>
+              <p className="text-gray-700 leading-relaxed text-justify italic font-serif text-[17px]">
+                {t("government.greetingMessage")}
+              </p>
+              <p className="mt-4 font-semibold text-green-800 text-lg">{t("government.greetingBy")}</p>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* - STRUKTUR ORGANISASI (tetap sama) */}
       <section className="bg-green-50 py-14" data-aos="fade-up">
         <div className="max-w-5xl mx-auto px-6 text-center">
-          <h2 className="text-3xl font-bold text-green-700 mb-10">Struktur Organisasi</h2>
+          <h2 className="text-3xl font-bold text-green-700 mb-10">{t("government.structureTitle")}</h2>
           <div className="grid md:grid-cols-4 sm:grid-cols-2 gap-6">
             {members.map((member) => (
-              <div
-                key={member.id}
-                className="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition text-center"
-                data-aos="zoom-in"
-              >
+              <div key={member.id} className="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition text-center" data-aos="zoom-in">
                 <img
                   src={`${import.meta.env.VITE_BASE_URL}/organizations/images/${member.profile_photo}`}
                   alt={member.name}
@@ -130,25 +104,16 @@ export default function Pemerintahan() {
                 />
                 <h3 className="text-lg font-semibold text-gray-800">{member.name}</h3>
                 <p className="text-sm text-gray-500">{member.position}</p>
-                <p className="text-xs text-gray-400 mt-1">
-                  {member.term_start} - {member.term_end}
-                </p>
+                <p className="text-xs text-gray-400 mt-1">{member.term_start} - {member.term_end}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* - LEMBAGA & LAYANAN (tetap sama) */}
-      <section
-        className="max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-2 gap-8"
-        data-aos="fade-up"
-      >
-        <div
-          className="bg-gradient-to-br from-[#f7ffe5] to-white shadow-md rounded-2xl p-8"
-          data-aos="fade-right"
-        >
-          <h3 className="text-2xl font-bold text-green-700 mb-4">Lembaga Desa</h3>
+      <section className="max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-2 gap-8" data-aos="fade-up">
+        <div className="bg-gradient-to-br from-[#f7ffe5] to-white shadow-md rounded-2xl p-8" data-aos="fade-right">
+          <h3 className="text-2xl font-bold text-green-700 mb-4">{t("government.orgTitle")}</h3>
           <div className="space-y-3">
             {lembagaDesa.map((item, i) => (
               <button
@@ -165,11 +130,8 @@ export default function Pemerintahan() {
           </div>
         </div>
 
-        <div
-          className="bg-gradient-to-br from-[#f7ffe5] to-white shadow-md rounded-2xl p-8"
-          data-aos="fade-left"
-        >
-          <h3 className="text-2xl font-bold text-green-700 mb-4">Layanan Administrasi</h3>
+        <div className="bg-gradient-to-br from-[#f7ffe5] to-white shadow-md rounded-2xl p-8" data-aos="fade-left">
+          <h3 className="text-2xl font-bold text-green-700 mb-4">{t("government.serviceTitle")}</h3>
           <div className="space-y-3">
             {layananAdmin.map((layanan, i) => (
               <button
@@ -184,27 +146,21 @@ export default function Pemerintahan() {
         </div>
       </section>
 
-      {/* - REGULASI (tetap sama) */}
       <section className="bg-white py-14" data-aos="fade-up">
         <div className="max-w-6xl mx-auto px-6 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-8">
-            Regulasi & Peraturan Desa
-          </h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-8">{t("government.regulationTitle")}</h2>
           <div className="overflow-hidden rounded-xl shadow-md">
             <table className="w-full text-left text-gray-700">
               <thead className="bg-gray-100 text-gray-800">
                 <tr>
-                  <th className="p-4">Judul Peraturan</th>
-                  <th className="p-4">No. / Tahun</th>
-                  <th className="p-4 text-center">Unduh</th>
+                  <th className="p-4">{t("government.tableTitle")}</th>
+                  <th className="p-4">{t("government.tableYear")}</th>
+                  <th className="p-4 text-center">{t("government.tableDownload")}</th>
                 </tr>
               </thead>
               <tbody>
                 {regulasi.map((item, index) => (
-                  <tr
-                    key={index}
-                    className="border-b hover:bg-gray-50 transition"
-                  >
+                  <tr key={index} className="border-b hover:bg-gray-50 transition">
                     <td className="p-4">{item.judul}</td>
                     <td className="p-4">{item.tahun}</td>
                     <td className="p-4 text-center">
@@ -212,7 +168,7 @@ export default function Pemerintahan() {
                         onClick={() => window.open(item.file, "_blank")}
                         className="text-blue-600 flex items-center gap-1 hover:underline mx-auto justify-center"
                       >
-                        <FaDownload /> Download
+                        <FaDownload /> {t("government.download")}
                       </button>
                     </td>
                   </tr>

@@ -2,9 +2,11 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AdministrasiApi } from "../../libs/api/AdministrasiApi";
 import { alertError, alertSuccess } from "../../libs/alert";
+import { useTranslation } from "react-i18next";
 
 export default function FormOnline() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -42,14 +44,14 @@ export default function FormOnline() {
     <div className="bg-gray-50 min-h-screen py-10 px-4">
       <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-md p-8">
         <h1 className="text-2xl font-bold text-gray-800 mb-6 text-center">
-          Layanan Online Desa
+          {t("formOnline.title")}
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Nama */}
           <div>
             <label className="block text-gray-700 font-medium mb-1">
-              Nama Lengkap
+              {t("formOnline.form.nameLabel")}
             </label>
             <input
               type="text"
@@ -57,7 +59,7 @@ export default function FormOnline() {
               value={formData.name}
               onChange={handleChange}
               required
-              placeholder="Masukkan nama lengkap"
+              placeholder={t("formOnline.form.namePlaceholder")}
               className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-400"
             />
           </div>
@@ -65,7 +67,7 @@ export default function FormOnline() {
           {/* Email */}
           <div>
             <label className="block text-gray-700 font-medium mb-1">
-              Email Aktif
+              {t("formOnline.form.emailLabel")}
             </label>
             <input
               type="email"
@@ -73,7 +75,7 @@ export default function FormOnline() {
               value={formData.email}
               onChange={handleChange}
               required
-              placeholder="contoh@email.com"
+              placeholder={t("formOnline.form.emailPlaceholder")}
               className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-400"
             />
           </div>
@@ -81,7 +83,7 @@ export default function FormOnline() {
           {/* Nomor HP */}
           <div>
             <label className="block text-gray-700 font-medium mb-1">
-              Nomor WhatsApp
+              {t("formOnline.form.phoneLabel")}
             </label>
             <input
               type="text"
@@ -89,7 +91,7 @@ export default function FormOnline() {
               value={formData.phone}
               onChange={handleChange}
               required
-              placeholder="08xxxxxxxxxx"
+              placeholder={t("formOnline.form.phonePlaceholder")}
               className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-400"
             />
           </div>
@@ -97,7 +99,7 @@ export default function FormOnline() {
           {/* Layanan Online */}
           <div>
             <label className="block text-gray-700 font-medium mb-1">
-              Pilih Jenis Layanan Online
+              {t("formOnline.form.typeLabel")}
             </label>
             <select
               name="type"
@@ -106,10 +108,16 @@ export default function FormOnline() {
               required
               className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-400"
             >
-              <option value="">-- Pilih --</option>
-              <option value="TRACKING_SURAT">Tracking Surat</option>
-              <option value="CEK_STATUS_LAYANAN">Cek Status Layanan</option>
-              <option value="PERMOHONAN">Buat Permohonan</option>
+              <option value="">{t("formOnline.form.typeDefault")}</option>
+              <option value="TRACKING_SURAT">
+                {t("formOnline.form.typeOptions.TRACKING_SURAT")}
+              </option>
+              <option value="CEK_STATUS_LAYANAN">
+                {t("formOnline.form.typeOptions.CEK_STATUS_LAYANAN")}
+              </option>
+              <option value="PERMOHONAN">
+                {t("formOnline.form.typeOptions.PERMOHONAN")}
+              </option>
             </select>
           </div>
 
@@ -120,13 +128,13 @@ export default function FormOnline() {
               onClick={() => navigate(-1)}
               className="px-6 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 transition"
             >
-              Batal
+              {t("formOnline.form.cancel")}
             </button>
             <button
               type="submit"
               className="px-6 py-2 rounded-lg bg-green-500 hover:bg-green-600 text-white font-semibold"
             >
-              Kirim Permohonan
+              {t("formOnline.form.submit")}
             </button>
           </div>
         </form>

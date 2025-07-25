@@ -106,7 +106,7 @@ export default function ProfilDesa() {
           </h2>
           <div className="grid md:grid-cols-3 gap-6">
             <Link
-              to="/pemerintah"
+              to="/pemerintahan"
               className="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition"
               data-aos="zoom-in"
             >
@@ -115,7 +115,8 @@ export default function ProfilDesa() {
               </h3>
               <p className="text-gray-500">{t("profileVillage.headDesc")}</p>
             </Link>
-            <div
+            <Link
+              to="/administrasi"
               className="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition"
               data-aos="zoom-in"
             >
@@ -123,7 +124,7 @@ export default function ProfilDesa() {
                 {t("profileVillage.staffTitle")}
               </h3>
               <p className="text-gray-500">{t("profileVillage.staffDesc")}</p>
-            </div>
+            </Link>
             <Link
               to="/bpd"
               className="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition"

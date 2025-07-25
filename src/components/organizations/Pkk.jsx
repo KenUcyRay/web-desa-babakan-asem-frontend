@@ -7,8 +7,10 @@ import { alertError } from "../../libs/alert";
 import { ProgramApi } from "../../libs/api/ProgramApi";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import { useTranslation } from "react-i18next";
 
 export default function Pkk() {
+  const { t } = useTranslation();
   const [agenda, setAgenda] = useState([]);
   const [programs, setPrograms] = useState([]);
 
@@ -18,14 +20,14 @@ export default function Pkk() {
       const responseBody = await response.json();
       setAgenda(responseBody.agenda);
     } else {
-      alertError("Gagal mengambil data agenda. Silakan coba lagi nanti.");
+      alertError(t("pkk.agendaError"));
     }
   };
 
   const fetchPrograms = async () => {
     const response = await ProgramApi.getPrograms(1, 3);
     if (!response.ok) {
-      alertError("Gagal mengambil data program. Silakan coba lagi nanti.");
+      alertError(t("pkk.programError"));
       return;
     }
     const responseBody = await response.json();
@@ -40,31 +42,31 @@ export default function Pkk() {
 
   return (
     <div className="font-poppins text-gray-800 bg-gradient-to-b from-green-50 via-white to-green-50">
-      {/* ✅ HERO SECTION */}
-      <section className="max-w-6xl mx-auto px-6 py-16 text-center" data-aos="fade-up">
+      <section
+        className="max-w-6xl mx-auto px-6 py-16 text-center"
+        data-aos="fade-up"
+      >
         <h1 className="text-4xl md:text-5xl font-extrabold text-green-700 leading-tight">
           PKK <span className="text-green-500">Desa Babakan Asem</span>
         </h1>
         <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
-          Pemberdayaan Keluarga Menuju Desa Sejahtera & Mandiri
+          {t("pkk.subtitle")}
         </p>
         <p className="mt-3 text-gray-700 max-w-3xl mx-auto leading-relaxed">
-          Gerakan PKK adalah gerakan nasional yang tumbuh dari masyarakat untuk
-          membangun keluarga yang beriman, sejahtera, dan mandiri melalui
-          partisipasi aktif seluruh lapisan warga desa.
+          {t("pkk.description")}
         </p>
       </section>
 
-      {/* ✅ VISI & MISI */}
       <section className="max-w-6xl mx-auto px-6 py-12 grid md:grid-cols-2 gap-8">
         <div
           className="bg-yellow-50 p-8 rounded-2xl shadow-md hover:shadow-xl hover:scale-105 transition text-center"
           data-aos="zoom-in"
         >
-          <h2 className="text-3xl font-bold text-yellow-800 mb-4">Visi</h2>
+          <h2 className="text-3xl font-bold text-yellow-800 mb-4">
+            {t("pkk.vision")}
+          </h2>
           <p className="text-lg leading-relaxed text-gray-700">
-            Mewujudkan keluarga yang beriman, sejahtera, dan mandiri, dengan
-            nilai-nilai gotong royong dan partisipasi aktif masyarakat.
+            {t("pkk.visionDesc")}
           </p>
         </div>
         <div
@@ -72,21 +74,19 @@ export default function Pkk() {
           data-aos="zoom-in"
         >
           <h2 className="text-3xl font-bold text-green-800 mb-4 text-center">
-            Misi
+            {t("pkk.mission")}
           </h2>
           <ul className="list-disc list-inside text-left space-y-3 text-gray-700">
-            <li>Meningkatkan kualitas hidup dan kesejahteraan keluarga</li>
-            <li>Mendorong partisipasi aktif dalam pembangunan desa</li>
-            <li>Mengembangkan ekonomi kreatif keluarga melalui UMKM</li>
-            <li>Menumbuhkan kesadaran lingkungan & kesehatan keluarga</li>
+            {t("pkk.missionList", { returnObjects: true }).map((item, i) => (
+              <li key={i}>{item}</li>
+            ))}
           </ul>
         </div>
       </section>
 
-      {/* ✅ PROGRAM POKOK PKK */}
       <section className="max-w-6xl mx-auto px-6 py-16">
         <h2 className="text-3xl font-bold text-center mb-10" data-aos="fade-up">
-          Program Pokok PKK
+          {t("pkk.programTitle")}
         </h2>
         <div className="grid gap-8 grid-cols-[repeat(auto-fit,minmax(260px,1fr))]">
           {programs.map((item, idx) => (
@@ -116,10 +116,9 @@ export default function Pkk() {
         </div>
       </section>
 
-      {/* ✅ AGENDA PENTING */}
       <section className="max-w-6xl mx-auto px-6 py-16">
         <h2 className="text-3xl font-bold text-center mb-10" data-aos="fade-up">
-          Agenda Penting PKK
+          {t("pkk.agendaTitle")}
         </h2>
         <div className="grid gap-8 grid-cols-[repeat(auto-fit,minmax(280px,1fr))]">
           {agenda.map((item, idx) => (
@@ -149,24 +148,22 @@ export default function Pkk() {
         </div>
       </section>
 
-      {/* ✅ CTA STRUKTUR & GALERI */}
       <section
         className="max-w-4xl mx-auto px-6 my-20 text-center"
         data-aos="zoom-in"
       >
         <div className="bg-gradient-to-r from-green-100 to-green-50 p-10 rounded-3xl shadow-xl">
           <h2 className="text-3xl font-bold text-green-800 mb-4">
-            Ingin Melihat Galeri & Struktur PKK?
+            {t("pkk.ctaTitle")}
           </h2>
           <p className="text-gray-700 max-w-xl mx-auto mb-6 leading-relaxed">
-            Lihat dokumentasi kegiatan PKK dan susunan organisasi lengkap yang
-            berperan aktif dalam pembangunan desa.
+            {t("pkk.ctaDesc")}
           </p>
           <Link
             to="/pkk/struktur"
             className="inline-flex items-center gap-3 px-8 py-4 text-lg font-semibold rounded-xl bg-green-600 text-white shadow hover:bg-green-700 hover:scale-105 transition"
           >
-            <FaPhotoVideo className="text-2xl" /> Lihat Galeri & Struktur PKK
+            <FaPhotoVideo className="text-2xl" /> {t("pkk.ctaButton")}
           </Link>
         </div>
       </section>

@@ -1,36 +1,38 @@
 import { useNavigate } from "react-router-dom";
 import { HiOutlineMail } from "react-icons/hi";
 import { FaWpforms, FaUsers, FaGlobe } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 
 export default function Administrasi() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const services = [
     {
-      title: "Surat Pengantar",
-      desc: "Untuk KTP, KK, SKCK, DLL",
-      button: "Lihat Detail",
+      title: t("administrasi.services.0.title"),
+      desc: t("administrasi.services.0.desc"),
+      button: t("administrasi.services.0.button"),
       icon: <HiOutlineMail className="text-4xl" />,
       route: "/surat-pengantar",
     },
     {
-      title: "Formulir Layanan",
-      desc: "Isi Formulir Pengajuan",
-      button: "Isi Formulir",
+      title: t("administrasi.services.1.title"),
+      desc: t("administrasi.services.1.desc"),
+      button: t("administrasi.services.1.button"),
       icon: <FaWpforms className="text-4xl" />,
       route: "/formulir-layanan",
     },
     {
-      title: "Informasi Kependudukan",
-      desc: "Detail Penduduk",
-      button: "Lihat Data",
+      title: t("administrasi.services.2.title"),
+      desc: t("administrasi.services.2.desc"),
+      button: t("administrasi.services.2.button"),
       icon: <FaUsers className="text-4xl" />,
       route: "/infografis/penduduk",
     },
     {
-      title: "Layanan Online",
-      desc: "Ajukan & lacak Online",
-      button: "Masuk Portal",
+      title: t("administrasi.services.3.title"),
+      desc: t("administrasi.services.3.desc"),
+      button: t("administrasi.services.3.button"),
       icon: <FaGlobe className="text-4xl" />,
       route: "/layanan-online",
     },
@@ -45,13 +47,13 @@ export default function Administrasi() {
             onClick={() => navigate("/surat-pengantar")}
             className="bg-lime-400 text-black font-semibold px-6 py-2 rounded-full hover:bg-lime-300 transition"
           >
-            Ajukan Sekarang
+            {t("administrasi.topButtons.ajukan")}
           </button>
           <button
             onClick={() => navigate("/panduan")}
             className="bg-white text-black font-semibold px-6 py-2 rounded-full border hover:bg-gray-100 transition"
           >
-            Panduan Layanan
+            {t("administrasi.topButtons.panduan")}
           </button>
         </div>
 

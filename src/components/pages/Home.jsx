@@ -36,38 +36,50 @@ export default function Home() {
   const { t } = useTranslation();
   const [products, setProducts] = useState([]);
   const [news, setNews] = useState([]);
+
+  const apbData = [
+    { name: t("home.apb.budget"), anggaran: 350, realisasi: 300 },
+    { name: t("home.apb.realization"), anggaran: 280, realisasi: 250 },
+    { name: "Sisa", anggaran: 70, realisasi: 50 },
+  ];
+
+  useEffect(() => {
+    AOS.init({ duration: 800, once: true });
+    AOS.refresh();
+
+    const link = document.createElement("link");
+    link.href =
+      "https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap";
+    link.rel = "stylesheet";
+    document.head.appendChild(link);
+    document.body.style.fontFamily = "'Poppins', sans-serif";
+  }, []);
+
   const quickMenu = [
     {
-      title: t("quickMenu.profil.title"),
-      desc: t("quickMenu.profil.desc"),
+      title: t("home.quickmenu.profile.title"),
+      desc: t("home.quickmenu.profile.desc"),
       icon: <FaMapMarkerAlt className="text-green-600 text-4xl" />,
       link: "/profil",
     },
     {
-      title: t("quickMenu.berita.title"),
-      desc: t("quickMenu.berita.desc"),
+      title: t("home.quickmenu.news.title"),
+      desc: t("home.quickmenu.news.desc"),
       icon: <FaNewspaper className="text-blue-600 text-4xl" />,
       link: "/berita",
     },
     {
-      title: t("quickMenu.layanan.title"),
-      desc: t("quickMenu.layanan.desc"),
+      title: t("home.quickmenu.service.title"),
+      desc: t("home.quickmenu.service.desc"),
       icon: <FaHandsHelping className="text-yellow-600 text-4xl" />,
       link: "/administrasi",
     },
     {
-      title: t("quickMenu.infografis.title"),
-      desc: t("quickMenu.infografis.desc"),
+      title: t("home.quickmenu.infografis.title"),
+      desc: t("home.quickmenu.infografis.desc"),
       icon: <FaChartBar className="text-purple-600 text-4xl" />,
       link: "/infografis/penduduk",
     },
-  ];
-
-  // ✅ Data Chart APB (dalam juta)
-  const apbData = [
-    { name: "Pendapatan", anggaran: 350, realisasi: 300 },
-    { name: "Belanja", anggaran: 280, realisasi: 250 },
-    { name: "Sisa", anggaran: 70, realisasi: 50 },
   ];
 
   const fetchProduct = async () => {
@@ -81,6 +93,7 @@ export default function Home() {
       );
     }
   };
+
   const fetchNews = async () => {
     const response = await NewsApi.getNews(1, 3);
     if (response.status === 200) {
@@ -94,57 +107,36 @@ export default function Home() {
   useEffect(() => {
     fetchNews();
     fetchProduct();
-    AOS.init({ duration: 800, once: true });
-    AOS.refresh();
-
-    const link = document.createElement("link");
-    link.href =
-      "https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap";
-    link.rel = "stylesheet";
-    document.head.appendChild(link);
-
-    document.body.style.fontFamily = "'Poppins', sans-serif";
   }, []);
 
   return (
     <div className="font-[Poppins] w-full">
-      {/* - HERO VIDEO */}
+      {/* HERO */}
       <div className="relative h-screen w-full">
         <video
           autoPlay
           muted
           loop
           playsInline
-          className="absolute top-0 left-0 w-full h-full object-cover will-change-transform"
-          style={{ backfaceVisibility: "hidden", transform: "translateZ(0)" }}
+          className="absolute top-0 left-0 w-full h-full object-cover"
         >
           <source src={HeroVideo} type="video/mp4" />
         </video>
         <div className="absolute inset-0 bg-black/40"></div>
-
         <div className="relative z-10 flex flex-col items-center justify-center h-full text-center text-white px-6">
-          <h1
-            className="text-[clamp(1.8rem,4vw,3rem)] font-bold"
-            data-aos="fade-down"
-          >
-            {t("welcome")}
+          <h1 className="text-4xl font-bold" data-aos="fade-down">
+            {t("home.hero.title")}
           </h1>
-          <p
-            className="mt-3 text-[clamp(0.9rem,1.6vw,1.2rem)] max-w-xl leading-relaxed"
-            data-aos="fade-up"
-          >
-            {t("hero.subtitle")}
+          <p className="mt-3 text-lg" data-aos="fade-up">
+            {t("home.hero.description")}
           </p>
-          <p
-            className="mt-1 text-[clamp(0.8rem,1.4vw,1rem)] opacity-90"
-            data-aos="fade-up"
-          >
-            {t("hero.location")}
+          <p className="mt-1 text-sm opacity-90" data-aos="fade-up">
+            {t("home.hero.location")}
           </p>
         </div>
       </div>
 
-      {/* - QUICK MENU */}
+      {/* QUICK MENU */}
       <div className="w-full px-[5%] py-10 grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-6">
         {quickMenu.map((item, idx) => (
           <Link
@@ -154,152 +146,119 @@ export default function Home() {
             data-aos="fade-up"
           >
             <div>{item.icon}</div>
-            <h3 className="font-bold text-[clamp(0.95rem,1.4vw,1.1rem)] mt-3">
-              {item.title}
-            </h3>
-            <p className="text-gray-600 text-[clamp(0.75rem,1vw,0.95rem)] mt-1">
-              {item.desc}
-            </p>
+            <h3 className="font-bold mt-3">{item.title}</h3>
+            <p className="text-gray-600 mt-1">{item.desc}</p>
           </Link>
         ))}
       </div>
 
-      {/* - TENTANG DESA */}
-      <div
-        className="bg-green-50 py-[clamp(2rem,6vh,4rem)] px-[5%]"
-        data-aos="fade-up"
-      >
+      {/* ABOUT */}
+      <div className="bg-green-50 py-10 px-[5%]" data-aos="fade-up">
         <div className="grid md:grid-cols-2 gap-8 items-center">
           <div>
-            <h2 className="text-[clamp(1.3rem,2.2vw,1.8rem)] font-bold text-green-700 mb-4">
-              {t("tentang.title")}
+            <h2 className="text-2xl font-bold text-green-700 mb-4">
+              {t("home.about.title")}
             </h2>
-            <p className="text-gray-700 leading-relaxed text-[clamp(0.85rem,1.2vw,1rem)]">
-              {t("tentang.paragraf1")}
-            </p>
-            <p className="mt-3 text-gray-700 leading-relaxed text-[clamp(0.85rem,1.2vw,1rem)]">
-              {t("tentang.paragraf2")}
-            </p>
+            <p className="text-gray-700 mb-3">{t("home.about.desc1")}</p>
+            <p className="text-gray-700">{t("home.about.desc2")}</p>
           </div>
           <div className="flex justify-center">
             <img
               src={LogoDesa}
-              alt="Logo Desa Babakan Asem"
-              className="w-[20vw] min-w-[100px] max-w-[180px] drop-shadow-lg"
+              alt="Logo Desa"
+              className="w-[20vw] min-w-[100px] max-w-[180px]"
             />
           </div>
         </div>
       </div>
 
-      {/* - BERITA TERBARU */}
-      <div className="w-full px-[5%] py-[clamp(2rem,6vh,4rem)]">
+      {/* BERITA */}
+      <div className="w-full px-[5%] py-10">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-[clamp(1.1rem,1.8vw,1.5rem)] font-bold">
-            {t("berita.terbaru")}
-          </h2>
-          <Link
-            to="/berita"
-            className="text-green-600 hover:underline text-[clamp(0.8rem,1.1vw,0.95rem)]"
-          >
-            {t("berita.lihatSemua")}
+          <h2 className="text-xl font-bold">{t("home.latestnews.title")}</h2>
+          <Link to="/berita" className="text-green-600 hover:underline">
+            {t("home.latestnews.seeall")}
           </Link>
         </div>
-
         <div className="grid grid-cols-[repeat(auto-fit,minmax(230px,1fr))] gap-6">
           {news.map((item) => (
             <Link
               key={item.news.id}
               to={`/berita/${item.news.id}`}
-              className="bg-white shadow rounded-xl overflow-hidden hover:shadow-xl hover:scale-[1.03] transition-transform"
+              className="bg-white shadow rounded-xl overflow-hidden"
               data-aos="zoom-in"
             >
-              {/* ✅ Tinggi gambar diperbesar */}
               <img
                 src={`${import.meta.env.VITE_BASE_URL}/news/images/${
                   item.news.featured_image
                 }`}
                 alt={item.news.title}
-                className="w-full h-[30vh] object-cover"
+                className="w-full h-[18vh] object-cover"
               />
               <div className="p-4">
                 <p className="text-xs text-gray-500">
                   {Helper.formatTanggal(item.news.created_at)}
                 </p>
-                <h3 className="font-semibold text-[clamp(0.95rem,1.4vw,1.1rem)] mt-1">
-                  {item.news.title}
-                </h3>
+                <h3 className="font-semibold mt-1">{item.news.title}</h3>
               </div>
             </Link>
           ))}
         </div>
       </div>
 
-      {/* - PRODUK BUMDes */}
-      <div
-        className="bg-green-50 py-[clamp(2rem,6vh,4rem)] px-[5%]"
-        data-aos="fade-up"
-      >
+      {/* BUMDES */}
+      <div className="bg-green-50 py-10 px-[5%]" data-aos="fade-up">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-[clamp(1.1rem,1.8vw,1.5rem)] font-bold">
-            {t("produk.judul")}
-          </h2>
-          <Link
-            to="/bumdes"
-            className="text-green-600 hover:underline text-[clamp(0.8rem,1.1vw,0.95rem)]"
-          >
-            {t("produk.lihatSemua")}
+          <h2 className="text-xl font-bold">{t("home.bumdes.title")}</h2>
+          <Link to="/bumdes" className="text-green-600 hover:underline">
+            {t("home.bumdes.seeall")}
           </Link>
         </div>
-
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {products.map((item, idx) => {
+          {products.map((item) => {
             const full = Math.floor(item.average_rating);
             const half = item.average_rating - full >= 0.5;
 
             return (
               <div
                 key={item.product.id}
-                className="bg-white rounded-2xl shadow hover:shadow-xl transition transform hover:-translate-y-1 flex flex-col"
+                className="bg-white rounded-xl shadow hover:shadow-xl"
                 data-aos="fade-up"
-                data-aos-delay={idx * 100}
               >
                 <Link to={`/bumdes/${item.product.id}`}>
-                  {/* ✅ Tinggi gambar diperbesar */}
                   <img
                     src={`${import.meta.env.VITE_BASE_URL}/products/images/${
                       item.product.featured_image
                     }`}
                     alt={item.product.title}
-                    className="w-full h-60 object-cover rounded-t-2xl hover:opacity-90 transition"
+                    className="w-full h-48 object-cover rounded-t-xl"
                   />
                 </Link>
-
-                <div className="p-4 flex flex-col flex-grow">
+                <div className="p-4 flex flex-col">
                   <Link to={`/bumdes/${item.product.id}`}>
-                    <h3 className="font-semibold text-[1rem] text-gray-800 hover:text-green-700 transition">
+                    <h3 className="font-semibold text-gray-800 hover:text-green-700">
                       {item.product.title}
                     </h3>
                   </Link>
-
-                  {/* ⭐ Rating */}
                   <div className="flex items-center gap-1 mt-2">
                     {[1, 2, 3, 4, 5].map((star) => {
-                      let icon;
-                      if (star <= full) {
-                        icon = <FaStar className="text-yellow-400" />;
-                      } else if (star === full + 1 && half) {
-                        icon = <FaStarHalfAlt className="text-yellow-400" />;
-                      } else {
-                        icon = <FaRegStar className="text-gray-300" />;
-                      }
-                      return <span key={star}>{icon}</span>;
+                      if (star <= full)
+                        return (
+                          <FaStar key={star} className="text-yellow-400" />
+                        );
+                      if (star === full + 1 && half)
+                        return (
+                          <FaStarHalfAlt
+                            key={star}
+                            className="text-yellow-400"
+                          />
+                        );
+                      return <FaRegStar key={star} className="text-gray-300" />;
                     })}
                     <span className="text-xs text-gray-500 ml-1">
                       ({item.average_rating?.toFixed(1) ?? "0.0"})
                     </span>
                   </div>
-
-                  {/* Harga & WA */}
                   <div className="mt-auto flex justify-between items-center pt-4">
                     <p className="text-lg font-bold text-green-700">
                       {Helper.formatRupiah(item.product.price)}
@@ -308,9 +267,10 @@ export default function Home() {
                       href={item.product.link_whatsapp}
                       target="_blank"
                       rel="noreferrer"
-                      className="flex items-center gap-1 text-white bg-green-500 hover:bg-green-600 px-3 py-1.5 rounded-lg shadow hover:shadow-md transition text-sm"
+                      className="flex items-center gap-1 text-white bg-green-500 px-3 py-1.5 rounded-lg shadow text-sm"
                     >
-                      <FaWhatsapp /> {t("produk.pesan")}
+                      <FaWhatsapp />
+                      {t("home.bumdes.order")}
                     </a>
                   </div>
                 </div>
@@ -320,47 +280,43 @@ export default function Home() {
         </div>
       </div>
 
-      {/* - APB Desa Combo Chart */}
-      <div className="w-full px-[5%] py-[clamp(2rem,6vh,4rem)]">
+      {/* APB Chart */}
+      <div className="w-full px-[5%] py-10">
         <h2
-          className="text-[clamp(1.3rem,2.2vw,1.8rem)] font-bold text-center text-green-700 mb-8"
+          className="text-2xl font-bold text-center text-green-700 mb-8"
           data-aos="fade-up"
         >
-          {t("apb.judul")}
+          {t("home.apb.title")}
         </h2>
-
-        <div className="bg-white rounded-2xl shadow-lg p-[clamp(1rem,3vw,2rem)]">
+        <div className="bg-white rounded-xl shadow-lg p-6">
           <ResponsiveContainer width="100%" height={350}>
             <ComposedChart data={apbData}>
               <CartesianGrid stroke="#f5f5f5" />
               <XAxis dataKey="name" />
-              <YAxis
-                tickFormatter={(v) => `${v} JT`}
-              />
-              <Tooltip formatter={(v) => `${v} Juta`} />
+              <YAxis />
+              <Tooltip />
               <Legend />
               <Bar
                 dataKey="anggaran"
                 barSize={30}
                 fill="#4ade80"
-                name={t("apb.anggaran")}
+                name={t("home.apb.budget")}
               />
               <Line
                 type="monotone"
                 dataKey="realisasi"
                 stroke="#3b82f6"
-                strokeWidth={2}
-                name={t("apb.realisasi")}
+                name={t("home.apb.realization")}
               />
             </ComposedChart>
           </ResponsiveContainer>
         </div>
       </div>
 
-      {/* - MAP DESA */}
+      {/* Map */}
       <div className="relative h-[30vh] md:h-[40vh] w-full">
         <iframe
-          title="Peta Desa Babakan Asem"
+          title={t("home.map.title")}
           src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d50846.83215472047!2d108.04488070198364!3d-6.7568080545342095!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e6f2aaf583cd373%3A0x997e0a8c838d37df!2sBabakan%20Asem%2C%20Kec.%20Conggeang%2C%20Kabupaten%20Sumedang%2C%20Jawa%20Barat!5e0!3m2!1sid!2sid!4v1753327873604!5m2!1sid!2sid"
           className="absolute top-0 left-0 w-full h-full border-0"
           loading="lazy"

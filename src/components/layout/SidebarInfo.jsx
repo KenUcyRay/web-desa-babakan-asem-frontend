@@ -1,15 +1,16 @@
 import berita1 from "../../assets/berita1.jpeg";
 import { Link } from "react-router-dom";
-import { HiOutlineMail } from "react-icons/hi";
-import { FaUsers, FaWhatsapp, FaPhoneAlt, FaEnvelope } from "react-icons/fa";
+import { FaWhatsapp, FaPhoneAlt, FaEnvelope } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { NewsApi } from "../../libs/api/NewsApi";
 import { Helper } from "../../utils/Helper";
 import { AgendaApi } from "../../libs/api/AgendaApi";
+import { useTranslation } from "react-i18next";
 
 export default function SidebarInfo() {
   const [news, setNews] = useState([]);
   const [agenda, setAgenda] = useState([]);
+  const { t } = useTranslation();
 
   const fetchNews = async () => {
     const response = await NewsApi.getNews(1, 4);
@@ -17,7 +18,7 @@ export default function SidebarInfo() {
       const responseBody = await response.json();
       setNews(responseBody.news);
     } else {
-      alertError("Gagal mengambil data berita. Silakan coba lagi nanti.");
+      alertError(t("sidebarInfo.alert.news_error"));
     }
   };
 
@@ -27,7 +28,7 @@ export default function SidebarInfo() {
       const responseBody = await response.json();
       setAgenda(responseBody.agenda);
     } else {
-      alertError("Gagal mengambil data agenda. Silakan coba lagi nanti.");
+      alertError(t("sidebarInfo.alert.agenda_error"));
     }
   };
 
@@ -43,7 +44,9 @@ export default function SidebarInfo() {
     <div className="space-y-6">
       {/* ✅ Kartu Berita Terbaru */}
       <div className="bg-white p-4 rounded-xl shadow-lg">
-        <h2 className="font-bold text-lg mb-4 border-b pb-2">Berita Terbaru</h2>
+        <h2 className="font-bold text-lg mb-4 border-b pb-2">
+          {t("sidebarInfo.latest_news")}
+        </h2>
         {news.map((item) => (
           <div key={item.news.id} className="relative">
             <Link
@@ -72,7 +75,9 @@ export default function SidebarInfo() {
 
       {/* ✅ Kartu Agenda Terbaru */}
       <div className="bg-white p-4 rounded-xl shadow-lg">
-        <h2 className="font-bold text-lg mb-4 border-b pb-2">Agenda Terbaru</h2>
+        <h2 className="font-bold text-lg mb-4 border-b pb-2">
+          {t("sidebarInfo.latest_agenda")}
+        </h2>
         {agenda.map((item) => (
           <div key={item.agenda.id} className="relative">
             <Link
@@ -99,7 +104,7 @@ export default function SidebarInfo() {
         ))}
       </div>
 
-      {/* ✅ Kartu Kontak Kami (MIRIP YANG DICONTOHKAN) */}
+      {/* ✅ Kartu Kontak Kami */}
       <div className="space-y-4">
         {/* Telepon */}
         <a
@@ -110,8 +115,12 @@ export default function SidebarInfo() {
             <FaPhoneAlt />
           </div>
           <div>
-            <h4 className="font-bold text-gray-900 text-sm">Telepon</h4>
-            <p className="text-xs text-gray-700">(0261) 123456</p>
+            <h4 className="font-bold text-gray-900 text-sm">
+              {t("sidebarInfo.contact_cards.phone.title")}
+            </h4>
+            <p className="text-xs text-gray-700">
+              {t("sidebarInfo.contact_cards.phone.number")}
+            </p>
           </div>
         </a>
 
@@ -124,8 +133,12 @@ export default function SidebarInfo() {
             <FaWhatsapp />
           </div>
           <div>
-            <h4 className="font-bold text-gray-900 text-sm">WhatsApp</h4>
-            <p className="text-xs text-gray-700">0812‑3456‑7890</p>
+            <h4 className="font-bold text-gray-900 text-sm">
+              {t("sidebarInfo.contact_cards.whatsapp.title")}
+            </h4>
+            <p className="text-xs text-gray-700">
+              {t("sidebarInfo.contact_cards.whatsapp.number")}
+            </p>
           </div>
         </a>
 
@@ -138,8 +151,12 @@ export default function SidebarInfo() {
             <FaEnvelope />
           </div>
           <div>
-            <h4 className="font-bold text-gray-900 text-sm">Email Kami</h4>
-            <p className="text-xs text-gray-700">info@babakanasem.id</p>
+            <h4 className="font-bold text-gray-900 text-sm">
+              {t("sidebarInfo.contact_cards.email.title")}
+            </h4>
+            <p className="text-xs text-gray-700">
+              {t("sidebarInfo.contact_cards.email.address")}
+            </p>
           </div>
         </a>
       </div>

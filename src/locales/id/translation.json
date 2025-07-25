@@ -1,64 +1,86 @@
 {
-  "welcome": "Selamat Datang di Desa Babakan Asem",
-  "quickMenu": {
-    "profil": {
-      "title": "Profil Desa",
-      "desc": "Sejarah, visi & misi desa"
+  "home": {
+    "hero": {
+      "title": "Selamat Datang di Desa Babakan Asem",
+      "description": "Desa yang asri, ramah, dan penuh gotong royong.",
+      "location": "Kabupaten Sumedang"
     },
-    "berita": {
-      "title": "Berita Desa",
-      "desc": "Informasi terkini"
+    "quickmenu": {
+      "profile": {
+        "title": "Profil Desa",
+        "desc": "Sejarah, visi & misi desa"
+      },
+      "news": {
+        "title": "Berita Desa",
+        "desc": "Informasi terkini"
+      },
+      "service": {
+        "title": "Layanan Publik",
+        "desc": "Pengajuan surat & layanan"
+      },
+      "infografis": {
+        "title": "Infografis",
+        "desc": "Data statistik desa"
+      }
     },
-    "layanan": {
-      "title": "Layanan Publik",
-      "desc": "Pengajuan surat & layanan"
+    "about": {
+      "title": "Tentang Desa Babakan Asem",
+      "desc1": "Desa Babakan Asem merupakan desa yang terletak di kawasan asri dengan mayoritas penduduk bermata pencaharian sebagai petani dan pengrajin. Desa ini memiliki potensi alam yang melimpah, budaya gotong royong yang kuat, serta berbagai produk unggulan yang dikelola oleh Badan Usaha Milik Desa (BUMDes).",
+      "desc2": "Kami terus berkomitmen untuk membangun desa yang mandiri, berdaya saing, dan sejahtera melalui pemberdayaan masyarakat lokal."
     },
-    "infografis": {
-      "title": "Infografis",
-      "desc": "Data statistik desa"
+    "latestnews": {
+      "title": "Berita Terbaru",
+      "seeall": "Lihat Semua →"
+    },
+    "bumdes": {
+      "title": "Produk BUMDes",
+      "seeall": "Lihat Semua →",
+      "order": "Pesan"
+    },
+    "apb": {
+      "title": "📊 APB Desa Tahun 2025",
+      "budget": "Anggaran",
+      "realization": "Realisasi"
+    },
+    "map": {
+      "title": "Peta Desa Babakan Asem"
     }
   },
-  "hero": {
-    "subtitle": "Desa yang asri, ramah, dan penuh gotong royong.",
-    "location": "Kabupaten Sumedang"
-  },
-  "tentang": {
-    "title": "Tentang Desa Babakan Asem",
-    "paragraf1": "Desa Babakan Asem merupakan desa yang terletak di kawasan asri dengan mayoritas penduduk bermata pencaharian sebagai petani dan pengrajin. Desa ini memiliki potensi alam yang melimpah, budaya gotong royong yang kuat, serta berbagai produk unggulan yang dikelola oleh Badan Usaha Milik Desa (BUMDes).",
-    "paragraf2": "Kami terus berkomitmen untuk membangun desa yang mandiri, berdaya saing, dan sejahtera melalui pemberdayaan masyarakat lokal."
-  },
-  "berita": {
-    "terbaru": "Berita Terbaru",
-    "lihatSemua": "Lihat Semua →"
-  },
-  "produk": {
-    "judul": "Produk BUMDes",
-    "lihatSemua": "Lihat Semua →",
-    "pesan": "Pesan"
-  },
-  "apb": {
-    "judul": "📊 APB Desa Tahun 2025",
-    "anggaran": "Anggaran",
-    "realisasi": "Realisasi"
-  },
   "contact": {
-    "title": "Jangan Ragu untuk Terhubung dengan Kami",
-    "subtitle": "Selamat datang di halaman Kontak Desa Babakan Asem Kami siap mendengar keluhan & saran Anda.",
-    "formTitle": "Tinggalkan Pesan Anda",
-    "formSubtitle": "Kami akan membalas secepat mungkin",
-    "formName": "Nama",
-    "formEmail": "Email",
-    "formMessage": "Pesan",
-    "formButton": "Kirim Pesan",
-    "address": {
-      "title": "Desa Babakan Asem",
-      "subtitle": "Jalan Babakan Asem No. 142 Desa Babakan Asem Kecamatan Conggeang, Kabupaten Sumedang, Jawa Barat 45391"
+    "hero": {
+      "title": "Jangan Ragu untuk Terhubung dengan Kami",
+      "description": "Selamat datang di halaman <strong>Kontak Desa Babakan Asem</strong>.<br />Kami siap mendengar keluhan & saran Anda."
     },
-    "phone": {
-      "title": "Telepon"
+    "form": {
+      "title": "Tinggalkan Pesan Anda",
+      "description": "Kami akan membalas secepat mungkin",
+      "name": "Nama",
+      "email": "Email",
+      "message": "Pesan",
+      "placeholder_name": "Nama anda...",
+      "placeholder_email": "Email anda...",
+      "placeholder_message": "Masukkan pesan...",
+      "submit": "Kirim Pesan",
+      "success": "Pesan berhasil dikirim!",
+      "error": "Gagal mengirim pesan: "
     },
-    "email": {
-      "title": "Email Kami"
+    "info": {
+      "address": {
+        "title": "Desa Babakan Asem",
+        "detail": "Jalan Babakan Asem No. 142 Desa Babakan Asem, Kecamatan Conggeang, Kabupaten Sumedang, Jawa Barat 45391"
+      },
+      "phone": {
+        "title": "Telepon",
+        "number": "0853-3019-2025"
+      },
+      "whatsapp": {
+        "title": "WhatsApp",
+        "number": "+62 853‑3019‑2025"
+      },
+      "email": {
+        "title": "Email Kami",
+        "address": "babakanasem@gmail.com"
+      }
     }
   },
   "navbarTop": {
@@ -115,5 +137,563 @@
     "mapSouth": "<strong>Selatan:</strong> Desa Bugel",
     "mapWest": "<strong>Barat:</strong> Desa Cacaban & Desa Prasih",
     "mapEast": "<strong>Timur:</strong> Desa Cipelang & kawasan BPM Taman"
+  },
+  "government": {
+    "title": "Pemerintah <br /> <span class='text-green-600'>Desa Babakan Asem</span>",
+    "subtitle": "Desa Babakan Asem <br /> Menuju Desa Mandiri, Maju & Sejahtera",
+    "greetingTitle": "Sambutan Kepala Desa",
+    "greetingMessage": "“Kami mengajak seluruh masyarakat Desa Babakan Asem untuk terus bergotong royong membangun desa yang lebih maju, mandiri, dan sejahtera. Partisipasi aktif masyarakat adalah kunci keberhasilan pembangunan desa.”",
+    "greetingBy": "– Kepala Desa Babakan Asem",
+    "structureTitle": "Struktur Organisasi",
+    "orgTitle": "Lembaga Desa",
+    "org1": "BUMDes",
+    "org2": "DPD",
+    "org3": "Karang Taruna",
+    "serviceTitle": "Layanan Administrasi",
+    "service1": "Surat Pengantar",
+    "service2": "Formulir Layanan",
+    "service3": "Layanan Online",
+    "regulationTitle": "Regulasi & Peraturan Desa",
+    "regulation1Title": "Perdes Tentang Desa",
+    "regulation2Title": "Perdes Rencana Pembangunan",
+    "tableTitle": "Judul Peraturan",
+    "tableYear": "No. / Tahun",
+    "tableDownload": "Unduh",
+    "download": "Download"
+  },
+  "villagePotential": {
+    "title": "Potensi Desa Babakan Asem",
+    "subtitle": "Mayoritas warga bekerja sebagai petani, peternak, dan pekebun dengan hasil pangan yang berkualitas dan alami.",
+    "agricultureTitle": "Pertanian",
+    "agricultureDesc": "Padi, jagung, ubi kayu, kacang tanah, dan sayuran menjadi andalan desa.",
+    "livestockTitle": "Peternakan",
+    "livestockDesc": "Sapi, kambing, ayam, & domba untuk konsumsi lokal dan meningkatkan ekonomi warga.",
+    "plantationTitle": "Perkebunan",
+    "plantationDesc": "Mangga, pisang, dan tanaman hortikultura menjadi tambahan penghasilan warga.",
+    "carouselTitle": "Dari bumi subur dan ternak terawat, \nkami hadirkan pangan berkualitas untuk keluarga Anda",
+    "carouselSubtitle": "Lihat langsung potensi unggulan desa kami melalui galeri foto di bawah ini.",
+    "carousel1Title": "Pertanian Subur",
+    "carousel1Desc": "Sawah luas menghasilkan padi, jagung, ubi kayu, dan sayuran segar.",
+    "carousel2Title": "Peternakan Terawat",
+    "carousel2Desc": "Sapi, kambing, ayam, dan domba menunjang ketahanan pangan desa.",
+    "carousel3Title": "Perkebunan Hijau",
+    "carousel3Desc": "Perkebunan mangga, pisang, dan hortikultura menambah penghasilan warga."
+  },
+  "pkk": {
+    "subtitle": "Pemberdayaan Keluarga Menuju Desa Sejahtera & Mandiri",
+    "description": "Gerakan PKK adalah gerakan nasional yang tumbuh dari masyarakat untuk membangun keluarga yang beriman, sejahtera, dan mandiri melalui partisipasi aktif seluruh lapisan warga desa.",
+    "vision": "Visi",
+    "visionDesc": "Mewujudkan keluarga yang beriman, sejahtera, dan mandiri, dengan nilai-nilai gotong royong dan partisipasi aktif masyarakat.",
+    "mission": "Misi",
+    "missionList": [
+      "Meningkatkan kualitas hidup dan kesejahteraan keluarga",
+      "Mendorong partisipasi aktif dalam pembangunan desa",
+      "Mengembangkan ekonomi kreatif keluarga melalui UMKM",
+      "Menumbuhkan kesadaran lingkungan & kesehatan keluarga"
+    ],
+    "programTitle": "Program Pokok PKK",
+    "agendaTitle": "Agenda Penting PKK",
+    "ctaTitle": "Ingin Melihat Galeri & Struktur PKK?",
+    "ctaDesc": "Lihat dokumentasi kegiatan PKK dan susunan organisasi lengkap yang berperan aktif dalam pembangunan desa.",
+    "ctaButton": "Lihat Galeri & Struktur PKK",
+    "agendaError": "Gagal mengambil data agenda. Silakan coba lagi nanti.",
+    "programError": "Gagal mengambil data program. Silakan coba lagi nanti."
+  },
+  "detailPkk": {
+    "title": "Pemberdayaan Kesejahteraan Keluarga (PKK)",
+    "subtitle": "Organisasi yang berperan meningkatkan kesejahteraan keluarga melalui pemberdayaan masyarakat, pendidikan, dan kesehatan.",
+    "structureTitle": "Struktur Organisasi PKK",
+    "galleryTitle": "Galeri Kegiatan PKK",
+    "galleryLabel": "Kegiatan PKK",
+    "errorMembers": "Gagal mengambil data anggota PKK.",
+    "errorGalery": "Gagal mengambil data galeri PKK."
+  },
+  "bumdes": {
+    "title": "Badan Usaha Milik Desa (BUMDes)",
+    "subtitle": "Produk unggulan Desa Babakan Asem yang dikelola oleh masyarakat lokal. Mendukung ekonomi mandiri & pemberdayaan desa.",
+    "empty": "Belum ada produk yang tersedia.",
+    "order": "Pesan",
+    "footerTitle": "Lumbung Ekonomi Desa",
+    "footerText": "Semua produk di sini adalah hasil karya asli masyarakat Desa Babakan Asem – mendukung kemandirian & kesejahteraan warga.",
+    "error": "Gagal mengambil data product. Silakan coba lagi nanti."
+  },
+  "karangTaruna": {
+    "title": "Karang Taruna Desa Babakan Asem",
+    "subtitle": "Pemuda Berkarya, Desa Berjaya. Wadah pembinaan dan pengembangan generasi muda yang bergerak di bidang sosial, kepemudaan, dan kemasyarakatan.",
+    "visionTitle": "Visi",
+    "vision": "Menjadi pemuda yang aktif, kreatif, dan peduli terhadap pembangunan desa.",
+    "missionTitle": "Misi",
+    "mission": {
+      "1": "Mengembangkan potensi generasi muda",
+      "2": "Mengadakan kegiatan sosial dan budaya",
+      "3": "Menjadi penggerak utama pembangunan desa"
+    },
+    "structure": "Struktur Organisasi Karang Taruna",
+    "galleryTitle": "Dokumentasi Kegiatan Karang Taruna",
+    "gallerySubtitle": "Berikut beberapa kegiatan terbaru Karang Taruna Desa Babakan Asem.",
+    "galleryLabel": "Kegiatan",
+    "error": "Gagal mengambil data agenda. Silakan coba lagi nanti."
+  },
+  "bpd": {
+    "hero": {
+      "title": "Badan Permusyawaratan Desa",
+      "description": "Lembaga perwakilan masyarakat desa yang berfungsi menampung aspirasi warga, mengawasi jalannya pemerintahan desa, serta memastikan transparansi pembangunan."
+    },
+    "role": {
+      "title": "Peran & Tugas Utama BPD",
+      "description": "Badan Permusyawaratan Desa (BPD) merupakan mitra pemerintah desa dalam penyelenggaraan pemerintahan desa. BPD berfungsi sebagai lembaga yang menampung dan menyalurkan aspirasi masyarakat, membahas dan menyepakati rancangan peraturan desa, serta melakukan pengawasan terhadap kinerja pemerintah desa.",
+      "tasks": {
+        "1": "Menampung aspirasi dan kebutuhan masyarakat desa.",
+        "2": "Mengawasi jalannya pemerintahan desa secara transparan.",
+        "3": "Memberikan masukan dalam penyusunan APB Desa dan peraturan desa.",
+        "4": "Menjadi jembatan komunikasi antara pemerintah desa dan masyarakat."
+      }
+    },
+    "stats": {
+      "1": { "angka": "7", "label": "Anggota Aktif" },
+      "2": { "angka": "4", "label": "Program Tahunan" },
+      "3": { "angka": "90+", "label": "Aspirasi Warga" }
+    },
+    "structure": {
+      "title": "Struktur Organisasi BPD"
+    },
+    "agenda": {
+      "title": "Agenda Mendatang"
+    },
+    "error": {
+      "members": "Gagal mengambil data anggota BPD.",
+      "agenda": "Gagal mengambil data agenda BPD."
+    }
+  },
+  "dpd": {
+    "hero": {
+      "title": "Dewan Perwakilan Desa",
+      "description": "Menampung aspirasi warga, mengawasi jalannya pemerintahan desa, serta memastikan pembangunan desa berjalan transparan."
+    },
+    "stats": {
+      "1": { "angka": "6", "label": "Anggota Aktif" },
+      "2": { "angka": "3", "label": "Program Tahunan" },
+      "3": { "angka": "120+", "label": "Aspirasi Diterima" }
+    },
+    "structure": {
+      "title": "Struktur Organisasi"
+    },
+    "agenda": {
+      "title": "Agenda Mendatang",
+      "button": "Lihat Agenda Lengkap →"
+    },
+    "error": {
+      "agenda": "Gagal mengambil data agenda. Silakan coba lagi nanti.",
+      "members": "Gagal mengambil data anggota."
+    }
+  },
+  "detailDpd": {
+    "hero.title": "Agenda Lengkap & Galeri",
+    "hero.description": "Semua agenda mendatang serta dokumentasi kegiatan <strong>Dewan Perwakilan Desa Babakan Asem</strong>.",
+    "back": "Kembali ke DPD",
+    "agendaTitle": "Daftar Agenda Lengkap",
+    "galleryTitle": "Galeri Kegiatan DPD",
+    "error.agenda": "Gagal mengambil data agenda. Silakan coba lagi nanti.",
+    "error.galeri": "Gagal mengambil data galeri. Silakan coba lagi nanti."
+  },
+  "guide": {
+    "button": "Ajukan Sekarang",
+    "title": "Panduan Layanan Administrasi Desa",
+    "description": "Berikut adalah langkah-langkah umum untuk mengurus berbagai surat dan dokumen di Desa Babakan Asem dengan mudah dan cepat.",
+    "stepsTitle": "Langkah Umum Pengajuan Layanan",
+    "steps": [
+      "Siapkan dokumen persyaratan sesuai jenis layanan.",
+      "Datang ke kantor desa atau gunakan layanan online.",
+      "Serahkan berkas dan isi formulir sesuai permintaan.",
+      "Tunggu proses verifikasi oleh petugas desa.",
+      "Ambil dokumen atau surat pengantar yang sudah selesai."
+    ],
+    "servicesTitle": "Jenis Layanan Tersedia",
+    "services": [
+      "Surat Pengantar KTP/KK",
+      "Surat Pengantar SKCK",
+      "Surat Domisili & SKU",
+      "Surat Keterangan Tidak Mampu",
+      "Permohonan Usaha Kecil (UMKM)",
+      "Permintaan Data Kependudukan"
+    ],
+    "note": "<strong>Catatan:</strong> Pelayanan hanya dilakukan pada hari kerja (Senin - Jumat) pukul 08.00 - 15.00 WIB. Harap membawa dokumen asli dan fotokopi."
+  },
+  "administrasi": {
+    "topButtons": {
+      "ajukan": "Ajukan Sekarang",
+      "panduan": "Panduan Layanan"
+    },
+    "services": [
+      {
+        "title": "Surat Pengantar",
+        "desc": "Untuk KTP, KK, SKCK, DLL",
+        "button": "Lihat Detail"
+      },
+      {
+        "title": "Formulir Layanan",
+        "desc": "Isi Formulir Pengajuan",
+        "button": "Isi Formulir"
+      },
+      {
+        "title": "Informasi Kependudukan",
+        "desc": "Detail Penduduk",
+        "button": "Lihat Data"
+      },
+      {
+        "title": "Layanan Online",
+        "desc": "Ajukan & lacak Online",
+        "button": "Masuk Portal"
+      }
+    ]
+  },
+  "formOnline": {
+    "title": "Layanan Online Desa",
+    "form": {
+      "nameLabel": "Nama Lengkap",
+      "namePlaceholder": "Masukkan nama lengkap",
+      "emailLabel": "Email Aktif",
+      "emailPlaceholder": "contoh@email.com",
+      "phoneLabel": "Nomor WhatsApp",
+      "phonePlaceholder": "08xxxxxxxxxx",
+      "typeLabel": "Pilih Jenis Layanan Online",
+      "typeDefault": "-- Pilih --",
+      "typeOptions": {
+        "TRACKING_SURAT": "Tracking Surat",
+        "CEK_STATUS_LAYANAN": "Cek Status Layanan",
+        "PERMOHONAN": "Buat Permohonan"
+      },
+      "cancel": "Batal",
+      "submit": "Kirim Permohonan"
+    }
+  },
+  "formLayanan": {
+    "title": "Formulir Layanan Desa",
+    "form": {
+      "nameLabel": "Nama Lengkap",
+      "namePlaceholder": "Masukkan nama lengkap",
+      "emailLabel": "Email Aktif",
+      "emailPlaceholder": "contoh@email.com",
+      "typeLabel": "Pilih Layanan",
+      "typeDefault": "-- Pilih Layanan --",
+      "typeOptions": {
+        "PENGADUAN": "Pengaduan",
+        "PERMOHONAN": "Permohonan",
+        "LAINNYA": "Lainnya"
+      },
+      "messageLabel": "Pesan / Permintaan",
+      "messagePlaceholder": "Tuliskan permintaan layanan Anda...",
+      "cancel": "Batal",
+      "submit": "Kirim Formulir"
+    }
+  },
+  "formLetter": {
+    "title": "Form Pengajuan Surat Pengantar",
+    "form": {
+      "nameLabel": "Nama Lengkap",
+      "namePlaceholder": "Masukkan nama lengkap",
+      "nikLabel": "Nomor Induk Kependudukan (NIK)",
+      "nikPlaceholder": "Masukkan NIK",
+      "typeLabel": "Jenis Surat",
+      "typeDefault": "-- Pilih Jenis Surat --",
+      "typeOptions": {
+        "KTP": "Surat Pengantar KTP",
+        "KK": "Surat Pengantar KK",
+        "SKCK": "Surat Pengantar SKCK",
+        "LAINNYA": "Lainnya"
+      },
+      "noteLabel": "Keterangan Tambahan",
+      "notePlaceholder": "Tuliskan keterangan tambahan...",
+      "cancel": "Batal",
+      "submit": "Kirim Pengajuan"
+    }
+  },
+  "resident": {
+    "title": "Demografi Penduduk Desa Babakan",
+    "description": {
+      "paragraph1": "Berikut adalah gambaran umum tentang jumlah penduduk Desa Babakan yang terbagi berdasarkan jenis kelamin, jumlah kepala keluarga, dan anak-anak. Data ini digunakan untuk keperluan perencanaan pembangunan, layanan masyarakat, dan pengelolaan desa secara lebih baik.",
+      "paragraph2": "*Data bersifat dinamis dari sistem informasi desa."
+    },
+    "chart": {
+      "title": "Grafik Distribusi Penduduk",
+      "description": "Grafik ini menunjukkan jumlah penduduk desa dalam beberapa kategori utama. Dari grafik ini kita bisa melihat perbandingan jumlah laki-laki, perempuan, kepala keluarga, serta anak-anak."
+    }
+  },
+  "idm": {
+    "title": "Skor IDM Desa Babakan Asem",
+    "description": "Indeks Desa Membangun (IDM) dari tahun ke tahun.",
+    "box": {
+      "status": "Status Desa",
+      "sosial": "Dimensi Sosial",
+      "ekonomi": "Dimensi Ekonomi",
+      "lingkungan": "Dimensi Lingkungan"
+    },
+    "chart": {
+      "title": "Perkembangan Skor IDM"
+    }
+  },
+  "bansos": {
+    "title": "Data Bantuan Sosial",
+    "description": "Daftar bantuan sosial yang diterima warga desa.",
+    "jumlah": "Jumlah Penerima"
+  },
+  "sdgs": {
+    "title": "SDGs Desa",
+    "description": "17 Tujuan Pembangunan Berkelanjutan di Desa Babakan Asem."
+  },
+  "infografis": {
+    "layout": {
+      "title": "INFOGRAFIS DESA BABAKAN ASEM",
+      "subtitle": "Data lengkap desa yang mudah dipahami.",
+      "menu": {
+        "resident": "Penduduk",
+        "idm": "IDM",
+        "bansos": "Bansos",
+        "sdgs": "SDGs"
+      }
+    }
+  },
+  "agenda": {
+    "title": "Agenda Desa Babakan Asem",
+    "loading": "⏳ Sedang memuat agenda...",
+    "empty": "📭 Belum ada agenda untuk ditampilkan.",
+    "category": {
+      "Semua": "Semua",
+      "REGULAR": "Reguler",
+      "PKK": "PKK",
+      "KARANG_TARUNA": "Karang Taruna",
+      "DPD": "DPD",
+      "BPD": "BPD"
+    },
+    "viewCount": "kali"
+  },
+  "news": {
+    "title": "Berita Desa Babakan Asem",
+    "readMore": "Lihat detail →",
+    "viewed": "Dilihat",
+    "times": "Kali"
+  },
+  "galery": {
+    "title": "Galeri Kegiatan Desa",
+    "overlay": "📸 Kegiatan Desa"
+  },
+  "login": {
+    "title": "Hallo, Senang Melihatmu Kembali!",
+    "description": "Masuk ke Portal Desa Babakan Asem",
+    "method": {
+      "email": "Email",
+      "phone": "No Telp"
+    },
+    "placeholder": {
+      "email": "Masukkan email",
+      "phone": "Masukkan nomor HP",
+      "password": "Masukkan password"
+    },
+    "password": "Password",
+    "remember": "Ingat Saya",
+    "forgot": "Lupa password?",
+    "submit": "Masuk",
+    "or": "atau",
+    "no_account": "Belum punya akun?",
+    "register_here": "Daftar di sini",
+    "success": "Login berhasil!",
+    "admin_welcome": "Selamat datang, Admin!"
+  },
+  "register": {
+    "welcomeTitle": "Hallo , Selamat Datang!",
+    "welcomeSubtitle": "Bergabung dengan Portal Desa Babakan Asem",
+    "fullNameLabel": "Nama Lengkap",
+    "fullNamePlaceholder": "Masukkan nama lengkap",
+    "emailLabel": "Email",
+    "emailPlaceholder": "Masukkan email",
+    "phoneLabel": "No HP",
+    "phonePlaceholder": "Masukkan nomor HP",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Buat password",
+    "confirmPasswordLabel": "Konfirmasi Password",
+    "confirmPasswordPlaceholder": "Ulangi password",
+    "rememberMe": "Ingat Saya",
+    "registerButton": "Daftar Sekarang",
+    "or": "atau",
+    "alreadyHaveAccount": "Sudah punya akun?",
+    "loginHere": "Masuk di sini",
+    "successRegister": "Registrasi berhasil!"
+  },
+  "forgotPassword": {
+    "title": "Lupa Password?",
+    "subtitle": "Masukkan email kamu, kami akan mengirimkan link untuk reset password",
+    "emailLabel": "Email",
+    "emailPlaceholder": "Masukkan email",
+    "button": "Kirim Link Reset",
+    "successSend": "Email reset password telah dikirim. Silakan cek inbox Anda.",
+    "failedSend": "Gagal mengirim email reset password. Silakan coba lagi.",
+    "loading": "Loading..."
+  },
+  "wait": {
+    "title": "Silakan cek email Atau Nomer Telepon kamu!",
+    "description": "Kami telah mengirimkan <strong>link</strong> untuk mengatur ulang password. Buka email kamu lalu klik link yang diberikan."
+  },
+  "resetPassword": {
+    "title": "Atur Ulang Password",
+    "subtitle": "Masukkan <strong>password baru</strong> untuk akunmu",
+    "newPasswordLabel": "Password Baru",
+    "newPasswordPlaceholder": "Masukkan password baru",
+    "confirmPasswordLabel": "Konfirmasi Password",
+    "confirmPasswordPlaceholder": "Ulangi password baru",
+    "button": "Simpan Password",
+    "success": "Password berhasil diubah! Silakan login kembali.",
+    "failed": "Gagal mengubah password. Pastikan token valid dan coba lagi.",
+    "tokenInvalid": "Token tidak ditemukan. Pastikan buka link dari email."
+  },
+  "profile": {
+    "back": "Kembali",
+    "title": "Profil Pengguna",
+    "loading": "Memuat profil...",
+    "id": "ID Pengguna",
+    "name": "Nama Lengkap",
+    "email": "Email",
+    "phone": "No. Telepon",
+    "joined": "Bergabung",
+    "copy": "Salin",
+    "copied": "ID berhasil disalin ke clipboard -",
+    "copyFail": "Gagal menyalin ID",
+    "edit": "Edit Profil",
+    "logout": "Logout",
+    "logoutConfirm": "Apakah Anda yakin ingin keluar?",
+    "logoutSuccess": "Anda telah keluar.",
+    "delete": "Hapus Akun",
+    "deleteConfirm": "❌ Apakah Anda yakin ingin menghapus akun ini? Tindakan ini tidak dapat dibatalkan!",
+    "deleteFail": "Gagal Menghapus.",
+    "deleteSuccess": "Akun berhasil dihapus.",
+    "updateFail": "Gagal memperbarui profil.",
+    "updateConfirm": "Yakin simpan perubahan ini?",
+    "updateSuccess": "Profil berhasil diperbarui.",
+    "passwordMismatch": "Konfirmasi password tidak cocok.",
+    "form": {
+      "emailPlaceholder": "Kosongkan jika hanya pakai No. Telp",
+      "phonePlaceholder": "Kosongkan jika hanya pakai Email",
+      "passwordPlaceholder": "Biarkan kosong jika tidak ingin ganti password",
+      "cancel": "Batal",
+      "save": "Simpan Perubahan"
+    }
+  },
+  "detailAgenda": {
+    "back": "Kembali",
+    "viewed": "Dilihat",
+    "leaveComment": "\uD83D\uDCAC Tinggalkan Komentar",
+    "placeholder": "Tulis komentar kamu...",
+    "sendComment": "Kirim Komentar",
+    "noComment": "Belum ada komentar",
+    "edit": "Edit",
+    "delete": "Hapus",
+    "save": "Simpan",
+    "cancel": "Batal",
+    "alert": {
+      "mustLogin": "\u26A0 Silakan <strong>login</strong> dulu untuk memberikan komentar!",
+      "sendSuccess": "Komentar berhasil dikirim!",
+      "sendFailed": "Gagal mengirim komentar. Silakan coba lagi nanti. {{error}}",
+      "loadFailed": "Gagal mengambil detail agenda. Silakan coba lagi nanti.",
+      "updateSuccess": "Komentar berhasil diupdate!",
+      "updateFailed": "Gagal update komentar: {{error}}",
+      "deleteConfirm": "Yakin ingin menghapus komentar ini?",
+      "deleteSuccess": "Komentar berhasil dihapus!",
+      "deleteFailed": "Gagal hapus komentar: {{error}}"
+    }
+  },
+  "detailNews": {
+    "back": "Kembali",
+    "postedBy": "Oleh {{name}} | Tanggal: {{date}} | 👁 {{views}} Dilihat",
+    "leaveComment": "💬 Tinggalkan Komentar",
+    "writeComment": "Tulis komentar kamu...",
+    "sendComment": "Kirim Komentar",
+    "noComment": "Belum ada komentar",
+    "edit": "Edit",
+    "delete": "Hapus",
+    "save": "Simpan",
+    "cancel": "Batal",
+    "alert": {
+      "needLogin": "⚠ <strong>Silakan login dulu</strong> untuk memberikan komentar!",
+      "fetchError": "Gagal mengambil detail berita. Silakan coba lagi nanti.",
+      "fetchCommentError": "Gagal mengambil comment. Silakan coba lagi nanti.",
+      "commentSuccess": "Komentar berhasil dikirim!",
+      "commentFail": "Gagal mengirim komentar. Silakan coba lagi nanti. {{error}}",
+      "commentUpdateSuccess": "Komentar berhasil diupdate!",
+      "commentUpdateFail": "Gagal update komentar: {{error}}",
+      "confirmDelete": "Yakin ingin menghapus komentar ini?",
+      "commentDeleteSuccess": "Komentar berhasil dihapus!",
+      "commentDeleteFail": "Gagal hapus komentar: {{error}}"
+    }
+  },
+  "detailProduct": {
+    "back": "Kembali",
+    "by": "Oleh BUMDes Babakan Asem",
+    "price": "Harga",
+    "descriptionNote": "Produk ini <strong>100% hasil desa</strong> dan dikelola oleh masyarakat lokal.",
+    "orderWhatsapp": "Pesan via WhatsApp",
+    "ratingTitleRated": "Rating Kamu",
+    "ratingTitleUnrated": "Beri Penilaian Produk Ini",
+    "updateRating": "Update Rating",
+    "sendRating": "Kirim Rating",
+    "cancel": "Batal",
+    "deleteRating": "Hapus Rating",
+    "leaveComment": "Tinggalkan Komentar",
+    "commentPlaceholder": "Tulis komentar kamu...",
+    "sendComment": "Kirim Komentar",
+    "edit": "Edit",
+    "delete": "Hapus",
+    "noComments": "Belum ada komentar",
+    "editComment": "Simpan",
+    "cancelEdit": "Batal"
+  },
+  "floatingMenu": {
+    "greeting": "👋 <strong>Butuh bantuan?</strong>",
+    "subGreeting": "Hubungi Admin Cukup Klik di sini",
+    "whatsapp": "WhatsApp",
+    "phone": "Telepon"
+  },
+  "footer": {
+    "village_name": "Desa Babakan Asem",
+    "address": "Jalan Babakan Asem No. 142 Desa Babakan Asem,\nKecamatan Conggeang, Kabupaten Sumedang,\nJawa Barat 45391",
+    "contact_us": "Hubungi Kami",
+    "phone": "0853-3019-2025",
+    "email": "Babakanasem@gmail.com",
+    "services": "Layanan",
+    "service_1": "Jumadi / Kades Kesik",
+    "service_2": "Yayan / Ambulans Kesik",
+    "explore": "Jelajahi",
+    "explore_1": "Website Kemendesa",
+    "explore_2": "Website Kemendagri",
+    "explore_3": "Website Sumedang",
+    "explore_4": "Kartanegara",
+    "supported_by": "Didukung oleh",
+    "copyright": "© 2025 Desa Babakan Asem. Hak cipta dilindungi."
+  },
+  "sidebarInfo": {
+    "latest_news": "Berita Terbaru",
+    "latest_agenda": "Agenda Terbaru",
+    "contact_cards": {
+      "phone": {
+        "title": "Telepon",
+        "number": "(0261) 123456"
+      },
+      "whatsapp": {
+        "title": "WhatsApp",
+        "number": "0812‑3456‑7890"
+      },
+      "email": {
+        "title": "Email Kami",
+        "address": "info@babakanasem.id"
+      }
+    },
+    "alert": {
+      "news_error": "Gagal mengambil data berita. Silakan coba lagi nanti.",
+      "agenda_error": "Gagal mengambil data agenda. Silakan coba lagi nanti."
+    }
+  },
+  "sidebarProduct": {
+    "other_products": "Produk Lainnya",
+    "alert": {
+      "product_error": "Gagal mengambil data product. Silakan coba lagi nanti."
+    }
   }
 }

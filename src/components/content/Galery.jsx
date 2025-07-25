@@ -4,9 +4,11 @@ import Pagination from "../ui/Pagination";
 import { GaleryApi } from "../../libs/api/GaleryApi";
 import { alertError } from "../../libs/alert";
 import AOS from "aos";
+import { useTranslation } from "react-i18next";
 import "aos/dist/aos.css";
 
 export default function Galery() {
+  const { t } = useTranslation();
   const [galery, setGalery] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -40,7 +42,7 @@ export default function Galery() {
             className="text-3xl md:text-4xl font-extrabold text-center md:text-left mb-10 bg-gradient-to-r from-[#000000] to-[#ffffff] bg-clip-text text-transparent"
             data-aos="fade-down"
           >
-            Galeri Kegiatan Desa
+            {t("galery.title")}
           </h1>
 
           {/* - Grid Galeri Auto-fit */}
@@ -54,7 +56,9 @@ export default function Galery() {
               >
                 <div className="relative w-full aspect-[4/3] overflow-hidden">
                   <img
-                    src={`${import.meta.env.VITE_BASE_URL}/galeri/images/${img.image}`}
+                    src={`${import.meta.env.VITE_BASE_URL}/galeri/images/${
+                      img.image
+                    }`}
                     alt={`Galeri ${idx + 1}`}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
@@ -62,7 +66,7 @@ export default function Galery() {
                   {/* Overlay efek saat hover */}
                   <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
                     <p className="text-white text-lg font-semibold">
-                      📸 Kegiatan Desa
+                      {t("galery.overlay")}
                     </p>
                   </div>
                 </div>
