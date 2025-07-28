@@ -696,5 +696,293 @@
     "alert": {
       "product_error": "Failed to fetch product data. Please try again later."
     }
+  },
+  "adminDashboard": {
+    "title": "Admin Dashboard",
+    "statistics": {
+      "news": "News",
+      "agenda": "Agenda",
+      "messages": "Messages",
+      "users": "Users"
+    },
+    "infographics": {
+      "title": "Population Infographics",
+      "subtitle": "Population statistics chart",
+      "categories": {
+        "male": "Male",
+        "female": "Female",
+        "headOfFamily": "Head of Family",
+        "children": "Children"
+      }
+    },
+    "preview": {
+      "viewComplete": "View Complete",
+      "noData": "No data available",
+      "bumdes": {
+        "title": "BUMDes Products"
+      },
+      "administration": {
+        "title": "Administration"
+      },
+      "gallery": {
+        "title": "Gallery"
+      },
+      "pkk": {
+        "title": "PKK Programs"
+      }
+    },
+    "errors": {
+      "failedToGetNews": "Failed to fetch news",
+      "failedToGetAgenda": "Failed to fetch agenda",
+      "failedToGetMessages": "Failed to fetch messages",
+      "failedToGetUsers": "Failed to fetch users",
+      "failedToGetBumdesProducts": "Failed to fetch BUMDes products",
+      "failedToGetAdministrationPreview": "Failed to fetch administration preview",
+      "failedToGetGallery": "Failed to fetch gallery",
+      "failedToGetPkkPrograms": "Failed to fetch PKK programs"
+    }
+  },
+  "adminLayout": {
+    "title": "Admin Panel",
+    "errors": {
+      "authError": "Auth error:"
+    }
+  },
+  "adminSidebar": {
+    "title": "Babakan Village",
+    "subtitle": "Admin Panel",
+    "menu": {
+      "dashboard": "Dashboard",
+      "manageNews": "Manage News",
+      "manageAgenda": "Manage Agenda",
+      "manageMessages": "Manage Messages",
+      "manageUsers": "Manage Users",
+      "bumdesProducts": "BUMDes Products",
+      "villageGallery": "Village Gallery",
+      "administration": "Administration",
+      "pkkPrograms": "PKK Programs",
+      "organizationStructure": "Organization Structure"
+    },
+    "infographics": {
+      "title": "Manage Infographics",
+      "submenu": {
+        "population": "Population",
+        "villageIndex": "Village Development Index",
+        "socialAssistance": "Social Assistance",
+        "sdgsVillage": "Village SDGs"
+      }
+    },
+    "settings": {
+      "title": "Settings",
+      "profile": "Profile"
+    },
+    "actions": {
+      "backToWebsite": "Back to Website",
+      "logout": "Logout",
+      "logoutConfirm": "Are you sure you want to logout?",
+      "logoutSuccess": "You have been logged out."
+    }
+  },
+  "settingProfile": {
+    "title": "Admin Profile Settings",
+    "subtitle": "Manage account information & admin security",
+    "form": {
+      "fields": {
+        "adminId": "Admin ID",
+        "name": "Name",
+        "email": "Email",
+        "newPassword": "New Password",
+        "confirmPassword": "Confirm Password"
+      },
+      "placeholders": {
+        "nameAdmin": "Admin name",
+        "emailAdmin": "Admin email",
+        "enterNewPassword": "Enter new password",
+        "confirmNewPassword": "Confirm new password"
+      },
+      "buttons": {
+        "copy": "Copy",
+        "saveChanges": "Save Changes"
+      }
+    },
+    "messages": {
+      "success": {
+        "idCopied": "ID successfully copied to clipboard",
+        "changesSaved": "Changes saved successfully!"
+      },
+      "errors": {
+        "failedToGetProfile": "Failed to fetch profile.",
+        "fillMinimumField": "Please fill at least one field (Name, Email, or Password).",
+        "fillConfirmPassword": "Please fill password confirmation.",
+        "passwordMismatch": "Password and confirmation password do not match.",
+        "failedToSaveChanges": "Failed to save changes."
+      },
+      "confirmations": {
+        "saveChanges": "Are you sure you want to save changes?"
+      }
+    }
+  },
+  "manageUser": {
+    "title": "Manage Admin Accounts",
+    "buttons": {
+      "addAdmin": "Add Admin",
+      "promoteUser": "User → Admin",
+      "cancel": "Cancel",
+      "save": "Save",
+      "promote": "Promote",
+      "demote": "Demote to User"
+    },
+    "forms": {
+      "addAdminTitle": "Add New Admin",
+      "promoteUserTitle": "Promote User to Admin",
+      "placeholders": {
+        "name": "Name",
+        "email": "Email",
+        "password": "Password",
+        "confirmPassword": "Confirm Password",
+        "userId": "Enter User ID"
+      }
+    },
+    "table": {
+      "headers": {
+        "number": "#",
+        "name": "Name",
+        "email": "Email",
+        "role": "Role",
+        "action": "Action"
+      },
+      "role": "Admin",
+      "empty": "No admins yet."
+    },
+    "alerts": {
+      "confirmAddAdmin": "Are you sure you want to add a new admin?",
+      "confirmDemoteAdmin": "Change <strong>{{name}}</strong> to regular user?",
+      "confirmPromoteUser": "Are you sure you want to promote this user to admin?",
+      "passwordMismatch": "Password confirmation does not match!",
+      "addAdminSuccess": "Admin successfully added!",
+      "demoteSuccess": "<strong>{{name}}</strong> is now a regular user.",
+      "promoteSuccess": "<strong>{{name}}</strong> is now an admin.",
+      "fetchUsersError": "Failed to fetch user data!",
+      "addAdminError": "Failed to add admin",
+      "changeRoleError": "Failed to change role",
+      "promoteUserError": "Failed to promote user"
+    }
+  },
+  "managePkk": {
+    "title": "Manage PKK Programs",
+    "buttons": {
+      "addProgram": "Add Program",
+      "updateProgram": "Update Program",
+      "saveProgram": "Save Program",
+      "cancel": "Cancel",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "form": {
+      "programName": "Program Name",
+      "programNamePlaceholder": "Enter program name",
+      "uploadImage": "Upload Image",
+      "description": "Description",
+      "descriptionPlaceholder": "Write program description..."
+    },
+    "validation": {
+      "completeAllData": "Complete all data before saving!"
+    },
+    "confirmation": {
+      "saveChanges": "Are you sure you want to save these changes?",
+      "deleteProgram": "Are you sure you want to delete this program?"
+    },
+    "success": {
+      "programUpdated": "Program successfully updated!",
+      "programAdded": "Program successfully added!",
+      "programDeleted": "Program successfully deleted!"
+    },
+    "error": {
+      "saveChanges": "Failed to save changes.",
+      "saveProgram": "Failed to save program.",
+      "deleteProgram": "Failed to delete program",
+      "fetchPrograms": "Failed to fetch program data"
+    },
+    "empty": {
+      "noPrograms": "No programs available yet"
+    }
+  },
+  "managePesan": {
+    "title": "📩 Manage Incoming Messages",
+    "filters": {
+      "all": "All",
+      "read": "Read",
+      "unread": "Unread"
+    },
+    "buttons": {
+      "markRead": "Mark as Read",
+      "delete": "Delete"
+    },
+    "labels": {
+      "name": "Name",
+      "email": "Email",
+      "message": "Message",
+      "date": "Date"
+    },
+    "confirmation": {
+      "deleteMessage": "Are you sure you want to delete this message?"
+    },
+    "success": {
+      "messageDeleted": "Message successfully deleted.",
+      "messageMarkedRead": "Message successfully marked as read."
+    },
+    "error": {
+      "fetchMessages": "Failed to fetch messages.",
+      "deleteMessage": "Failed to delete message.",
+      "markAsRead": "Failed to mark message as read.",
+      "generalError": "An error occurred while fetching messages."
+    },
+    "empty": {
+      "noMessages": "No messages available"
+    },
+    "status": {
+      "read": "Read",
+      "unread": "Unread"
+    }
+  },
+  "manageGallery": {
+    "title": "Manage Gallery",
+    "buttons": {
+      "addPhoto": "Add Photo",
+      "updatePhoto": "Update Photo",
+      "savePhoto": "Save Photo",
+      "cancel": "Cancel",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "form": {
+      "photoTitle": "Photo Title",
+      "photoTitlePlaceholder": "Enter photo title",
+      "uploadImage": "Upload Image"
+    },
+    "validation": {
+      "completeData": "Complete title & select image!"
+    },
+    "confirmation": {
+      "editPhoto": "Are you sure you want to edit this photo?",
+      "deletePhoto": "Are you sure you want to delete this photo?"
+    },
+    "success": {
+      "photoUpdated": "Photo successfully updated!",
+      "photoAdded": "Photo successfully added!",
+      "photoDeleted": "Photo successfully deleted!"
+    },
+    "error": {
+      "saveChanges": "Failed to save changes.",
+      "savePhoto": "Failed to save photo.",
+      "deletePhoto": "Failed to delete photo.",
+      "fetchData": "Failed to fetch data."
+    },
+    "empty": {
+      "noPhotos": "No photos available yet"
+    },
+    "preview": {
+      "altText": "preview"
+    }
   }
 }

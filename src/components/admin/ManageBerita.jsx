@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { NewsApi } from "../../libs/api/NewsApi";
 import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 import { Helper } from "../../utils/Helper";
@@ -14,6 +15,7 @@ import {
 } from "react-icons/fa";
 
 export default function ManageBerita() {
+  const { t } = useTranslation();
   const [news, setNews] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -30,7 +32,7 @@ export default function ManageBerita() {
   const fetchNews = async () => {
     const response = await NewsApi.getOwnNews(currentPage, 6);
     if (!response.ok) {
-      alertError("Gagal mengambil berita. Silakan coba lagi.");
+      alertError(t("manageNews.error.fetchFailed"));
       return;
     }
     const responseBody = await response.json();
@@ -61,7 +63,7 @@ export default function ManageBerita() {
     };
 
     if (editingId) {
-      if (!(await alertConfirm("Yakin ingin mengedit berita ini?"))) return;
+      if (!(await alertConfirm(t("manageNews.confirmation.editNews")))) return;
 
       const response = await NewsApi.updateNews(editingId, rawData);
       const responseBody = await response.json();
@@ -73,7 +75,7 @@ export default function ManageBerita() {
 
       resetForm();
       setShowForm(false);
-      await alertSuccess("Berita berhasil diperbarui!");
+      await alertSuccess(t("manageNews.success.updateNews"));
       fetchNews();
       return;
     }
@@ -82,7 +84,7 @@ export default function ManageBerita() {
     const responseBody = await response.json();
 
     if (response.ok) {
-      await alertSuccess("Berita berhasil ditambahkan!");
+      await alertSuccess(t("manageNews.success.addNews"));
       fetchNews();
     } else {
       let errorMessage = Helper.parseError(responseBody);
@@ -94,12 +96,12 @@ export default function ManageBerita() {
   };
 
   const handleDelete = async (id) => {
-    if (await alertConfirm("Yakin hapus berita ini?")) {
+    if (await alertConfirm(t("manageNews.confirmation.deleteNews"))) {
       const response = await NewsApi.deleteNews(id);
       if (!response.ok) {
         const responseBody = await response.json();
         alertError(
-          `Gagal menghapus berita. Silakan coba lagi nanti. ${responseBody.error}`
+          `${t("manageNews.error.deleteFailed")} ${responseBody.error}`
         );
         return;
       }
@@ -122,7 +124,7 @@ export default function ManageBerita() {
     <div className="font-[Poppins,sans-serif]">
       {/* HEADER */}
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-green-700">Kelola Berita</h1>
+        <h1 className="text-2xl font-bold text-green-700">{t("manageNews.title")}</h1>
 
         {!showForm && (
           <button
@@ -132,7 +134,7 @@ export default function ManageBerita() {
             }}
             className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded shadow hover:bg-green-600 transition"
           >
-            <FaPlus /> Tambah Berita
+            <FaPlus /> {t("manageNews.buttons.addNews")}
           </button>
         )}
       </div>
@@ -145,33 +147,33 @@ export default function ManageBerita() {
         >
           <div>
             <label className="block font-medium text-gray-700 mb-1">
-              Judul
+              {t("manageNews.form.newsTitle")}
             </label>
             <input
               className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-green-300 outline-none"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Masukkan judul berita"
+              placeholder={t("manageNews.form.titlePlaceholder")}
               required
             />
           </div>
 
           <div>
             <label className="block font-medium text-gray-700 mb-1">
-              Konten
+              {t("manageNews.form.content")}
             </label>
             <textarea
               className="w-full border rounded-lg p-3 h-32 resize-none focus:ring-2 focus:ring-green-300 outline-none"
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              placeholder="Tuliskan isi berita..."
+              placeholder={t("manageNews.form.contentPlaceholder")}
               required
             ></textarea>
           </div>
 
           <div>
             <label className="block font-medium text-gray-700 mb-1">
-              Upload Gambar Utama
+              {t("manageNews.form.uploadMainImage")}
             </label>
             <input
               type="file"
@@ -188,7 +190,7 @@ export default function ManageBerita() {
                     ? URL.createObjectURL(featuredImage)
                     : news.find((b) => b.id === editingId)?.featuredImage
                 }
-                alt="preview"
+                alt={t("manageNews.preview")}
                 className="mt-3 w-40 rounded-lg shadow-sm"
               />
             )}
@@ -197,7 +199,7 @@ export default function ManageBerita() {
           {/* STATUS */}
           <div>
             <label className="block font-medium text-gray-700 mb-2">
-              Status Publish
+              {t("manageNews.form.publishStatus")}
             </label>
             <div className="flex gap-3">
               <button
@@ -209,7 +211,7 @@ export default function ManageBerita() {
                     : "bg-gray-200 text-gray-600 hover:bg-gray-300"
                 }`}
               >
-                <FaCheck /> Yes
+                <FaCheck /> {t("manageNews.status.yes")}
               </button>
               <button
                 type="button"
@@ -220,7 +222,7 @@ export default function ManageBerita() {
                     : "bg-gray-200 text-gray-600 hover:bg-gray-300"
                 }`}
               >
-                <FaTimes /> No
+                <FaTimes /> {t("manageNews.status.no")}
               </button>
             </div>
           </div>
@@ -231,7 +233,7 @@ export default function ManageBerita() {
               type="submit"
               className="flex items-center gap-2 bg-green-500 text-white px-5 py-2 rounded-lg shadow hover:bg-green-600 transition"
             >
-              <FaSave /> {editingId ? "Update Berita" : "Simpan Berita"}
+              <FaSave /> {editingId ? t("manageNews.buttons.updateNews") : t("manageNews.buttons.saveNews")}
             </button>
             <button
               type="button"
@@ -241,7 +243,7 @@ export default function ManageBerita() {
               }}
               className="flex items-center gap-2 bg-gray-400 text-white px-4 py-2 rounded-lg hover:bg-gray-500 transition"
             >
-              <FaTimes /> Batal
+              <FaTimes /> {t("manageNews.buttons.cancel")}
             </button>
           </div>
         </form>
@@ -272,11 +274,11 @@ export default function ManageBerita() {
                 <span>{Helper.formatTanggal(item.created_at)}</span>
                 {item.is_published ? (
                   <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs flex items-center gap-1">
-                    <FaCheck /> Published
+                    <FaCheck /> {t("manageNews.status.published")}
                   </span>
                 ) : (
                   <span className="bg-red-100 text-red-600 px-2 py-0.5 rounded-full text-xs flex items-center gap-1">
-                    <FaTimesCircle /> Unpublished
+                    <FaTimesCircle /> {t("manageNews.status.unpublished")}
                   </span>
                 )}
               </div>
@@ -286,13 +288,13 @@ export default function ManageBerita() {
                   onClick={() => handleEdit(item.id)}
                   className="flex items-center gap-1 text-blue-500 hover:text-blue-700 transition text-sm"
                 >
-                  <FaEdit /> Edit
+                  <FaEdit /> {t("manageNews.buttons.edit")}
                 </button>
                 <button
                   onClick={() => handleDelete(item.id)}
                   className="flex items-center gap-1 text-red-500 hover:text-red-700 transition text-sm"
                 >
-                  <FaTrash /> Hapus
+                  <FaTrash /> {t("manageNews.buttons.delete")}
                 </button>
               </div>
             </div>

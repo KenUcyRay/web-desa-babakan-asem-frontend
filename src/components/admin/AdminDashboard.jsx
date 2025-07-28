@@ -10,6 +10,7 @@ import {
   FaTasks,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import { NewsApi } from "../../libs/api/NewsApi";
 import { AgendaApi } from "../../libs/api/AgendaApi";
@@ -33,6 +34,7 @@ import {
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [newsCount, setNewsCount] = useState(0);
   const [agendaCount, setAgendaCount] = useState(0);
@@ -46,37 +48,37 @@ export default function AdminDashboard() {
 
   // - DATA DEMO PENDUDUK
   const pendudukData = [
-    { name: "Laki-laki", jumlah: 320 },
-    { name: "Perempuan", jumlah: 340 },
-    { name: "Kepala Keluarga", jumlah: 120 },
-    { name: "Anak-anak", jumlah: 210 },
+    { name: t("adminDashboard.infographics.categories.male"), jumlah: 320 },
+    { name: t("adminDashboard.infographics.categories.female"), jumlah: 340 },
+    { name: t("adminDashboard.infographics.categories.headOfFamily"), jumlah: 120 },
+    { name: t("adminDashboard.infographics.categories.children"), jumlah: 210 },
   ];
 
   // - Fetch TOTAL data
   const fetchNews = async () => {
     const res = await NewsApi.getOwnNews(); 
-    if (!res.ok) return alertError("Gagal ambil berita");
+    if (!res.ok) return alertError(t("adminDashboard.errors.failedToGetNews"));
     const data = await res.json();
     setNewsCount(data.news?.length || 0);
   };
 
   const fetchAgenda = async () => {
     const res = await AgendaApi.getOwnAgenda();
-    if (!res.ok) return alertError("Gagal ambil agenda");
+    if (!res.ok) return alertError(t("adminDashboard.errors.failedToGetAgenda"));
     const data = await res.json();
     setAgendaCount(data.agenda?.length || 0);
   };
 
   const fetchMessages = async () => {
     const res = await MessageApi.getMessages();
-    if (!res.ok) return alertError("Gagal ambil pesan");
+    if (!res.ok) return alertError(t("adminDashboard.errors.failedToGetMessages"));
     const data = await res.json();
     setMessageCount(data.messages?.length || 0);
   };
 
   const fetchUsers = async () => {
     const res = await UserApi.getAllUsers();
-    if (!res.ok) return alertError("Gagal ambil user");
+    if (!res.ok) return alertError(t("adminDashboard.errors.failedToGetUsers"));
     const data = await res.json();
     setUserCount(data.users?.length || 0);
   };
@@ -84,7 +86,7 @@ export default function AdminDashboard() {
   // - Preview 3 item
   const fetchBumdesPreview = async () => {
     const res = await ProductApi.getOwnProducts(1, 3);
-    if (!res.ok) return alertError("Gagal ambil produk BUMDes");
+    if (!res.ok) return alertError(t("adminDashboard.errors.failedToGetBumdesProducts"));
     const data = await res.json();
     setBumdesPreview(data.products || []);
   };
@@ -102,20 +104,20 @@ export default function AdminDashboard() {
       ];
       setAdministrasiPreview(merge);
     } catch (e) {
-      alertError("Gagal ambil preview administrasi");
+      alertError(t("adminDashboard.errors.failedToGetAdministrationPreview"));
     }
   };
 
   const fetchGaleriPreview = async () => {
     const res = await GaleryApi.getGaleri(1, 3);
-    if (!res.ok) return alertError("Gagal ambil galeri");
+    if (!res.ok) return alertError(t("adminDashboard.errors.failedToGetGallery"));
     const data = await res.json();
     setGaleriPreview(data.galeri || []);
   };
 
   const fetchPkkPreview = async () => {
     const res = await ProgramApi.getPrograms(1, 3);
-    if (!res.ok) return alertError("Gagal ambil program PKK");
+    if (!res.ok) return alertError(t("adminDashboard.errors.failedToGetPkkPrograms"));
     const data = await res.json();
     setPkkPreview(data.programs || []);
   };
@@ -134,32 +136,32 @@ export default function AdminDashboard() {
   return (
     <div className="w-full font-[Poppins,sans-serif]">
       <h1 className="text-2xl md:text-3xl font-bold mb-6 text-gray-800">
-        Dashboard Admin
+        {t("adminDashboard.title")}
       </h1>
 
       {/* - GRID STATISTIK */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <StatCard
           icon={<FaNewspaper className="text-green-500" />}
-          title="Berita"
+          title={t("adminDashboard.statistics.news")}
           count={newsCount}
           onClick={() => navigate("/admin/manage-berita")}
         />
         <StatCard
           icon={<FaCalendarAlt className="text-blue-500" />}
-          title="Agenda"
+          title={t("adminDashboard.statistics.agenda")}
           count={agendaCount}
           onClick={() => navigate("/admin/manage-agenda")}
         />
         <StatCard
           icon={<FaComments className="text-orange-500" />}
-          title="Pesan"
+          title={t("adminDashboard.statistics.messages")}
           count={messageCount}
           onClick={() => navigate("/admin/manage-pesan")}
         />
         <StatCard
           icon={<FaUsers className="text-purple-500" />}
-          title="Users"
+          title={t("adminDashboard.statistics.users")}
           count={userCount}
           onClick={() => navigate("/admin/manage-user")}
         />
@@ -168,7 +170,7 @@ export default function AdminDashboard() {
       {/* - INFROGRAFIS PENDUDUK - TANPA LINK */}
       <div className="bg-white rounded-xl shadow-md p-6 mb-8">
         <h2 className="text-xl font-semibold text-gray-800 mb-4">
-          Infografis Penduduk
+          {t("adminDashboard.infographics.title")}
         </h2>
         <ResponsiveContainer width="100%" height={250}>
           <BarChart data={pendudukData} barCategoryGap="30%">
@@ -185,13 +187,13 @@ export default function AdminDashboard() {
           </BarChart>
         </ResponsiveContainer>
         <p className="text-sm text-gray-500 text-center mt-3">
-          Grafik statistik jumlah penduduk
+          {t("adminDashboard.infographics.subtitle")}
         </p>
       </div>
 
       {/* - PREVIEW SECTIONS */}
       <PreviewSection
-        title="Produk BUMDes"
+        title={t("adminDashboard.preview.bumdes.title")}
         icon={<FaStore />}
         data={bumdesPreview.map((p) => ({
           title: p.product.title,
@@ -202,7 +204,7 @@ export default function AdminDashboard() {
       />
 
       <PreviewSection
-        title="Administrasi"
+        title={t("adminDashboard.preview.administration.title")}
         icon={<FaClipboardList />}
         data={administrasiPreview.map((a) => ({
           title: a.name,
@@ -212,7 +214,7 @@ export default function AdminDashboard() {
       />
 
       <PreviewSection
-        title="Galeri"
+        title={t("adminDashboard.preview.gallery.title")}
         icon={<FaImage />}
         data={galeriPreview.map((g) => ({
           title: g.title,
@@ -222,7 +224,7 @@ export default function AdminDashboard() {
       />
 
       <PreviewSection
-        title="Program PKK"
+        title={t("adminDashboard.preview.pkk.title")}
         icon={<FaTasks />}
         data={pkkPreview.map((p) => ({
           title: p.title,
@@ -251,6 +253,8 @@ function StatCard({ icon, title, count, onClick }) {
 
 // - PREVIEW SECTION LIST
 function PreviewSection({ title, icon, data, onClick }) {
+  const { t } = useTranslation();
+  
   return (
     <div className="bg-white rounded-xl shadow-md p-5 mb-6">
       <div className="flex justify-between items-center mb-3">
@@ -261,12 +265,12 @@ function PreviewSection({ title, icon, data, onClick }) {
           onClick={onClick}
           className="text-green-600 font-medium hover:underline"
         >
-          ➜ Lihat Lengkap
+          ➜ {t("adminDashboard.preview.viewComplete")}
         </button>
       </div>
       <div className="space-y-3">
         {data.length === 0 ? (
-          <p className="text-gray-500 italic">Belum ada data</p>
+          <p className="text-gray-500 italic">{t("adminDashboard.preview.noData")}</p>
         ) : (
           data.map((item, idx) => (
             <div key={idx} className="flex gap-3 items-center border-b pb-2">

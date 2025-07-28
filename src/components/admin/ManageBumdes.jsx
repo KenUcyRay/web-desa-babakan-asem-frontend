@@ -180,8 +180,8 @@ export default function ManageBumdes() {
   const handleDeleteCategory = async (id) => {
     if (await alertConfirm("Yakin hapus kategori ini?")) {
       const response = await CategoryApi.deleteCategory(id);
-      const body = await response.json();
       if (!response.ok) {
+        const body = await response.json();
         alertError(`Gagal menghapus kategori. ${body.error}`);
         return;
       }

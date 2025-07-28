@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { FaUser, FaLock, FaSave, FaIdBadge } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 import { UserApi } from "../../../libs/api/UserApi";
 import { alertConfirm, alertError, alertSuccess } from "../../../libs/alert";
 
 export default function PengaturanProfil() {
+  const { t } = useTranslation();
   const [profile, setProfile] = useState({});
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -13,7 +15,7 @@ export default function PengaturanProfil() {
   const fetchProfile = async () => {
     const response = await UserApi.getUserProfile();
     if (!response.ok) {
-      alertError("Gagal mengambil profil.");
+      alertError(t("settingProfile.messages.errors.failedToGetProfile"));
       return;
     }
     const responseBody = await response.json();
@@ -24,26 +26,32 @@ export default function PengaturanProfil() {
     e.preventDefault();
 
     if (name.trim() === "" && email.trim() === "" && password.trim() === "") {
-      alertError("Harap isi minimal salah satu field (Nama, Email, atau Password).");
+      alertError(t("settingProfile.messages.errors.fillMinimumField"));
       return;
     }
 
-    if (!(await alertConfirm("Apakah Anda yakin ingin menyimpan perubahan?"))) return;
+    if (
+      !(await alertConfirm(
+        t("settingProfile.messages.confirmations.saveChanges")
+      ))
+    )
+      return;
 
     if (password.trim() !== "" && confirmPassword.trim() === "") {
-      alertError("Harap isi konfirmasi password.");
+      alertError(t("settingProfile.messages.errors.fillConfirmPassword"));
       return;
     }
 
     if (password !== confirmPassword) {
-      alertError("Password dan konfirmasi password tidak cocok.");
+      alertError(t("settingProfile.messages.errors.passwordMismatch"));
       return;
     }
 
     const updatedName = name === "" ? undefined : name;
     const updatedEmail = email === "" ? undefined : email;
     const updatedPassword = password === "" ? undefined : password;
-    const updatedConfirmPassword = confirmPassword === "" ? undefined : confirmPassword;
+    const updatedConfirmPassword =
+      confirmPassword === "" ? undefined : confirmPassword;
 
     const response = await UserApi.updateUser(
       updatedName,
@@ -60,10 +68,14 @@ export default function PengaturanProfil() {
     setConfirmPassword("");
 
     if (!response.ok) {
-      let errorMessage = "Gagal menyimpan perubahan.";
+      let errorMessage = t(
+        "settingProfile.messages.errors.failedToSaveChanges"
+      );
       if (responseBody.error && Array.isArray(responseBody.error)) {
         errorMessage = responseBody.error
-          .map((err) => (err.path?.length ? `${err.path[0]}: ${err.message}` : err.message))
+          .map((err) =>
+            err.path?.length ? `${err.path[0]}: ${err.message}` : err.message
+          )
           .join(", ");
       } else if (typeof responseBody.error === "string") {
         errorMessage = responseBody.error;
@@ -73,7 +85,7 @@ export default function PengaturanProfil() {
     }
 
     setProfile(responseBody.user);
-    alertSuccess("Perubahan berhasil disimpan!");
+    alertSuccess(t("settingProfile.messages.success.changesSaved"));
   };
 
   useEffect(() => {
@@ -85,10 +97,10 @@ export default function PengaturanProfil() {
       {/* HEADER */}
       <div className="mb-6 text-center">
         <h1 className="text-2xl font-bold text-gray-800 flex justify-center items-center gap-2">
-          <FaUser className="text-green-600" /> Pengaturan Profil Admin
+          <FaUser className="text-green-600" /> {t("settingProfile.title")}
         </h1>
         <p className="text-sm text-gray-500 mt-1">
-          Kelola informasi akun & keamanan admin
+          {t("settingProfile.subtitle")}
         </p>
       </div>
 
@@ -96,7 +108,8 @@ export default function PengaturanProfil() {
         {/* ✅ ID Admin (read-only + tombol salin) */}
         <div className="bg-white border rounded-lg p-4">
           <label className="font-semibold mb-2 flex items-center gap-2 text-gray-700">
-            <FaIdBadge className="text-green-600" /> ID Admin
+            <FaIdBadge className="text-green-600" />{" "}
+            {t("settingProfile.form.fields.adminId")}
           </label>
           <div className="flex gap-2 mt-2">
             <input
@@ -109,11 +122,11 @@ export default function PengaturanProfil() {
               type="button"
               onClick={() => {
                 navigator.clipboard.writeText(profile.id);
-                alertSuccess("ID berhasil disalin ke clipboard");
+                alertSuccess(t("settingProfile.messages.success.idCopied"));
               }}
               className="bg-green-500 hover:bg-green-600 text-white px-4 rounded-lg text-sm"
             >
-              Salin
+              {t("settingProfile.form.buttons.copy")}
             </button>
           </div>
         </div>
@@ -122,11 +135,14 @@ export default function PengaturanProfil() {
         <div className="grid sm:grid-cols-2 gap-4">
           <div className="bg-white border rounded-lg p-4">
             <label className="font-semibold mb-1 flex items-center gap-2 text-gray-700">
-              <FaUser className="text-green-600" /> Nama
+              <FaUser className="text-green-600" />{" "}
+              {t("settingProfile.form.fields.name")}
             </label>
             <input
               type="text"
-              placeholder={profile.name || "Nama admin"}
+              placeholder={
+                profile.name || t("settingProfile.form.placeholders.nameAdmin")
+              }
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="border rounded-lg w-full p-2 mt-1"
@@ -135,11 +151,15 @@ export default function PengaturanProfil() {
 
           <div className="bg-white border rounded-lg p-4">
             <label className="font-semibold mb-1 flex items-center gap-2 text-gray-700">
-              <FaUser className="text-green-600" /> Email
+              <FaUser className="text-green-600" />{" "}
+              {t("settingProfile.form.fields.email")}
             </label>
             <input
               type="email"
-              placeholder={profile.email || "Email admin"}
+              placeholder={
+                profile.email ||
+                t("settingProfile.form.placeholders.emailAdmin")
+              }
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="border rounded-lg w-full p-2 mt-1"
@@ -151,11 +171,14 @@ export default function PengaturanProfil() {
         <div className="grid sm:grid-cols-2 gap-4">
           <div className="bg-white border rounded-lg p-4">
             <label className="font-semibold mb-1 flex items-center gap-2 text-gray-700">
-              <FaLock className="text-green-600" /> Password Baru
+              <FaLock className="text-green-600" />{" "}
+              {t("settingProfile.form.fields.newPassword")}
             </label>
             <input
               type="password"
-              placeholder="Masukkan password baru"
+              placeholder={t(
+                "settingProfile.form.placeholders.enterNewPassword"
+              )}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="border rounded-lg w-full p-2 mt-1"
@@ -164,11 +187,14 @@ export default function PengaturanProfil() {
 
           <div className="bg-white border rounded-lg p-4">
             <label className="font-semibold mb-1 flex items-center gap-2 text-gray-700">
-              <FaLock className="text-green-600" /> Konfirmasi Password
+              <FaLock className="text-green-600" />{" "}
+              {t("settingProfile.form.fields.confirmPassword")}
             </label>
             <input
               type="password"
-              placeholder="Konfirmasi password baru"
+              placeholder={t(
+                "settingProfile.form.placeholders.confirmNewPassword"
+              )}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               className="border rounded-lg w-full p-2 mt-1"
@@ -182,7 +208,7 @@ export default function PengaturanProfil() {
             type="submit"
             className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg flex items-center gap-2 shadow"
           >
-            <FaSave /> Simpan Perubahan
+            <FaSave /> {t("settingProfile.form.buttons.saveChanges")}
           </button>
         </div>
       </form>

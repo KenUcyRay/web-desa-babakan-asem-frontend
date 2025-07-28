@@ -696,5 +696,293 @@
     "alert": {
       "product_error": "Gagal mengambil data product. Silakan coba lagi nanti."
     }
+  },
+  "adminDashboard": {
+    "title": "Dashboard Admin",
+    "statistics": {
+      "news": "Berita",
+      "agenda": "Agenda",
+      "messages": "Pesan",
+      "users": "Users"
+    },
+    "infographics": {
+      "title": "Infografis Penduduk",
+      "subtitle": "Grafik statistik jumlah penduduk",
+      "categories": {
+        "male": "Laki-laki",
+        "female": "Perempuan",
+        "headOfFamily": "Kepala Keluarga",
+        "children": "Anak-anak"
+      }
+    },
+    "preview": {
+      "viewComplete": "Lihat Lengkap",
+      "noData": "Belum ada data",
+      "bumdes": {
+        "title": "Produk BUMDes"
+      },
+      "administration": {
+        "title": "Administrasi"
+      },
+      "gallery": {
+        "title": "Galeri"
+      },
+      "pkk": {
+        "title": "Program PKK"
+      }
+    },
+    "errors": {
+      "failedToGetNews": "Gagal ambil berita",
+      "failedToGetAgenda": "Gagal ambil agenda",
+      "failedToGetMessages": "Gagal ambil pesan",
+      "failedToGetUsers": "Gagal ambil user",
+      "failedToGetBumdesProducts": "Gagal ambil produk BUMDes",
+      "failedToGetAdministrationPreview": "Gagal ambil preview administrasi",
+      "failedToGetGallery": "Gagal ambil galeri",
+      "failedToGetPkkPrograms": "Gagal ambil program PKK"
+    }
+  },
+  "adminLayout": {
+    "title": "Panel Admin",
+    "errors": {
+      "authError": "Auth error:"
+    }
+  },
+  "adminSidebar": {
+    "title": "Desa Babakan",
+    "subtitle": "Panel Admin",
+    "menu": {
+      "dashboard": "Dashboard",
+      "manageNews": "Kelola Berita",
+      "manageAgenda": "Kelola Agenda",
+      "manageMessages": "Kelola Pesan",
+      "manageUsers": "Kelola User",
+      "bumdesProducts": "Produk BUMDes",
+      "villageGallery": "Galeri Desa",
+      "administration": "Administrasi",
+      "pkkPrograms": "Program PKK",
+      "organizationStructure": "Struktur Organisasi"
+    },
+    "infographics": {
+      "title": "Kelola Infografis",
+      "submenu": {
+        "population": "Penduduk",
+        "villageIndex": "Indeks Desa Membangun",
+        "socialAssistance": "Bantuan Sosial",
+        "sdgsVillage": "SDGs Desa"
+      }
+    },
+    "settings": {
+      "title": "Pengaturan",
+      "profile": "Profil"
+    },
+    "actions": {
+      "backToWebsite": "Kembali ke Website",
+      "logout": "Logout",
+      "logoutConfirm": "Apakah Anda yakin ingin keluar?",
+      "logoutSuccess": "Anda telah keluar."
+    }
+  },
+  "settingProfile": {
+    "title": "Pengaturan Profil Admin",
+    "subtitle": "Kelola informasi akun & keamanan admin",
+    "form": {
+      "fields": {
+        "adminId": "ID Admin",
+        "name": "Nama",
+        "email": "Email",
+        "newPassword": "Password Baru",
+        "confirmPassword": "Konfirmasi Password"
+      },
+      "placeholders": {
+        "nameAdmin": "Nama admin",
+        "emailAdmin": "Email admin",
+        "enterNewPassword": "Masukkan password baru",
+        "confirmNewPassword": "Konfirmasi password baru"
+      },
+      "buttons": {
+        "copy": "Salin",
+        "saveChanges": "Simpan Perubahan"
+      }
+    },
+    "messages": {
+      "success": {
+        "idCopied": "ID berhasil disalin ke clipboard",
+        "changesSaved": "Perubahan berhasil disimpan!"
+      },
+      "errors": {
+        "failedToGetProfile": "Gagal mengambil profil.",
+        "fillMinimumField": "Harap isi minimal salah satu field (Nama, Email, atau Password).",
+        "fillConfirmPassword": "Harap isi konfirmasi password.",
+        "passwordMismatch": "Password dan konfirmasi password tidak cocok.",
+        "failedToSaveChanges": "Gagal menyimpan perubahan."
+      },
+      "confirmations": {
+        "saveChanges": "Apakah Anda yakin ingin menyimpan perubahan?"
+      }
+    }
+  },
+  "manageUser": {
+    "title": "Kelola Akun Admin",
+    "buttons": {
+      "addAdmin": "Tambah Admin",
+      "promoteUser": "User → Admin",
+      "cancel": "Batal",
+      "save": "Simpan",
+      "promote": "Promote",
+      "demote": "Turunkan ke User"
+    },
+    "forms": {
+      "addAdminTitle": "Tambah Admin Baru",
+      "promoteUserTitle": "Ubah User Menjadi Admin",
+      "placeholders": {
+        "name": "Nama",
+        "email": "Email",
+        "password": "Password",
+        "confirmPassword": "Konfirmasi Password",
+        "userId": "Masukkan ID User"
+      }
+    },
+    "table": {
+      "headers": {
+        "number": "#",
+        "name": "Nama",
+        "email": "Email",
+        "role": "Role",
+        "action": "Aksi"
+      },
+      "role": "Admin",
+      "empty": "Belum ada admin."
+    },
+    "alerts": {
+      "confirmAddAdmin": "Yakin tambah admin baru?",
+      "confirmDemoteAdmin": "Ubah <strong>{{name}}</strong> menjadi user biasa?",
+      "confirmPromoteUser": "Yakin ubah user ini menjadi admin?",
+      "passwordMismatch": "Konfirmasi password tidak cocok!",
+      "addAdminSuccess": "Admin berhasil ditambahkan!",
+      "demoteSuccess": "<strong>{{name}}</strong> sekarang jadi user biasa.",
+      "promoteSuccess": "<strong>{{name}}</strong> sekarang jadi admin.",
+      "fetchUsersError": "Gagal mengambil data pengguna!",
+      "addAdminError": "Gagal menambah admin",
+      "changeRoleError": "Gagal mengubah role",
+      "promoteUserError": "Gagal mempromosikan user"
+    }
+  },
+  "managePkk": {
+    "title": "Kelola Program PKK",
+    "buttons": {
+      "addProgram": "Tambah Program",
+      "updateProgram": "Update Program",
+      "saveProgram": "Simpan Program",
+      "cancel": "Batal",
+      "edit": "Edit",
+      "delete": "Hapus"
+    },
+    "form": {
+      "programName": "Nama Program",
+      "programNamePlaceholder": "Masukkan nama program",
+      "uploadImage": "Upload Gambar",
+      "description": "Deskripsi",
+      "descriptionPlaceholder": "Tuliskan deskripsi program..."
+    },
+    "validation": {
+      "completeAllData": "Lengkapi semua data sebelum simpan!"
+    },
+    "confirmation": {
+      "saveChanges": "Yakin simpan perubahan ini?",
+      "deleteProgram": "Yakin hapus program ini?"
+    },
+    "success": {
+      "programUpdated": "Program berhasil diperbarui!",
+      "programAdded": "Program berhasil ditambahkan!",
+      "programDeleted": "Program berhasil dihapus!"
+    },
+    "error": {
+      "saveChanges": "Gagal menyimpan perubahan.",
+      "saveProgram": "Gagal menyimpan program.",
+      "deleteProgram": "Gagal menghapus program",
+      "fetchPrograms": "Gagal mengambil data program"
+    },
+    "empty": {
+      "noPrograms": "Belum ada program"
+    }
+  },
+  "managePesan": {
+    "title": "📩 Kelola Pesan Masuk",
+    "filters": {
+      "all": "Semua",
+      "read": "Sudah Dibaca",
+      "unread": "Belum Dibaca"
+    },
+    "buttons": {
+      "markRead": "Tandai Dibaca",
+      "delete": "Hapus"
+    },
+    "labels": {
+      "name": "Nama",
+      "email": "Email",
+      "message": "Pesan",
+      "date": "Tanggal"
+    },
+    "confirmation": {
+      "deleteMessage": "Apakah Anda yakin ingin menghapus pesan ini?"
+    },
+    "success": {
+      "messageDeleted": "Pesan berhasil dihapus.",
+      "messageMarkedRead": "Pesan berhasil ditandai sebagai dibaca."
+    },
+    "error": {
+      "fetchMessages": "Gagal mengambil pesan.",
+      "deleteMessage": "Gagal menghapus pesan.",
+      "markAsRead": "Gagal menandai pesan sebagai dibaca.",
+      "generalError": "Terjadi kesalahan saat mengambil pesan."
+    },
+    "empty": {
+      "noMessages": "Tidak ada pesan"
+    },
+    "status": {
+      "read": "Sudah dibaca",
+      "unread": "Belum dibaca"
+    }
+  },
+  "manageGallery": {
+    "title": "Kelola Galeri",
+    "buttons": {
+      "addPhoto": "Tambah Foto",
+      "updatePhoto": "Update Foto",
+      "savePhoto": "Simpan Foto",
+      "cancel": "Batal",
+      "edit": "Edit",
+      "delete": "Hapus"
+    },
+    "form": {
+      "photoTitle": "Judul Foto",
+      "photoTitlePlaceholder": "Masukkan judul foto",
+      "uploadImage": "Upload Gambar"
+    },
+    "validation": {
+      "completeData": "Lengkapi judul & pilih gambar!"
+    },
+    "confirmation": {
+      "editPhoto": "Yakin ingin mengedit foto ini?",
+      "deletePhoto": "Yakin hapus foto ini?"
+    },
+    "success": {
+      "photoUpdated": "Foto berhasil diperbarui!",
+      "photoAdded": "Foto berhasil ditambahkan!",
+      "photoDeleted": "Foto berhasil dihapus!"
+    },
+    "error": {
+      "saveChanges": "Gagal menyimpan perubahan.",
+      "savePhoto": "Gagal menyimpan foto.",
+      "deletePhoto": "Gagal menghapus foto.",
+      "fetchData": "Gagal mengambil data."
+    },
+    "empty": {
+      "noPhotos": "Belum ada foto"
+    },
+    "preview": {
+      "altText": "preview"
+    }
   }
 }

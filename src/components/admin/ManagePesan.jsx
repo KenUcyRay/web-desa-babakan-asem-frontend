@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { FaTrash, FaEnvelopeOpen } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 import { MessageApi } from "../../libs/api/MessageApi";
 import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 import Pagination from "../ui/Pagination";
 
 export default function ManagePesan() {
+  const { t } = useTranslation();
   const [messages, setMessages] = useState([]);
   const [filter, setFilter] = useState("all");
   const [totalPages, setTotalPages] = useState(1); // - ini baru // all | read | unread
@@ -26,7 +28,7 @@ export default function ManagePesan() {
       const resBody = await response.json();
 
       if (!response.ok) {
-        await alertError("Gagal mengambil pesan.");
+        await alertError(t("managePesan.error.fetchMessages"));
         return;
       }
 
@@ -34,7 +36,7 @@ export default function ManagePesan() {
       setTotalPages(resBody.total_page);
     } catch (err) {
       console.error(err);
-      alertError("Terjadi kesalahan saat mengambil pesan.");
+      alertError(t("managePesan.error.generalError"));
     }
   };
 
@@ -43,16 +45,16 @@ export default function ManagePesan() {
   }, [filter, page]);
 
   const handleDelete = async (id) => {
-    if (!(await alertConfirm("Apakah Anda yakin ingin menghapus pesan ini?")))
+    if (!(await alertConfirm(t("managePesan.confirmation.deleteMessage"))))
       return;
 
     const response = await MessageApi.deleteMessage(id);
     if (!response.ok) {
-      await alertError("Gagal menghapus pesan.");
+      await alertError(t("managePesan.error.deleteMessage"));
       return;
     }
 
-    await alertSuccess("Pesan berhasil dihapus.");
+    await alertSuccess(t("managePesan.success.messageDeleted"));
     setMessages(messages.filter((p) => p.id !== id));
   };
 
@@ -72,7 +74,7 @@ export default function ManagePesan() {
       {/* - Header */}
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold text-gray-800">
-          📩 Kelola Pesan Masuk
+          {t("managePesan.title")}
         </h1>
       </div>
 
@@ -91,11 +93,7 @@ export default function ManagePesan() {
               setPage(1);
             }}
           >
-            {f === "all"
-              ? "Semua"
-              : f === "read"
-              ? "Sudah Dibaca"
-              : "Belum Dibaca"}
+            {t(`managePesan.filters.${f}`)}
           </button>
         ))}
       </div>
@@ -103,7 +101,9 @@ export default function ManagePesan() {
       {/* - LIST PESAN */}
       <div className="space-y-4">
         {messages.length === 0 ? (
-          <p className="text-gray-500 italic">Tidak ada pesan</p>
+          <p className="text-gray-500 italic">
+            {t("managePesan.empty.noMessages")}
+          </p>
         ) : (
           messages.map((p) => (
             <div
@@ -123,14 +123,14 @@ export default function ManagePesan() {
                     onClick={() => handleMarkRead(p.id)}
                     className="flex items-center gap-1 text-green-500 hover:text-green-700 text-sm"
                   >
-                    <FaEnvelopeOpen /> Tandai Dibaca
+                    <FaEnvelopeOpen /> {t("managePesan.buttons.markRead")}
                   </button>
                 )}
                 <button
                   onClick={() => handleDelete(p.id)}
                   className="flex items-center gap-1 text-red-500 hover:text-red-700 text-sm"
                 >
-                  <FaTrash /> Hapus
+                  <FaTrash /> {t("managePesan.buttons.delete")}
                 </button>
               </div>
             </div>

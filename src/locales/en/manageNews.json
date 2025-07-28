@@ -1,0 +1,52 @@
+{
+  "manageNews": {
+    "title": "Manage News",
+    "buttons": {
+      "addNews": "Add News",
+      "updateNews": "Update News",
+      "saveNews": "Save News",
+      "cancel": "Cancel",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "form": {
+      "newsTitle": "Title",
+      "newsTitlePlaceholder": "Enter news title",
+      "content": "Content",
+      "contentPlaceholder": "Write news content...",
+      "uploadMainImage": "Upload Main Image",
+      "publishStatus": "Publish Status"
+    },
+    "status": {
+      "yes": "Yes",
+      "no": "No",
+      "published": "Published",
+      "unpublished": "Unpublished"
+    },
+    "validation": {
+      "fillAllFields": "Complete all data before saving!"
+    },
+    "confirmation": {
+      "editNews": "Are you sure you want to edit this news?",
+      "deleteNews": "Are you sure you want to delete this news?"
+    },
+    "success": {
+      "newsUpdated": "News successfully updated!",
+      "newsAdded": "News successfully added!",
+      "newsDeleted": "News successfully deleted!"
+    },
+    "error": {
+      "fetchNews": "Failed to fetch news. Please try again.",
+      "deleteNews": "Failed to delete news. Please try again later."
+    },
+    "empty": {
+      "noNews": "No news available yet"
+    },
+    "preview": {
+      "altText": "preview"
+    },
+    "meta": {
+      "createdAt": "Created date"
+    }
+  }
+}

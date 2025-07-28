@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { FaUserPlus, FaUserShield, FaExchangeAlt } from "react-icons/fa";
+import { useTranslation, Trans } from "react-i18next";
 import Pagination from "../ui/Pagination";
 import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 import { UserApi } from "../../libs/api/UserApi";
 
 export default function ManageUser() {
+  const { t } = useTranslation();
   const [users, setUsers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -22,12 +24,12 @@ export default function ManageUser() {
     try {
       const response = await UserApi.getAllUsers(currentPage, 10);
       const resBody = await response.json();
-      if (!response.ok) throw new Error("Gagal mengambil data pengguna");
+      if (!response.ok) throw new Error(t("manageUser.alerts.fetchUsersError"));
       setUsers(resBody.users);
       setCurrentPage(resBody.page);
       setTotalPages(resBody.total_page);
     } catch (err) {
-      alertError("Gagal mengambil data pengguna!");
+      alertError(t("manageUser.alerts.fetchUsersError"));
     }
   };
 
@@ -37,36 +39,50 @@ export default function ManageUser() {
 
   const handleAddAdmin = async (e) => {
     e.preventDefault();
-    if (!(await alertConfirm("Yakin tambah admin baru?"))) return;
+    if (!(await alertConfirm(t("manageUser.alerts.confirmAddAdmin")))) return;
 
     if (form.confirm_password !== form.password) {
-      return alertError("Konfirmasi password tidak cocok!");
+      return alertError(t("manageUser.alerts.passwordMismatch"));
     }
 
     try {
       const response = await UserApi.createAdmin(form);
       const resBody = await response.json();
-      if (!response.ok) throw new Error(resBody.error || "Gagal menambah admin");
+      if (!response.ok)
+        throw new Error(resBody.error || t("manageUser.alerts.addAdminError"));
 
       setUsers([...users, resBody.user]);
       setShowAddForm(false);
       setForm({ name: "", email: "", password: "", confirm_password: "" });
-      alertSuccess("Admin berhasil ditambahkan!");
+      alertSuccess(t("manageUser.alerts.addAdminSuccess"));
     } catch (err) {
       alertError(err.message);
     }
   };
 
   const adminToUser = async (admin) => {
-    if (!(await alertConfirm(`Ubah ${admin.name} menjadi user biasa?`))) return;
+    const confirmMessage = t("manageUser.alerts.confirmDemoteAdmin", {
+      name: admin.name,
+      interpolation: { escapeValue: false },
+    });
+
+    if (!(await alertConfirm(confirmMessage))) return;
 
     try {
       const response = await UserApi.updateRoleById(admin.id, "REGULAR");
       const resBody = await response.json();
-      if (!response.ok) throw new Error(resBody.error || "Gagal mengubah role");
+      if (!response.ok)
+        throw new Error(
+          resBody.error || t("manageUser.alerts.changeRoleError")
+        );
 
       setUsers(users.filter((u) => u.id !== admin.id));
-      alertSuccess(`${resBody.user.name} sekarang jadi user biasa.`);
+
+      const successMessage = t("manageUser.alerts.demoteSuccess", {
+        name: resBody.user.name,
+        interpolation: { escapeValue: false },
+      });
+      alertSuccess(successMessage);
     } catch (err) {
       alertError(err.message);
     }
@@ -74,7 +90,8 @@ export default function ManageUser() {
 
   const handlePromoteUser = async (e) => {
     e.preventDefault();
-    if (!(await alertConfirm("Yakin ubah user ini menjadi admin?"))) return;
+    if (!(await alertConfirm(t("manageUser.alerts.confirmPromoteUser"))))
+      return;
 
     const formData = new FormData(e.target);
     const userId = formData.get("userId");
@@ -83,10 +100,17 @@ export default function ManageUser() {
       const response = await UserApi.updateRoleById(userId, "ADMIN");
       const resBody = await response.json();
       if (!response.ok)
-        throw new Error(resBody.error || "Gagal mempromosikan user");
+        throw new Error(
+          resBody.error || t("manageUser.alerts.promoteUserError")
+        );
 
       setUsers([...users, resBody.user]);
-      alertSuccess(`${resBody.user.name} sekarang jadi admin.`);
+
+      const successMessage = t("manageUser.alerts.promoteSuccess", {
+        name: resBody.user.name,
+        interpolation: { escapeValue: false },
+      });
+      alertSuccess(successMessage);
       setShowPromoteForm(false);
       e.target.reset();
     } catch (err) {
@@ -99,7 +123,7 @@ export default function ManageUser() {
       {/* - Header + Tombol */}
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3 mb-6">
         <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-          <FaUserShield className="text-green-500" /> Kelola Akun Admin
+          <FaUserShield className="text-green-500" /> {t("manageUser.title")}
         </h1>
 
         <div className="flex flex-wrap gap-2">
@@ -110,7 +134,7 @@ export default function ManageUser() {
             }}
             className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded shadow text-sm"
           >
-            <FaUserPlus /> Tambah Admin
+            <FaUserPlus /> {t("manageUser.buttons.addAdmin")}
           </button>
 
           <button
@@ -120,7 +144,7 @@ export default function ManageUser() {
             }}
             className="flex items-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded shadow text-sm"
           >
-            <FaExchangeAlt /> User → Admin
+            <FaExchangeAlt /> {t("manageUser.buttons.promoteUser")}
           </button>
         </div>
       </div>
@@ -132,12 +156,12 @@ export default function ManageUser() {
           className="bg-white p-4 mb-4 rounded-lg shadow space-y-3"
         >
           <h2 className="text-lg font-semibold text-gray-700">
-            Tambah Admin Baru
+            {t("manageUser.forms.addAdminTitle")}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <input
               type="text"
-              placeholder="Nama"
+              placeholder={t("manageUser.forms.placeholders.name")}
               className="border p-2 rounded"
               required
               value={form.name}
@@ -145,7 +169,7 @@ export default function ManageUser() {
             />
             <input
               type="email"
-              placeholder="Email"
+              placeholder={t("manageUser.forms.placeholders.email")}
               className="border p-2 rounded"
               required
               value={form.email}
@@ -153,7 +177,7 @@ export default function ManageUser() {
             />
             <input
               type="password"
-              placeholder="Password"
+              placeholder={t("manageUser.forms.placeholders.password")}
               className="border p-2 rounded"
               required
               value={form.password}
@@ -161,7 +185,7 @@ export default function ManageUser() {
             />
             <input
               type="password"
-              placeholder="Konfirmasi Password"
+              placeholder={t("manageUser.forms.placeholders.confirmPassword")}
               className="border p-2 rounded"
               required
               value={form.confirm_password}
@@ -176,13 +200,13 @@ export default function ManageUser() {
               onClick={() => setShowAddForm(false)}
               className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
             >
-              Batal
+              {t("manageUser.buttons.cancel")}
             </button>
             <button
               type="submit"
               className="px-4 py-2 rounded bg-green-500 hover:bg-green-600 text-white"
             >
-              Simpan
+              {t("manageUser.buttons.save")}
             </button>
           </div>
         </form>
@@ -195,12 +219,12 @@ export default function ManageUser() {
           className="bg-white p-4 mb-4 rounded-lg shadow space-y-3"
         >
           <h2 className="text-lg font-semibold text-gray-700">
-            Ubah User Menjadi Admin
+            {t("manageUser.forms.promoteUserTitle")}
           </h2>
           <input
             type="text"
             name="userId"
-            placeholder="Masukkan ID User"
+            placeholder={t("manageUser.forms.placeholders.userId")}
             className="border p-2 rounded w-full"
             required
           />
@@ -210,13 +234,13 @@ export default function ManageUser() {
               onClick={() => setShowPromoteForm(false)}
               className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
             >
-              Batal
+              {t("manageUser.buttons.cancel")}
             </button>
             <button
               type="submit"
               className="px-4 py-2 rounded bg-yellow-500 hover:bg-yellow-600 text-white"
             >
-              Promote
+              {t("manageUser.buttons.promote")}
             </button>
           </div>
         </form>
@@ -227,11 +251,13 @@ export default function ManageUser() {
         <table className="w-full text-left border-collapse min-w-[700px]">
           <thead className="bg-gray-100 text-gray-700">
             <tr>
-              <th className="p-4">#</th>
-              <th className="p-4">Nama</th>
-              <th className="p-4">Email</th>
-              <th className="p-4">Role</th>
-              <th className="p-4 text-center w-36">Aksi</th>
+              <th className="p-4">{t("manageUser.table.headers.number")}</th>
+              <th className="p-4">{t("manageUser.table.headers.name")}</th>
+              <th className="p-4">{t("manageUser.table.headers.email")}</th>
+              <th className="p-4">{t("manageUser.table.headers.role")}</th>
+              <th className="p-4 text-center w-36">
+                {t("manageUser.table.headers.action")}
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -242,14 +268,14 @@ export default function ManageUser() {
                 <td className="p-4 text-gray-600">{user.email}</td>
                 <td className="p-4">
                   <span className="flex items-center gap-1 text-green-600 font-semibold">
-                    <FaUserShield /> Admin
+                    <FaUserShield /> {t("manageUser.table.role")}
                   </span>
                 </td>
                 <td className="p-4 text-center">
                   <button
                     onClick={() => adminToUser(user)}
                     className="px-3 py-2 rounded bg-yellow-500 hover:bg-yellow-600 text-white"
-                    title="Turunkan ke User"
+                    title={t("manageUser.buttons.demote")}
                   >
                     <FaExchangeAlt />
                   </button>
@@ -259,7 +285,7 @@ export default function ManageUser() {
             {users.length === 0 && (
               <tr>
                 <td colSpan="5" className="text-center p-6 text-gray-500">
-                  Belum ada admin.
+                  {t("manageUser.table.empty")}
                 </td>
               </tr>
             )}
@@ -270,24 +296,30 @@ export default function ManageUser() {
       {/* - Mobile Card View */}
       <div className="md:hidden grid gap-4">
         {users.map((user, index) => (
-          <div key={user.id} className="bg-white p-4 rounded-lg shadow space-y-2">
+          <div
+            key={user.id}
+            className="bg-white p-4 rounded-lg shadow space-y-2"
+          >
             <p className="font-bold text-gray-800">
               {index + 1}. {user.name}
             </p>
             <p className="text-sm text-gray-600">{user.email}</p>
             <p className="text-green-600 flex items-center gap-1 font-semibold">
-              <FaUserShield /> Admin
+              <FaUserShield /> {t("manageUser.table.role")}
             </p>
             <button
               onClick={() => adminToUser(user)}
               className="mt-2 w-full px-3 py-2 rounded bg-yellow-500 hover:bg-yellow-600 text-white text-sm"
             >
-              <FaExchangeAlt className="inline mr-1" /> Turunkan ke User
+              <FaExchangeAlt className="inline mr-1" />{" "}
+              {t("manageUser.buttons.demote")}
             </button>
           </div>
         ))}
         {users.length === 0 && (
-          <p className="text-center text-gray-500">Belum ada admin.</p>
+          <p className="text-center text-gray-500">
+            {t("manageUser.table.empty")}
+          </p>
         )}
       </div>
 

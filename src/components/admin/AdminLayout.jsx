@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../../contexts/AuthContext";
 import { UserApi } from "../../libs/api/UserApi";
 import AdminSidebar from "./AdminSidebar";
@@ -7,6 +8,7 @@ import { FaBars } from "react-icons/fa";
 
 export default function AdminLayout() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { isLoggedIn } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { setAdminStatus } = useAuth();
@@ -31,7 +33,7 @@ export default function AdminLayout() {
         return;
       }
     } catch (err) {
-      console.error("Auth error:", err);
+      console.error(t("adminLayout.errors.authError"), err);
       navigate("/login");
     }
   };
@@ -73,7 +75,7 @@ export default function AdminLayout() {
           >
             <FaBars />
           </button>
-          <h1 className="font-semibold text-lg">Panel Admin</h1>
+          <h1 className="font-semibold text-lg">{t("adminLayout.title")}</h1>
           <div className="w-6" /> {/* Spacer biar balance */}
         </div>
 

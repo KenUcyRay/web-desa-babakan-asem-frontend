@@ -4,7 +4,7 @@ export const alertSuccess = async (message) => {
   return await Swal.fire({
     icon: "success",
     title: "Success",
-    text: message,
+    html: message, // Using html instead of text to support HTML tags
   });
 };
 
@@ -12,7 +12,7 @@ export const alertError = async (message) => {
   return Swal.fire({
     icon: "error",
     title: "Error",
-    text: message,
+    html: message, // Using html instead of text to support HTML tags
   });
 };
 
@@ -20,7 +20,7 @@ export const alertConfirm = async (message) => {
   const result = await Swal.fire({
     icon: "question",
     title: "Are you sure?",
-    text: message,
+    html: message, // Using html instead of text to support HTML tags
     showCancelButton: true,
     confirmButtonColor: "#d33",
     cancelButtonColor: "#3085d6",

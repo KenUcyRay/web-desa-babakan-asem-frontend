@@ -20,6 +20,7 @@ import {
 } from "react-icons/fa";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import logo from "../../assets/logo.png";
 import { useAuth } from "../../contexts/AuthContext";
 import { alertConfirm, alertSuccess } from "../../libs/alert";
@@ -27,6 +28,7 @@ import { alertConfirm, alertSuccess } from "../../libs/alert";
 export default function AdminSidebar({ isOpen, onClose }) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
   const { logout, setAdminStatus } = useAuth();
   const [openInfografis, setOpenInfografis] = useState(false);
 
@@ -39,39 +41,63 @@ export default function AdminSidebar({ isOpen, onClose }) {
   }, [isOpen]);
 
   const handleLogout = async () => {
-    const confirm = await alertConfirm("Apakah Anda yakin ingin keluar?");
+    const confirm = await alertConfirm(t("adminSidebar.actions.logoutConfirm"));
     if (!confirm) return;
     setAdminStatus(false);
     logout();
-    await alertSuccess("Anda telah keluar.");
+    await alertSuccess(t("adminSidebar.actions.logoutSuccess"));
     navigate("/login");
   };
 
   const menu = [
-    { to: "/admin", label: "Dashboard", icon: <FaTachometerAlt /> },
+    {
+      to: "/admin",
+      label: t("adminSidebar.menu.dashboard"),
+      icon: <FaTachometerAlt />,
+    },
     {
       to: "/admin/manage-berita",
-      label: "Kelola Berita",
+      label: t("adminSidebar.menu.manageNews"),
       icon: <FaNewspaper />,
     },
     {
       to: "/admin/manage-agenda",
-      label: "Kelola Agenda",
+      label: t("adminSidebar.menu.manageAgenda"),
       icon: <FaCalendarAlt />,
     },
-    { to: "/admin/manage-pesan", label: "Kelola Pesan", icon: <FaEnvelope /> },
-    { to: "/admin/manage-user", label: "Kelola User", icon: <FaUsers /> },
-    { to: "/admin/manage-bumdes", label: "Produk BUMDes", icon: <FaStore /> },
-    { to: "/admin/manage-galery", label: "Galeri Desa", icon: <FaImage /> },
+    {
+      to: "/admin/manage-pesan",
+      label: t("adminSidebar.menu.manageMessages"),
+      icon: <FaEnvelope />,
+    },
+    {
+      to: "/admin/manage-user",
+      label: t("adminSidebar.menu.manageUsers"),
+      icon: <FaUsers />,
+    },
+    {
+      to: "/admin/manage-bumdes",
+      label: t("adminSidebar.menu.bumdesProducts"),
+      icon: <FaStore />,
+    },
+    {
+      to: "/admin/manage-galery",
+      label: t("adminSidebar.menu.villageGallery"),
+      icon: <FaImage />,
+    },
     {
       to: "/admin/manage-administrasi",
-      label: "Administrasi",
+      label: t("adminSidebar.menu.administration"),
       icon: <FaClipboardList />,
     },
-    { to: "/admin/manage-pkk", label: "Program PKK", icon: <FaUsersCog /> },
+    {
+      to: "/admin/manage-pkk",
+      label: t("adminSidebar.menu.pkkPrograms"),
+      icon: <FaUsersCog />,
+    },
     {
       to: "/admin/manage-anggota",
-      label: "Struktur Organisasi",
+      label: t("adminSidebar.menu.organizationStructure"),
       icon: <FaSitemap />,
     },
   ];
@@ -79,28 +105,32 @@ export default function AdminSidebar({ isOpen, onClose }) {
   const infografisSubmenu = [
     {
       to: "/admin/kelola-infografis/penduduk",
-      label: "Penduduk",
+      label: t("adminSidebar.infographics.submenu.population"),
       icon: <FaUserFriends />,
     },
     {
       to: "/admin/kelola-infografis/idm",
-      label: "Indeks Desa Membangun",
+      label: t("adminSidebar.infographics.submenu.villageIndex"),
       icon: <FaGlobeAsia />,
     },
     {
       to: "/admin/kelola-infografis/bansos",
-      label: "Bantuan Sosial",
+      label: t("adminSidebar.infographics.submenu.socialAssistance"),
       icon: <FaHandshake />,
     },
     {
       to: "/admin/kelola-infografis/sdgs",
-      label: "SDGs Desa",
+      label: t("adminSidebar.infographics.submenu.sdgsVillage"),
       icon: <FaPeopleCarry />,
     },
   ];
 
   const pengaturan = [
-    { to: "/admin/pengaturan/profil", label: "Profil", icon: <FaUsers /> },
+    {
+      to: "/admin/pengaturan/profil",
+      label: t("adminSidebar.settings.profile"),
+      icon: <FaUsers />,
+    },
   ];
 
   const renderSidebarContent = () => (
@@ -110,9 +140,9 @@ export default function AdminSidebar({ isOpen, onClose }) {
         <img src={logo} alt="Logo Desa" className="w-11 h-11 object-contain" />
         <div>
           <h1 className="font-bold text-green-700 leading-tight text-base">
-            Desa Babakan
+            {t("adminSidebar.title")}
           </h1>
-          <p className="text-xs text-gray-500">Panel Admin</p>
+          <p className="text-xs text-gray-500">{t("adminSidebar.subtitle")}</p>
         </div>
       </div>
 
@@ -149,7 +179,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
           >
             <div className="flex items-center gap-3">
               <FaChartPie />
-              <span>Kelola Infografis</span>
+              <span>{t("adminSidebar.infographics.title")}</span>
             </div>
             {openInfografis ? (
               <FiChevronUp className="text-gray-500" />
@@ -184,7 +214,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
 
         {/* PENGATURAN */}
         <p className="text-xs text-gray-400 mt-5 mb-2 px-2 uppercase tracking-wide">
-          Pengaturan
+          {t("adminSidebar.settings.title")}
         </p>
         {pengaturan.map((item) => {
           const isActive = location.pathname === item.to;
@@ -213,14 +243,14 @@ export default function AdminSidebar({ isOpen, onClose }) {
           onClick={onClose}
           className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 text-gray-700 text-sm"
         >
-          <FaArrowLeft /> Kembali ke Website
+          <FaArrowLeft /> {t("adminSidebar.actions.backToWebsite")}
         </Link>
 
         <button
           onClick={handleLogout}
           className="flex items-center gap-3 px-3 py-2 w-full text-left rounded-md hover:bg-red-50 text-red-500 text-sm"
         >
-          <FaSignOutAlt /> Logout
+          <FaSignOutAlt /> {t("adminSidebar.actions.logout")}
         </button>
       </nav>
     </>
