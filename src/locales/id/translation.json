@@ -984,5 +984,55 @@
     "preview": {
       "altText": "preview"
     }
+  },
+  "manageNews": {
+    "title": "Kelola Berita",
+    "buttons": {
+      "addNews": "Tambah Berita",
+      "updateNews": "Update Berita",
+      "saveNews": "Simpan Berita",
+      "cancel": "Batal",
+      "edit": "Edit",
+      "delete": "Hapus"
+    },
+    "form": {
+      "newsTitle": "Judul",
+      "newsTitlePlaceholder": "Masukkan judul berita",
+      "content": "Konten",
+      "contentPlaceholder": "Tuliskan isi berita...",
+      "uploadMainImage": "Upload Gambar Utama",
+      "publishStatus": "Status Publish"
+    },
+    "status": {
+      "yes": "Yes",
+      "no": "No",
+      "published": "Published",
+      "unpublished": "Unpublished"
+    },
+    "validation": {
+      "fillAllFields": "Lengkapi semua data sebelum simpan!"
+    },
+    "confirmation": {
+      "editNews": "Yakin ingin mengedit berita ini?",
+      "deleteNews": "Yakin hapus berita ini?"
+    },
+    "success": {
+      "newsUpdated": "Berita berhasil diperbarui!",
+      "newsAdded": "Berita berhasil ditambahkan!",
+      "newsDeleted": "Berita berhasil dihapus!"
+    },
+    "error": {
+      "fetchNews": "Gagal mengambil berita. Silakan coba lagi.",
+      "deleteNews": "Gagal menghapus berita. Silakan coba lagi nanti."
+    },
+    "empty": {
+      "noNews": "Belum ada berita"
+    },
+    "preview": {
+      "altText": "preview"
+    },
+    "meta": {
+      "createdAt": "Tanggal dibuat"
+    }
   }
 }
