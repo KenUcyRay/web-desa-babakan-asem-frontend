@@ -98,7 +98,6 @@ export default function ManageAdministrasi() {
       alertError("Gagal mengambil data pengantar.");
       return [];
     }
-
     const responseBody = await response.json();
     return responseBody.data.map((item) => ({
       id: item.id,
@@ -106,7 +105,7 @@ export default function ManageAdministrasi() {
       nik: item.nik,
       jenis_form: "Surat Pengantar",
       layanan: Helper.formatText(item.type),
-      keterangan: item.description,
+      keterangan: item.keterangan,
       created_at: item.createdAt,
       status: item.is_pending ? "pending" : "diterima",
     }));
