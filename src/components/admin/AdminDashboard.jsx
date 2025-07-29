@@ -50,13 +50,16 @@ export default function AdminDashboard() {
   const pendudukData = [
     { name: t("adminDashboard.infographics.categories.male"), jumlah: 320 },
     { name: t("adminDashboard.infographics.categories.female"), jumlah: 340 },
-    { name: t("adminDashboard.infographics.categories.headOfFamily"), jumlah: 120 },
+    {
+      name: t("adminDashboard.infographics.categories.headOfFamily"),
+      jumlah: 120,
+    },
     { name: t("adminDashboard.infographics.categories.children"), jumlah: 210 },
   ];
 
   // - Fetch TOTAL data
   const fetchNews = async () => {
-    const res = await NewsApi.getOwnNews(); 
+    const res = await NewsApi.getOwnNews();
     if (!res.ok) return alertError(t("adminDashboard.errors.failedToGetNews"));
     const data = await res.json();
     setNewsCount(data.news?.length || 0);
@@ -64,14 +67,16 @@ export default function AdminDashboard() {
 
   const fetchAgenda = async () => {
     const res = await AgendaApi.getOwnAgenda();
-    if (!res.ok) return alertError(t("adminDashboard.errors.failedToGetAgenda"));
+    if (!res.ok)
+      return alertError(t("adminDashboard.errors.failedToGetAgenda"));
     const data = await res.json();
     setAgendaCount(data.agenda?.length || 0);
   };
 
   const fetchMessages = async () => {
     const res = await MessageApi.getMessages();
-    if (!res.ok) return alertError(t("adminDashboard.errors.failedToGetMessages"));
+    if (!res.ok)
+      return alertError(t("adminDashboard.errors.failedToGetMessages"));
     const data = await res.json();
     setMessageCount(data.messages?.length || 0);
   };
@@ -86,7 +91,8 @@ export default function AdminDashboard() {
   // - Preview 3 item
   const fetchBumdesPreview = async () => {
     const res = await ProductApi.getOwnProducts(1, 3);
-    if (!res.ok) return alertError(t("adminDashboard.errors.failedToGetBumdesProducts"));
+    if (!res.ok)
+      return alertError(t("adminDashboard.errors.failedToGetBumdesProducts"));
     const data = await res.json();
     setBumdesPreview(data.products || []);
   };
@@ -110,14 +116,16 @@ export default function AdminDashboard() {
 
   const fetchGaleriPreview = async () => {
     const res = await GaleryApi.getGaleri(1, 3);
-    if (!res.ok) return alertError(t("adminDashboard.errors.failedToGetGallery"));
+    if (!res.ok)
+      return alertError(t("adminDashboard.errors.failedToGetGallery"));
     const data = await res.json();
     setGaleriPreview(data.galeri || []);
   };
 
   const fetchPkkPreview = async () => {
     const res = await ProgramApi.getPrograms(1, 3);
-    if (!res.ok) return alertError(t("adminDashboard.errors.failedToGetPkkPrograms"));
+    if (!res.ok)
+      return alertError(t("adminDashboard.errors.failedToGetPkkPrograms"));
     const data = await res.json();
     setPkkPreview(data.programs || []);
   };
@@ -145,7 +153,7 @@ export default function AdminDashboard() {
           icon={<FaNewspaper className="text-green-500" />}
           title={t("adminDashboard.statistics.news")}
           count={newsCount}
-          onClick={() => navigate("/admin/manage-berita")}
+          onClick={() => navigate("/admin/manage-galery")}
         />
         <StatCard
           icon={<FaCalendarAlt className="text-blue-500" />}
@@ -198,7 +206,9 @@ export default function AdminDashboard() {
         data={bumdesPreview.map((p) => ({
           title: p.product.title,
           desc: p.product.description,
-          img: `${import.meta.env.VITE_BASE_URL}/products/images/${p.product.featured_image}`,
+          img: `${import.meta.env.VITE_BASE_URL}/products/images/${
+            p.product.featured_image
+          }`,
         }))}
         onClick={() => navigate("/admin/manage-bumdes")}
       />
@@ -220,7 +230,7 @@ export default function AdminDashboard() {
           title: g.title,
           img: `${import.meta.env.VITE_BASE_URL}/galeri/images/${g.image}`,
         }))}
-        onClick={() => navigate("/admin/manage-galeri")}
+        onClick={() => navigate("/admin/manage-galery")}
       />
 
       <PreviewSection
@@ -229,7 +239,9 @@ export default function AdminDashboard() {
         data={pkkPreview.map((p) => ({
           title: p.title,
           desc: p.description,
-          img: `${import.meta.env.VITE_BASE_URL}/programs/images/${p.featured_image}`,
+          img: `${import.meta.env.VITE_BASE_URL}/programs/images/${
+            p.featured_image
+          }`,
         }))}
         onClick={() => navigate("/admin/manage-pkk")}
       />
@@ -254,7 +266,7 @@ function StatCard({ icon, title, count, onClick }) {
 // - PREVIEW SECTION LIST
 function PreviewSection({ title, icon, data, onClick }) {
   const { t } = useTranslation();
-  
+
   return (
     <div className="bg-white rounded-xl shadow-md p-5 mb-6">
       <div className="flex justify-between items-center mb-3">
@@ -270,7 +282,9 @@ function PreviewSection({ title, icon, data, onClick }) {
       </div>
       <div className="space-y-3">
         {data.length === 0 ? (
-          <p className="text-gray-500 italic">{t("adminDashboard.preview.noData")}</p>
+          <p className="text-gray-500 italic">
+            {t("adminDashboard.preview.noData")}
+          </p>
         ) : (
           data.map((item, idx) => (
             <div key={idx} className="flex gap-3 items-center border-b pb-2">
