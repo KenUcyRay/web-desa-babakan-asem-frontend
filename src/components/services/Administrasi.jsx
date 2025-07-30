@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { HiOutlineMail } from "react-icons/hi";
-import { FaWpforms, FaUsers, FaGlobe } from "react-icons/fa";
+import { FaUsers } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 
 export default function Administrasi() {
@@ -16,25 +16,11 @@ export default function Administrasi() {
       route: "/surat-pengantar",
     },
     {
-      title: t("administrasi.services.1.title"),
-      desc: t("administrasi.services.1.desc"),
-      button: t("administrasi.services.1.button"),
-      icon: <FaWpforms className="text-4xl" />,
-      route: "/formulir-layanan",
-    },
-    {
       title: t("administrasi.services.2.title"),
       desc: t("administrasi.services.2.desc"),
       button: t("administrasi.services.2.button"),
       icon: <FaUsers className="text-4xl" />,
       route: "/infografis/penduduk",
-    },
-    {
-      title: t("administrasi.services.3.title"),
-      desc: t("administrasi.services.3.desc"),
-      button: t("administrasi.services.3.button"),
-      icon: <FaGlobe className="text-4xl" />,
-      route: "/layanan-online",
     },
   ];
 

@@ -1,13 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import {
-  FaFacebookF,
-  FaInstagram,
-  FaTiktok,
-  FaWhatsapp,
-  FaGlobe,
-} from "react-icons/fa";
-import { MdEmail } from "react-icons/md";
+import { FaGlobe } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 
 export default function NavbarTop() {
@@ -56,11 +49,11 @@ export default function NavbarTop() {
         <div className="flex gap-4 overflow-x-auto scrollbar-hide justify-center px-4 sm:justify-start sm:px-0">
           {[
             ["PKK", "/pkk"],
-            ["BUMDES", "/bumdes"],
+            ["BUMDes", "/bumdes"],
             ["Karang Taruna", "/karang-taruna"],
-            ["Galeri", "/galeri"],
-            ["DPD", "/dpd"],
             ["BPD", "/bpd"],
+            ["Galeri", "/galeri"],
+            ["Koperasi Merah Putih", "/koperasi-merah-putih"],
           ].map(([label, to]) => (
             <Link
               key={to}
@@ -72,7 +65,7 @@ export default function NavbarTop() {
           ))}
         </div>
 
-        {/* ✅ ROW 2: Sosmed + Bahasa */}
+        {/* ✅ ROW 2 Bahasa */}
         <div className="flex flex-wrap justify-center md:justify-end items-center gap-4">
           {/* Language Toggle */}
           <div

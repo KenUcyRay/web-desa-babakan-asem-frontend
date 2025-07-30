@@ -52,13 +52,9 @@ import SDGs from "./components/Infografis/SDGs";
 
 // - Halaman DPD
 import Bpd from "./components/organizations/Bpd";
-import Dpd from "./components/organizations/Dpd";
-import DetailDpd from "./components/organizations/DetailDpd";
 
 // - Form Administrasi
 import SuratPengantar from "./components/forms/SuratPengantar";
-import FormulirLayanan from "./components/forms/FormulirLayanan";
-import FormOnline from "./components/forms/FormOnline";
 
 // - Admin Panel
 import AdminDashboard from "./components/admin/AdminDashboard";
@@ -117,12 +113,10 @@ function LayoutUmum() {
           <Route path="/pkk" element={<Pkk />} />
           <Route path="/potensi" element={<PotensiDesa />} />
           <Route path="/pemerintahan" element={<Pemerintahan />} />
-          <Route path="/dpd" element={<Dpd />} />
           <Route path="/bpd" element={<Bpd />} />
           <Route path="/profil" element={<ProfilDesa />} />
           <Route path="/kontak" element={<KontakKami />} />
           <Route path="/pkk/struktur" element={<StPkk />} />
-          <Route path="/detail-dpd" element={<DetailDpd />} />
 
           {/* - Profil User */}
           <Route path="/profile" element={<Profile />} />
@@ -145,8 +139,6 @@ function LayoutUmum() {
 
           {/* - Form Administrasi */}
           <Route path="/surat-pengantar" element={<SuratPengantar />} />
-          <Route path="/formulir-layanan" element={<FormulirLayanan />} />
-          <Route path="/layanan-online" element={<FormOnline />} />
         </Routes>
 
         {/* ✅ Floating Menu tampil di semua halaman umum */}
