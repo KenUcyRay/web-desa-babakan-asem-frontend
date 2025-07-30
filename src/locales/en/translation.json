@@ -104,40 +104,52 @@
     "desaName": "Babakan Asem Village",
     "kabupaten": "Sumedang Regency"
   },
-  "profileVillage": {
-    "tagline": "About the Village",
-    "title": "Village Profile of <strong>Babakan Asem</strong>",
-    "description": "Babakan Asem is a village rich in history, culture, and community potential. With the spirit of togetherness and mutual cooperation, this village continues to grow toward a better future, preserving traditional values while adapting to modern times.",
-    "historyTitle": "Village History",
-    "historyText": "According to its history, Babakan Asem Village was originally part of Bongkok Village and Conggeang Village. The name 'Babakan Asem' comes from a hamlet or 'babakan' where a large tamarind tree once stood. Babakan Asem is also an acronym for <strong>Bareng Bakti Negara Anu Sempurna</strong>. Meanwhile, the village motto is <strong>\"Ayem Tengrtrem Kerta Raharja\"</strong>.",
-    "visionTitle": "Vision",
-    "visionText": "“To realize Babakan Asem Village as an independent, advanced, and competitive village while maintaining cultural values and community cooperation.”",
-    "missionTitle": "Mission",
-    "missionList": [
-      "Improve community welfare through sustainable development.",
-      "Empower village potential to support the creative economy.",
-      "Enhance the quality of education & community health.",
-      "Preserve the environment & local culture."
-    ],
-    "structureTitle": "Village Organizational Structure",
-    "headTitle": "Village Head",
-    "headDesc": "Leads & manages village policies",
-    "staffTitle": "Village Staff",
-    "staffDesc": "Administrative services & development",
-    "bpdTitle": "Village Council & Institutions",
-    "bpdDesc": "Supervise & convey community aspirations",
-    "contactTitle": "🌐 Contact & Follow Us",
-    "locationTitle": "Babakan Asem Village",
-    "locationDetail": "Jalan Babakan Asem No. 142, Babakan Asem Village, Conggeang District, Sumedang Regency, West Java 45391",
-    "phoneTitle": "Phone",
-    "whatsappTitle": "WhatsApp",
-    "emailTitle": "Email Us",
-    "mapTitle": "Village Boundary Map",
-    "mapNorth": "<strong>North:</strong> Ungkal Village",
-    "mapSouth": "<strong>South:</strong> Bugel Village",
-    "mapWest": "<strong>West:</strong> Cacaban & Prasih Villages",
-    "mapEast": "<strong>East:</strong> Cipelang Village & BPM Taman area"
+ "profileVillage": {
+  "tagline": "About the Village",
+  "title": "Village Profile of <strong>Babakan Asem</strong>",
+  "description": "Babakan Asem is a village rich in history, culture, and community potential. With the spirit of togetherness and mutual cooperation, this village continues to grow toward a better future, preserving traditional values while adapting to modern times.",
+  "historyTitle": "Village History",
+  "historyText": "According to its history, Babakan Asem Village was originally part of Bongkok Village and Conggeang Village. The name 'Babakan Asem' comes from a hamlet or 'babakan' where a large tamarind tree once stood. Babakan Asem is also an acronym for <strong>Bareng Bakti Negara Anu Sempurna</strong>. Meanwhile, the village motto is <strong>\"Ayem Tengrtrem Kerta Raharja\"</strong>.",
+  "visionTitle": "Vision",
+  "visionText": "“To realize Babakan Asem Village as an independent, advanced, and competitive village while maintaining cultural values and community cooperation.”",
+  "missionTitle": "Mission",
+  "missionList": [
+    "Improve community welfare through sustainable development.",
+    "Empower village potential to support the creative economy.",
+    "Enhance the quality of education & community health",
+    "Preserve the environment & local culture."
+  ],
+ "achievementsTitle": "Village Achievements",
+"achievements": [
+  {
+    "title": "Best Village in Environmental Sustainability – Sumedang Regency (2023)",
+    "description": "Awarded for outstanding environmental initiatives and community participation in preserving green spaces.",
+    "image": "/images/awards/award-2023.jpg"
   },
+  {
+    "title": "Top 3 Digital Village Innovations – West Java (2022)",
+    "description": "Recognized for pioneering digital services in public administration and citizen engagement.",
+    "image": "/images/awards/award-2022.jpg"
+  },
+  {
+    "title": "Active Village in Community Health Program (Posyandu) – 2021",
+    "description": "Acknowledged for consistent community involvement in local health initiatives and Posyandu activities.",
+    "image": "/images/awards/award-2021.jpg"
+  }
+]
+,
+  "contactTitle": "🌐 Contact & Follow Us",
+  "locationTitle": "Babakan Asem Village",
+  "locationDetail": "Jalan Babakan Asem No. 142, Babakan Asem Village, Conggeang District, Sumedang Regency, West Java 45391",
+  "phoneTitle": "Phone",
+  "whatsappTitle": "WhatsApp",
+  "emailTitle": "Email Us",
+  "mapTitle": "Village Boundary Map",
+  "mapNorth": "<strong>North:</strong> Ungkal Village",
+  "mapSouth": "<strong>South:</strong> Bugel Village",
+  "mapWest": "<strong>West:</strong> Cacaban & Prasih Villages",
+  "mapEast": "<strong>East:</strong> Cipelang Village & BPM Taman area"
+},  
   "government": {
     "title": "Government <br /> <span class='text-green-600'>Babakan Asem Village</span>",
     "subtitle": "Babakan Asem Village <br /> Towards an Independent, Advanced & Prosperous Village",

@@ -104,40 +104,51 @@
     "desaName": "Desa Babakan Asem",
     "kabupaten": "Kabupaten Sumedang"
   },
-  "profileVillage": {
-    "tagline": "Tentang Desa",
-    "title": "Profil Desa <strong>Babakan Asem</strong>",
-    "description": "Desa Babakan Asem adalah desa yang kaya akan sejarah, budaya, dan potensi masyarakatnya. Dengan semangat kebersamaan dan gotong royong, desa ini terus berkembang menuju masa depan yang lebih baik, tetap menjaga nilai-nilai tradisi namun beradaptasi dengan perkembangan zaman.",
-    "historyTitle": "Sejarah Desa",
-    "historyText": "Menurut sejarahnya, Desa Babakan Asem pada awalnya termasuk wilayah Desa Bongkok dan Desa Conggeang. Nama Desa Babakan Asem sendiri berasal dari satu kampung atau babakan dan ada pohon asem yang besar, maka diberi nama Desa Babakan Asem. Babakan Asem juga merupakan singkatan dari <strong>Bareng Bakti Negara Anu Sempurna</strong>. Sementara moto Desa Babakan Asem adalah <strong>\"Ayem Tengrtrem Kerta Raharja\"</strong>.",
-    "visionTitle": "Visi",
-    "visionText": "“Mewujudkan Desa Babakan Asem yang mandiri, maju, dan berdaya saing dengan tetap menjaga nilai-nilai budaya dan gotong royong masyarakat.”",
-    "missionTitle": "Misi",
-    "missionList": [
-      "Meningkatkan kesejahteraan masyarakat melalui pembangunan berkelanjutan.",
-      "Memberdayakan potensi desa untuk mendukung ekonomi kreatif.",
-      "Meningkatkan kualitas pendidikan & kesehatan masyarakat.",
-      "Menjaga kelestarian lingkungan & budaya lokal."
-    ],
-    "structureTitle": "Struktur Organisasi Desa",
-    "headTitle": "Kepala Desa",
-    "headDesc": "Memimpin & mengatur kebijakan desa",
-    "staffTitle": "Perangkat Desa",
-    "staffDesc": "Pelayanan administrasi & pembangunan",
-    "bpdTitle": "BPD & Lembaga Desa",
-    "bpdDesc": "Mengawasi & menyalurkan aspirasi warga",
-    "contactTitle": "🌐 Hubungi & Ikuti Kami",
-    "locationTitle": "Desa Babakan Asem",
-    "locationDetail": "Jalan Babakan Asem No. 142 Desa Babakan Asem, Kecamatan Conggeang, Kabupaten Sumedang, Jawa Barat 45391",
-    "phoneTitle": "Telepon",
-    "whatsappTitle": "WhatsApp",
-    "emailTitle": "Email Kami",
-    "mapTitle": "Batas Wilayah Desa",
-    "mapNorth": "<strong>Utara:</strong> Desa Ungkal",
-    "mapSouth": "<strong>Selatan:</strong> Desa Bugel",
-    "mapWest": "<strong>Barat:</strong> Desa Cacaban & Desa Prasih",
-    "mapEast": "<strong>Timur:</strong> Desa Cipelang & kawasan BPM Taman"
+ "profileVillage": {
+  "tagline": "Tentang Desa",
+  "title": "Profil Desa <strong>Babakan Asem</strong>",
+  "description": "Desa Babakan Asem adalah desa yang kaya akan sejarah, budaya, dan potensi masyarakatnya. Dengan semangat kebersamaan dan gotong royong, desa ini terus berkembang menuju masa depan yang lebih baik, tetap menjaga nilai-nilai tradisi namun beradaptasi dengan perkembangan zaman.",
+  "historyTitle": "Sejarah Desa",
+  "historyText": "Menurut sejarahnya, Desa Babakan Asem pada awalnya termasuk wilayah Desa Bongkok dan Desa Conggeang. Nama Desa Babakan Asem sendiri berasal dari satu kampung atau babakan dan ada pohon asem yang besar, maka diberi nama Desa Babakan Asem. Babakan Asem juga merupakan singkatan dari <strong>Bareng Bakti Negara Anu Sempurna</strong>. Sementara moto Desa Babakan Asem adalah <strong>\"Ayem Tengrtrem Kerta Raharja\"</strong>.",
+  "visionTitle": "Visi",
+  "visionText": "“Mewujudkan Desa Babakan Asem yang mandiri, maju, dan berdaya saing dengan tetap menjaga nilai-nilai budaya dan gotong royong masyarakat.”",
+  "missionTitle": "Misi",
+  "missionList": [
+    "Meningkatkan kesejahteraan masyarakat melalui pembangunan berkelanjutan.",
+    "Memberdayakan potensi desa untuk mendukung ekonomi kreatif.",
+    "Meningkatkan kualitas pendidikan & kesehatan masyarakat.",
+    "Menjaga kelestarian lingkungan & budaya lokal."
+  ],
+  "achievementsTitle": "Penghargaan Desa",
+"achievements": [
+  {
+    "title": "Desa Terbaik dalam Keberlanjutan Lingkungan – Kabupaten Sumedang (2023)",
+    "description": "Diberikan atas inisiatif lingkungan yang luar biasa serta partisipasi aktif masyarakat dalam menjaga ruang hijau.",
+    "image": "/images/awards/award-2023.jpg"
   },
+  {
+    "title": "3 Besar Inovasi Desa Digital – Jawa Barat (2022)",
+    "description": "Diakui atas terobosan dalam pelayanan publik berbasis digital dan keterlibatan warga secara daring.",
+    "image": "/images/awards/award-2022.jpg"
+  },
+  {
+    "title": "Desa Aktif dalam Program Kesehatan Posyandu – 2021",
+    "description": "Penghargaan atas keterlibatan masyarakat yang konsisten dalam kegiatan kesehatan dan layanan Posyandu.",
+    "image": "/images/awards/award-2021.jpg"
+  }
+],
+  "contactTitle": "🌐 Hubungi & Ikuti Kami",
+  "locationTitle": "Desa Babakan Asem",
+  "locationDetail": "Jalan Babakan Asem No. 142 Desa Babakan Asem, Kecamatan Conggeang, Kabupaten Sumedang, Jawa Barat 45391",
+  "phoneTitle": "Telepon",
+  "whatsappTitle": "WhatsApp",
+  "emailTitle": "Email Kami",
+  "mapTitle": "Batas Wilayah Desa",
+  "mapNorth": "<strong>Utara:</strong> Desa Ungkal",
+  "mapSouth": "<strong>Selatan:</strong> Desa Bugel",
+  "mapWest": "<strong>Barat:</strong> Desa Cacaban & Desa Prasih",
+  "mapEast": "<strong>Timur:</strong> Desa Cipelang & kawasan BPM Taman"
+},
   "government": {
     "title": "Pemerintah <br /> <span class='text-green-600'>Desa Babakan Asem</span>",
     "subtitle": "Desa Babakan Asem <br /> Menuju Desa Mandiri, Maju & Sejahtera",
