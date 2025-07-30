@@ -98,47 +98,33 @@ export default function ProfilDesa() {
         </div>
       </section>
 
-      {/* - STRUKTUR ORGANISASI */}
-      <section className="bg-green-50 py-14" data-aos="fade-up">
-        <div className="max-w-5xl mx-auto px-6 text-center">
-          <h2 className="text-3xl font-bold text-green-700 mb-10">
-            {t("profileVillage.structureTitle")}
+      {/* - Prestasi */}
+       <section className="bg-white py-14" data-aos="fade-up">
+        <div className="max-w-5xl mx-auto px-6">
+          <h2 className="text-3xl font-bold text-center text-green-700 mb-10">
+            {t("profileVillage.achievementsTitle")}
           </h2>
-          <div className="grid md:grid-cols-3 gap-6">
-            <Link
-              to="/pemerintahan"
-              className="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition"
-              data-aos="zoom-in"
-            >
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                {t("profileVillage.headTitle")}
-              </h3>
-              <p className="text-gray-500">{t("profileVillage.headDesc")}</p>
-            </Link>
-            <Link
-              to="/administrasi"
-              className="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition"
-              data-aos="zoom-in"
-            >
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                {t("profileVillage.staffTitle")}
-              </h3>
-              <p className="text-gray-500">{t("profileVillage.staffDesc")}</p>
-            </Link>
-            <Link
-              to="/bpd"
-              className="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition"
-              data-aos="zoom-in"
-            >
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                {t("profileVillage.bpdTitle")}
-              </h3>
-              <p className="text-gray-500">{t("profileVillage.bpdDesc")}</p>
-            </Link>
+          <div className="space-y-10">
+            {t("profileVillage.achievements", { returnObjects: true }).map((item, index) => (
+              <div
+                key={index}
+                className="flex flex-col md:flex-row gap-6 items-center bg-gray-50 rounded-xl shadow-md p-6"
+                data-aos="fade-up"
+              >
+                <img
+                  src={item.image}
+                  alt={item.title}
+                  className="w-full md:w-1/3 h-56 object-cover rounded-lg shadow"
+                />
+                <div className="md:w-2/3">
+                  <h3 className="text-xl font-semibold text-gray-800 mb-2">{item.title}</h3>
+                  <p className="text-gray-600">{item.description}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
-
       {/* - KONTAK & SOSMED */}
       <section className="bg-white py-16" data-aos="fade-up">
         <div className="max-w-6xl mx-auto px-6">

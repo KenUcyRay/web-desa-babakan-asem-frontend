@@ -59,8 +59,8 @@ export default function NavbarTop() {
             ["BUMDES", "/bumdes"],
             ["Karang Taruna", "/karang-taruna"],
             ["Galeri", "/galeri"],
-            ["DPD", "/dpd"],
             ["BPD", "/bpd"],
+            ["Koperasi Merah Putih", "#"],
           ].map(([label, to]) => (
             <Link
               key={to}
