@@ -74,33 +74,6 @@ export default function NavbarTop() {
 
         {/* ✅ ROW 2: Sosmed + Bahasa */}
         <div className="flex flex-wrap justify-center md:justify-end items-center gap-4">
-          {/* Icons */}
-          <div className="flex gap-3">
-            {[
-              [
-                "https://www.facebook.com/KpuSumedangKab/?locale=id_ID",
-                <FaFacebookF />,
-              ],
-              ["https://www.instagram.com/inimahsumedang/", <FaInstagram />],
-              ["https://www.tiktok.com/@bpskabsumedang", <FaTiktok />],
-              [
-                "https://api.whatsapp.com/send?phone=6281122202220&text=Simpati",
-                <FaWhatsapp />,
-              ],
-              ["#", <MdEmail />],
-            ].map(([href, icon], idx) => (
-              <a
-                key={idx}
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-500 hover:text-current transition text-base"
-              >
-                {icon}
-              </a>
-            ))}
-          </div>
-
           {/* Language Toggle */}
           <div
             className="flex items-center gap-1 text-gray-600 cursor-pointer select-none hover:text-[#B6F500]"
