@@ -122,16 +122,19 @@
  "achievementsTitle": "Village Achievements",
 "achievements": [
   {
+    "years": "2022",
     "title": "Best Village in Environmental Sustainability – Sumedang Regency (2023)",
     "description": "Awarded for outstanding environmental initiatives and community participation in preserving green spaces.",
     "image": "/images/awards/award-2023.jpg"
   },
   {
+    "years":"2023",
     "title": "Top 3 Digital Village Innovations – West Java (2022)",
     "description": "Recognized for pioneering digital services in public administration and citizen engagement.",
     "image": "/images/awards/award-2022.jpg"
   },
   {
+    "years": "2024",
     "title": "Active Village in Community Health Program (Posyandu) – 2021",
     "description": "Acknowledged for consistent community involvement in local health initiatives and Posyandu activities.",
     "image": "/images/awards/award-2021.jpg"

@@ -99,12 +99,13 @@ export default function ProfilDesa() {
       </section>
 
       {/* - Prestasi */}
-       <section className="bg-white py-14" data-aos="fade-up">
+      <section className="bg-white py-14" data-aos="fade-up">
         <div className="max-w-5xl mx-auto px-6">
           <h2 className="text-3xl font-bold text-center text-green-700 mb-10">
             {t("profileVillage.achievementsTitle")}
           </h2>
-          <div className="space-y-10">
+
+          <div className="space-y-10 mb-16">
             {t("profileVillage.achievements", { returnObjects: true }).map((item, index) => (
               <div
                 key={index}
@@ -123,8 +124,24 @@ export default function ProfilDesa() {
               </div>
             ))}
           </div>
+
+          {/* Milestone Horizontal */}
+          <div className="relative w-full h-32 flex items-center justify-center">
+            <div className="absolute top-1/2 left-0 w-full h-2 bg-gradient-to-r from-blue-500 via-yellow-400 to-green-500 transform -translate-y-1/2 rounded-full" />
+            <div className="flex justify-between w-full px-4 md:px-16 z-10">
+              {t("profileVillage.achievements", { returnObjects: true }).map((item, index) => (
+                <div key={index} className="flex flex-col items-center text-center">
+                  <div className="w-12 h-12 bg-green-700 text-white rounded-full flex items-center justify-center font-bold mb-2 shadow-md">
+                    {item.year}
+                  </div>
+                  <span className="text-sm font-medium text-gray-700">{item.title}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
+
       {/* - KONTAK & SOSMED */}
       <section className="bg-white py-16" data-aos="fade-up">
         <div className="max-w-6xl mx-auto px-6">
