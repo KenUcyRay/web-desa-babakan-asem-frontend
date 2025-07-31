@@ -10,7 +10,7 @@ import {
   FaArrowLeft,
   FaArrowRight,
 } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link } from "react-router-dom"; // Pastikan Link diimpor
 import AOS from "aos";
 import "aos/dist/aos.css";
 import kumpul from "../../assets/kumpul.jpg";
@@ -200,31 +200,40 @@ export default function ProfilDesa() {
             <>
               <div className="space-y-10 mb-16">
                 {achievements.map((item, index) => (
-                  <div
+                  <Link
+                    to={`/prestasi/${item.id}`}
                     key={item.id || index}
-                    className="flex flex-col md:flex-row gap-6 items-center bg-gray-50 rounded-xl shadow-md p-6"
-                    data-aos="fade-up"
+                    className="block"
                   >
-                    <img
-                      src={item.imageUrl || item.image || kumpul}
-                      alt={item.title}
-                      className="w-full md:w-1/3 h-56 object-cover rounded-lg shadow"
-                      onError={(e) => {
-                        e.target.src = kumpul; // Fallback jika gambar tidak bisa dimuat
-                      }}
-                    />
-                    <div className="md:w-2/3">
-                      <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                        {item.title}
-                      </h3>
-                      <p className="text-gray-600">{item.description}</p>
-                      {item.date && (
-                        <p className="text-sm text-green-600 mt-2">
-                          {Helper.formatTanggal(item.date)}
-                        </p>
-                      )}
+                    <div
+                      className="flex flex-col md:flex-row gap-6 items-center bg-gray-50 rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow duration-300 cursor-pointer"
+                      data-aos="fade-up"
+                    >
+                      <img
+                        src={item.imageUrl || item.image || kumpul}
+                        alt={item.title}
+                        className="w-full md:w-1/3 h-56 object-cover rounded-lg shadow"
+                        onError={(e) => {
+                          e.target.src = kumpul;
+                        }}
+                      />
+                      <div className="md:w-2/3">
+                        <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                          {item.title}
+                        </h3>
+                        <p className="text-gray-600">{item.description}</p>
+                        {item.date && (
+                          <p className="text-sm text-green-600 mt-2">
+                            {new Date(item.date).toLocaleDateString("id-ID", {
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                            })}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
 

@@ -8,6 +8,12 @@ import {
   FaClipboardList,
   FaImage,
   FaTasks,
+  FaMapMarkedAlt,
+  FaUserAlt,
+  FaFolderOpen,
+  FaSitemap,
+  FaChartBar,
+  FaDatabase
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -40,11 +46,32 @@ export default function AdminDashboard() {
   const [agendaCount, setAgendaCount] = useState(0);
   const [messageCount, setMessageCount] = useState(0);
   const [userCount, setUserCount] = useState(0);
+  const [programCount, setProgramCount] = useState(0);
+  const [galeriCount, setGaleriCount] = useState(0);
 
   const [bumdesPreview, setBumdesPreview] = useState([]);
   const [administrasiPreview, setAdministrasiPreview] = useState([]);
   const [galeriPreview, setGaleriPreview] = useState([]);
   const [pkkPreview, setPkkPreview] = useState([]);
+
+  // Data dummy untuk fitur baru
+  const strukturPreview = [
+    { nama: "Budi Santoso", jabatan: "Kepala Desa", rw: "Seluruh Desa" },
+    { nama: "Siti Rahayu", jabatan: "Sekretaris Desa", rw: "-" },
+    { nama: "Agus Wijaya", jabatan: "Bendahara Desa", rw: "-" },
+  ];
+  
+  const dokumenPreview = [
+    { nama_dokumen: "Peraturan Desa 2023", jenis_dokumen: "Perdes", link: "#" },
+    { nama_dokumen: "Laporan Keuangan 2023", jenis_dokumen: "Laporan", link: "#" },
+    { nama_dokumen: "Rencana Kerja 2024", jenis_dokumen: "Rencana", link: "#" },
+  ];
+  
+  const programKerjaPreview = [
+    { judul: "Pembangunan Jalan Desa", deskripsi: "Peningkatan infrastruktur jalan", status: "Berjalan" },
+    { judul: "Pelatihan UMKM", deskripsi: "Peningkatan kapasitas wirausaha", status: "Selesai" },
+    { judul: "Penanaman Pohon", deskripsi: "Program penghijauan desa", status: "Rencana" },
+  ];
 
   // - DATA DEMO PENDUDUK
   const pendudukData = [
@@ -86,6 +113,20 @@ export default function AdminDashboard() {
     if (!res.ok) return alertError(t("adminDashboard.errors.failedToGetUsers"));
     const data = await res.json();
     setUserCount(data.users?.length || 0);
+  };
+
+  const fetchProgramCount = async () => {
+    const res = await ProgramApi.getPrograms(1, 1);
+    if (!res.ok) return alertError("Gagal mengambil jumlah program");
+    const data = await res.json();
+    setProgramCount(data.total || 0);
+  };
+
+  const fetchGaleriCount = async () => {
+    const res = await GaleryApi.getGaleri(1, 1);
+    if (!res.ok) return alertError("Gagal mengambil jumlah galeri");
+    const data = await res.json();
+    setGaleriCount(data.total || 0);
   };
 
   // - Preview 3 item
@@ -135,6 +176,8 @@ export default function AdminDashboard() {
     fetchAgenda();
     fetchMessages();
     fetchUsers();
+    fetchProgramCount();
+    fetchGaleriCount();
     fetchBumdesPreview();
     fetchAdministrasiPreview();
     fetchGaleriPreview();
@@ -147,35 +190,101 @@ export default function AdminDashboard() {
         {t("adminDashboard.title")}
       </h1>
 
-      {/* - GRID STATISTIK */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <StatCard
-          icon={<FaNewspaper className="text-green-500" />}
-          title={t("adminDashboard.statistics.news")}
-          count={newsCount}
-          onClick={() => navigate("/admin/manage-galery")}
+      {/* - EMPAT KARTU UTAMA DI ATAS - DIKECILKAN */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <SmallMainCard
+          icon={<FaChartBar className="text-xl text-green-500" />}
+          title="Dashboard Desa"
+          onClick={() => navigate("/admin/dashboard")}
         />
-        <StatCard
-          icon={<FaCalendarAlt className="text-blue-500" />}
-          title={t("adminDashboard.statistics.agenda")}
-          count={agendaCount}
-          onClick={() => navigate("/admin/manage-agenda")}
+        
+        <SmallMainCard
+          icon={<FaDatabase className="text-xl text-blue-500" />}
+          title="Data Master"
+          onClick={() => navigate("/admin/data-master")}
         />
-        <StatCard
-          icon={<FaComments className="text-orange-500" />}
-          title={t("adminDashboard.statistics.messages")}
-          count={messageCount}
-          onClick={() => navigate("/admin/manage-pesan")}
+        
+        <SmallMainCard
+          icon={<FaFolderOpen className="text-xl text-purple-500" />}
+          title="Repository Dokumen"
+          onClick={() => navigate("/admin/repository")}
         />
-        <StatCard
-          icon={<FaUsers className="text-purple-500" />}
-          title={t("adminDashboard.statistics.users")}
-          count={userCount}
-          onClick={() => navigate("/admin/manage-user")}
+        
+        <SmallMainCard
+          icon={<FaMapMarkedAlt className="text-xl text-yellow-500" />}
+          title="GIS Desa"
+          onClick={() => navigate("/admin/gis-desa")}
         />
       </div>
 
-      {/* - INFROGRAFIS PENDUDUK - TANPA LINK */}
+      {/* - GRID STATISTIK DETAIL */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <DetailStatCard
+          icon={<FaNewspaper className="text-green-500" />}
+          title={t("adminDashboard.statistics.news")}
+          count={newsCount}
+          detail="Artikel terbaru"
+          onClick={() => navigate("/admin/manage-news")}
+        />
+        
+        <DetailStatCard
+          icon={<FaCalendarAlt className="text-blue-500" />}
+          title={t("adminDashboard.statistics.agenda")}
+          count={agendaCount}
+          detail="Kegiatan mendatang"
+          onClick={() => navigate("/admin/manage-agenda")}
+        />
+        
+        <DetailStatCard
+          icon={<FaComments className="text-orange-500" />}
+          title={t("adminDashboard.statistics.messages")}
+          count={messageCount}
+          detail="Pesan masuk"
+          onClick={() => navigate("/admin/manage-pesan")}
+        />
+        
+        <DetailStatCard
+          icon={<FaUsers className="text-purple-500" />}
+          title={t("adminDashboard.statistics.users")}
+          count={userCount}
+          detail="Pengguna terdaftar"
+          onClick={() => navigate("/admin/manage-user")}
+        />
+        
+        <DetailStatCard
+          icon={<FaTasks className="text-cyan-500" />}
+          title="Program Kerja"
+          count={programCount}
+          detail="Aktivitas desa"
+          onClick={() => navigate("/admin/manage-program")}
+        />
+        
+        <DetailStatCard
+          icon={<FaSitemap className="text-red-500" />}
+          title="Struktur Desa"
+          count={strukturPreview.length}
+          detail="Pengurus desa"
+          onClick={() => navigate("/admin/struktur-desa")}
+        />
+        
+        <DetailStatCard
+          icon={<FaFolderOpen className="text-amber-500" />}
+          title="Repository"
+          count={dokumenPreview.length}
+          detail="Dokumen resmi"
+          onClick={() => navigate("/admin/repository")}
+        />
+        
+        <DetailStatCard
+          icon={<FaStore className="text-teal-500" />}
+          title="BUMDes"
+          count={bumdesPreview.length}
+          detail="Produk unggulan"
+          onClick={() => navigate("/admin/manage-bumdes")}
+        />
+      </div>
+
+      {/* - INFROGRAFIS PENDUDUK */}
       <div className="bg-white rounded-xl shadow-md p-6 mb-8">
         <h2 className="text-xl font-semibold text-gray-800 mb-4">
           {t("adminDashboard.infographics.title")}
@@ -199,7 +308,54 @@ export default function AdminDashboard() {
         </p>
       </div>
 
-      {/* - PREVIEW SECTIONS */}
+      {/* - PREVIEW SECTIONS DENGAN URUTAN BARU */}
+      <PreviewSection
+        title="Struktur Desa"
+        icon={<FaSitemap />}
+        data={strukturPreview.map((s) => ({
+          title: s.nama,
+          desc: s.jabatan,
+          rw: s.rw,
+        }))}
+        onClick={() => navigate("/admin/struktur-desa")}
+      />
+
+      <PreviewSection
+        title="Program Kerja Desa"
+        icon={<FaTasks />}
+        data={programKerjaPreview.map((p) => ({
+          title: p.judul,
+          desc: p.deskripsi,
+          status: p.status,
+        }))}
+        onClick={() => navigate("/admin/manage-program")}
+        showStatus={true}
+      />
+
+      <PreviewSection
+        title="Repository Dokumen"
+        icon={<FaFolderOpen />}
+        data={dokumenPreview.map((d) => ({
+          title: d.nama_dokumen,
+          desc: d.jenis_dokumen,
+          link: d.link
+        }))}
+        onClick={() => navigate("/admin/repository")}
+        showLink={true}
+      />
+
+      <PreviewSection
+        title="Data Penduduk"
+        icon={<FaUserAlt />}
+        data={[
+          { title: "Jumlah KK", value: "120 KK" },
+          { title: "Penduduk Laki-laki", value: "320 Jiwa" },
+          { title: "Penduduk Perempuan", value: "340 Jiwa" },
+        ]}
+        onClick={() => navigate("/admin/master-penduduk")}
+        showValue={true}
+      />
+
       <PreviewSection
         title={t("adminDashboard.preview.bumdes.title")}
         icon={<FaStore />}
@@ -232,39 +388,52 @@ export default function AdminDashboard() {
         }))}
         onClick={() => navigate("/admin/manage-galery")}
       />
-
-      <PreviewSection
-        title={t("adminDashboard.preview.pkk.title")}
-        icon={<FaTasks />}
-        data={pkkPreview.map((p) => ({
-          title: p.title,
-          desc: p.description,
-          img: `${import.meta.env.VITE_BASE_URL}/programs/images/${
-            p.featured_image
-          }`,
-        }))}
-        onClick={() => navigate("/admin/manage-pkk")}
-      />
     </div>
   );
 }
 
-// - MINI CARD STATISTIK
-function StatCard({ icon, title, count, onClick }) {
+// - KARTU UTAMA KECIL (4 di atas)
+function SmallMainCard({ icon, title, onClick }) {
   return (
     <div
-      className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition flex flex-col items-center text-center cursor-pointer"
+      className="bg-white p-4 rounded-lg shadow hover:shadow-md transition cursor-pointer flex items-center gap-3"
       onClick={onClick}
     >
-      <div className="text-4xl mb-3">{icon}</div>
-      <h2 className="text-lg font-semibold text-gray-700">{title}</h2>
-      <p className="text-3xl font-bold text-gray-900 mt-2">{count}</p>
+      <div className="text-2xl text-gray-600">{icon}</div>
+      <h2 className="text-lg font-medium text-gray-800">{title}</h2>
     </div>
   );
 }
 
-// - PREVIEW SECTION LIST
-function PreviewSection({ title, icon, data, onClick }) {
+// - KARTU STATISTIK DENGAN DETAIL
+function DetailStatCard({ icon, title, count, detail, onClick }) {
+  return (
+    <div
+      className="bg-white p-5 rounded-xl shadow hover:shadow-lg transition cursor-pointer"
+      onClick={onClick}
+    >
+      <div className="flex items-start justify-between">
+        <div>
+          <div className="text-3xl mb-2 text-gray-500">{icon}</div>
+          <h2 className="text-lg font-semibold text-gray-700">{title}</h2>
+        </div>
+        <p className="text-3xl font-bold text-gray-900">{count}</p>
+      </div>
+      <p className="text-sm text-gray-500 mt-3">{detail}</p>
+    </div>
+  );
+}
+
+// - PREVIEW SECTION LIST YANG LEBIH FLEKSIBEL
+function PreviewSection({ 
+  title, 
+  icon, 
+  data, 
+  onClick, 
+  showLink = false, 
+  showStatus = false,
+  showValue = false
+}) {
   const { t } = useTranslation();
 
   return (
@@ -275,31 +444,61 @@ function PreviewSection({ title, icon, data, onClick }) {
         </h2>
         <button
           onClick={onClick}
-          className="text-green-600 font-medium hover:underline"
+          className="text-green-600 font-medium hover:underline flex items-center"
         >
-          ➜ {t("adminDashboard.preview.viewComplete")}
+          Lihat Semua <span className="ml-1">➜</span>
         </button>
       </div>
       <div className="space-y-3">
         {data.length === 0 ? (
-          <p className="text-gray-500 italic">
-            {t("adminDashboard.preview.noData")}
-          </p>
+          <p className="text-gray-500 italic">Belum ada data</p>
         ) : (
           data.map((item, idx) => (
-            <div key={idx} className="flex gap-3 items-center border-b pb-2">
+            <div key={idx} className="flex gap-3 items-center border-b pb-3 last:border-0">
               {item.img && (
                 <img
                   src={item.img}
+                  alt={item.title}
                   className="w-12 h-12 rounded object-cover"
                 />
               )}
+              
               <div className="flex-1">
                 <p className="font-medium text-gray-800">{item.title}</p>
-                {item.desc && (
+                
+                {item.desc && !showValue && (
                   <p className="text-sm text-gray-500">{item.desc}</p>
                 )}
+                
+                {item.value && showValue && (
+                  <p className="text-sm font-semibold text-gray-700">{item.value}</p>
+                )}
+                
+                {item.rw && (
+                  <p className="text-xs text-gray-400 mt-1">RW: {item.rw}</p>
+                )}
+                
+                {item.status && showStatus && (
+                  <span className={`text-xs px-2 py-1 rounded-full mt-1 ${
+                    item.status === "Berjalan" ? "bg-yellow-100 text-yellow-800" :
+                    item.status === "Selesai" ? "bg-green-100 text-green-800" :
+                    "bg-blue-100 text-blue-800"
+                  }`}>
+                    {item.status}
+                  </span>
+                )}
               </div>
+              
+              {showLink && item.link && (
+                <a 
+                  href={item.link} 
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-blue-500 hover:underline text-sm whitespace-nowrap"
+                >
+                  Lihat
+                </a>
+              )}
             </div>
           ))
         )}
