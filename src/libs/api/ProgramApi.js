@@ -1,7 +1,7 @@
 export class ProgramApi {
-  static async getPrograms(page = 1, limit = 10) {
+  static async getPrograms() {
     return await fetch(
-      `${import.meta.env.VITE_BASE_URL}/programs/?page=${page}&limit=${limit}`,
+      `${import.meta.env.VITE_NEW_BASE_URL}/village-work-programs`,
       {
         headers: {
           "Content-Type": "application/json",

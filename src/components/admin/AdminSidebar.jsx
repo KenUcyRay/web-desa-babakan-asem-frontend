@@ -83,7 +83,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
     },
   ];
 
-  const manageInformasiSubmenu = [
+  const manageDataSubmenu = [
     {
       to: "/admin/manage-user",
       label: t("adminSidebar.menu.manageUsers"),
@@ -179,19 +179,19 @@ export default function AdminSidebar({ isOpen, onClose }) {
           );
         })}
 
-        {/* DROPDOWN MANAGE PUBLIK */}
+        {/* DROPDOWN KELOLA PUBLIKASI */}
         <div>
           <button
             onClick={() => setOpenManagePublik(!openManagePublik)}
             className={`flex items-center justify-between w-full px-3 py-2 rounded-md text-sm transition ${
-              managePublikSubmenu.some(item => location.pathname === item.to)
+              managePublikSubmenu.some((item) => location.pathname === item.to)
                 ? "bg-green-100 text-green-700 font-semibold border-l-4 border-green-500"
                 : "hover:bg-green-50 text-gray-700"
             }`}
           >
             <div className="flex items-center gap-3">
               <FaUserFriends />
-              <span>{t("adminSidebar.managePublik")}</span>
+              <span>Kelola Publikasi</span>
             </div>
             {openManagePublik ? (
               <FiChevronUp className="text-gray-500" />
@@ -224,19 +224,19 @@ export default function AdminSidebar({ isOpen, onClose }) {
           )}
         </div>
 
-        {/* DROPDOWN MANAGE INFORMASI */}
+        {/* DROPDOWN KELOLA DATA */}
         <div>
           <button
             onClick={() => setOpenManageInformasi(!openManageInformasi)}
             className={`flex items-center justify-between w-full px-3 py-2 rounded-md text-sm transition ${
-              manageInformasiSubmenu.some(item => location.pathname === item.to)
+              manageDataSubmenu.some((item) => location.pathname === item.to)
                 ? "bg-green-100 text-green-700 font-semibold border-l-4 border-green-500"
                 : "hover:bg-green-50 text-gray-700"
             }`}
           >
             <div className="flex items-center gap-3">
               <FaClipboardList />
-              <span>{t("adminSidebar.manageInformasi")}</span>
+              <span>Kelola Data</span>
             </div>
             {openManageInformasi ? (
               <FiChevronUp className="text-gray-500" />
@@ -247,7 +247,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
 
           {openManageInformasi && (
             <div className="ml-6 mt-1 space-y-1 border-l pl-3">
-              {manageInformasiSubmenu.map((sub) => {
+              {manageDataSubmenu.map((sub) => {
                 const isActive = location.pathname === sub.to;
                 return (
                   <Link
@@ -269,19 +269,21 @@ export default function AdminSidebar({ isOpen, onClose }) {
           )}
         </div>
 
-        {/* DROPDOWN MANAGE ORGANISASI */}
+        {/* DROPDOWN KELOLA ORGANISASI */}
         <div>
           <button
             onClick={() => setOpenManageOrganisasi(!openManageOrganisasi)}
             className={`flex items-center justify-between w-full px-3 py-2 rounded-md text-sm transition ${
-              manageOrganisasiSubmenu.some(item => location.pathname === item.to)
+              manageOrganisasiSubmenu.some(
+                (item) => location.pathname === item.to
+              )
                 ? "bg-green-100 text-green-700 font-semibold border-l-4 border-green-500"
                 : "hover:bg-green-50 text-gray-700"
             }`}
           >
             <div className="flex items-center gap-3">
               <FaSitemap />
-              <span>{t("adminSidebar.manageOrganisasi")}</span>
+              <span>Kelola Organisasi</span>
             </div>
             {openManageOrganisasi ? (
               <FiChevronUp className="text-gray-500" />
@@ -314,7 +316,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
           )}
         </div>
 
-        {/* DROPDOWN INFOGRAFIS */}
+        {/* DROPDOWN KELOLA INFOGRAFIS */}
         <div>
           <button
             onClick={() => setOpenInfografis(!openInfografis)}
@@ -384,7 +386,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
 
         <hr className="my-4" />
 
-        {/* KEMBALI & LOGOUT */}
+        {/* KEMBALI KE WEBSITE & KELUAR */}
         <Link
           to="/"
           onClick={onClose}

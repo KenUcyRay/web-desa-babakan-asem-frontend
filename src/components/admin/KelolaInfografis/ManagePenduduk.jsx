@@ -101,6 +101,7 @@ export default function ManagePenduduk() {
   const [showForm, setShowForm] = useState(false);
   const [editingData, setEditingData] = useState(null);
   const [jumlahBaru, setJumlahBaru] = useState("");
+  const [updateTrigger, setUpdateTrigger] = useState(0); // Trigger untuk force re-render
 
   // Function untuk mengurutkan data
   const sortData = (data, type) => {
@@ -109,94 +110,50 @@ export default function ManagePenduduk() {
       icon: getIconForCategory(type, item.key),
     }));
 
-    // Urutan khusus untuk pendidikan
-    if (type === "PENDIDIKAN") {
-      const educationOrder = [
-        "sd",
-        "smp",
-        "sma",
-        "diploma",
-        "d3",
-        "s1",
-        "s2",
-        "s3",
-      ];
-      return mapped.sort((a, b) => {
-        const aIndex = educationOrder.indexOf(a.key.toLowerCase());
-        const bIndex = educationOrder.indexOf(b.key.toLowerCase());
+    const sortOrders = {
+      PENDIDIKAN: ["sd", "smp", "sma", "diploma", "d3", "s1", "s2", "s3"],
+      GENDER: (a, b) => {
+        const [aKey, bKey] = [a.key.toLowerCase(), b.key.toLowerCase()];
+        if (aKey.includes("laki") || aKey === "male") return -1;
+        if (bKey.includes("laki") || bKey === "male") return 1;
+        return 0;
+      },
+      USIA: (a, b) => {
+        const [aMatch, bMatch] = [a.key.match(/(\d+)/), b.key.match(/(\d+)/)];
+        return aMatch && bMatch
+          ? parseInt(aMatch[1]) - parseInt(bMatch[1])
+          : a.key.localeCompare(b.key);
+      },
+      DUSUN: (a, b) => {
+        const [aMatch, bMatch] = [
+          a.key.match(/([a-z])/),
+          b.key.match(/([a-z])/),
+        ];
+        return aMatch && bMatch
+          ? aMatch[1].localeCompare(bMatch[1])
+          : a.key.localeCompare(b.key);
+      },
+    };
 
-        // Jika kedua item ada dalam urutan, urutkan berdasarkan index
-        if (aIndex !== -1 && bIndex !== -1) {
-          return aIndex - bIndex;
-        }
-        // Jika hanya satu yang ada dalam urutan, yang ada di urutan didahulukan
+    if (Array.isArray(sortOrders[type])) {
+      const order = sortOrders[type];
+      return mapped.sort((a, b) => {
+        const [aIndex, bIndex] = [
+          order.indexOf(a.key.toLowerCase()),
+          order.indexOf(b.key.toLowerCase()),
+        ];
+        if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex;
         if (aIndex !== -1) return -1;
         if (bIndex !== -1) return 1;
-        // Jika keduanya tidak ada dalam urutan, urutkan alfabetis
         return a.key.localeCompare(b.key);
       });
     }
 
-    // Urutan khusus untuk gender (laki-laki dulu)
-    if (type === "GENDER") {
-      return mapped.sort((a, b) => {
-        const aKey = a.key.toLowerCase();
-        const bKey = b.key.toLowerCase();
-        if (aKey.includes("laki") || aKey === "male") return -1;
-        if (bKey.includes("laki") || bKey === "male") return 1;
-        return 0;
-      });
-    }
-
-    // Urutan khusus untuk usia (dari muda ke tua)
-    if (type === "USIA") {
-      return mapped.sort((a, b) => {
-        const aKey = a.key.toLowerCase();
-        const bKey = b.key.toLowerCase();
-
-        // Extract angka dari key untuk sorting numerik
-        const aMatch = aKey.match(/(\d+)/);
-        const bMatch = bKey.match(/(\d+)/);
-
-        if (aMatch && bMatch) {
-          const aNum = parseInt(aMatch[1]);
-          const bNum = parseInt(bMatch[1]);
-          return aNum - bNum;
-        }
-
-        // Fallback ke sorting alfabetis
-        return aKey.localeCompare(bKey);
-      });
-    }
-
-    // Urutan khusus untuk dusun (dimulai dari A)
-    if (type === "DUSUN") {
-      return mapped.sort((a, b) => {
-        const aKey = a.key.toLowerCase();
-        const bKey = b.key.toLowerCase();
-
-        // Extract huruf dari key untuk sorting alfabetis
-        const aMatch = aKey.match(/([a-z])/);
-        const bMatch = bKey.match(/([a-z])/);
-
-        if (aMatch && bMatch) {
-          const aLetter = aMatch[1];
-          const bLetter = bMatch[1];
-          return aLetter.localeCompare(bLetter);
-        }
-
-        // Fallback ke sorting alfabetis normal
-        return aKey.localeCompare(bKey);
-      });
-    }
-
-    return mapped;
+    return sortOrders[type] ? mapped.sort(sortOrders[type]) : mapped;
   };
 
   const baseUrl =
     import.meta.env.VITE_NEW_BASE_URL || "http://localhost:4000/api";
-
-  // Colors untuk pie chart
   const COLORS = [
     "#B6F500",
     "#FFD700",
@@ -207,11 +164,7 @@ export default function ManagePenduduk() {
     "#9370DB",
     "#20B2AA",
   ];
-
-  // Tooltip formatter function
   const tooltipFormatter = (value) => [`${value} orang`, "Jumlah"];
-
-  // Gabungkan semua data untuk tampilan
   const allData = [
     ...genderData,
     ...kepalaKeluargaData,
@@ -259,37 +212,25 @@ export default function ManagePenduduk() {
         s1: <FaUserGraduate />,
         s2: <FaUserGraduate />,
       },
-      KEPALA_KELUARGA: {
-        default: <FaHome />,
-      },
-      WAJIB_PILIH: {
-        default: <FaVoteYea />,
-      },
-      DUSUN: {
-        default: <FaMapMarkerAlt />,
-      },
-      ANAK_ANAK: {
-        default: <FaChild />,
-      },
-      USIA: {
-        default: <FaChild />,
-      },
+      KEPALA_KELUARGA: { default: <FaHome /> },
+      WAJIB_PILIH: { default: <FaVoteYea /> },
+      DUSUN: { default: <FaMapMarkerAlt /> },
+      ANAK_ANAK: { default: <FaChild /> },
+      USIA: { default: <FaChild /> },
     };
 
     const categoryIcons = iconMappings[type];
     if (!categoryIcons) return <FaChild />;
-
-    const lowerKey = key.toLowerCase();
-    return categoryIcons[lowerKey] || categoryIcons.default || <FaChild />;
+    return (
+      categoryIcons[key.toLowerCase()] || categoryIcons.default || <FaChild />
+    );
   };
 
   // Function untuk fetch data berdasarkan type
   const fetchDataByType = async (type) => {
     try {
       const response = await fetch(`${baseUrl}/residents?type=${type}`);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch ${type} data`);
-      }
+      if (!response.ok) throw new Error(`Failed to fetch ${type} data`);
       const result = await response.json();
       return result.data || [];
     } catch (error) {
@@ -305,7 +246,7 @@ export default function ManagePenduduk() {
 
   const handleEdit = (item) => {
     setEditingData(item);
-    setJumlahBaru(item.value);
+    setJumlahBaru(item.value.toString());
     setShowForm(true);
   };
 
@@ -332,85 +273,53 @@ export default function ManagePenduduk() {
         }
       );
 
-      if (!response.ok) {
-        throw new Error("Failed to update data");
-      }
+      if (!response.ok) throw new Error("Failed to update data");
 
-      // Ambil data response dari API
-      const responseData = await response.json();
-      console.log("Full Response:", responseData);
+      // ✅ Ambil response dari backend
+      const result = await response.json();
+      const updatedItem = result.data;
 
-      // Check apakah responseData.data ada
-      const updatedData = responseData.data || responseData;
-      console.log("Updated Data:", updatedData);
-      console.log("Editing Data:", editingData);
-      console.log("New Value from input:", jumlah);
-
-      // Function untuk update data berdasarkan tipe
+      // ✅ Update state langsung dengan data terbaru dari backend
       const updateStateFunction = (setter) => {
-        console.log(`Updating state for type: ${editingData.type}`);
-        setter((prev) => {
-          const newState = prev.map((item) => {
-            if (item.id === editingData.id) {
-              const updatedItem = {
-                ...item,
-                value: jumlah, // Gunakan langsung nilai dari input, bukan dari response
-                updated_at: updatedData.updated_at || new Date().toISOString(),
-                key: updatedData.key || item.key,
-                icon: getIconForCategory(
-                  editingData.type,
-                  updatedData.key || item.key
-                ),
-              };
-              console.log("Updated item:", updatedItem);
-              return updatedItem;
-            }
-            return item;
-          });
-          console.log("New state:", newState);
-          return newState;
-        });
+        setter((prevData) =>
+          prevData.map((item) =>
+            item.id === updatedItem.id
+              ? {
+                  ...item,
+                  value: updatedItem.value,
+                  updated_at: updatedItem.updated_at,
+                  icon: getIconForCategory(editingData.type, updatedItem.key),
+                }
+              : item
+          )
+        );
       };
 
-      // Update data lokal berdasarkan tipe
-      switch (editingData.type) {
-        case "GENDER":
-          updateStateFunction(setGenderData);
-          break;
-        case "KEPALA_KELUARGA":
-          updateStateFunction(setKepalaKeluargaData);
-          break;
-        case "ANAK_ANAK":
-          updateStateFunction(setAnakAnakData);
-          break;
-        case "PERNIKAHAN":
-          updateStateFunction(setPernikahanData);
-          break;
-        case "AGAMA":
-          updateStateFunction(setAgamaData);
-          break;
-        case "USIA":
-          updateStateFunction(setUsiaData);
-          break;
-        case "PERKERJAAN":
-          updateStateFunction(setPekerjaanData);
-          break;
-        case "PENDIDIKAN":
-          updateStateFunction(setPendidikanData);
-          break;
-        case "WAJIB_PILIH":
-          updateStateFunction(setWajibPilihData);
-          break;
-        case "DUSUN":
-          updateStateFunction(setDusunData);
-          break;
-        default:
-          console.warn("Unknown data type:", editingData.type);
+      const stateUpdaters = {
+        GENDER: setGenderData,
+        KEPALA_KELUARGA: setKepalaKeluargaData,
+        ANAK_ANAK: setAnakAnakData,
+        PERNIKAHAN: setPernikahanData,
+        AGAMA: setAgamaData,
+        USIA: setUsiaData,
+        PERKERJAAN: setPekerjaanData,
+        PENDIDIKAN: setPendidikanData,
+        WAJIB_PILIH: setWajibPilihData,
+        DUSUN: setDusunData,
+      };
+
+      if (stateUpdaters[editingData.type]) {
+        updateStateFunction(stateUpdaters[editingData.type]);
       }
 
-      alertSuccess("Data berhasil diperbarui!");
+      // ✅ Juga refetch semua data biar konsisten
+      await fetchPenduduk();
+
       setShowForm(false);
       setEditingData(null);
+      setJumlahBaru("");
+      setUpdateTrigger((prev) => prev + 1);
+      alertSuccess("Data berhasil diperbarui!");
     } catch (error) {
       console.error("Error updating data:", error);
       alertError("Gagal mengupdate data penduduk!");
@@ -469,6 +378,124 @@ export default function ManagePenduduk() {
     fetchPenduduk();
   }, []);
 
+  // Komponen Card yang dapat digunakan kembali
+  const DataCard = ({ item, index, color = "#B6F500" }) => (
+    <div
+      key={`${item.type}-${item.id}-${updateTrigger}-${index}`}
+      className="relative flex flex-col items-center bg-white p-4 rounded-xl shadow hover:shadow-lg hover:scale-[1.02] transition-all"
+    >
+      <div className={`text-3xl mb-2`} style={{ color }}>
+        {item.icon}
+      </div>
+      <p className="text-gray-600 text-xs text-center mb-1">{item.key}</p>
+      <p className="text-lg font-bold text-gray-800">{item.value}</p>
+      {item.updated_at && (
+        <p className="mt-1 text-xs text-gray-400">
+          Diperbarui: {Helper.formatTanggal(item.updated_at)}
+        </p>
+      )}
+      <button
+        onClick={() => handleEdit(item)}
+        className="absolute top-2 right-2 text-blue-500 hover:text-blue-700"
+      >
+        <FaEdit className="text-sm" />
+      </button>
+    </div>
+  );
+
+  // Komponen Section yang dapat digunakan kembali
+  const DataSection = ({
+    title,
+    data,
+    color,
+    chartType = "bar",
+    gridCols = "md:grid-cols-3",
+  }) => {
+    if (!data.length) return null;
+
+    const chartData = data.map((d) => ({
+      name: d.key,
+      jumlah: d.value,
+      value: d.value,
+    }));
+
+    return (
+      <div className="mb-12">
+        <h3 className="text-2xl font-bold text-gray-800 mb-6">{title}</h3>
+        <div className={`grid sm:grid-cols-2 ${gridCols} gap-4 mb-8`}>
+          {data.map((item, index) => (
+            <DataCard key={item.id} item={item} index={index} color={color} />
+          ))}
+        </div>
+        <ResponsiveContainer
+          width="100%"
+          height={chartType === "pie" ? 400 : 350}
+        >
+          {chartType === "pie" ? (
+            <PieChart>
+              <Pie
+                data={chartData}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                label={renderCustomizedLabel}
+                outerRadius={80}
+                fill="#8884d8"
+              >
+                {data.map((_, i) => (
+                  <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip formatter={tooltipFormatter} />
+              <Legend />
+            </PieChart>
+          ) : chartType === "area" ? (
+            <AreaChart
+              data={chartData}
+              margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+            >
+              <defs>
+                <linearGradient id="colorAgeManage" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#82ca9d" stopOpacity={0.8} />
+                  <stop offset="95%" stopColor="#82ca9d" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <XAxis dataKey="name" />
+              <YAxis allowDecimals={false} />
+              <Tooltip content={<CustomTooltip />} />
+              <Legend />
+              <Area
+                type="monotone"
+                dataKey="value"
+                name="Jumlah Penduduk"
+                stroke="#82ca9d"
+                fillOpacity={1}
+                fill="url(#colorAgeManage)"
+              />
+            </AreaChart>
+          ) : (
+            <BarChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis allowDecimals={false} />
+              <Tooltip content={<CustomTooltip />} />
+              <Legend />
+              <Bar
+                dataKey="jumlah"
+                name="Jumlah Penduduk"
+                fill={color}
+                barSize={35}
+                radius={[6, 6, 0, 0]}
+              />
+            </BarChart>
+          )}
+        </ResponsiveContainer>
+      </div>
+    );
+  };
+
   return (
     <div className="max-w-6xl mx-auto px-6 py-8 font-poppins bg-gray-50 min-h-screen">
       {/* Header */}
@@ -522,37 +549,16 @@ export default function ManagePenduduk() {
             </h3>
             <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4 mb-8">
               {[...genderData, ...kepalaKeluargaData, ...anakAnakData].map(
-                (item) => (
-                  <div
-                    key={`${item.type}-${item.id}`}
-                    className="relative flex flex-col items-center bg-white p-4 rounded-xl shadow hover:shadow-lg hover:scale-[1.02] transition-all"
-                  >
-                    <div className="text-3xl text-[#B6F500] mb-2">
-                      {item.icon}
-                    </div>
-                    <p className="text-gray-600 text-xs text-center mb-1">
-                      {item.key}
-                    </p>
-                    <p className="text-lg font-bold text-gray-800">
-                      {item.value}
-                    </p>
-                    {item.updated_at && (
-                      <p className="mt-1 text-xs text-gray-400">
-                        Diperbarui: {Helper.formatTanggal(item.updated_at)}
-                      </p>
-                    )}
-                    <button
-                      onClick={() => handleEdit(item)}
-                      className="absolute top-2 right-2 text-blue-500 hover:text-blue-700"
-                    >
-                      <FaEdit className="text-sm" />
-                    </button>
-                  </div>
+                (item, index) => (
+                  <DataCard
+                    key={item.id}
+                    item={item}
+                    index={index}
+                    color="#B6F500"
+                  />
                 )
               )}
             </div>
-
-            {/* Grafik Data Utama */}
             <div>
               <h4 className="text-2xl font-bold text-gray-800 text-center mb-4">
                 Grafik Data Utama Penduduk
@@ -564,19 +570,10 @@ export default function ManagePenduduk() {
               <ResponsiveContainer width="100%" height={350}>
                 <BarChart
                   data={[
-                    ...genderData.map((d) => ({
-                      name: d.key,
-                      jumlah: d.value,
-                    })),
-                    ...kepalaKeluargaData.map((d) => ({
-                      name: d.key,
-                      jumlah: d.value,
-                    })),
-                    ...anakAnakData.map((d) => ({
-                      name: d.key,
-                      jumlah: d.value,
-                    })),
-                  ]}
+                    ...genderData,
+                    ...kepalaKeluargaData,
+                    ...anakAnakData,
+                  ].map((d) => ({ name: d.key, jumlah: d.value }))}
                 >
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" />
@@ -596,403 +593,39 @@ export default function ManagePenduduk() {
           </div>
         )}
 
-      {/* Pekerjaan */}
-      {!loading && !error && pekerjaanData.length > 0 && (
-        <div className="mb-12">
-          <h3 className="text-2xl font-bold text-gray-800 mb-6">
-            Data Pekerjaan
-          </h3>
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-            {pekerjaanData.map((item) => (
-              <div
-                key={`${item.type}-${item.id}`}
-                className="relative flex flex-col items-center bg-white p-4 rounded-xl shadow hover:shadow-lg hover:scale-[1.02] transition-all"
-              >
-                <div className="text-3xl text-[#FF69B4] mb-2">{item.icon}</div>
-                <p className="text-gray-600 text-xs text-center mb-1">
-                  {item.key}
-                </p>
-                <p className="text-lg font-bold text-gray-800">{item.value}</p>
-                {item.updated_at && (
-                  <p className="mt-1 text-xs text-gray-400">
-                    Diperbarui: {Helper.formatTanggal(item.updated_at)}
-                  </p>
-                )}
-                <button
-                  onClick={() => handleEdit(item)}
-                  className="absolute top-2 right-2 text-blue-500 hover:text-blue-700"
-                >
-                  <FaEdit className="text-sm" />
-                </button>
-              </div>
-            ))}
-          </div>
-
-          {/* Grafik Pekerjaan */}
-          <ResponsiveContainer width="100%" height={350}>
-            <BarChart
-              data={pekerjaanData.map((d) => ({
-                name: d.key,
-                jumlah: d.value,
-              }))}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis allowDecimals={false} />
-              <Tooltip content={<CustomTooltip />} />
-              <Legend />
-              <Bar
-                dataKey="jumlah"
-                name="Jumlah Penduduk"
-                fill="#FF69B4"
-                barSize={35}
-                radius={[6, 6, 0, 0]}
-              />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      )}
-
-      {/* Pendidikan */}
-      {!loading && !error && pendidikanData.length > 0 && (
-        <div className="mb-12">
-          <h3 className="text-2xl font-bold text-gray-800 mb-6">
-            Data Pendidikan
-          </h3>
-          <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            {pendidikanData.map((item) => (
-              <div
-                key={`${item.type}-${item.id}`}
-                className="relative flex flex-col items-center bg-white p-4 rounded-xl shadow hover:shadow-lg hover:scale-[1.02] transition-all"
-              >
-                <div className="text-3xl text-[#FFD700] mb-2">{item.icon}</div>
-                <p className="text-gray-600 text-xs text-center mb-1">
-                  {item.key}
-                </p>
-                <p className="text-lg font-bold text-gray-800">{item.value}</p>
-                {item.updated_at && (
-                  <p className="mt-1 text-xs text-gray-400">
-                    Diperbarui: {Helper.formatTanggal(item.updated_at)}
-                  </p>
-                )}
-                <button
-                  onClick={() => handleEdit(item)}
-                  className="absolute top-2 right-2 text-blue-500 hover:text-blue-700"
-                >
-                  <FaEdit className="text-sm" />
-                </button>
-              </div>
-            ))}
-          </div>
-
-          {/* Grafik Pendidikan */}
-          <ResponsiveContainer width="100%" height={350}>
-            <BarChart
-              data={pendidikanData.map((d) => ({
-                name: d.key,
-                jumlah: d.value,
-              }))}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis allowDecimals={false} />
-              <Tooltip content={<CustomTooltip />} />
-              <Legend />
-              <Bar
-                dataKey="jumlah"
-                name="Jumlah Penduduk"
-                fill="#FFD700"
-                barSize={35}
-                radius={[6, 6, 0, 0]}
-              />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      )}
-
-      {/* Status Pernikahan */}
-      {!loading && !error && pernikahanData.length > 0 && (
-        <div className="mb-12">
-          <h3 className="text-2xl font-bold text-gray-800 mb-6">
-            Status Pernikahan
-          </h3>
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-            {pernikahanData.map((item) => (
-              <div
-                key={`${item.type}-${item.id}`}
-                className="relative flex flex-col items-center bg-white p-4 rounded-xl shadow hover:shadow-lg hover:scale-[1.02] transition-all"
-              >
-                <div className="text-3xl text-[#87CEEB] mb-2">{item.icon}</div>
-                <p className="text-gray-600 text-xs text-center mb-1">
-                  {item.key}
-                </p>
-                <p className="text-lg font-bold text-gray-800">{item.value}</p>
-                {item.updated_at && (
-                  <p className="text-xs text-gray-400 mt-1">
-                    Diperbarui: {Helper.formatTanggal(item.updated_at)}
-                  </p>
-                )}
-                <button
-                  onClick={() => handleEdit(item)}
-                  className="absolute top-2 right-2 text-blue-500 hover:text-blue-700"
-                >
-                  <FaEdit className="text-sm" />
-                </button>
-              </div>
-            ))}
-          </div>
-
-          {/* Grafik Status Pernikahan */}
-          <ResponsiveContainer width="100%" height={400}>
-            <PieChart>
-              <Pie
-                data={pernikahanData.map((d) => ({
-                  name: d.key,
-                  value: d.value,
-                }))}
-                dataKey="value"
-                nameKey="name"
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                label={renderCustomizedLabel}
-                outerRadius={80}
-                fill="#8884d8"
-              >
-                {pernikahanData.map((_, i) => (
-                  <Cell key={i} fill={COLORS[i % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip formatter={tooltipFormatter} />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
-      )}
-
-      {/* Agama */}
-      {!loading && !error && agamaData.length > 0 && (
-        <div className="mb-12">
-          <h3 className="text-2xl font-bold text-gray-800 mb-6">Data Agama</h3>
-          <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            {agamaData.map((item) => (
-              <div
-                key={`${item.type}-${item.id}`}
-                className="relative flex flex-col items-center bg-white p-4 rounded-xl shadow hover:shadow-lg hover:scale-[1.02] transition-all"
-              >
-                <div className="text-3xl text-[#32CD32] mb-2">{item.icon}</div>
-                <p className="text-gray-600 text-xs text-center mb-1">
-                  {item.key}
-                </p>
-                <p className="text-lg font-bold text-gray-800">{item.value}</p>
-                {item.updated_at && (
-                  <p className="text-xs text-gray-400 mt-1">
-                    Diperbarui: {Helper.formatTanggal(item.updated_at)}
-                  </p>
-                )}
-                <button
-                  onClick={() => handleEdit(item)}
-                  className="absolute top-2 right-2 text-blue-500 hover:text-blue-700"
-                >
-                  <FaEdit className="text-sm" />
-                </button>
-              </div>
-            ))}
-          </div>
-
-          {/* Grafik Data Agama */}
-          <ResponsiveContainer width="100%" height={400}>
-            <PieChart>
-              <Pie
-                data={agamaData.map((d) => ({ name: d.key, value: d.value }))}
-                dataKey="value"
-                nameKey="name"
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                label={renderCustomizedLabel}
-                outerRadius={80}
-                fill="#8884d8"
-              >
-                {agamaData.map((_, i) => (
-                  <Cell key={i} fill={COLORS[i % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip formatter={tooltipFormatter} />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
-      )}
-
-      {/* Kelompok Usia */}
-      {!loading && !error && usiaData.length > 0 && (
-        <div className="mb-12">
-          <h3 className="text-2xl font-bold text-gray-800 mb-6">
-            Kelompok Usia
-          </h3>
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-            {usiaData.map((item) => (
-              <div
-                key={`${item.type}-${item.id}`}
-                className="relative flex flex-col items-center bg-white p-4 rounded-xl shadow hover:shadow-lg hover:scale-[1.02] transition-all"
-              >
-                <div className="text-3xl text-[#FF6347] mb-2">{item.icon}</div>
-                <p className="text-gray-600 text-xs text-center mb-1">
-                  {item.key}
-                </p>
-                <p className="text-lg font-bold text-gray-800">{item.value}</p>
-                {item.updated_at && (
-                  <p className="text-xs text-gray-400 mt-1">
-                    Diperbarui: {Helper.formatTanggal(item.updated_at)}
-                  </p>
-                )}
-                <button
-                  onClick={() => handleEdit(item)}
-                  className="absolute top-2 right-2 text-blue-500 hover:text-blue-700"
-                >
-                  <FaEdit className="text-sm" />
-                </button>
-              </div>
-            ))}
-          </div>
-
-          {/* Grafik Kelompok Usia */}
-          <ResponsiveContainer width="100%" height={350}>
-            <AreaChart
-              data={usiaData.map((d) => ({ name: d.key, value: d.value }))}
-              margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-            >
-              <defs>
-                <linearGradient id="colorAgeManage" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#82ca9d" stopOpacity={0.8} />
-                  <stop offset="95%" stopColor="#82ca9d" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <XAxis dataKey="name" />
-              <YAxis allowDecimals={false} />
-              <Tooltip content={<CustomTooltip />} />
-              <Legend />
-              <Area
-                type="monotone"
-                dataKey="value"
-                name="Jumlah Penduduk"
-                stroke="#82ca9d"
-                fillOpacity={1}
-                fill="url(#colorAgeManage)"
-              />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-      )}
-
-      {/* Wajib Pilih */}
-      {!loading && !error && wajibPilihData.length > 0 && (
-        <div className="mb-12">
-          <h3 className="text-2xl font-bold text-gray-800 mb-6">Pemilih</h3>
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-            {wajibPilihData.map((item) => (
-              <div
-                key={`${item.type}-${item.id}`}
-                className="relative flex flex-col items-center bg-white p-4 rounded-xl shadow hover:shadow-lg hover:scale-[1.02] transition-all"
-              >
-                <div className="text-3xl text-[#9370DB] mb-2">{item.icon}</div>
-                <p className="text-gray-600 text-xs text-center mb-1">
-                  {item.key}
-                </p>
-                <p className="text-lg font-bold text-gray-800">{item.value}</p>
-                {item.updated_at && (
-                  <p className="text-xs text-gray-400 mt-1">
-                    Diperbarui: {Helper.formatTanggal(item.updated_at)}
-                  </p>
-                )}
-                <button
-                  onClick={() => handleEdit(item)}
-                  className="absolute top-2 right-2 text-blue-500 hover:text-blue-700"
-                >
-                  <FaEdit className="text-sm" />
-                </button>
-              </div>
-            ))}
-          </div>
-
-          {/* Grafik Pemilih */}
-          <ResponsiveContainer width="100%" height={350}>
-            <BarChart
-              data={wajibPilihData.map((d) => ({
-                name: d.key,
-                jumlah: d.value,
-              }))}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis allowDecimals={false} />
-              <Tooltip content={<CustomTooltip />} />
-              <Legend />
-              <Bar
-                dataKey="jumlah"
-                name="Jumlah Penduduk"
-                fill="#9370DB"
-                barSize={35}
-                radius={[6, 6, 0, 0]}
-              />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      )}
-
-      {/* Distribusi Dusun */}
-      {!loading && !error && dusunData.length > 0 && (
-        <div className="mb-12">
-          <h3 className="text-2xl font-bold text-gray-800 mb-6">
-            Distribusi Dusun
-          </h3>
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-            {dusunData.map((item) => (
-              <div
-                key={`${item.type}-${item.id}`}
-                className="relative flex flex-col items-center bg-white p-4 rounded-xl shadow hover:shadow-lg hover:scale-[1.02] transition-all"
-              >
-                <div className="text-3xl text-[#20B2AA] mb-2">{item.icon}</div>
-                <p className="text-gray-600 text-xs text-center mb-1">
-                  {item.key}
-                </p>
-                <p className="text-lg font-bold text-gray-800">{item.value}</p>
-                {item.updated_at && (
-                  <p className="text-xs text-gray-400 mt-1">
-                    Diperbarui: {Helper.formatTanggal(item.updated_at)}
-                  </p>
-                )}
-                <button
-                  onClick={() => handleEdit(item)}
-                  className="absolute top-2 right-2 text-blue-500 hover:text-blue-700"
-                >
-                  <FaEdit className="text-sm" />
-                </button>
-              </div>
-            ))}
-          </div>
-
-          {/* Grafik Distribusi Dusun */}
-          <ResponsiveContainer width="100%" height={350}>
-            <BarChart
-              data={dusunData.map((d) => ({ name: d.key, jumlah: d.value }))}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis allowDecimals={false} />
-              <Tooltip content={<CustomTooltip />} />
-              <Legend />
-              <Bar
-                dataKey="jumlah"
-                name="Jumlah Penduduk"
-                fill="#20B2AA"
-                radius={[6, 6, 0, 0]}
-              />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      )}
+      {/* Sections menggunakan komponen DataSection */}
+      <DataSection
+        title="Data Pekerjaan"
+        data={pekerjaanData}
+        color="#FF69B4"
+      />
+      <DataSection
+        title="Data Pendidikan"
+        data={pendidikanData}
+        color="#FFD700"
+        gridCols="md:grid-cols-4"
+      />
+      <DataSection
+        title="Status Pernikahan"
+        data={pernikahanData}
+        color="#87CEEB"
+        chartType="pie"
+      />
+      <DataSection
+        title="Data Agama"
+        data={agamaData}
+        color="#32CD32"
+        gridCols="md:grid-cols-4"
+        chartType="pie"
+      />
+      <DataSection
+        title="Kelompok Usia"
+        data={usiaData}
+        color="#FF6347"
+        chartType="area"
+      />
+      <DataSection title="Pemilih" data={wajibPilihData} color="#9370DB" />
+      <DataSection title="Distribusi Dusun" data={dusunData} color="#20B2AA" />
 
       {/* Modal Edit */}
       {showForm && editingData && (
@@ -1001,7 +634,6 @@ export default function ManagePenduduk() {
             <h3 className="text-xl font-semibold mb-4">
               Edit Jumlah - {editingData.key}
             </h3>
-
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Jumlah Penduduk
             </label>
@@ -1012,12 +644,12 @@ export default function ManagePenduduk() {
               className="w-full p-2 border rounded mb-4"
               min="0"
             />
-
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => {
                   setShowForm(false);
                   setEditingData(null);
+                  setJumlahBaru("");
                 }}
                 className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
               >
