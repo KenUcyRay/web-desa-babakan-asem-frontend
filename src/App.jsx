@@ -72,6 +72,7 @@ import ManagePrestasi from "./components/admin/ManagePrestasi";
 import DataMaster from "./components/admin/DataMaster";
 import DashboardDesa from "./components/admin/DashboardDesa";
 import GisDesa from "./components/admin/GisDesa";
+import ManageProgram from "./components/admin/ManageProgram";
 
 // - Pengaturan Admin
 import PengaturanProfil from "./components/admin/settings/PengaturanProfil";
@@ -200,6 +201,7 @@ function LayoutAdmin() {
         <Route path="dashboard-desa" element={<DashboardDesa />} />
         <Route path="data-master" element={<DataMaster />} />
         <Route path="gis-desa" element={<GisDesa />} />
+        <Route path="manage-program" element={<ManageProgram />} />
 
 
 

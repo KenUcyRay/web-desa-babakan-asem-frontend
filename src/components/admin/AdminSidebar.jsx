@@ -17,7 +17,8 @@ import {
   FaHandshake,
   FaGlobeAsia,
   FaPeopleCarry,
-  FaStar, // ✅ Ganti ke FaStar yang pasti ada
+  FaStar,
+  FaTasks,
 } from "react-icons/fa";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 import { useEffect, useState } from "react";
@@ -86,7 +87,12 @@ export default function AdminSidebar({ isOpen, onClose }) {
     {
       to: "/admin/manage-prestasi",
       label: t("adminSidebar.menu.ManagePrestasi") || "Kelola Prestasi",
-      icon: <FaStar />, // ✅ Icon bintang yang pasti ada
+      icon: <FaStar />,
+    },
+    {
+      to: "/admin/manage-program",
+      label: t("adminSidebar.menu.ManageProgram") || "Kelola Program",
+      icon: <FaTasks />,
     },
   ];
 
