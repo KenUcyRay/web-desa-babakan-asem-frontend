@@ -19,6 +19,7 @@ import {
   FaPeopleCarry,
   FaStar,
   FaTasks,
+  FaMoneyCheckAlt,
 } from "react-icons/fa";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 import { useEffect, useState } from "react";
@@ -94,6 +95,11 @@ export default function AdminSidebar({ isOpen, onClose }) {
       label: t("adminSidebar.menu.ManageProgram") || "Kelola Program",
       icon: <FaTasks />,
     },
+    {
+    to: "/admin/manage-apb",
+    label: t("adminSidebar.menu.ManageApb") || "Kelola APB",
+    icon: <FaMoneyCheckAlt />, // ikon keuangan
+  },
   ];
 
   const manageDataSubmenu = [
