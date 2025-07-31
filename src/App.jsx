@@ -68,6 +68,10 @@ import ManageGalery from "./components/admin/ManageGalery";
 import ManageAnggota from "./components/admin/ManageAnggota";
 import ManageAdministrasi from "./components/admin/ManageAdministrasi";
 import ManagePkk from "./components/admin/ManagePkk";
+import ManagePrestasi from "./components/admin/ManagePrestasi";
+import DataMaster from "./components/admin/DataMaster";
+import DashboardDesa from "./components/admin/DashboardDesa";
+import GisDesa from "./components/admin/GisDesa";
 
 // - Pengaturan Admin
 import PengaturanProfil from "./components/admin/settings/PengaturanProfil";
@@ -192,6 +196,12 @@ function LayoutAdmin() {
         <Route path="manage-anggota" element={<ManageAnggota />} />
         <Route path="manage-administrasi" element={<ManageAdministrasi />} />
         <Route path="manage-pkk" element={<ManagePkk />} />
+        <Route path="manage-prestasi" element={<ManagePrestasi />} />
+        <Route path="dashboard-desa" element={<DashboardDesa />} />
+        <Route path="data-master" element={<DataMaster />} />
+        <Route path="gis-desa" element={<GisDesa />} />
+
+
 
         {/* - Kelola Infografis */}
         <Route path="kelola-infografis/penduduk" element={<ManagePenduduk />} />

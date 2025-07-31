@@ -185,28 +185,28 @@ export default function AdminDashboard() {
       {/* - EMPAT KARTU UTAMA DI ATAS - DIKECILKAN */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <SmallMainCard
-          icon={<FaChartBar className="text-xl text-green-500" />}
-          title="Dashboard Desa"
-          onClick={() => navigate("/admin/dashboard")}
-        />
+  icon={<FaChartBar className="text-xl text-green-500" />}
+  title="Dashboard Desa"
+  onClick={() => navigate("/admin/dashboard-desa")} // ke DashboardDesa.jsx
+/>
 
-        <SmallMainCard
-          icon={<FaDatabase className="text-xl text-blue-500" />}
-          title="Data Master"
-          onClick={() => navigate("/admin/data-master")}
-        />
+<SmallMainCard
+  icon={<FaDatabase className="text-xl text-blue-500" />}
+  title="Data Master"
+  onClick={() => navigate("/admin/data-master")} // ke DataMaster.jsx
+/>
 
-        <SmallMainCard
-          icon={<FaFolderOpen className="text-xl text-purple-500" />}
-          title="Repository Dokumen"
-          onClick={() => navigate("/admin/repository")}
-        />
+<SmallMainCard
+  icon={<FaFolderOpen className="text-xl text-purple-500" />}
+  title="Repository Dokumen"
+  onClick={() => window.open("https://drive.google.com/drive/folders/1H6wPE94ywdVsbH3XF7z2UpJ23sKFajr_?usp=sharing", "_blank")} // ganti dengan link Drive
+/>
 
-        <SmallMainCard
-          icon={<FaMapMarkedAlt className="text-xl text-yellow-500" />}
-          title="GIS Desa"
-          onClick={() => navigate("/admin/gis-desa")}
-        />
+<SmallMainCard
+  icon={<FaMapMarkedAlt className="text-xl text-yellow-500" />}
+  title="GIS Desa"
+  onClick={() => navigate("/admin/gis-desa")} // ke GisDesa.jsx
+/>
       </div>
 
       {/* - GRID STATISTIK DETAIL */}
