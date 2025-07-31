@@ -10,13 +10,10 @@ import {
   FaChalkboardTeacher,
   FaStore,
   FaUserTie,
-  FaSkull,
-  FaStarAndCrescent,
-  FaChurch,
+  FaStar,
+  FaCross,
   FaOm,
   FaYinYang,
-  FaCross,
-  FaBook,
 } from "react-icons/fa";
 import {
   BarChart,
@@ -31,6 +28,7 @@ import {
   Cell,
   AreaChart,
   Area,
+  Legend,
 } from "recharts";
 import { InfografisApi } from "../../libs/api/InfografisApi";
 import { alertError } from "../../libs/alert";
@@ -47,10 +45,46 @@ function StatCard({ icon, label, value }) {
   );
 }
 
+// Custom Tooltip with values
+const CustomTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white p-3 rounded-lg shadow-lg border">
+        <p className="font-semibold text-gray-800">{`${label}`}</p>
+        <p className="text-blue-600">
+          {`Jumlah: ${payload[0].value} orang`}
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
+
+// Custom Label for Pie Chart
+const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, value, name }) => {
+  const RADIAN = Math.PI / 180;
+  const radius = outerRadius + 30;
+  const x = cx + radius * Math.cos(-midAngle * RADIAN);
+  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+  return (
+    <text 
+      x={x} 
+      y={y} 
+      fill="#374151" 
+      textAnchor={x > cx ? 'start' : 'end'} 
+      dominantBaseline="central"
+      fontSize={12}
+      fontWeight="600"
+    >
+      {`${name}: ${value} (${(percent * 100).toFixed(1)}%)`}
+    </text>
+  );
+};
+
 export default function Penduduk() {
   const { t } = useTranslation();
   const [data, setData] = useState([]);
-  const [kematian, setKematian] = useState(0);
 
   // Fetch base data
   useEffect(() => {
@@ -85,13 +119,6 @@ export default function Penduduk() {
         });
         
         setData(mapped);
-        
-        // Fetch death data
-        const deathResponse = await InfografisApi.getDeath();
-        if (!deathResponse.ok) return alertError("Gagal mengambil data kematian");
-        
-        const deathData = await deathResponse.json();
-        setKematian(deathData.total);
       } catch (error) {
         alertError("Gagal mengambil data penduduk");
       }
@@ -123,22 +150,12 @@ export default function Penduduk() {
     { name: "Cerai", value: 50 },
   ];
 
-  const agamaCardData = [
-    { name: "Islam", value: 700, icon: <FaStarAndCrescent /> },
-    { name: "Kristen Protestan", value: 100, icon: <FaCross /> },
-    { name: "Katolik", value: 80, icon: <FaChurch /> },
-    { name: "Hindu", value: 50, icon: <FaOm /> },
-    { name: "Buddha", value: 20, icon: <FaYinYang /> },
-    { name: "Konghucu", value: 15, icon: <FaBook /> },
-  ];
-
-  const agamaChartData = [
-    { name: "Islam", value: 700 },
-    { name: "Kristen Protestan", value: 100 },
-    { name: "Katolik", value: 80 },
-    { name: "Hindu", value: 50 },
-    { name: "Buddha", value: 20 },
-    { name: "Konghucu", value: 15 },
+  // Data agama dengan icon masing-masing
+  const agamaData = [
+    { name: "Islam", value: 700, icon: <FaStar className="text-yellow-400" /> },
+    { name: "Kristen", value: 100, icon: <FaCross className="text-blue-500" /> },
+    { name: "Hindu", value: 50, icon: <FaOm className="text-orange-500" /> },
+    { name: "Buddha", value: 20, icon: <FaYinYang className="text-purple-500" /> },
   ];
 
   const usiaData = [
@@ -155,7 +172,7 @@ export default function Penduduk() {
     { name: "Dusun C", value: 220 },
   ];
 
-  const COLORS = ["#B6F500", "#FFD700", "#FF69B4", "#87CEEB", "#32CD32", "#FF6347"];
+  const COLORS = ["#B6F500", "#FFD700", "#FF69B4", "#87CEEB", "#32CD32"];
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-10 font-poppins space-y-16">
@@ -187,12 +204,12 @@ export default function Penduduk() {
               Data Penduduk Utama
             </h3>
             <p className="text-gray-600 text-sm leading-relaxed">
-              Data berikut menunjukkan komposisi dasar penduduk desa berdasarkan jenis kelamin, jumlah kepala keluarga, 
-              dan statistik kematian. Data ini menjadi dasar untuk perencanaan program pembangunan dan pelayanan masyarakat.
+              Data berikut menunjukkan komposisi dasar penduduk desa berdasarkan jenis kelamin dan jumlah kepala keluarga. 
+              Data ini menjadi dasar untuk perencanaan program pembangunan dan pelayanan masyarakat.
             </p>
           </div>
           <div className="md:col-span-2">
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {data.map((item, idx) => (
                 <StatCard
                   key={idx}
@@ -201,12 +218,6 @@ export default function Penduduk() {
                   value={item.value}
                 />
               ))}
-              {/* Tambahkan card kematian */}
-              <StatCard
-                icon={<FaSkull />}
-                label="Jumlah Kematian"
-                value={kematian}
-              />
             </div>
           </div>
         </div>
@@ -220,14 +231,16 @@ export default function Penduduk() {
         <p className="text-center text-gray-600 mb-8">
           {t("resident.chart.description")}
         </p>
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer width="100%" height={350}>
           <BarChart data={data.map((d) => ({ name: d.label, jumlah: d.value }))}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="name" />
             <YAxis allowDecimals={false} />
-            <Tooltip />
+            <Tooltip content={<CustomTooltip />} />
+            <Legend />
             <Bar
               dataKey="jumlah"
+              name="Jumlah Penduduk"
               fill="#B6F500"
               barSize={40}
               radius={[6, 6, 0, 0]}
@@ -274,14 +287,16 @@ export default function Penduduk() {
             Mayoritas penduduk berpendidikan menengah (SMP-SMA), sementara lulusan perguruan tinggi masih perlu ditingkatkan. 
             Data ini menjadi acuan untuk program pendidikan dan beasiswa bagi masyarakat.
           </p>
-          <ResponsiveContainer width="100%" height={300}>
+          <ResponsiveContainer width="100%" height={350}>
             <BarChart data={pendidikanData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
               <YAxis allowDecimals={false} />
-              <Tooltip />
+              <Tooltip content={<CustomTooltip />} />
+              <Legend />
               <Bar
                 dataKey="value"
+                name="Jumlah Penduduk"
                 fill="#FF69B4"
                 barSize={35}
                 radius={[6, 6, 0, 0]}
@@ -300,7 +315,7 @@ export default function Penduduk() {
             Pie chart digunakan untuk menunjukkan proporsi masing-masing status secara visual.
             Data ini membantu dalam perencanaan program keluarga dan pembinaan sosial kemasyarakatan.
           </p>
-          <ResponsiveContainer width="100%" height={300}>
+          <ResponsiveContainer width="100%" height={400}>
             <PieChart>
               <Pie
                 data={statusNikahData}
@@ -308,63 +323,66 @@ export default function Penduduk() {
                 nameKey="name"
                 cx="50%"
                 cy="50%"
-                outerRadius={100}
-                label
+                labelLine={false}
+                label={renderCustomizedLabel}
+                outerRadius={80}
+                fill="#8884d8"
               >
                 {statusNikahData.map((_, i) => (
                   <Cell key={i} fill={COLORS[i % COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip />
+              <Tooltip formatter={(value) => [`${value} orang`, "Jumlah"]} />
+              <Legend />
             </PieChart>
           </ResponsiveContainer>
         </div>
 
-        {/* Agama - Card Section */}
+        {/* Agama */}
         <div>
           <h3 className="text-3xl font-bold text-gray-800 text-center mb-4">
-            Komposisi Agama
+            Agama
           </h3>
-          <p className="text-center text-gray-600 mb-8 max-w-4xl mx-auto">
+          <p className="text-center text-gray-600 mb-4 max-w-4xl mx-auto">
             Keberagaman agama mencerminkan toleransi dan keharmonisan hidup bermasyarakat. 
-            Data ini penting untuk perencanaan kegiatan keagamaan dan pembinaan kehidupan beragama.
+            Data berikut menunjukkan jumlah pemeluk agama di desa kami.
           </p>
           
-          {/* Card agama mirip pekerjaan */}
-          <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-12">
-            {agamaCardData.map((item, idx) => (
+          {/* Card Agama */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 max-w-4xl mx-auto">
+            {agamaData.map((agama, idx) => (
               <StatCard
                 key={idx}
-                icon={item.icon}
-                label={item.name}
-                value={item.value}
+                icon={agama.icon}
+                label={agama.name}
+                value={agama.value}
               />
             ))}
           </div>
           
-          {/* Chart agama */}
-          <h4 className="text-2xl font-bold text-gray-700 text-center mb-4">
-            Distribusi Agama
-          </h4>
           <p className="text-center text-gray-600 mb-8 max-w-4xl mx-auto">
-            Persentase komposisi agama penduduk desa berdasarkan data terbaru
+            Pie chart berikut menampilkan komposisi agama secara proporsional.
+            Data ini penting untuk perencanaan kegiatan keagamaan dan pembinaan kehidupan beragama.
           </p>
           <ResponsiveContainer width="100%" height={400}>
             <PieChart>
               <Pie
-                data={agamaChartData}
+                data={agamaData}
                 dataKey="value"
                 nameKey="name"
                 cx="50%"
                 cy="50%"
-                outerRadius={120}
-                label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(1)}%`}
+                labelLine={false}
+                label={renderCustomizedLabel}
+                outerRadius={80}
+                fill="#8884d8"
               >
-                {agamaChartData.map((_, i) => (
+                {agamaData.map((_, i) => (
                   <Cell key={i} fill={COLORS[i % COLORS.length]} />
                 ))}
               </Pie>
               <Tooltip formatter={(value) => [`${value} orang`, "Jumlah"]} />
+              <Legend />
             </PieChart>
           </ResponsiveContainer>
         </div>
@@ -379,7 +397,7 @@ export default function Penduduk() {
             Area chart dipilih untuk menampilkan distribusi dan tren populasi secara visual.
             Komposisi usia produktif (18-60 tahun) mendominasi, menunjukkan potensi ekonomi yang baik.
           </p>
-          <ResponsiveContainer width="100%" height={300}>
+          <ResponsiveContainer width="100%" height={350}>
             <AreaChart
               data={usiaData}
               margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
@@ -392,10 +410,12 @@ export default function Penduduk() {
               </defs>
               <XAxis dataKey="name" />
               <YAxis allowDecimals={false} />
-              <Tooltip />
+              <Tooltip content={<CustomTooltip />} />
+              <Legend />
               <Area
                 type="monotone"
                 dataKey="value"
+                name="Jumlah Penduduk"
                 stroke="#82ca9d"
                 fillOpacity={1}
                 fill="url(#colorAge)"
@@ -414,13 +434,19 @@ export default function Penduduk() {
             Bar chart digunakan untuk membandingkan jumlah penduduk antar dusun secara jelas.
             Penyebaran penduduk relatif merata antar dusun, memudahkan pelayanan administrasi dan pembangunan.
           </p>
-          <ResponsiveContainer width="100%" height={300}>
+          <ResponsiveContainer width="100%" height={350}>
             <BarChart data={dusunData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
               <YAxis allowDecimals={false} />
-              <Tooltip />
-              <Bar dataKey="value" fill="#8884d8" />
+              <Tooltip content={<CustomTooltip />} />
+              <Legend />
+              <Bar 
+                dataKey="value" 
+                name="Jumlah Penduduk"
+                fill="#8884d8" 
+                radius={[6, 6, 0, 0]}
+              />
             </BarChart>
           </ResponsiveContainer>
         </div>
