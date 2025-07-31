@@ -28,7 +28,7 @@ export class GaleryApi {
   static async updateGaleri(id, data) {
     const formData = new FormData();
     formData.append("title", data.title ?? undefined);
-    formData.append("image", data.image ?? undefined);
+    formData.append("image", data.image ? data.image : undefined);
     return await fetch(`${import.meta.env.VITE_BASE_URL}/galeri/admin/${id}`, {
       method: "PUT",
       headers: {

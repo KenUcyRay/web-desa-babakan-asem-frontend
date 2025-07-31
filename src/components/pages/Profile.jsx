@@ -34,7 +34,7 @@ export default function Profile() {
     setFormData({
       name: responseBody.user.name,
       email: responseBody.user.email || "",
-      phone: responseBody.user.phone || "",
+      phone: responseBody.user.phone_number || "",
       password: "",
       confirm_password: "",
     });
@@ -262,7 +262,9 @@ export default function Profile() {
                 <input
                   type="text"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
                   className="w-full border rounded-lg p-2 mt-1"
                   required
                 />
@@ -274,7 +276,9 @@ export default function Profile() {
                 <input
                   type="email"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
                   className="w-full border rounded-lg p-2 mt-1"
                   placeholder={t("profile.form.emailPlaceholder")}
                 />
@@ -286,7 +290,9 @@ export default function Profile() {
                 <input
                   type="text"
                   value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, phone: e.target.value })
+                  }
                   className="w-full border rounded-lg p-2 mt-1"
                   placeholder={t("profile.form.phonePlaceholder")}
                 />
@@ -298,7 +304,9 @@ export default function Profile() {
                 <input
                   type="password"
                   value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
                   className="w-full border rounded-lg p-2 mt-1"
                   placeholder={t("profile.form.passwordPlaceholder")}
                 />
@@ -310,7 +318,12 @@ export default function Profile() {
                 <input
                   type="password"
                   value={formData.confirm_password}
-                  onChange={(e) => setFormData({ ...formData, confirm_password: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      confirm_password: e.target.value,
+                    })
+                  }
                   className="w-full border rounded-lg p-2 mt-1"
                   placeholder={t("profile.form.passwordPlaceholder")}
                 />
@@ -324,7 +337,7 @@ export default function Profile() {
                     setFormData({
                       name: user.name,
                       email: user.email || "",
-                      phone: user.phone || "",
+                      phone: user.phone_number || "",
                       password: "",
                     });
                   }}

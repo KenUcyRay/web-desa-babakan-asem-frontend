@@ -83,8 +83,29 @@ import ManageIDM from "./components/admin/KelolaInfografis/ManageIDM";
 import ManageSDGs from "./components/admin/KelolaInfografis/ManageSDGs";
 import ManageBansos from "./components/admin/KelolaInfografis/ManageBansos";
 
+//profile
+import { useAuth } from "./contexts/AuthContext";
+import { UserApi } from "./libs/api/UserApi";
+
 // ✅ Layout Umum (Navbar + Footer aktif + Floating Menu)
 function LayoutUmum() {
+  const { isLoggedIn, setAdminStatus } = useAuth();
+
+  const fetchProfile = async () => {
+    if (!isLoggedIn) return;
+
+    const response = await UserApi.getUserProfile();
+    if (response.status === 200) {
+      const responseBody = await response.json();
+      setAdminStatus(responseBody.user.role === "ADMIN");
+    } else {
+      setAdminStatus(false);
+    }
+  };
+  useEffect(() => {
+    fetchProfile();
+  });
+
   return (
     <>
       <NavbarTop />

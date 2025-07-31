@@ -30,8 +30,6 @@ export class UserApi {
     rememberMe,
     reCaptchaToken
   ) {
-    console.log(phone_number);
-    console.log(email);
     return await fetch(`${import.meta.env.VITE_BASE_URL}/users/register`, {
       method: "POST",
       headers: {
@@ -105,6 +103,7 @@ export class UserApi {
     });
   }
   static async updateUser(name, email, password, phone) {
+    console.log();
     return await fetch(`${import.meta.env.VITE_BASE_URL}/users/`, {
       method: "PATCH",
       headers: {
@@ -116,7 +115,7 @@ export class UserApi {
         name: name,
         email: email !== null ? email : undefined,
         password: password !== "" ? password : undefined,
-        phone_number: phone !== "" ? phone : undefined,
+        phone_number: phone ? phone : undefined,
       }),
     });
   }
