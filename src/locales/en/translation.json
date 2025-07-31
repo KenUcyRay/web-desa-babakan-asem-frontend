@@ -901,6 +901,11 @@
       "pkkPrograms": "PKK Programs",
       "organizationStructure": "Organization Structure"
     },
+    "dropdowns": {
+      "managePublications": "Manage Publications",
+      "manageData": "Manage Data",
+      "manageOrganizations": "Manage Organizations"
+    },
     "infographics": {
       "title": "Manage Infographics",
       "submenu": {
@@ -1211,6 +1216,50 @@
       "addPrestasi": "Achievement successfully added!",
       "updatePrestasi": "Achievement successfully updated!",
       "deletePrestasi": "Achievement successfully deleted!"
+    }
+  },
+  "manageApb": {
+    "title": "Village Budget 2025",
+    "chartTitle": "Budget vs Realization Comparison Chart",
+    "buttons": {
+      "add": "Add",
+      "edit": "Edit",
+      "delete": "Delete",
+      "save": "Save",
+      "cancel": "Cancel"
+    },
+    "form": {
+      "addTitle": "Add Village Budget Data",
+      "editTitle": "Edit",
+      "fields": {
+        "bidang": "Sector",
+        "anggaran": "Budget (millions)",
+        "realisasi": "Realization (millions)"
+      }
+    },
+    "chart": {
+      "legend": {
+        "anggaran": "Budget",
+        "realisasi": "Realization"
+      },
+      "unit": " M"
+    },
+    "summary": {
+      "totalAnggaran": "Total Budget",
+      "totalRealisasi": "Total Realization",
+      "sisaAnggaran": "Remaining Budget",
+      "penyerapan": "Absorption"
+    },
+    "list": {
+      "anggaranLabel": "Budget",
+      "realisasiLabel": "Realization",
+      "unitShort": "M"
+    },
+    "confirmation": {
+      "delete": "Are you sure you want to delete this item?"
+    },
+    "success": {
+      "add": "Data successfully added"
     }
   }
 }

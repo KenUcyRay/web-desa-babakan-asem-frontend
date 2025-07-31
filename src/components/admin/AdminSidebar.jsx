@@ -96,10 +96,10 @@ export default function AdminSidebar({ isOpen, onClose }) {
       icon: <FaTasks />,
     },
     {
-    to: "/admin/manage-apb",
-    label: t("adminSidebar.menu.ManageApb") || "Kelola APB",
-    icon: <FaMoneyCheckAlt />, // ikon keuangan
-  },
+      to: "/admin/manage-apb",
+      label: t("adminSidebar.menu.ManageApb") || "Kelola APB",
+      icon: <FaMoneyCheckAlt />, // ikon keuangan
+    },
   ];
 
   const manageDataSubmenu = [
@@ -217,7 +217,12 @@ export default function AdminSidebar({ isOpen, onClose }) {
           >
             <div className="flex items-center gap-3">
               <FaUserFriends />
-              <span>Kelola Publikasi</span>
+              <span>
+                {t(
+                  "adminSidebar.dropdowns.managePublications",
+                  "Kelola Publikasi"
+                )}
+              </span>
             </div>
             {openManagePublik ? (
               <FiChevronUp className="text-gray-500" />
@@ -262,7 +267,9 @@ export default function AdminSidebar({ isOpen, onClose }) {
           >
             <div className="flex items-center gap-3">
               <FaClipboardList />
-              <span>Kelola Data</span>
+              <span>
+                {t("adminSidebar.dropdowns.manageData", "Kelola Data")}
+              </span>
             </div>
             {openManageInformasi ? (
               <FiChevronUp className="text-gray-500" />
@@ -309,7 +316,12 @@ export default function AdminSidebar({ isOpen, onClose }) {
           >
             <div className="flex items-center gap-3">
               <FaSitemap />
-              <span>Kelola Organisasi</span>
+              <span>
+                {t(
+                  "adminSidebar.dropdowns.manageOrganizations",
+                  "Kelola Organisasi"
+                )}
+              </span>
             </div>
             {openManageOrganisasi ? (
               <FiChevronUp className="text-gray-500" />

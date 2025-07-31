@@ -901,6 +901,11 @@
       "pkkPrograms": "Program PKK",
       "organizationStructure": "Struktur Organisasi"
     },
+    "dropdowns": {
+      "managePublications": "Kelola Publikasi",
+      "manageData": "Kelola Data",
+      "manageOrganizations": "Kelola Organisasi"
+    },
     "infographics": {
       "title": "Kelola Infografis",
       "submenu": {
@@ -1211,6 +1216,50 @@
       "addPrestasi": "Prestasi berhasil ditambahkan!",
       "updatePrestasi": "Prestasi berhasil diperbarui!",
       "deletePrestasi": "Prestasi berhasil dihapus!"
+    }
+  },
+  "manageApb": {
+    "title": "APBDes 2025",
+    "chartTitle": "Grafik Perbandingan Anggaran vs Realisasi",
+    "buttons": {
+      "add": "Tambah",
+      "edit": "Edit",
+      "delete": "Hapus",
+      "save": "Simpan",
+      "cancel": "Batal"
+    },
+    "form": {
+      "addTitle": "Tambah Data APBDes",
+      "editTitle": "Edit",
+      "fields": {
+        "bidang": "Bidang",
+        "anggaran": "Anggaran (juta)",
+        "realisasi": "Realisasi (juta)"
+      }
+    },
+    "chart": {
+      "legend": {
+        "anggaran": "Anggaran",
+        "realisasi": "Realisasi"
+      },
+      "unit": " jt"
+    },
+    "summary": {
+      "totalAnggaran": "Total Anggaran",
+      "totalRealisasi": "Total Realisasi",
+      "sisaAnggaran": "Sisa Anggaran",
+      "penyerapan": "Penyerapan"
+    },
+    "list": {
+      "anggaranLabel": "Anggaran",
+      "realisasiLabel": "Realisasi",
+      "unitShort": "jt"
+    },
+    "confirmation": {
+      "delete": "Yakin ingin menghapus item ini?"
+    },
+    "success": {
+      "add": "Data berhasil ditambahkan"
     }
   }
 }
