@@ -212,22 +212,6 @@ export default function AdminDashboard() {
       {/* - GRID STATISTIK DETAIL */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <DetailStatCard
-          icon={<FaNewspaper className="text-green-500" />}
-          title={t("adminDashboard.statistics.news")}
-          count={newsCount}
-          detail="Artikel terbaru"
-          onClick={() => navigate("/admin/manage-news")}
-        />
-
-        <DetailStatCard
-          icon={<FaCalendarAlt className="text-blue-500" />}
-          title={t("adminDashboard.statistics.agenda")}
-          count={agendaCount}
-          detail="Kegiatan mendatang"
-          onClick={() => navigate("/admin/manage-agenda")}
-        />
-
-        <DetailStatCard
           icon={<FaComments className="text-orange-500" />}
           title={t("adminDashboard.statistics.messages")}
           count={messageCount}
@@ -243,13 +227,6 @@ export default function AdminDashboard() {
           onClick={() => navigate("/admin/manage-user")}
         />
 
-        <DetailStatCard
-          icon={<FaTasks className="text-cyan-500" />}
-          title="Program Kerja"
-          count={programKerjaPreview.length}
-          detail="Aktivitas desa"
-          onClick={() => navigate("/admin/manage-program")}
-        />
 
         <DetailStatCard
           icon={<FaSitemap className="text-red-500" />}
@@ -259,13 +236,6 @@ export default function AdminDashboard() {
           onClick={() => navigate("/admin/struktur-desa")}
         />
 
-        <DetailStatCard
-          icon={<FaFolderOpen className="text-amber-500" />}
-          title="Repository"
-          count={dokumenPreview.length}
-          detail="Dokumen resmi"
-          onClick={() => navigate("/admin/repository")}
-        />
 
         <DetailStatCard
           icon={<FaStore className="text-teal-500" />}

@@ -56,55 +56,54 @@ export default function AdminSidebar({ isOpen, onClose }) {
   const menu = [
     {
       to: "/admin",
-      label: t("adminSidebar.menu.dashboard"),
+      label: t("adminSidebar.menu.dashboard") || "Dashboard",
       icon: <FaTachometerAlt />,
     },
   ];
 
   const managePublikSubmenu = [
-  {
-    to: "/admin/manage-berita",
-    label: t("adminSidebar.menu.manageNews"),
-    icon: <FaNewspaper />,
-  },
-  {
-    to: "/admin/manage-agenda",
-    label: t("adminSidebar.menu.manageAgenda"),
-    icon: <FaCalendarAlt />,
-  },
-  {
-    to: "/admin/manage-galery",
-    label: t("adminSidebar.menu.villageGallery"),
-    icon: <FaImage />,
-  },
-  {
-    to: "/admin/manage-anggota",
-    label: t("adminSidebar.menu.organizationStructure"),
-    icon: <FaSitemap />,
-  },
-  {
-    to: "/admin/manage-prestasi",
-    label: t("adminSidebar.menu.ManagePrestasi"),
-    icon: <FaStar />, // ✅ Icon bintang yang pasti ada
-  },
-];
-
-  
+    {
+      to: "/admin/manage-berita",
+      label: t("adminSidebar.menu.manageNews") || "Kelola Berita",
+      icon: <FaNewspaper />,
+    },
+    {
+      to: "/admin/manage-agenda",
+      label: t("adminSidebar.menu.manageAgenda") || "Kelola Agenda",
+      icon: <FaCalendarAlt />,
+    },
+    {
+      to: "/admin/manage-galery",
+      label: t("adminSidebar.menu.villageGallery") || "Galeri Desa",
+      icon: <FaImage />,
+    },
+    {
+      to: "/admin/manage-anggota",
+      label:
+        t("adminSidebar.menu.organizationStructure") || "Struktur Organisasi",
+      icon: <FaSitemap />,
+    },
+    {
+      to: "/admin/manage-prestasi",
+      label: t("adminSidebar.menu.ManagePrestasi") || "Kelola Prestasi",
+      icon: <FaStar />, // ✅ Icon bintang yang pasti ada
+    },
+  ];
 
   const manageDataSubmenu = [
     {
       to: "/admin/manage-user",
-      label: t("adminSidebar.menu.manageUsers"),
+      label: t("adminSidebar.menu.manageUsers") || "Kelola Pengguna",
       icon: <FaUsers />,
     },
     {
       to: "/admin/manage-pesan",
-      label: t("adminSidebar.menu.manageMessages"),
+      label: t("adminSidebar.menu.manageMessages") || "Kelola Pesan",
       icon: <FaEnvelope />,
     },
     {
       to: "/admin/manage-administrasi",
-      label: t("adminSidebar.menu.administration"),
+      label: t("adminSidebar.menu.administration") || "Administrasi",
       icon: <FaClipboardList />,
     },
   ];
@@ -112,12 +111,12 @@ export default function AdminSidebar({ isOpen, onClose }) {
   const manageOrganisasiSubmenu = [
     {
       to: "/admin/manage-pkk",
-      label: t("adminSidebar.menu.pkkPrograms"),
+      label: t("adminSidebar.menu.pkkPrograms") || "Program PKK",
       icon: <FaUsersCog />,
     },
     {
       to: "/admin/manage-bumdes",
-      label: t("adminSidebar.menu.bumdesProducts"),
+      label: t("adminSidebar.menu.bumdesProducts") || "Produk BUMDes",
       icon: <FaStore />,
     },
   ];
@@ -125,22 +124,27 @@ export default function AdminSidebar({ isOpen, onClose }) {
   const infografisSubmenu = [
     {
       to: "/admin/kelola-infografis/penduduk",
-      label: t("adminSidebar.infographics.submenu.population"),
+      label:
+        t("adminSidebar.infographics.submenu.population") || "Data Penduduk",
       icon: <FaUserFriends />,
     },
     {
       to: "/admin/kelola-infografis/idm",
-      label: t("adminSidebar.infographics.submenu.villageIndex"),
+      label:
+        t("adminSidebar.infographics.submenu.villageIndex") ||
+        "Indeks Desa Membangun",
       icon: <FaGlobeAsia />,
     },
     {
       to: "/admin/kelola-infografis/bansos",
-      label: t("adminSidebar.infographics.submenu.socialAssistance"),
+      label:
+        t("adminSidebar.infographics.submenu.socialAssistance") ||
+        "Bantuan Sosial",
       icon: <FaHandshake />,
     },
     {
       to: "/admin/kelola-infografis/sdgs",
-      label: t("adminSidebar.infographics.submenu.sdgsVillage"),
+      label: t("adminSidebar.infographics.submenu.sdgsVillage") || "SDGs Desa",
       icon: <FaPeopleCarry />,
     },
   ];
@@ -148,7 +152,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
   const pengaturan = [
     {
       to: "/admin/pengaturan/profil",
-      label: t("adminSidebar.settings.profile"),
+      label: t("adminSidebar.settings.profile") || "Profil",
       icon: <FaUsers />,
     },
   ];
@@ -160,9 +164,11 @@ export default function AdminSidebar({ isOpen, onClose }) {
         <img src={logo} alt="Logo Desa" className="w-11 h-11 object-contain" />
         <div>
           <h1 className="font-bold text-green-700 leading-tight text-base">
-            {t("adminSidebar.title")}
+            {t("adminSidebar.title") || "Admin Panel Desa"}
           </h1>
-          <p className="text-xs text-gray-500">{t("adminSidebar.subtitle")}</p>
+          <p className="text-xs text-gray-500">
+            {t("adminSidebar.subtitle") || "Babakan Asem"}
+          </p>
         </div>
       </div>
 
@@ -336,7 +342,9 @@ export default function AdminSidebar({ isOpen, onClose }) {
           >
             <div className="flex items-center gap-3">
               <FaChartPie />
-              <span>{t("adminSidebar.infographics.title")}</span>
+              <span>
+                {t("adminSidebar.infographics.title") || "Kelola Infografis"}
+              </span>
             </div>
             {openInfografis ? (
               <FiChevronUp className="text-gray-500" />
@@ -371,7 +379,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
 
         {/* PENGATURAN */}
         <p className="text-xs text-gray-400 mt-5 mb-2 px-2 uppercase tracking-wide">
-          {t("adminSidebar.settings.title")}
+          {t("adminSidebar.settings.title") || "Pengaturan"}
         </p>
         {pengaturan.map((item) => {
           const isActive = location.pathname === item.to;
@@ -400,14 +408,15 @@ export default function AdminSidebar({ isOpen, onClose }) {
           onClick={onClose}
           className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 text-gray-700 text-sm"
         >
-          <FaArrowLeft /> {t("adminSidebar.actions.backToWebsite")}
+          <FaArrowLeft />{" "}
+          {t("adminSidebar.actions.backToWebsite") || "Kembali ke Website"}
         </Link>
 
         <button
           onClick={handleLogout}
           className="flex items-center gap-3 px-3 py-2 w-full text-left rounded-md hover:bg-red-50 text-red-500 text-sm"
         >
-          <FaSignOutAlt /> {t("adminSidebar.actions.logout")}
+          <FaSignOutAlt /> {t("adminSidebar.actions.logout") || "Keluar"}
         </button>
       </nav>
     </>
