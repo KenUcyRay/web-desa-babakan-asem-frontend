@@ -18,7 +18,7 @@ const BASE_URL = import.meta.env.VITE_NEW_BASE_URL || "http://localhost:3000";
 export default function ManageApb() {
   const [data, setData] = useState([]);
   const [editing, setEditing] = useState(null);
-  const [form, setForm] = useState({ anggaran: "", realisasi: "" });
+  const [form, setForm] = useState({ key: "", anggaran: "", realisasi: "" });
   const [showAddForm, setShowAddForm] = useState(false);
   const [addForm, setAddForm] = useState({
     key: "",
@@ -52,7 +52,7 @@ export default function ManageApb() {
           Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
         },
         body: JSON.stringify({
-          bidang: editing.key,
+          bidang: form.key,
           anggaran: parseFloat(form.anggaran) * 1000000,
           realisasi: parseFloat(form.realisasi) * 1000000,
         }),
@@ -232,6 +232,7 @@ export default function ManageApb() {
                 onClick={() => {
                   setEditing(item);
                   setForm({
+                    key: item.key,
                     anggaran: item.anggaran,
                     realisasi: item.realisasi,
                   });
@@ -255,7 +256,16 @@ export default function ManageApb() {
       {editing && (
         <div className="mt-6 bg-white p-4 shadow rounded-lg">
           <h4 className="font-bold mb-4">Edit: {editing.key}</h4>
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid md:grid-cols-3 gap-4">
+            <label>
+              <span className="block mb-1">Bidang</span>
+              <input
+                type="text"
+                value={form.key}
+                onChange={(e) => setForm({ ...form, key: e.target.value })}
+                className="border p-2 w-full rounded"
+              />
+            </label>
             <label>
               <span className="block mb-1">Anggaran (juta)</span>
               <input
