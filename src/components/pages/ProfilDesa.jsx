@@ -15,6 +15,7 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import kumpul from "../../assets/kumpul.jpg";
 import { useTranslation } from "react-i18next";
+import { Helper } from "../../utils/Helper";
 
 export default function ProfilDesa() {
   const { t } = useTranslation();
@@ -173,7 +174,9 @@ export default function ProfilDesa() {
           {loading && (
             <div className="flex justify-center items-center py-10">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-700"></div>
-              <span className="ml-3 text-gray-600">Memuat prestasi...</span>
+              <span className="ml-3 text-gray-600">
+                {t("profileVillage.loading")}
+              </span>
             </div>
           )}
 
@@ -181,13 +184,13 @@ export default function ProfilDesa() {
           {error && !loading && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
               <p className="text-red-700">
-                Error memuat data prestasi: {error}
+                {t("profileVillage.errorMessage")}: {error}
               </p>
               <button
                 onClick={fetchAchievements}
                 className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
               >
-                Coba Lagi
+                {t("profileVillage.retryButton")}
               </button>
             </div>
           )}
@@ -217,11 +220,7 @@ export default function ProfilDesa() {
                       <p className="text-gray-600">{item.description}</p>
                       {item.date && (
                         <p className="text-sm text-green-600 mt-2">
-                          {new Date(item.date).toLocaleDateString("id-ID", {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                          })}
+                          {Helper.formatTanggal(item.date)}
                         </p>
                       )}
                     </div>
@@ -232,7 +231,7 @@ export default function ProfilDesa() {
               {/* Milestone Horizontal Timeline */}
               <div className="relative w-full py-10">
                 <h3 className="text-xl font-bold text-center text-gray-800 mb-14">
-                  Jejak Penghargaan Desa
+                  {t("profileVillage.timelineTitle")}
                 </h3>
 
                 {/* Timeline Container */}
@@ -292,7 +291,7 @@ export default function ProfilDesa() {
           {!loading && achievements.length === 0 && !error && (
             <div className="text-center py-10">
               <p className="text-gray-600">
-                Belum ada data prestasi yang tersedia.
+                {t("profileVillage.noAchievements")}
               </p>
             </div>
           )}

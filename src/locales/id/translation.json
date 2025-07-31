@@ -1,5 +1,5 @@
 {
- "home": {
+  "home": {
     "hero": {
       "title": "Selamat Datang di Desa Babakan Asem",
       "description": "Desa hijau yang ramah penuh dengan semangat gotong royong.",
@@ -69,7 +69,21 @@
       "paving": "Pembangunan Jalan Paving",
       "entrepreneur": "Pelatihan Wirausaha",
       "lighting": "Pemasangan Penerangan Jalan",
-      "hall": "Renovasi Balai Desa"
+      "hall": "Renovasi Balai Desa",
+      "loading": "Memuat program kerja...",
+      "nodata": "Program kerja tidak tersedia",
+      "nodesc": "Tidak ada deskripsi",
+      "nodate": "Tanggal tidak tersedia",
+      "nobudget": "Anggaran tidak ditentukan"
+    },
+    "apbchart": {
+      "loading": "Memuat data APB...",
+      "nodata": "Data APB tidak tersedia",
+      "million": "Jt"
+    },
+    "errors": {
+      "product": "Gagal mengambil data produk. Silakan coba lagi nanti.",
+      "news": "Gagal mengambil data berita. Silakan coba lagi nanti."
     }
   },
   "contact": {
@@ -130,54 +144,59 @@
     "desaName": "Desa Babakan Asem",
     "kabupaten": "Kabupaten Sumedang"
   },
- "profileVillage": {
-  "tagline": "Tentang Desa",
-  "title": "Profil Desa <strong>Babakan Asem</strong>",
-  "description": "Desa Babakan Asem adalah desa yang kaya akan sejarah, budaya, dan potensi masyarakatnya. Dengan semangat kebersamaan dan gotong royong, desa ini terus berkembang menuju masa depan yang lebih baik, tetap menjaga nilai-nilai tradisi namun beradaptasi dengan perkembangan zaman.",
-  "historyTitle": "Sejarah Desa",
-  "historyText": "Menurut sejarahnya, Desa Babakan Asem pada awalnya termasuk wilayah Desa Bongkok dan Desa Conggeang. Nama Desa Babakan Asem sendiri berasal dari satu kampung atau babakan dan ada pohon asem yang besar, maka diberi nama Desa Babakan Asem. Babakan Asem juga merupakan singkatan dari <strong>Bareng Bakti Negara Anu Sempurna</strong>. Sementara moto Desa Babakan Asem adalah <strong>\"Ayem Tengrtrem Kerta Raharja\"</strong>.",
-  "visionTitle": "Visi",
-  "visionText": "“Mewujudkan Desa Babakan Asem yang mandiri, maju, dan berdaya saing dengan tetap menjaga nilai-nilai budaya dan gotong royong masyarakat.”",
-  "missionTitle": "Misi",
-  "missionList": [
-    "Meningkatkan kesejahteraan masyarakat melalui pembangunan berkelanjutan.",
-    "Memberdayakan potensi desa untuk mendukung ekonomi kreatif.",
-    "Meningkatkan kualitas pendidikan & kesehatan masyarakat.",
-    "Menjaga kelestarian lingkungan & budaya lokal."
-  ],
-  "achievementsTitle": "Penghargaan Desa",
-"achievements": [
-  {
-    "years": "2022",
-    "title": "Desa Terbaik dalam Keberlanjutan Lingkungan – Kabupaten Sumedang (2023)",
-    "description": "Diberikan atas inisiatif lingkungan yang luar biasa serta partisipasi aktif masyarakat dalam menjaga ruang hijau.",
-    "image": "/images/awards/award-2023.jpg"
+  "profileVillage": {
+    "tagline": "Tentang Desa",
+    "title": "Profil Desa <strong>Babakan Asem</strong>",
+    "description": "Desa Babakan Asem adalah desa yang kaya akan sejarah, budaya, dan potensi masyarakatnya. Dengan semangat kebersamaan dan gotong royong, desa ini terus berkembang menuju masa depan yang lebih baik, tetap menjaga nilai-nilai tradisi namun beradaptasi dengan perkembangan zaman.",
+    "historyTitle": "Sejarah Desa",
+    "historyText": "Menurut sejarahnya, Desa Babakan Asem pada awalnya termasuk wilayah Desa Bongkok dan Desa Conggeang. Nama Desa Babakan Asem sendiri berasal dari satu kampung atau babakan dan ada pohon asem yang besar, maka diberi nama Desa Babakan Asem. Babakan Asem juga merupakan singkatan dari <strong>Bareng Bakti Negara Anu Sempurna</strong>. Sementara moto Desa Babakan Asem adalah <strong>\"Ayem Tengrtrem Kerta Raharja\"</strong>.",
+    "visionTitle": "Visi",
+    "visionText": "“Mewujudkan Desa Babakan Asem yang mandiri, maju, dan berdaya saing dengan tetap menjaga nilai-nilai budaya dan gotong royong masyarakat.”",
+    "missionTitle": "Misi",
+    "missionList": [
+      "Meningkatkan kesejahteraan masyarakat melalui pembangunan berkelanjutan.",
+      "Memberdayakan potensi desa untuk mendukung ekonomi kreatif.",
+      "Meningkatkan kualitas pendidikan & kesehatan masyarakat.",
+      "Menjaga kelestarian lingkungan & budaya lokal."
+    ],
+    "achievementsTitle": "Penghargaan Desa",
+    "loading": "Memuat prestasi...",
+    "errorMessage": "Error memuat data prestasi",
+    "retryButton": "Coba Lagi",
+    "timelineTitle": "Jejak Penghargaan Desa",
+    "noAchievements": "Belum ada data prestasi yang tersedia.",
+    "achievements": [
+      {
+        "years": "2022",
+        "title": "Desa Terbaik dalam Keberlanjutan Lingkungan – Kabupaten Sumedang (2023)",
+        "description": "Diberikan atas inisiatif lingkungan yang luar biasa serta partisipasi aktif masyarakat dalam menjaga ruang hijau.",
+        "image": "/images/awards/award-2023.jpg"
+      },
+      {
+        "years": "2023",
+        "title": "3 Besar Inovasi Desa Digital – Jawa Barat (2022)",
+        "description": "Diakui atas terobosan dalam pelayanan publik berbasis digital dan keterlibatan warga secara daring.",
+        "image": "/images/awards/award-2022.jpg"
+      },
+      {
+        "years": "2024",
+        "title": "Desa Aktif dalam Program Kesehatan Posyandu – 2021",
+        "description": "Penghargaan atas keterlibatan masyarakat yang konsisten dalam kegiatan kesehatan dan layanan Posyandu.",
+        "image": "/images/awards/award-2021.jpg"
+      }
+    ],
+    "contactTitle": "🌐 Hubungi & Ikuti Kami",
+    "locationTitle": "Desa Babakan Asem",
+    "locationDetail": "Jalan Babakan Asem No. 142 Desa Babakan Asem, Kecamatan Conggeang, Kabupaten Sumedang, Jawa Barat 45391",
+    "phoneTitle": "Telepon",
+    "whatsappTitle": "WhatsApp",
+    "emailTitle": "Email Kami",
+    "mapTitle": "Batas Wilayah Desa",
+    "mapNorth": "<strong>Utara:</strong> Desa Ungkal",
+    "mapSouth": "<strong>Selatan:</strong> Desa Bugel",
+    "mapWest": "<strong>Barat:</strong> Desa Cacaban & Desa Prasih",
+    "mapEast": "<strong>Timur:</strong> Desa Cipelang & kawasan BPM Taman"
   },
-  {
-    "years": "2023",
-    "title": "3 Besar Inovasi Desa Digital – Jawa Barat (2022)",
-    "description": "Diakui atas terobosan dalam pelayanan publik berbasis digital dan keterlibatan warga secara daring.",
-    "image": "/images/awards/award-2022.jpg"
-  },
-  {
-    "years": "2024",
-    "title": "Desa Aktif dalam Program Kesehatan Posyandu – 2021",
-    "description": "Penghargaan atas keterlibatan masyarakat yang konsisten dalam kegiatan kesehatan dan layanan Posyandu.",
-    "image": "/images/awards/award-2021.jpg"
-  }
-],
-  "contactTitle": "🌐 Hubungi & Ikuti Kami",
-  "locationTitle": "Desa Babakan Asem",
-  "locationDetail": "Jalan Babakan Asem No. 142 Desa Babakan Asem, Kecamatan Conggeang, Kabupaten Sumedang, Jawa Barat 45391",
-  "phoneTitle": "Telepon",
-  "whatsappTitle": "WhatsApp",
-  "emailTitle": "Email Kami",
-  "mapTitle": "Batas Wilayah Desa",
-  "mapNorth": "<strong>Utara:</strong> Desa Ungkal",
-  "mapSouth": "<strong>Selatan:</strong> Desa Bugel",
-  "mapWest": "<strong>Barat:</strong> Desa Cacaban & Desa Prasih",
-  "mapEast": "<strong>Timur:</strong> Desa Cipelang & kawasan BPM Taman"
-},
   "government": {
     "title": "Pemerintah <br /> <span class='text-green-600'>Desa Babakan Asem</span>",
     "subtitle": "Desa Babakan Asem <br /> Menuju Desa Mandiri, Maju & Sejahtera",
@@ -463,6 +482,7 @@
   "idm": {
     "title": "Skor IDM Desa Babakan Asem",
     "description": "Indeks Desa Membangun (IDM) dari tahun ke tahun.",
+    "lastUpdated": "Terakhir diperbarui",
     "box": {
       "status": "Status Desa",
       "sosial": "Dimensi Sosial",
@@ -474,31 +494,77 @@
     }
   },
   "bansos": {
-  "title": "Data Bantuan Sosial",
-  "description": "Daftar bantuan sosial yang diterima warga desa.",
-  "jumlah": "Jumlah Penerima",
-  "trend_title": "Tren Penerima Bantuan Sosial",
-  "recipients": "penerima",
-  "year": "Tahun",
-  "analysis_title": "Analisis Tren",
-  "analysis_text": "Data menunjukkan penurunan signifikan dalam jumlah penerima bansos dari tahun 2020 hingga 2024. Penurunan sebesar <bold>39%</bold> ini menunjukkan peningkatan kesejahteraan masyarakat dan efektivitas program pengentasan kemiskinan. Faktor utama penurunan meliputi:",
-  "analysis_point_1": "Pertumbuhan ekonomi yang stabil",
-  "analysis_point_2": "Program pemberdayaan masyarakat yang efektif",
-  "analysis_point_3": "Peningkatan lapangan pekerjaan",
-  "analysis_point_4": "Pendidikan dan pelatihan keterampilan",
-  "active_programs": "Program Bansos Aktif",
-  "about_title": "Tentang Program Bansos",
-  "what_is": "Apa itu Bansos?",
-  "what_is_text": "Bantuan Sosial (Bansos) adalah program pemerintah untuk memberikan bantuan kepada masyarakat yang membutuhkan. Program ini bertujuan untuk mengurangi beban ekonomi masyarakat miskin dan rentan.",
-  "goals": "Tujuan Program",
-  "goal_1": "Meningkatkan akses pelayanan dasar",
-  "goal_2": "Mengurangi kesenjangan sosial",
-  "goal_3": "Meningkatkan kesejahteraan masyarakat",
-  "goal_4": "Memberikan perlindungan sosial"
-},
+    "title": "Data Bantuan Sosial",
+    "description": "Daftar bantuan sosial yang diterima warga desa.",
+    "lastUpdated": "Terakhir diperbarui",
+    "jumlah": "Jumlah Penerima",
+    "trend_title": "Tren Penerima Bantuan Sosial",
+    "recipients": "penerima",
+    "year": "Tahun",
+    "analysis_title": "Analisis Tren",
+    "analysis_text": "Data menunjukkan penurunan signifikan dalam jumlah penerima bansos dari tahun 2020 hingga 2024. Penurunan sebesar <bold>39%</bold> ini menunjukkan peningkatan kesejahteraan masyarakat dan efektivitas program pengentasan kemiskinan. Faktor utama penurunan meliputi:",
+    "analysis_point_1": "Pertumbuhan ekonomi yang stabil",
+    "analysis_point_2": "Program pemberdayaan masyarakat yang efektif",
+    "analysis_point_3": "Peningkatan lapangan pekerjaan",
+    "analysis_point_4": "Pendidikan dan pelatihan keterampilan",
+    "active_programs": "Program Bansos Aktif",
+    "createdAt": "Dibuat pada",
+    "about_title": "Tentang Program Bansos",
+    "what_is": "Apa itu Bansos?",
+    "what_is_text": "Bantuan Sosial (Bansos) adalah program pemerintah untuk memberikan bantuan kepada masyarakat yang membutuhkan. Program ini bertujuan untuk mengurangi beban ekonomi masyarakat miskin dan rentan.",
+    "goals": "Tujuan Program",
+    "goal_1": "Meningkatkan akses pelayanan dasar",
+    "goal_2": "Mengurangi kesenjangan sosial",
+    "goal_3": "Meningkatkan kesejahteraan masyarakat",
+    "goal_4": "Memberikan perlindungan sosial"
+  },
   "sdgs": {
     "title": "SDGs Desa",
-    "description": "17 Tujuan Pembangunan Berkelanjutan di Desa Babakan Asem."
+    "description": "17 Tujuan Pembangunan Berkelanjutan di Desa Babakan Asem.",
+    "lastUpdated": "Terakhir diperbarui",
+    "updatedAt": "Diperbarui"
+  },
+  "penduduk": {
+    "title": "Data Penduduk Desa",
+    "description": "Komprehensif data demografi dan statistik penduduk desa yang akurat dan terkini",
+    "updateNote": "Data diperbarui secara berkala untuk memberikan informasi yang tepat",
+    "updatedAt": "Diperbarui",
+    "jumlah": "Jumlah",
+    "orang": "orang",
+    "mainData": {
+      "title": "Data Penduduk Utama",
+      "description": "Komposisi dasar penduduk desa berdasarkan jenis kelamin, jumlah kepala keluarga, dan data anak-anak. Data ini menjadi dasar untuk perencanaan program pembangunan dan pelayanan masyarakat.",
+      "chartTitle": "Grafik Data Penduduk Utama",
+      "chartDescription": "Visualisasi komposisi dasar penduduk desa"
+    },
+    "pekerjaan": {
+      "title": "Data Pekerjaan",
+      "description": "Distribusi mata pencaharian penduduk menunjukkan karakteristik ekonomi masyarakat desa."
+    },
+    "pendidikan": {
+      "title": "Tingkat Pendidikan",
+      "description": "Profil pendidikan masyarakat desa menggambarkan kualitas sumber daya manusia."
+    },
+    "pernikahan": {
+      "title": "Status Pernikahan",
+      "description": "Komposisi status pernikahan penduduk dewasa menunjukkan struktur keluarga dalam masyarakat."
+    },
+    "agama": {
+      "title": "Data Agama",
+      "description": "Keberagaman agama mencerminkan toleransi dan keharmonisan hidup bermasyarakat."
+    },
+    "usia": {
+      "title": "Kelompok Usia",
+      "description": "Struktur usia menunjukkan komposisi penduduk berdasarkan kelompok umur."
+    },
+    "wajibPilih": {
+      "title": "Data Wajib Pilih",
+      "description": "Data penduduk yang memiliki hak pilih dalam pemilihan umum."
+    },
+    "dusun": {
+      "title": "Distribusi Per Dusun",
+      "description": "Penyebaran penduduk di wilayah desa berdasarkan dusun."
+    }
   },
   "infografis": {
     "layout": {

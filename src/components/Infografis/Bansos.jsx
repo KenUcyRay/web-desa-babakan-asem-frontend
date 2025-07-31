@@ -8,11 +8,12 @@ import {
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
 } from "chart.js";
 import { InfografisApi } from "../../libs/api/InfografisApi";
 import { alertError } from "../../libs/alert";
 import { useTranslation } from "react-i18next";
+import { Helper } from "../../utils/Helper";
 
 // Daftarkan ChartJS
 ChartJS.register(
@@ -29,6 +30,25 @@ export default function Bansos() {
   const { t } = useTranslation();
   const [bansos, setBansos] = useState([]);
   const [trendData, setTrendData] = useState([]);
+  const [lastUpdated, setLastUpdated] = useState(null);
+
+  // Fungsi untuk memparse text dengan tag <bold>
+  const parseTextWithBold = (text) => {
+    if (!text) return text;
+
+    const parts = text.split(/(<bold>.*?<\/bold>)/g);
+    return parts.map((part, index) => {
+      if (part.startsWith("<bold>") && part.endsWith("</bold>")) {
+        const boldText = part.replace(/<\/?bold>/g, "");
+        return (
+          <strong key={index} className="font-bold text-blue-900">
+            {boldText}
+          </strong>
+        );
+      }
+      return part;
+    });
+  };
 
   const fetchBansos = async () => {
     const response = await InfografisApi.getBansos();
@@ -38,6 +58,23 @@ export default function Bansos() {
       return;
     }
     setBansos(responseBody.bansos);
+
+    // Set tanggal update terakhir
+    if (responseBody.lastUpdated) {
+      setLastUpdated(responseBody.lastUpdated);
+    } else if (responseBody.bansos && responseBody.bansos.length > 0) {
+      // Jika API tidak mengembalikan lastUpdated, ambil dari data terakhir yang diupdate
+      const latestData = responseBody.bansos.reduce((latest, current) => {
+        if (!latest.updated_at) return current;
+        if (!current.updated_at) return latest;
+        return new Date(current.updated_at) > new Date(latest.updated_at)
+          ? current
+          : latest;
+      });
+      if (latestData.updated_at) {
+        setLastUpdated(latestData.updated_at);
+      }
+    }
   };
 
   const getDummyTrendData = () => {
@@ -46,7 +83,7 @@ export default function Bansos() {
       { year: 2021, total: 16300 },
       { year: 2022, total: 14200 },
       { year: 2023, total: 12800 },
-      { year: 2024, total: 11200 }
+      { year: 2024, total: 11200 },
     ];
   };
 
@@ -56,11 +93,11 @@ export default function Bansos() {
   }, []);
 
   const chartData = {
-    labels: trendData.map(item => item.year),
+    labels: trendData.map((item) => item.year),
     datasets: [
       {
         label: "", // kosongkan agar legend tidak muncul
-        data: trendData.map(item => item.total),
+        data: trendData.map((item) => item.total),
         borderColor: "#B6F500",
         backgroundColor: "rgba(182, 245, 0, 0.2)",
         tension: 0.3,
@@ -69,9 +106,9 @@ export default function Bansos() {
         pointBorderWidth: 2,
         pointHoverRadius: 6,
         pointRadius: 5,
-        fill: true
-      }
-    ]
+        fill: true,
+      },
+    ],
   };
 
   const chartOptions = {
@@ -79,7 +116,7 @@ export default function Bansos() {
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        display: false
+        display: false,
       },
       title: {
         display: true,
@@ -88,65 +125,67 @@ export default function Bansos() {
         font: {
           family: "Poppins, sans-serif",
           size: 18,
-          weight: "bold"
+          weight: "bold",
         },
         color: "#111",
         padding: {
           top: 10,
-          bottom: 20
-        }
+          bottom: 20,
+        },
       },
       tooltip: {
         backgroundColor: "#1a1c23",
         titleFont: {
           family: "Poppins, sans-serif",
-          size: 14
+          size: 14,
         },
         bodyFont: {
           family: "Poppins, sans-serif",
           size: 14,
-          weight: "bold"
+          weight: "bold",
         },
         padding: 12,
         displayColors: false,
         callbacks: {
           label: function (context) {
-            return `${context.parsed.y.toLocaleString()} ${t("bansos.recipients")}`;
+            return `${context.parsed.y.toLocaleString()} ${t(
+              "bansos.recipients"
+            )}`;
           },
           title: function (context) {
             return `${t("bansos.year")} ${context[0].label}`;
-          }
-        }
-      }
+          },
+        },
+      },
     },
     scales: {
       y: {
         beginAtZero: false,
         grid: {
-          color: "rgba(0, 0, 0, 0.05)"
+          color: "rgba(0, 0, 0, 0.05)",
         },
         ticks: {
           font: {
             family: "Poppins, sans-serif",
-            size: 12
+            size: 12,
           },
           callback: function (value) {
             return value.toLocaleString();
-          }
-        }
+          },
+        },
       },
       x: {
         grid: {
-          display: false
+          display: false,
         },
         ticks: {
           font: {
             family: "Poppins, sans-serif",
-            size: 12
-          }
-        }
-      }
-    }
+            size: 12,
+          },
+        },
+      },
+    },
   };
 
   return (
@@ -158,6 +197,13 @@ export default function Bansos() {
         <p className="mt-2 text-gray-600 max-w-3xl">
           {t("bansos.description")}
         </p>
+        {lastUpdated && (
+          <div className="mt-3">
+            <p className="text-sm text-gray-500">
+              {t("bansos.lastUpdated")}: {Helper.formatTanggal(lastUpdated)}
+            </p>
+          </div>
+        )}
 
         {/* Grafik Tren */}
         <div className="mt-8 bg-gradient-to-br from-gray-50 to-white p-6 rounded-xl border border-gray-200">
@@ -196,7 +242,7 @@ export default function Bansos() {
               {t("bansos.analysis_title")}
             </h4>
             <p className="text-gray-700">
-              {t("bansos.analysis_text")}
+              {parseTextWithBold(t("bansos.analysis_text"))}
             </p>
             <ul className="mt-2 list-disc list-inside text-gray-700 space-y-1">
               <li>{t("bansos.analysis_point_1")}</li>
@@ -216,17 +262,27 @@ export default function Bansos() {
             {bansos.map((item) => (
               <div
                 key={item.id}
-                className="bg-white p-6 rounded-xl shadow flex justify-between items-center border border-gray-200 hover:shadow-md hover:-translate-y-1 transition-all duration-300"
+                className="bg-white p-6 rounded-xl shadow border border-gray-200 hover:shadow-md hover:-translate-y-1 transition-all duration-300"
               >
-                <div>
-                  <p className="font-semibold text-gray-800">{item.name}</p>
-                  <p className="text-gray-500 text-sm mt-1">
-                    {t("bansos.jumlah")}
-                  </p>
+                <div className="flex justify-between items-start mb-3">
+                  <div className="flex-1">
+                    <p className="font-semibold text-gray-800">{item.name}</p>
+                    <p className="text-gray-500 text-sm mt-1">
+                      {t("bansos.jumlah")}
+                    </p>
+                  </div>
+                  <span className="text-xl font-bold text-[#B6F500] ml-4">
+                    {item.amount.toLocaleString()}
+                  </span>
                 </div>
-                <span className="text-xl font-bold text-[#B6F500]">
-                  {item.amount.toLocaleString()}
-                </span>
+                {item.created_at && (
+                  <div className="mt-3 pt-3 border-t border-gray-100">
+                    <p className="text-xs text-gray-500">
+                      {t("bansos.createdAt")}:{" "}
+                      {Helper.formatTanggal(item.created_at)}
+                    </p>
+                  </div>
+                )}
               </div>
             ))}
           </div>

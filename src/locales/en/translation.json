@@ -1,5 +1,5 @@
 {
- "home": {
+  "home": {
     "hero": {
       "title": "Welcome to Babakan Asem Village",
       "description": "A green, friendly village full of mutual cooperation.",
@@ -69,7 +69,21 @@
       "paving": "Paving Road Construction",
       "entrepreneur": "Entrepreneurship Training",
       "lighting": "Street Lighting Installation",
-      "hall": "Village Hall Renovation"
+      "hall": "Village Hall Renovation",
+      "loading": "Loading work programs...",
+      "nodata": "No work programs available",
+      "nodesc": "No description",
+      "nodate": "No date available",
+      "nobudget": "Budget not specified"
+    },
+    "apbchart": {
+      "loading": "Loading APB data...",
+      "nodata": "APB data not available",
+      "million": "M"
+    },
+    "errors": {
+      "product": "Failed to fetch product data. Please try again later.",
+      "news": "Failed to fetch news data. Please try again later."
     }
   },
   "contact": {
@@ -130,55 +144,59 @@
     "desaName": "Babakan Asem Village",
     "kabupaten": "Sumedang Regency"
   },
- "profileVillage": {
-  "tagline": "About the Village",
-  "title": "Village Profile of <strong>Babakan Asem</strong>",
-  "description": "Babakan Asem is a village rich in history, culture, and community potential. With the spirit of togetherness and mutual cooperation, this village continues to grow toward a better future, preserving traditional values while adapting to modern times.",
-  "historyTitle": "Village History",
-  "historyText": "According to its history, Babakan Asem Village was originally part of Bongkok Village and Conggeang Village. The name 'Babakan Asem' comes from a hamlet or 'babakan' where a large tamarind tree once stood. Babakan Asem is also an acronym for <strong>Bareng Bakti Negara Anu Sempurna</strong>. Meanwhile, the village motto is <strong>\"Ayem Tengrtrem Kerta Raharja\"</strong>.",
-  "visionTitle": "Vision",
-  "visionText": "“To realize Babakan Asem Village as an independent, advanced, and competitive village while maintaining cultural values and community cooperation.”",
-  "missionTitle": "Mission",
-  "missionList": [
-    "Improve community welfare through sustainable development.",
-    "Empower village potential to support the creative economy.",
-    "Enhance the quality of education & community health",
-    "Preserve the environment & local culture."
-  ],
- "achievementsTitle": "Village Achievements",
-"achievements": [
-  {
-    "years": "2022",
-    "title": "Best Village in Environmental Sustainability – Sumedang Regency (2023)",
-    "description": "Awarded for outstanding environmental initiatives and community participation in preserving green spaces.",
-    "image": "/images/awards/award-2023.jpg"
+  "profileVillage": {
+    "tagline": "About the Village",
+    "title": "Village Profile of <strong>Babakan Asem</strong>",
+    "description": "Babakan Asem is a village rich in history, culture, and community potential. With the spirit of togetherness and mutual cooperation, this village continues to grow toward a better future, preserving traditional values while adapting to modern times.",
+    "historyTitle": "Village History",
+    "historyText": "According to its history, Babakan Asem Village was originally part of Bongkok Village and Conggeang Village. The name 'Babakan Asem' comes from a hamlet or 'babakan' where a large tamarind tree once stood. Babakan Asem is also an acronym for <strong>Bareng Bakti Negara Anu Sempurna</strong>. Meanwhile, the village motto is <strong>\"Ayem Tengrtrem Kerta Raharja\"</strong>.",
+    "visionTitle": "Vision",
+    "visionText": "“To realize Babakan Asem Village as an independent, advanced, and competitive village while maintaining cultural values and community cooperation.”",
+    "missionTitle": "Mission",
+    "missionList": [
+      "Improve community welfare through sustainable development.",
+      "Empower village potential to support the creative economy.",
+      "Enhance the quality of education & community health",
+      "Preserve the environment & local culture."
+    ],
+    "achievementsTitle": "Village Achievements",
+    "loading": "Loading achievements...",
+    "errorMessage": "Error loading achievement data",
+    "retryButton": "Try Again",
+    "timelineTitle": "Village Award Timeline",
+    "noAchievements": "No achievement data available yet.",
+    "achievements": [
+      {
+        "years": "2022",
+        "title": "Best Village in Environmental Sustainability – Sumedang Regency (2023)",
+        "description": "Awarded for outstanding environmental initiatives and community participation in preserving green spaces.",
+        "image": "/images/awards/award-2023.jpg"
+      },
+      {
+        "years": "2023",
+        "title": "Top 3 Digital Village Innovations – West Java (2022)",
+        "description": "Recognized for pioneering digital services in public administration and citizen engagement.",
+        "image": "/images/awards/award-2022.jpg"
+      },
+      {
+        "years": "2024",
+        "title": "Active Village in Community Health Program (Posyandu) – 2021",
+        "description": "Acknowledged for consistent community involvement in local health initiatives and Posyandu activities.",
+        "image": "/images/awards/award-2021.jpg"
+      }
+    ],
+    "contactTitle": "🌐 Contact & Follow Us",
+    "locationTitle": "Babakan Asem Village",
+    "locationDetail": "Jalan Babakan Asem No. 142, Babakan Asem Village, Conggeang District, Sumedang Regency, West Java 45391",
+    "phoneTitle": "Phone",
+    "whatsappTitle": "WhatsApp",
+    "emailTitle": "Email Us",
+    "mapTitle": "Village Boundary Map",
+    "mapNorth": "<strong>North:</strong> Ungkal Village",
+    "mapSouth": "<strong>South:</strong> Bugel Village",
+    "mapWest": "<strong>West:</strong> Cacaban & Prasih Villages",
+    "mapEast": "<strong>East:</strong> Cipelang Village & BPM Taman area"
   },
-  {
-    "years":"2023",
-    "title": "Top 3 Digital Village Innovations – West Java (2022)",
-    "description": "Recognized for pioneering digital services in public administration and citizen engagement.",
-    "image": "/images/awards/award-2022.jpg"
-  },
-  {
-    "years": "2024",
-    "title": "Active Village in Community Health Program (Posyandu) – 2021",
-    "description": "Acknowledged for consistent community involvement in local health initiatives and Posyandu activities.",
-    "image": "/images/awards/award-2021.jpg"
-  }
-]
-,
-  "contactTitle": "🌐 Contact & Follow Us",
-  "locationTitle": "Babakan Asem Village",
-  "locationDetail": "Jalan Babakan Asem No. 142, Babakan Asem Village, Conggeang District, Sumedang Regency, West Java 45391",
-  "phoneTitle": "Phone",
-  "whatsappTitle": "WhatsApp",
-  "emailTitle": "Email Us",
-  "mapTitle": "Village Boundary Map",
-  "mapNorth": "<strong>North:</strong> Ungkal Village",
-  "mapSouth": "<strong>South:</strong> Bugel Village",
-  "mapWest": "<strong>West:</strong> Cacaban & Prasih Villages",
-  "mapEast": "<strong>East:</strong> Cipelang Village & BPM Taman area"
-},  
   "government": {
     "title": "Government <br /> <span class='text-green-600'>Babakan Asem Village</span>",
     "subtitle": "Babakan Asem Village <br /> Towards an Independent, Advanced & Prosperous Village",
@@ -464,6 +482,7 @@
   "idm": {
     "title": "IDM Score of Babakan Asem Village",
     "description": "Village Development Index (IDM) over the years.",
+    "lastUpdated": "Last updated",
     "box": {
       "status": "Village Status",
       "sosial": "Social Dimension",
@@ -474,32 +493,78 @@
       "title": "IDM Score Progress"
     }
   },
- "bansos": {
-  "title": "Social Assistance Data",
-  "description": "List of social assistance received by village residents.",
-  "jumlah": "Number of Recipients",
-  "trend_title": "Social Assistance Recipients Trend",
-  "recipients": "recipients",
-  "year": "Year",
-  "analysis_title": "Trend Analysis",
-  "analysis_text": "The data shows a significant decrease in the number of social assistance recipients from 2020 to 2024. This <bold>39%</bold> decrease indicates improved community welfare and the effectiveness of poverty alleviation programs. The main contributing factors include:",
-  "analysis_point_1": "Stable economic growth",
-  "analysis_point_2": "Effective community empowerment programs",
-  "analysis_point_3": "Increase in job opportunities",
-  "analysis_point_4": "Education and skills training",
-  "active_programs": "Active Social Assistance Programs",
-  "about_title": "About the Social Assistance Program",
-  "what_is": "What is Social Assistance?",
-  "what_is_text": "Social Assistance (Bansos) is a government program to provide aid to those in need. This program aims to reduce the economic burden of poor and vulnerable communities.",
-  "goals": "Program Goals",
-  "goal_1": "Improving access to basic services",
-  "goal_2": "Reducing social inequality",
-  "goal_3": "Improving community welfare",
-  "goal_4": "Providing social protection"
-},
+  "bansos": {
+    "title": "Social Assistance Data",
+    "description": "List of social assistance received by village residents.",
+    "lastUpdated": "Last updated",
+    "jumlah": "Number of Recipients",
+    "trend_title": "Social Assistance Recipients Trend",
+    "recipients": "recipients",
+    "year": "Year",
+    "analysis_title": "Trend Analysis",
+    "analysis_text": "The data shows a significant decrease in the number of social assistance recipients from 2020 to 2024. This <bold>39%</bold> decrease indicates improved community welfare and the effectiveness of poverty alleviation programs. The main contributing factors include:",
+    "analysis_point_1": "Stable economic growth",
+    "analysis_point_2": "Effective community empowerment programs",
+    "analysis_point_3": "Increase in job opportunities",
+    "analysis_point_4": "Education and skills training",
+    "active_programs": "Active Social Assistance Programs",
+    "createdAt": "Created on",
+    "about_title": "About the Social Assistance Program",
+    "what_is": "What is Social Assistance?",
+    "what_is_text": "Social Assistance (Bansos) is a government program to provide aid to those in need. This program aims to reduce the economic burden of poor and vulnerable communities.",
+    "goals": "Program Goals",
+    "goal_1": "Improving access to basic services",
+    "goal_2": "Reducing social inequality",
+    "goal_3": "Improving community welfare",
+    "goal_4": "Providing social protection"
+  },
   "sdgs": {
     "title": "Village SDGs",
-    "description": "17 Sustainable Development Goals in Babakan Asem Village."
+    "description": "17 Sustainable Development Goals in Babakan Asem Village.",
+    "lastUpdated": "Last updated",
+    "updatedAt": "Updated"
+  },
+  "penduduk": {
+    "title": "Village Population Data",
+    "description": "Comprehensive demographic data and village population statistics that are accurate and up-to-date",
+    "updateNote": "Data is updated regularly to provide accurate information",
+    "updatedAt": "Updated",
+    "jumlah": "Total",
+    "orang": "people",
+    "mainData": {
+      "title": "Main Population Data",
+      "description": "Basic composition of village population based on gender, number of household heads, and children's data. This data serves as the basis for development program planning and community services.",
+      "chartTitle": "Main Population Data Chart",
+      "chartDescription": "Visualization of basic village population composition"
+    },
+    "pekerjaan": {
+      "title": "Occupation Data",
+      "description": "Distribution of population livelihoods shows the economic characteristics of the village community."
+    },
+    "pendidikan": {
+      "title": "Education Level",
+      "description": "The educational profile of the village community reflects the quality of human resources."
+    },
+    "pernikahan": {
+      "title": "Marital Status",
+      "description": "The composition of adult marital status shows family structure in society."
+    },
+    "agama": {
+      "title": "Religious Data",
+      "description": "Religious diversity reflects tolerance and harmony in community life."
+    },
+    "usia": {
+      "title": "Age Groups",
+      "description": "Age structure shows population composition based on age groups."
+    },
+    "wajibPilih": {
+      "title": "Eligible Voters Data",
+      "description": "Data of population who have voting rights in general elections."
+    },
+    "dusun": {
+      "title": "Distribution by Hamlet",
+      "description": "Distribution of population in village areas based on hamlets."
+    }
   },
   "infografis": {
     "layout": {

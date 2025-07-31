@@ -11,6 +11,7 @@ import {
 import { InfografisApi } from "../../libs/api/InfografisApi";
 import { alertError } from "../../libs/alert";
 import { useTranslation } from "react-i18next";
+import { Helper } from "../../utils/Helper";
 
 export default function IDM() {
   const { t } = useTranslation();
@@ -21,12 +22,23 @@ export default function IDM() {
     ekonomi: 0,
     lingkungan: 0,
   });
+  const [lastUpdated, setLastUpdated] = useState(null);
 
   const fetchData = async () => {
     const resIdm = await InfografisApi.getIdm();
     const bodyIdm = await resIdm.json();
     if (resIdm.ok && Array.isArray(bodyIdm.idm)) {
       setIdm(bodyIdm.idm.map((d) => ({ ...d, skor: d.skor / 100 })));
+      // Set tanggal update terakhir (ambil dari data terbaru atau response)
+      if (bodyIdm.lastUpdated) {
+        setLastUpdated(bodyIdm.lastUpdated);
+      } else if (bodyIdm.idm.length > 0) {
+        // Jika API tidak mengembalikan lastUpdated, gunakan updated_at dari data terakhir
+        const latestData = bodyIdm.idm[bodyIdm.idm.length - 1];
+        if (latestData.updated_at) {
+          setLastUpdated(latestData.updated_at);
+        }
+      }
     } else {
       alertError("Gagal mengambil data IDM.");
     }
@@ -39,6 +51,10 @@ export default function IDM() {
       bodyExtra.extraIdm.length > 0
     ) {
       setExtraIdm(bodyExtra.extraIdm[0]);
+      // Set tanggal update dari extra IDM jika tidak ada dari data IDM utama
+      if (!lastUpdated && bodyExtra.extraIdm[0].updated_at) {
+        setLastUpdated(bodyExtra.extraIdm[0].updated_at);
+      }
     } else {
       alertError("Gagal mengambil data status desa & dimensi.");
     }
@@ -54,6 +70,13 @@ export default function IDM() {
       <div className="text-center">
         <h2 className="text-3xl font-bold text-gray-800">{t("idm.title")}</h2>
         <p className="mt-2 text-gray-600">{t("idm.description")}</p>
+        {lastUpdated && (
+          <div className="mt-3">
+            <p className="text-sm text-gray-500">
+              {t("idm.lastUpdated")}: {Helper.formatTanggal(lastUpdated)}
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Statistik Kotak */}

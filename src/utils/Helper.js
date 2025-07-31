@@ -17,6 +17,21 @@ export class Helper {
     }).format(angka);
   }
 
+  static formatRupiahMillion(angka, language = "id") {
+    if (angka >= 1000000) {
+      const million = angka / 1000000;
+      const millionText = language === "en" ? "million" : "juta";
+      return `${
+        million % 1 === 0 ? million.toFixed(0) : million.toFixed(1)
+      } ${millionText}`;
+    }
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
+    }).format(angka);
+  }
+
   static formatAgendaDateTime(startTime, endTime) {
     const start = new Date(startTime);
     const end = new Date(endTime);

@@ -14,6 +14,11 @@ import {
   FaCross,
   FaOm,
   FaYinYang,
+  FaHeart,
+  FaRing,
+  FaUserGraduate,
+  FaVoteYea,
+  FaMapMarkerAlt,
 } from "react-icons/fa";
 import {
   BarChart,
@@ -30,30 +35,36 @@ import {
   Area,
   Legend,
 } from "recharts";
-import { InfografisApi } from "../../libs/api/InfografisApi";
-import { alertError } from "../../libs/alert";
 import { useTranslation } from "react-i18next";
+import { Helper } from "../../utils/Helper";
 
-// Reusable StatCard component
-function StatCard({ icon, label, value }) {
+// Reusable StatCard component with updated_at
+function StatCard({ icon, label, value, updatedAt }) {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col items-center bg-white p-6 rounded-xl shadow hover:shadow-lg transition-transform duration-200 h-full">
       <div className="text-4xl text-[#B6F500]">{icon}</div>
-      <p className="mt-2 text-gray-600 text-sm">{label}</p>
+      <p className="mt-2 text-gray-600 text-sm text-center">{label}</p>
       <p className="mt-1 text-2xl font-bold text-gray-800">{value}</p>
+      {updatedAt && (
+        <p className="mt-1 text-xs text-gray-400">
+          {t("penduduk.updatedAt")}: {Helper.formatTanggal(updatedAt)}
+        </p>
+      )}
     </div>
   );
 }
 
 // Custom Tooltip with values
 const CustomTooltip = ({ active, payload, label }) => {
+  const { t } = useTranslation();
   if (active && payload && payload.length) {
     return (
       <div className="bg-white p-3 rounded-lg shadow-lg border">
         <p className="font-semibold text-gray-800">{`${label}`}</p>
-        <p className="text-blue-600">
-          {`Jumlah: ${payload[0].value} orang`}
-        </p>
+        <p className="text-blue-600">{`${t("penduduk.jumlah")}: ${
+          payload[0].value
+        } ${t("penduduk.orang")}`}</p>
       </div>
     );
   }
@@ -61,18 +72,27 @@ const CustomTooltip = ({ active, payload, label }) => {
 };
 
 // Custom Label for Pie Chart
-const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, value, name }) => {
+const renderCustomizedLabel = ({
+  cx,
+  cy,
+  midAngle,
+  innerRadius,
+  outerRadius,
+  percent,
+  value,
+  name,
+}) => {
   const RADIAN = Math.PI / 180;
   const radius = outerRadius + 30;
   const x = cx + radius * Math.cos(-midAngle * RADIAN);
   const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
   return (
-    <text 
-      x={x} 
-      y={y} 
-      fill="#374151" 
-      textAnchor={x > cx ? 'start' : 'end'} 
+    <text
+      x={x}
+      y={y}
+      fill="#374151"
+      textAnchor={x > cx ? "start" : "end"}
       dominantBaseline="central"
       fontSize={12}
       fontWeight="600"
@@ -84,95 +104,273 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
 
 export default function Penduduk() {
   const { t } = useTranslation();
-  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Fetch base data
+  // Tooltip formatter function that uses translation
+  const tooltipFormatter = (value) => [
+    `${value} ${t("penduduk.orang")}`,
+    t("penduduk.jumlah"),
+  ];
+
+  // State untuk setiap tipe data
+  const [genderData, setGenderData] = useState([]);
+  const [pernikahanData, setPernikahanData] = useState([]);
+  const [agamaData, setAgamaData] = useState([]);
+  const [usiaData, setUsiaData] = useState([]);
+  const [kepalaKeluargaData, setKepalaKeluargaData] = useState([]);
+  const [pekerjaanData, setPekerjaanData] = useState([]);
+  const [pendidikanData, setPendidikanData] = useState([]);
+  const [wajibPilihData, setWajibPilihData] = useState([]);
+  const [dusunData, setDusunData] = useState([]);
+  const [anakAnakData, setAnakAnakData] = useState([]);
+
+  const baseUrl =
+    import.meta.env.VITE_BASE_URL_NEW || "http://localhost:4000/api";
+
+  // Function untuk fetch data berdasarkan type
+  const fetchDataByType = async (type) => {
+    try {
+      const response = await fetch(`${baseUrl}/residents?type=${type}`);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch ${type} data`);
+      }
+      const result = await response.json();
+      return result.data || [];
+    } catch (error) {
+      console.error(`Error fetching ${type}:`, error);
+      return [];
+    }
+  };
+
+  // Icon mapping untuk berbagai kategori
+  const getIconForCategory = (type, key) => {
+    const iconMappings = {
+      GENDER: {
+        "laki-laki": <FaMale />,
+        perempuan: <FaFemale />,
+        male: <FaMale />,
+        female: <FaFemale />,
+      },
+      PERNIKAHAN: {
+        menikah: <FaRing />,
+        "belum menikah": <FaHeart />,
+        cerai: <FaChild />,
+      },
+      AGAMA: {
+        islam: <FaStar className="text-yellow-400" />,
+        kristen: <FaCross className="text-blue-500" />,
+        hindu: <FaOm className="text-orange-500" />,
+        buddha: <FaYinYang className="text-purple-500" />,
+      },
+      PERKERJAAN: {
+        petani: <FaLeaf />,
+        nelayan: <FaFish />,
+        guru: <FaChalkboardTeacher />,
+        pedagang: <FaStore />,
+        pegawai: <FaUserTie />,
+      },
+      PENDIDIKAN: {
+        sd: <FaChild />,
+        smp: <FaUserGraduate />,
+        sma: <FaUserGraduate />,
+        s1: <FaUserGraduate />,
+        s2: <FaUserGraduate />,
+      },
+      KEPALA_KELUARGA: {
+        default: <FaHome />,
+      },
+      WAJIB_PILIH: {
+        default: <FaVoteYea />,
+      },
+      DUSUN: {
+        default: <FaMapMarkerAlt />,
+      },
+      ANAK_ANAK: {
+        default: <FaChild />,
+      },
+      USIA: {
+        default: <FaChild />,
+      },
+    };
+
+    const categoryIcons = iconMappings[type];
+    if (!categoryIcons) return <FaChild />;
+
+    const lowerKey = key.toLowerCase();
+    return categoryIcons[lowerKey] || categoryIcons.default || <FaChild />;
+  };
+
+  // Fetch semua data saat komponen dimuat
   useEffect(() => {
-    const fetchPenduduk = async () => {
+    const fetchAllData = async () => {
+      setLoading(true);
       try {
-        const response = await InfografisApi.getPenduduk();
-        if (!response.ok) return alertError("Gagal mengambil data penduduk");
-        
-        const result = await response.json();
-        const iconOptions = {
-          male: <FaMale />,
-          female: <FaFemale />,
-          home: <FaHome />,
-          child: <FaChild />,
+        const [
+          gender,
+          pernikahan,
+          agama,
+          usia,
+          kepalaKeluarga,
+          pekerjaan,
+          pendidikan,
+          wajibPilih,
+          dusun,
+          anakAnak,
+        ] = await Promise.all([
+          fetchDataByType("GENDER"),
+          fetchDataByType("PERNIKAHAN"),
+          fetchDataByType("AGAMA"),
+          fetchDataByType("USIA"),
+          fetchDataByType("KEPALA_KELUARGA"),
+          fetchDataByType("PERKERJAAN"),
+          fetchDataByType("PENDIDIKAN"),
+          fetchDataByType("WAJIB_PILIH"),
+          fetchDataByType("DUSUN"),
+          fetchDataByType("ANAK_ANAK"),
+        ]);
+
+        // Function untuk mengurutkan data
+        const sortData = (data, type) => {
+          const mapped = data.map((item) => ({
+            ...item,
+            icon: getIconForCategory(type, item.key),
+          }));
+
+          // Urutan khusus untuk pendidikan
+          if (type === "PENDIDIKAN") {
+            const educationOrder = [
+              "sd",
+              "smp",
+              "sma",
+              "diploma",
+              "d3",
+              "s1",
+              "s2",
+              "s3",
+            ];
+            return mapped.sort((a, b) => {
+              const aIndex = educationOrder.indexOf(a.key.toLowerCase());
+              const bIndex = educationOrder.indexOf(b.key.toLowerCase());
+
+              // Jika kedua item ada dalam urutan, urutkan berdasarkan index
+              if (aIndex !== -1 && bIndex !== -1) {
+                return aIndex - bIndex;
+              }
+              // Jika hanya satu yang ada dalam urutan, yang ada di urutan didahulukan
+              if (aIndex !== -1) return -1;
+              if (bIndex !== -1) return 1;
+              // Jika keduanya tidak ada dalam urutan, urutkan alfabetis
+              return a.key.localeCompare(b.key);
+            });
+          }
+
+          // Urutan khusus untuk gender (laki-laki dulu)
+          if (type === "GENDER") {
+            return mapped.sort((a, b) => {
+              const aKey = a.key.toLowerCase();
+              const bKey = b.key.toLowerCase();
+              if (aKey.includes("laki") || aKey === "male") return -1;
+              if (bKey.includes("laki") || bKey === "male") return 1;
+              return 0;
+            });
+          }
+
+          return mapped;
         };
-        
-        const mapped = result.resident.map((item) => {
-          const lower = item.title.toLowerCase();
-          const iconKey = lower.includes("laki")
-            ? "male"
-            : lower.includes("perempuan")
-            ? "female"
-            : lower.includes("keluarga")
-            ? "home"
-            : "child";
-            
-          return {
-            icon: iconOptions[iconKey],
-            label: item.title,
-            value: item.amount,
-          };
-        });
-        
-        setData(mapped);
+
+        // Set data dengan mapping icon dan urutan
+        setGenderData(sortData(gender, "GENDER"));
+        setPernikahanData(
+          pernikahan.map((item) => ({
+            ...item,
+            icon: getIconForCategory("PERNIKAHAN", item.key),
+          }))
+        );
+        setAgamaData(
+          agama.map((item) => ({
+            ...item,
+            icon: getIconForCategory("AGAMA", item.key),
+          }))
+        );
+        setUsiaData(
+          usia.map((item) => ({
+            ...item,
+            icon: getIconForCategory("USIA", item.key),
+          }))
+        );
+        setKepalaKeluargaData(
+          kepalaKeluarga.map((item) => ({
+            ...item,
+            icon: getIconForCategory("KEPALA_KELUARGA", item.key),
+          }))
+        );
+        setPekerjaanData(
+          pekerjaan.map((item) => ({
+            ...item,
+            icon: getIconForCategory("PERKERJAAN", item.key),
+          }))
+        );
+        setPendidikanData(sortData(pendidikan, "PENDIDIKAN"));
+        setWajibPilihData(
+          wajibPilih.map((item) => ({
+            ...item,
+            icon: getIconForCategory("WAJIB_PILIH", item.key),
+          }))
+        );
+        setDusunData(
+          dusun.map((item) => ({
+            ...item,
+            icon: getIconForCategory("DUSUN", item.key),
+          }))
+        );
+        setAnakAnakData(
+          anakAnak.map((item) => ({
+            ...item,
+            icon: getIconForCategory("ANAK_ANAK", item.key),
+          }))
+        );
       } catch (error) {
-        alertError("Gagal mengambil data penduduk");
+        setError("Gagal mengambil data penduduk");
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchPenduduk();
-  }, []);
+    fetchAllData();
+  }, [baseUrl]);
 
-  // Static data for additional charts
-  const pekerjaanData = [
-    { name: "Petani", value: 200, icon: <FaLeaf /> },
-    { name: "Nelayan", value: 50, icon: <FaFish /> },
-    { name: "Guru", value: 30, icon: <FaChalkboardTeacher /> },
-    { name: "Pedagang", value: 80, icon: <FaStore /> },
-    { name: "Pegawai", value: 40, icon: <FaUserTie /> },
+  const COLORS = [
+    "#B6F500",
+    "#FFD700",
+    "#FF69B4",
+    "#87CEEB",
+    "#32CD32",
+    "#FF6347",
+    "#9370DB",
+    "#20B2AA",
   ];
 
-  const pendidikanData = [
-    { name: "SD", value: 250 },
-    { name: "SMP", value: 300 },
-    { name: "SMA", value: 200 },
-    { name: "S1", value: 100 },
-    { name: "S2", value: 50 },
-  ];
+  if (loading) {
+    return (
+      <div className="max-w-6xl mx-auto px-6 py-10 font-poppins">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-xl text-gray-600">Memuat data penduduk...</div>
+        </div>
+      </div>
+    );
+  }
 
-  const statusNikahData = [
-    { name: "Menikah", value: 450 },
-    { name: "Belum Menikah", value: 300 },
-    { name: "Cerai", value: 50 },
-  ];
-
-  // Data agama dengan icon masing-masing
-  const agamaData = [
-    { name: "Islam", value: 700, icon: <FaStar className="text-yellow-400" /> },
-    { name: "Kristen", value: 100, icon: <FaCross className="text-blue-500" /> },
-    { name: "Hindu", value: 50, icon: <FaOm className="text-orange-500" /> },
-    { name: "Buddha", value: 20, icon: <FaYinYang className="text-purple-500" /> },
-  ];
-
-  const usiaData = [
-    { name: "0-5", value: 50 },
-    { name: "6-17", value: 150 },
-    { name: "18-40", value: 300 },
-    { name: "41-60", value: 200 },
-    { name: "61+", value: 100 },
-  ];
-
-  const dusunData = [
-    { name: "Dusun A", value: 300 },
-    { name: "Dusun B", value: 250 },
-    { name: "Dusun C", value: 220 },
-  ];
-
-  const COLORS = ["#B6F500", "#FFD700", "#FF69B4", "#87CEEB", "#32CD32"];
+  if (error) {
+    return (
+      <div className="max-w-6xl mx-auto px-6 py-10 font-poppins">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-xl text-red-600">{error}</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-10 font-poppins space-y-16">
@@ -180,13 +378,11 @@ export default function Penduduk() {
       <div className="grid md:grid-cols-2 gap-8 items-center">
         <div>
           <h2 className="text-4xl font-extrabold text-gray-800">
-            {t("resident.title")}
+            {t("penduduk.title")}
           </h2>
-          <p className="mt-4 text-gray-600">
-            {t("resident.description.paragraph1")}
-          </p>
+          <p className="mt-4 text-gray-600">{t("penduduk.description")}</p>
           <p className="mt-2 text-gray-500 italic text-sm">
-            {t("resident.description.paragraph2")}
+            {t("penduduk.updateNote")}
           </p>
         </div>
         <img
@@ -196,106 +392,134 @@ export default function Penduduk() {
         />
       </div>
 
-      {/* Base Statistics Cards */}
-      <section>
-        <div className="grid md:grid-cols-3 gap-8 items-center mb-8">
-          <div className="md:col-span-1">
-            <h3 className="text-3xl font-bold text-gray-800 mb-4">
-              Data Penduduk Utama
-            </h3>
-            <p className="text-gray-600 text-sm leading-relaxed">
-              Data berikut menunjukkan komposisi dasar penduduk desa berdasarkan jenis kelamin dan jumlah kepala keluarga. 
-              Data ini menjadi dasar untuk perencanaan program pembangunan dan pelayanan masyarakat.
-            </p>
-          </div>
-          <div className="md:col-span-2">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {data.map((item, idx) => (
-                <StatCard
-                  key={idx}
-                  icon={item.icon}
-                  label={item.label}
-                  value={item.value}
-                />
-              ))}
+      {/* Data Penduduk Utama - Gender, Kepala Keluarga, dan Anak-Anak */}
+      {(genderData.length > 0 ||
+        kepalaKeluargaData.length > 0 ||
+        anakAnakData.length > 0) && (
+        <section>
+          <div className="grid md:grid-cols-3 gap-8 items-center mb-8">
+            <div className="md:col-span-1">
+              <h3 className="text-3xl font-bold text-gray-800 mb-4">
+                {t("penduduk.mainData.title")}
+              </h3>
+              <p className="text-gray-600 text-sm leading-relaxed">
+                {t("penduduk.mainData.description")}
+              </p>
+            </div>
+            <div className="md:col-span-2">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {genderData.map((item, idx) => (
+                  <StatCard
+                    key={`gender-${idx}`}
+                    icon={item.icon}
+                    label={item.key}
+                    value={item.value}
+                    updatedAt={item.updated_at}
+                  />
+                ))}
+                {kepalaKeluargaData.map((item, idx) => (
+                  <StatCard
+                    key={`kk-${idx}`}
+                    icon={item.icon}
+                    label={item.key}
+                    value={item.value}
+                    updatedAt={item.updated_at}
+                  />
+                ))}
+                {anakAnakData.map((item, idx) => (
+                  <StatCard
+                    key={`anak-${idx}`}
+                    icon={item.icon}
+                    label={item.key}
+                    value={item.value}
+                    updatedAt={item.updated_at}
+                  />
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* Main Population Chart */}
-      <section>
-        <h3 className="text-3xl font-bold text-gray-800 text-center mb-4">
-          {t("resident.chart.title")}
-        </h3>
-        <p className="text-center text-gray-600 mb-8">
-          {t("resident.chart.description")}
-        </p>
-        <ResponsiveContainer width="100%" height={350}>
-          <BarChart data={data.map((d) => ({ name: d.label, jumlah: d.value }))}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis allowDecimals={false} />
-            <Tooltip content={<CustomTooltip />} />
-            <Legend />
-            <Bar
-              dataKey="jumlah"
-              name="Jumlah Penduduk"
-              fill="#B6F500"
-              barSize={40}
-              radius={[6, 6, 0, 0]}
-            />
-          </BarChart>
-        </ResponsiveContainer>
-      </section>
-
-      {/* Additional Infographics */}
-      <section className="space-y-16">
-        {/* Pekerjaan */}
-        <div className="grid md:grid-cols-3 gap-8 items-center">
-          <div className="md:col-span-1">
-            <h3 className="text-3xl font-bold text-gray-800 mb-4">
-              Data Pekerjaan Penduduk
-            </h3>
-            <p className="text-gray-600 text-sm leading-relaxed">
-              Distribusi mata pencaharian penduduk desa menunjukkan karakteristik ekonomi masyarakat. 
-              Sektor pertanian masih mendominasi sebagai sumber penghasilan utama, diikuti dengan sektor perdagangan dan jasa. 
-              Data ini penting untuk pengembangan ekonomi lokal dan program pelatihan keterampilan.
+          {/* Chart untuk Data Penduduk Utama */}
+          <div>
+            <h4 className="text-2xl font-bold text-gray-800 text-center mb-4">
+              {t("penduduk.mainData.chartTitle")}
+            </h4>
+            <p className="text-center text-gray-600 mb-8">
+              {t("penduduk.mainData.chartDescription")}
             </p>
-          </div>
-          <div className="md:col-span-2">
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-              {pekerjaanData.map((item, idx) => (
-                <StatCard
-                  key={idx}
-                  icon={item.icon}
-                  label={item.name}
-                  value={item.value}
+            <ResponsiveContainer width="100%" height={350}>
+              <BarChart
+                data={[
+                  ...genderData.map((d) => ({ name: d.key, jumlah: d.value })),
+                  ...kepalaKeluargaData.map((d) => ({
+                    name: d.key,
+                    jumlah: d.value,
+                  })),
+                  ...anakAnakData.map((d) => ({
+                    name: d.key,
+                    jumlah: d.value,
+                  })),
+                ]}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis allowDecimals={false} />
+                <Tooltip content={<CustomTooltip />} />
+                <Legend />
+                <Bar
+                  dataKey="jumlah"
+                  name="Jumlah Penduduk"
+                  fill="#B6F500"
+                  barSize={40}
+                  radius={[6, 6, 0, 0]}
                 />
-              ))}
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </section>
+      )}
+
+      {/* Pekerjaan */}
+      {pekerjaanData.length > 0 && (
+        <section>
+          <div className="grid md:grid-cols-3 gap-8 items-center mb-8">
+            <div className="md:col-span-1">
+              <h3 className="text-3xl font-bold text-gray-800 mb-4">
+                {t("penduduk.pekerjaan.title")}
+              </h3>
+              <p className="text-gray-600 text-sm leading-relaxed">
+                {t("penduduk.pekerjaan.description")}
+              </p>
+            </div>
+            <div className="md:col-span-2">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {pekerjaanData.map((item, idx) => (
+                  <StatCard
+                    key={idx}
+                    icon={item.icon}
+                    label={item.key}
+                    value={item.value}
+                    updatedAt={item.updated_at}
+                  />
+                ))}
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Pendidikan */}
-        <div>
-          <h3 className="text-3xl font-bold text-gray-800 text-center mb-4">
-            Tingkat Pendidikan Penduduk
-          </h3>
-          <p className="text-center text-gray-600 mb-8 max-w-4xl mx-auto">
-            Profil pendidikan masyarakat desa menggambarkan kualitas sumber daya manusia. 
-            Mayoritas penduduk berpendidikan menengah (SMP-SMA), sementara lulusan perguruan tinggi masih perlu ditingkatkan. 
-            Data ini menjadi acuan untuk program pendidikan dan beasiswa bagi masyarakat.
-          </p>
           <ResponsiveContainer width="100%" height={350}>
-            <BarChart data={pendidikanData}>
+            <BarChart
+              data={pekerjaanData.map((d) => ({
+                name: d.key,
+                jumlah: d.value,
+              }))}
+            >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
               <YAxis allowDecimals={false} />
               <Tooltip content={<CustomTooltip />} />
               <Legend />
               <Bar
-                dataKey="value"
+                dataKey="jumlah"
                 name="Jumlah Penduduk"
                 fill="#FF69B4"
                 barSize={35}
@@ -303,22 +527,84 @@ export default function Penduduk() {
               />
             </BarChart>
           </ResponsiveContainer>
-        </div>
+        </section>
+      )}
 
-        {/* Status Pernikahan */}
-        <div>
+      {/* Pendidikan */}
+      {pendidikanData.length > 0 && (
+        <section>
           <h3 className="text-3xl font-bold text-gray-800 text-center mb-4">
-            Status Pernikahan
+            {t("penduduk.pendidikan.title")}
           </h3>
           <p className="text-center text-gray-600 mb-8 max-w-4xl mx-auto">
-            Komposisi status pernikahan penduduk dewasa menunjukkan struktur keluarga dalam masyarakat. 
-            Pie chart digunakan untuk menunjukkan proporsi masing-masing status secara visual.
-            Data ini membantu dalam perencanaan program keluarga dan pembinaan sosial kemasyarakatan.
+            {t("penduduk.pendidikan.description")}
           </p>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 max-w-4xl mx-auto">
+            {pendidikanData.map((item, idx) => (
+              <StatCard
+                key={idx}
+                icon={item.icon}
+                label={item.key}
+                value={item.value}
+                updatedAt={item.updated_at}
+              />
+            ))}
+          </div>
+
+          <ResponsiveContainer width="100%" height={350}>
+            <BarChart
+              data={pendidikanData.map((d) => ({
+                name: d.key,
+                jumlah: d.value,
+              }))}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis allowDecimals={false} />
+              <Tooltip content={<CustomTooltip />} />
+              <Legend />
+              <Bar
+                dataKey="jumlah"
+                name="Jumlah Penduduk"
+                fill="#FFD700"
+                barSize={35}
+                radius={[6, 6, 0, 0]}
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        </section>
+      )}
+
+      {/* Status Pernikahan */}
+      {pernikahanData.length > 0 && (
+        <section>
+          <h3 className="text-3xl font-bold text-gray-800 text-center mb-4">
+            {t("penduduk.pernikahan.title")}
+          </h3>
+          <p className="text-center text-gray-600 mb-8 max-w-4xl mx-auto">
+            {t("penduduk.pernikahan.description")}
+          </p>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8 max-w-4xl mx-auto">
+            {pernikahanData.map((item, idx) => (
+              <StatCard
+                key={idx}
+                icon={item.icon}
+                label={item.key}
+                value={item.value}
+                updatedAt={item.updated_at}
+              />
+            ))}
+          </div>
+
           <ResponsiveContainer width="100%" height={400}>
             <PieChart>
               <Pie
-                data={statusNikahData}
+                data={pernikahanData.map((d) => ({
+                  name: d.key,
+                  value: d.value,
+                }))}
                 dataKey="value"
                 nameKey="name"
                 cx="50%"
@@ -328,46 +614,43 @@ export default function Penduduk() {
                 outerRadius={80}
                 fill="#8884d8"
               >
-                {statusNikahData.map((_, i) => (
+                {pernikahanData.map((_, i) => (
                   <Cell key={i} fill={COLORS[i % COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip formatter={(value) => [`${value} orang`, "Jumlah"]} />
+              <Tooltip formatter={tooltipFormatter} />
               <Legend />
             </PieChart>
           </ResponsiveContainer>
-        </div>
+        </section>
+      )}
 
-        {/* Agama */}
-        <div>
+      {/* Agama */}
+      {agamaData.length > 0 && (
+        <section>
           <h3 className="text-3xl font-bold text-gray-800 text-center mb-4">
-            Agama
+            {t("penduduk.agama.title")}
           </h3>
-          <p className="text-center text-gray-600 mb-4 max-w-4xl mx-auto">
-            Keberagaman agama mencerminkan toleransi dan keharmonisan hidup bermasyarakat. 
-            Data berikut menunjukkan jumlah pemeluk agama di desa kami.
+          <p className="text-center text-gray-600 mb-8 max-w-4xl mx-auto">
+            {t("penduduk.agama.description")}
           </p>
-          
-          {/* Card Agama */}
+
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 max-w-4xl mx-auto">
-            {agamaData.map((agama, idx) => (
+            {agamaData.map((item, idx) => (
               <StatCard
                 key={idx}
-                icon={agama.icon}
-                label={agama.name}
-                value={agama.value}
+                icon={item.icon}
+                label={item.key}
+                value={item.value}
+                updatedAt={item.updated_at}
               />
             ))}
           </div>
-          
-          <p className="text-center text-gray-600 mb-8 max-w-4xl mx-auto">
-            Pie chart berikut menampilkan komposisi agama secara proporsional.
-            Data ini penting untuk perencanaan kegiatan keagamaan dan pembinaan kehidupan beragama.
-          </p>
+
           <ResponsiveContainer width="100%" height={400}>
             <PieChart>
               <Pie
-                data={agamaData}
+                data={agamaData.map((d) => ({ name: d.key, value: d.value }))}
                 dataKey="value"
                 nameKey="name"
                 cx="50%"
@@ -381,25 +664,38 @@ export default function Penduduk() {
                   <Cell key={i} fill={COLORS[i % COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip formatter={(value) => [`${value} orang`, "Jumlah"]} />
+              <Tooltip formatter={tooltipFormatter} />
               <Legend />
             </PieChart>
           </ResponsiveContainer>
-        </div>
+        </section>
+      )}
 
-        {/* Kelompok Usia */}
-        <div>
+      {/* Kelompok Usia */}
+      {usiaData.length > 0 && (
+        <section>
           <h3 className="text-3xl font-bold text-gray-800 text-center mb-4">
-            Kelompok Usia
+            {t("penduduk.usia.title")}
           </h3>
           <p className="text-center text-gray-600 mb-8 max-w-4xl mx-auto">
-            Struktur usia menunjukkan komposisi penduduk berdasarkan kelompok umur. 
-            Area chart dipilih untuk menampilkan distribusi dan tren populasi secara visual.
-            Komposisi usia produktif (18-60 tahun) mendominasi, menunjukkan potensi ekonomi yang baik.
+            {t("penduduk.usia.description")}
           </p>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+            {usiaData.map((item, idx) => (
+              <StatCard
+                key={idx}
+                icon={item.icon}
+                label={item.key}
+                value={item.value}
+                updatedAt={item.updated_at}
+              />
+            ))}
+          </div>
+
           <ResponsiveContainer width="100%" height={350}>
             <AreaChart
-              data={usiaData}
+              data={usiaData.map((d) => ({ name: d.key, value: d.value }))}
               margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
             >
               <defs>
@@ -422,35 +718,79 @@ export default function Penduduk() {
               />
             </AreaChart>
           </ResponsiveContainer>
-        </div>
+        </section>
+      )}
 
-        {/* Distribusi Dusun */}
-        <div>
+      {/* Wajib Pilih */}
+      {wajibPilihData.length > 0 && (
+        <section>
+          <div className="grid md:grid-cols-3 gap-8 items-center mb-8">
+            <div className="md:col-span-1">
+              <h3 className="text-3xl font-bold text-gray-800 mb-4">
+                {t("penduduk.wajibPilih.title")}
+              </h3>
+              <p className="text-gray-600 text-sm leading-relaxed">
+                {t("penduduk.wajibPilih.description")}
+              </p>
+            </div>
+            <div className="md:col-span-2">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {wajibPilihData.map((item, idx) => (
+                  <StatCard
+                    key={idx}
+                    icon={item.icon}
+                    label={item.key}
+                    value={item.value}
+                    updatedAt={item.updated_at}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Distribusi Dusun */}
+      {dusunData.length > 0 && (
+        <section>
           <h3 className="text-3xl font-bold text-gray-800 text-center mb-4">
-            Distribusi Per Dusun
+            {t("penduduk.dusun.title")}
           </h3>
           <p className="text-center text-gray-600 mb-8 max-w-4xl mx-auto">
-            Penyebaran penduduk di wilayah desa berdasarkan dusun. 
-            Bar chart digunakan untuk membandingkan jumlah penduduk antar dusun secara jelas.
-            Penyebaran penduduk relatif merata antar dusun, memudahkan pelayanan administrasi dan pembangunan.
+            {t("penduduk.dusun.description")}
           </p>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+            {dusunData.map((item, idx) => (
+              <StatCard
+                key={idx}
+                icon={item.icon}
+                label={item.key}
+                value={item.value}
+                updatedAt={item.updated_at}
+              />
+            ))}
+          </div>
+
           <ResponsiveContainer width="100%" height={350}>
-            <BarChart data={dusunData}>
+            <BarChart
+              data={dusunData.map((d) => ({ name: d.key, jumlah: d.value }))}
+            >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
               <YAxis allowDecimals={false} />
               <Tooltip content={<CustomTooltip />} />
               <Legend />
-              <Bar 
-                dataKey="value" 
+              <Bar
+                dataKey="jumlah"
                 name="Jumlah Penduduk"
-                fill="#8884d8" 
+                fill="#8884d8"
                 radius={[6, 6, 0, 0]}
               />
             </BarChart>
           </ResponsiveContainer>
-        </div>
-      </section>
+        </section>
+      )}
     </div>
   );
 }

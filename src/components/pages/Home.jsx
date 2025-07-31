@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import {
@@ -13,7 +13,7 @@ import {
   FaCheckCircle,
   FaSpinner,
   FaCalendarAlt,
-  FaTimesCircle
+  FaTimesCircle,
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import {
@@ -34,52 +34,52 @@ import { NewsApi } from "../../libs/api/NewsApi";
 import { Helper } from "../../utils/Helper";
 import { alertError } from "../../libs/alert";
 import { ProductApi } from "../../libs/api/ProductApi";
+import { VillageWorkProgramApi } from "../../libs/api/VillageWorkProgramApi";
 import { useTranslation } from "react-i18next";
 
+// APB API Class
+class ApbApi {
+  static baseURL = import.meta.env.VITE_NEW_BASE_URL || "http://localhost:8000";
+
+  static async getApbData() {
+    try {
+      const response = await fetch(`${this.baseURL}/apb`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          // Add authorization header if needed
+          // 'Authorization': `Bearer ${token}`
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return response;
+    } catch (error) {
+      console.error("Error fetching APB data:", error);
+      throw error;
+    }
+  }
+}
+
 export default function Home() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [products, setProducts] = useState([]);
   const [news, setNews] = useState([]);
+  const [workPrograms, setWorkPrograms] = useState([]);
+  const [apbData, setApbData] = useState([]);
+  const [isLoadingWorkPrograms, setIsLoadingWorkPrograms] = useState(true);
+  const [isLoadingApb, setIsLoadingApb] = useState(true);
 
-  // Work Programs Data
-  const workPrograms = [
-    {
-      id: 1,
-      name: t("home.workprograms.paving"),
-      startDate: "2023-01-10",
-      endDate: "2023-03-15",
-      status: "COMPLETED"
-    },
-    {
-      id: 2,
-      name: t("home.workprograms.entrepreneur"),
-      startDate: "2023-04-01",
-      endDate: "2023-06-30",
-      status: "IN_PROGRESS"
-    },
-    {
-      id: 3,
-      name: t("home.workprograms.lighting"),
-      startDate: "2023-07-01",
-      endDate: "2023-09-30",
-      status: "PLANNED"
-    },
-    {
-      id: 4,
-      name: t("home.workprograms.hall"),
-      startDate: "2023-03-01",
-      endDate: "2023-05-30",
-      status: "CANCELLED"
-    }
-  ];
-
-  // Enhanced APB Data
-  const apbData = [
-    { bidang: t("home.apb.education"), anggaran: 120, realisasi: 100 },
-    { bidang: t("home.apb.health"), anggaran: 80, realisasi: 75 },
-    { bidang: t("home.apb.infrastructure"), anggaran: 100, realisasi: 85 },
-    { bidang: t("home.apb.social"), anggaran: 50, realisasi: 40 },
-  ];
+  // Transform apbData based on current language
+  const transformedApbData = useMemo(() => {
+    return apbData.map((item) => ({
+      ...item,
+      bidang: item.bidang, // Keep original, as this is already translated
+    }));
+  }, [apbData, i18n.language]);
 
   useEffect(() => {
     AOS.init({ duration: 800, once: true });
@@ -121,31 +121,214 @@ export default function Home() {
   ];
 
   const fetchProduct = async () => {
-    const response = await ProductApi.getProducts(1, 3);
-    if (response.status === 200) {
-      const responseBody = await response.json();
-      setProducts(responseBody.products);
-    } else {
-      await alertError(
-        "Gagal mengambil data product. Silakan coba lagi nanti."
-      );
+    try {
+      const response = await ProductApi.getProducts(1, 3);
+      if (response.status === 200) {
+        const responseBody = await response.json();
+        setProducts(responseBody.products);
+      } else {
+        await alertError(t("errors.product"));
+      }
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      await alertError(t("errors.product"));
     }
   };
 
   const fetchNews = async () => {
-    const response = await NewsApi.getNews(1, 3);
-    if (response.status === 200) {
-      const responseBody = await response.json();
-      setNews(responseBody.news);
-    } else {
-      alertError("Gagal mengambil data berita. Silakan coba lagi nanti.");
+    try {
+      const response = await NewsApi.getNews(1, 3);
+      if (response.status === 200) {
+        const responseBody = await response.json();
+        setNews(responseBody.news);
+      } else {
+        alertError(t("errors.news"));
+      }
+    } catch (error) {
+      console.error("Error fetching news:", error);
+      alertError(t("errors.news"));
     }
+  };
+
+  const fetchVillageWorkPrograms = async () => {
+    try {
+      setIsLoadingWorkPrograms(true);
+      const response = await VillageWorkProgramApi.getVillageWorkPrograms();
+
+      if (response.status === 200) {
+        const responseBody = await response.json();
+        setWorkPrograms(responseBody.data || responseBody || []);
+      } else {
+        console.error(
+          "Failed to fetch village work programs:",
+          response.status
+        );
+        setWorkPrograms([]);
+      }
+    } catch (error) {
+      console.error("Error fetching village work programs:", error);
+      setWorkPrograms([]);
+    } finally {
+      setIsLoadingWorkPrograms(false);
+    }
+  };
+
+  const fetchApbData = async () => {
+    try {
+      setIsLoadingApb(true);
+      const response = await ApbApi.getApbData();
+
+      if (response.status === 200) {
+        const responseBody = await response.json();
+
+        // Transform API data to chart format
+        const transformedData =
+          responseBody.data?.map((item) => ({
+            bidang: item.bidang || "Unknown",
+            anggaran: parseInt(item.anggaran) || 0,
+            realisasi: parseInt(item.realisasi) || 0,
+            id: item.id,
+            tahun: item.tahun,
+            createdAt: item.createdAt,
+            updatedAt: item.updatedAt,
+          })) || [];
+
+        setApbData(transformedData);
+      } else {
+        console.error("Failed to fetch APB data:", response.status);
+        // Fallback to default data if API fails
+        setApbData([
+          {
+            bidang: t("home.apb.education"),
+            anggaran: 120000000,
+            realisasi: 100000000,
+          },
+          {
+            bidang: t("home.apb.health"),
+            anggaran: 80000000,
+            realisasi: 75000000,
+          },
+          {
+            bidang: t("home.apb.infrastructure"),
+            anggaran: 100000000,
+            realisasi: 85000000,
+          },
+          {
+            bidang: t("home.apb.social"),
+            anggaran: 50000000,
+            realisasi: 40000000,
+          },
+        ]);
+      }
+    } catch (error) {
+      console.error("Error fetching APB data:", error);
+      // Fallback to default data if API fails
+      setApbData([
+        {
+          bidang: t("home.apb.education"),
+          anggaran: 120000000,
+          realisasi: 100000000,
+        },
+        {
+          bidang: t("home.apb.health"),
+          anggaran: 80000000,
+          realisasi: 75000000,
+        },
+        {
+          bidang: t("home.apb.infrastructure"),
+          anggaran: 100000000,
+          realisasi: 85000000,
+        },
+        {
+          bidang: t("home.apb.social"),
+          anggaran: 50000000,
+          realisasi: 40000000,
+        },
+      ]);
+    } finally {
+      setIsLoadingApb(false);
+    }
+  };
+
+  const getStatusIcon = (status) => {
+    switch (status?.toUpperCase()) {
+      case "COMPLETED":
+      case "SELESAI":
+        return <FaCheckCircle className="text-green-500" />;
+      case "IN_PROGRESS":
+      case "BERJALAN":
+      case "PROGRESS":
+        return <FaSpinner className="text-yellow-500 animate-spin" />;
+      case "PLANNED":
+      case "RENCANA":
+        return <FaCalendarAlt className="text-blue-500" />;
+      case "CANCELLED":
+      case "DIBATALKAN":
+        return <FaTimesCircle className="text-red-500" />;
+      default:
+        return <FaCalendarAlt className="text-gray-500" />;
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch (status?.toUpperCase()) {
+      case "COMPLETED":
+      case "SELESAI":
+        return "bg-green-200 text-green-800";
+      case "IN_PROGRESS":
+      case "BERJALAN":
+      case "PROGRESS":
+        return "bg-yellow-200 text-yellow-800";
+      case "PLANNED":
+      case "RENCANA":
+        return "bg-blue-200 text-blue-800";
+      case "CANCELLED":
+      case "DIBATALKAN":
+        return "bg-red-200 text-red-800";
+      default:
+        return "bg-gray-200 text-gray-800";
+    }
+  };
+
+  // Calculate APB summary
+  const getApbSummary = () => {
+    if (!apbData || apbData.length === 0) {
+      return {
+        totalBudget: 0,
+        totalRealization: 0,
+        remaining: 0,
+        absorption: 0,
+      };
+    }
+
+    const totalBudget = apbData.reduce(
+      (sum, item) => sum + (item.anggaran || 0),
+      0
+    );
+    const totalRealization = apbData.reduce(
+      (sum, item) => sum + (item.realisasi || 0),
+      0
+    );
+    const remaining = totalBudget - totalRealization;
+    const absorption =
+      totalBudget > 0 ? (totalRealization / totalBudget) * 100 : 0;
+
+    return {
+      totalBudget,
+      totalRealization,
+      remaining,
+      absorption: absorption.toFixed(1),
+    };
   };
 
   useEffect(() => {
     fetchNews();
     fetchProduct();
+    fetchVillageWorkPrograms();
+    fetchApbData();
   }, []);
+
+  const apbSummary = getApbSummary();
 
   return (
     <div className="font-[Poppins] w-full">
@@ -320,61 +503,93 @@ export default function Home() {
 
       {/* Work Programs */}
       <div className="w-full px-[5%] py-10">
-        <h2 className="text-2xl font-bold text-center text-green-700 mb-8" data-aos="fade-up">
+        <h2
+          className="text-2xl font-bold text-center text-green-700 mb-8"
+          data-aos="fade-up"
+        >
           {t("home.workprograms.title")}
         </h2>
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white rounded-lg overflow-hidden shadow-lg">
-            <thead className="bg-green-600 text-white">
-              <tr>
-                <th className="py-3 px-4 text-left">No</th>
-                <th className="py-3 px-4 text-left">{t("home.workprograms.program")}</th>
-                <th className="py-3 px-4 text-left">{t("home.workprograms.dates")}</th>
-                <th className="py-3 px-4 text-left">{t("home.workprograms.status")}</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {workPrograms.map((program, index) => (
-                <tr key={program.id} className="hover:bg-gray-50">
-                  <td className="py-3 px-4">{index + 1}</td>
-                  <td className="py-3 px-4 font-medium">{program.name}</td>
-                  <td className="py-3 px-4">
-                    <div className="flex items-center gap-2">
-                      <FaCalendarAlt className="text-green-500" />
-                      <span>
-                        {Helper.formatTanggal(program.startDate)} - {Helper.formatTanggal(program.endDate)}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="py-3 px-4">
-                    <div className="flex items-center gap-2">
-                      {program.status === "COMPLETED" && (
-                        <FaCheckCircle className="text-green-500" />
-                      )}
-                      {program.status === "IN_PROGRESS" && (
-                        <FaSpinner className="text-yellow-500 animate-spin" />
-                      )}
-                      {program.status === "PLANNED" && (
-                        <FaCalendarAlt className="text-blue-500" />
-                      )}
-                      {program.status === "CANCELLED" && (
-                        <FaTimesCircle className="text-red-500" />
-                      )}
-                      <span className={`px-2 py-1 rounded-full text-xs ${
-                        program.status === "COMPLETED" ? "bg-green-200 text-green-800" :
-                        program.status === "IN_PROGRESS" ? "bg-yellow-200 text-yellow-800" :
-                        program.status === "PLANNED" ? "bg-blue-200 text-blue-800" :
-                        "bg-red-200 text-red-800"
-                      }`}>
-                        {t(`home.workprograms.statuses.${program.status.toLowerCase()}`)}
-                      </span>
-                    </div>
-                  </td>
+
+        {isLoadingWorkPrograms ? (
+          <div className="flex justify-center items-center py-12">
+            <FaSpinner className="text-4xl text-green-600 animate-spin" />
+            <span className="ml-3 text-lg text-gray-600">
+              {t("workprograms.loading")}
+            </span>
+          </div>
+        ) : workPrograms.length > 0 ? (
+          <div className="overflow-x-auto">
+            <table className="min-w-full bg-white rounded-lg overflow-hidden shadow-lg">
+              <thead className="bg-green-600 text-white">
+                <tr>
+                  <th className="py-3 px-4 text-left">No</th>
+                  <th className="py-3 px-4 text-left">
+                    {t("home.workprograms.program")}
+                  </th>
+                  <th className="py-3 px-4 text-left">
+                    {t("home.workprograms.dates")}
+                  </th>
+                  <th className="py-3 px-4 text-left">Budget</th>
+                  <th className="py-3 px-4 text-left">
+                    {t("home.workprograms.status")}
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {workPrograms.map((program, index) => (
+                  <tr key={program.id} className="hover:bg-gray-50">
+                    <td className="py-3 px-4">{index + 1}</td>
+                    <td className="py-3 px-4 font-medium">
+                      {program.description ||
+                        program.name ||
+                        t("workprograms.nodesc")}
+                    </td>
+                    <td className="py-3 px-4">
+                      <div className="flex items-center gap-2">
+                        <FaCalendarAlt className="text-green-500" />
+                        <span>
+                          {program.date
+                            ? Helper.formatTanggal(program.date)
+                            : program.created_at
+                            ? Helper.formatTanggal(program.created_at)
+                            : t("workprograms.nodate")}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="py-3 px-4 font-semibold text-green-700">
+                      {program.budget_amount
+                        ? Helper.formatRupiahMillion(
+                            program.budget_amount,
+                            i18n.language
+                          )
+                        : t("workprograms.nobudget")}
+                    </td>
+                    <td className="py-3 px-4">
+                      <div className="flex items-center gap-2">
+                        {getStatusIcon(program.status)}
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs ${getStatusColor(
+                            program.status
+                          )}`}
+                        >
+                          {program.status || "Unknown"}
+                        </span>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <FaCalendarAlt className="text-6xl text-gray-300 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-600 mb-2">
+              {t("workprograms.nodata")}
+            </h3>
+            <p className="text-gray-500">{t("workprograms.nodata")}</p>
+          </div>
+        )}
       </div>
 
       {/* APB Chart */}
@@ -385,54 +600,110 @@ export default function Home() {
         >
           {t("home.apb.title")}
         </h2>
-        <div className="bg-white rounded-xl shadow-lg p-6">
-          <ResponsiveContainer width="100%" height={350}>
-            <ComposedChart data={apbData}>
-              <CartesianGrid stroke="#f5f5f5" />
-              <XAxis dataKey="bidang" />
-              <YAxis />
-              <Tooltip 
-                formatter={(value) => [`${Helper.formatRupiah(value)}`, t("home.apb.value")]}
-                labelFormatter={(value) => t("home.apb.field") + ": " + value}
-              />
-              <Legend />
-              <Bar
-                dataKey="anggaran"
-                barSize={30}
-                fill="#4ade80"
-                name={t("home.apb.budget")}
-              />
-              <Line
-                type="monotone"
-                dataKey="realisasi"
-                stroke="#3b82f6"
-                name={t("home.apb.realization")}
-                strokeWidth={2}
-                dot={{ r: 4 }}
-              />
-            </ComposedChart>
-          </ResponsiveContainer>
-          
-          {/* Budget Summary */}
-          <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-green-50 p-4 rounded-lg">
-              <p className="text-green-700 font-bold">{t("home.apb.totalbudget")}</p>
-              <p className="text-xl font-bold">{Helper.formatRupiah(350)}</p>
-            </div>
-            <div className="bg-blue-50 p-4 rounded-lg">
-              <p className="text-blue-700 font-bold">{t("home.apb.totalrealization")}</p>
-              <p className="text-xl font-bold">{Helper.formatRupiah(300)}</p>
-            </div>
-            <div className="bg-yellow-50 p-4 rounded-lg">
-              <p className="text-yellow-700 font-bold">{t("home.apb.remaining")}</p>
-              <p className="text-xl font-bold">{Helper.formatRupiah(50)}</p>
-            </div>
-            <div className="bg-purple-50 p-4 rounded-lg">
-              <p className="text-purple-700 font-bold">{t("home.apb.absorption")}</p>
-              <p className="text-xl font-bold">85.7%</p>
+
+        {isLoadingApb ? (
+          <div className="flex justify-center items-center py-12">
+            <FaSpinner className="text-4xl text-green-600 animate-spin" />
+            <span className="ml-3 text-lg text-gray-600">
+              {t("apbchart.loading")}
+            </span>
+          </div>
+        ) : (
+          <div className="bg-white rounded-xl shadow-lg p-6">
+            <ResponsiveContainer width="100%" height={350}>
+              <ComposedChart data={transformedApbData}>
+                <CartesianGrid stroke="#f5f5f5" />
+                <XAxis dataKey="bidang" />
+                <YAxis
+                  tickFormatter={(value) => {
+                    if (value >= 1000000) {
+                      return `${(value / 1000000).toFixed(0)}`;
+                    }
+                    if (value >= 1000) {
+                      return `${(value / 1000).toFixed(0)}K`;
+                    }
+                    return value.toString();
+                  }}
+                  width={60}
+                  label={{
+                    value: i18n.language === "en" ? "Million" : "Juta",
+                    angle: -90,
+                    position: "insideLeft",
+                    offset: 10,
+                    style: { textAnchor: "middle" },
+                  }}
+                />
+                <Tooltip
+                  formatter={(value, name) => [
+                    `${Helper.formatRupiahMillion(value, i18n.language)}`,
+                    name === "anggaran"
+                      ? t("home.apb.budget")
+                      : t("home.apb.realization"),
+                  ]}
+                  labelFormatter={(value) => t("home.apb.field") + ": " + value}
+                />
+                <Legend />
+                <Bar
+                  dataKey="anggaran"
+                  barSize={30}
+                  fill="#4ade80"
+                  name={t("home.apb.budget")}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="realisasi"
+                  stroke="#3b82f6"
+                  name={t("home.apb.realization")}
+                  strokeWidth={2}
+                  dot={{ r: 4 }}
+                />
+              </ComposedChart>
+            </ResponsiveContainer>
+
+            {/* Budget Summary */}
+            <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="bg-green-50 p-4 rounded-lg">
+                <p className="text-green-700 font-bold">
+                  {t("home.apb.totalbudget")}
+                </p>
+                <p className="text-xl font-bold">
+                  {Helper.formatRupiahMillion(
+                    apbSummary.totalBudget,
+                    i18n.language
+                  )}
+                </p>
+              </div>
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <p className="text-blue-700 font-bold">
+                  {t("home.apb.totalrealization")}
+                </p>
+                <p className="text-xl font-bold">
+                  {Helper.formatRupiahMillion(
+                    apbSummary.totalRealization,
+                    i18n.language
+                  )}
+                </p>
+              </div>
+              <div className="bg-yellow-50 p-4 rounded-lg">
+                <p className="text-yellow-700 font-bold">
+                  {t("home.apb.remaining")}
+                </p>
+                <p className="text-xl font-bold">
+                  {Helper.formatRupiahMillion(
+                    apbSummary.remaining,
+                    i18n.language
+                  )}
+                </p>
+              </div>
+              <div className="bg-purple-50 p-4 rounded-lg">
+                <p className="text-purple-700 font-bold">
+                  {t("home.apb.absorption")}
+                </p>
+                <p className="text-xl font-bold">{apbSummary.absorption}%</p>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Map */}
