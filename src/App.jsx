@@ -137,7 +137,8 @@ function LayoutUmum() {
           <Route path="/pemerintahan" element={<Pemerintahan />} />
           <Route path="/bpd" element={<Bpd />} />
           <Route path="/profil" element={<ProfilDesa />} />
-          
+          <Route path="/prestasi/:id" element={<DetailPrestasi />} />
+
           <Route path="/kontak" element={<KontakKami />} />
           <Route path="/pkk/struktur" element={<StPkk />} />
 

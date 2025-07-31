@@ -20,6 +20,7 @@ export default function DetailPrestasi() {
   const [editingContent, setEditingContent] = useState("");
 
   const loggedInUser = JSON.parse(localStorage.getItem("user"));
+  const [user, setUser] = useState({});
 
   const handleKomentar = async (e) => {
     e.preventDefault();
@@ -47,20 +48,36 @@ export default function DetailPrestasi() {
 
   const fetchDetailPrestasi = async () => {
     try {
-      // Ambil data prestasi dari translation berdasarkan ID
-      const achievements = t("profileVillage.achievements", { returnObjects: true });
-      const selectedAchievement = achievements.find(item => item.id === id);
-      
-      if (selectedAchievement) {
-        setAchievement(selectedAchievement);
+      const response = await fetch(
+        `${import.meta.env.VITE_NEW_BASE_URL}/village-achievements/${id}`
+      );
+
+      const resBody = await response.json();
+
+      if (response.status === 200) {
+        const data = resBody.data;
+
+        setAchievement({
+          id: data.id,
+          title: data.title,
+          description: data.description,
+          year: new Date(data.date).getFullYear(),
+          image: `${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
+            data.featured_image
+          }`,
+          created_at: data.created_at,
+          updated_at: data.updated_at,
+        });
+
         fetchComment();
       } else {
-        await alertError("Prestasi tidak ditemukan");
-        navigate("/profil-desa");
+        await alertError(t("detailAchievement.errors.notFound"));
+        navigate("/profil");
       }
     } catch (error) {
-      await alertError("Gagal mengambil detail prestasi");
-      navigate("/profil-desa");
+      console.error(error);
+      await alertError(t("detailAchievement.errors.fetchFailed"));
+      navigate("/profil");
     }
   };
 
@@ -74,12 +91,6 @@ export default function DetailPrestasi() {
     }
   };
 
-  useEffect(() => {
-    fetchDetailPrestasi();
-  }, [id]);
-
-  const [user, setUser] = useState({});
-
   const fetchUser = async () => {
     const response = await UserApi.getUserProfile();
     const responseBody = await response.json();
@@ -87,6 +98,10 @@ export default function DetailPrestasi() {
       setUser(responseBody.user);
     }
   };
+
+  useEffect(() => {
+    fetchDetailPrestasi();
+  }, [id]);
 
   useEffect(() => {
     fetchUser();
@@ -101,7 +116,7 @@ export default function DetailPrestasi() {
 
   const handleBack = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
-    setTimeout(() => navigate("/profil-desa"), 300);
+    setTimeout(() => navigate("/profil"), 300);
   };
 
   const startEditComment = (comment) => {
@@ -148,7 +163,7 @@ export default function DetailPrestasi() {
           className="mb-5 flex items-center gap-2 px-4 py-2 rounded-full border border-gray-300 text-gray-800 hover:bg-gray-900 hover:text-white hover:scale-105 transition-all duration-300"
         >
           <HiArrowLeft className="text-lg" />
-          Kembali ke Profil Desa
+          {t("detailAchievement.backToProfile")}
         </button>
 
         {/* Achievement Image */}
@@ -162,7 +177,7 @@ export default function DetailPrestasi() {
         <div className="mb-6">
           <div className="flex items-center gap-4 mb-4">
             <span className="inline-block px-3 py-1 text-sm font-medium rounded-full bg-gradient-to-r from-[#9BEC00] to-[#D2FF72] text-gray-900 shadow">
-              Prestasi Desa
+              {t("detailAchievement.villageAchievement")}
             </span>
             <span className="text-sm font-semibold text-green-600 bg-green-50 px-3 py-1 rounded-full">
               {achievement.year}
@@ -175,42 +190,23 @@ export default function DetailPrestasi() {
 
         {/* Achievement Content */}
         <div className="bg-white p-6 rounded-xl shadow-md mb-8">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">Detail Prestasi</h2>
+          <h2 className="text-xl font-bold text-gray-800 mb-4">
+            {t("detailAchievement.achievementDetails")}
+          </h2>
           <div className="space-y-4 text-gray-700 leading-relaxed">
             <p>{achievement.description}</p>
-            {achievement.details && (
-              <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-                <h3 className="font-semibold text-gray-800 mb-2">Informasi Tambahan:</h3>
-                <p className="text-sm text-gray-600">{achievement.details}</p>
-              </div>
-            )}
           </div>
         </div>
 
-        {/* Achievement Stats */}
-        {achievement.stats && (
-          <div className="bg-gradient-to-br from-[#f7ffe5] to-white p-6 rounded-xl shadow-md mb-8">
-            <h3 className="text-lg font-bold text-green-700 mb-4">Statistik Prestasi</h3>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {achievement.stats.map((stat, index) => (
-                <div key={index} className="text-center p-3 bg-white rounded-lg shadow-sm">
-                  <div className="text-2xl font-bold text-green-600">{stat.value}</div>
-                  <div className="text-sm text-gray-600">{stat.label}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
         {/* Comments Section */}
-        <div className="mt-10 p-6 bg-gray-50 rounded-lg shadow">
+        {/* <div className="mt-10 p-6 bg-gray-50 rounded-lg shadow">
           <h2 className="text-xl font-semibold mb-4">
             {t("detailNews.leaveComment")}
           </h2>
 
           <form className="space-y-4" onSubmit={handleKomentar}>
             <textarea
-              placeholder="Berikan komentar atau apresiasi Anda tentang prestasi ini..."
+              placeholder={t("detailAchievement.commentPlaceholder")}
               rows="4"
               value={pesan}
               onChange={(e) => setPesan(e.target.value)}
@@ -285,11 +281,11 @@ export default function DetailPrestasi() {
             ))}
             {comments.length === 0 && (
               <p className="text-center text-gray-400">
-                Belum ada komentar. Jadilah yang pertama memberikan apresiasi!
+                {t("detailAchievement.noComments")}
               </p>
             )}
           </div>
-        </div>
+        </div> */}
       </div>
 
       <aside>

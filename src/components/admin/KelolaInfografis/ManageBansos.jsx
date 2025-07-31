@@ -1,172 +1,169 @@
 import { useEffect, useState } from "react";
-import { alertConfirm, alertError, alertSuccess } from "../../../libs/alert"; // ← pastikan ada
 import { InfografisApi } from "../../../libs/api/InfografisApi";
+import { alertError, alertSuccess, alertConfirm } from "../../../libs/alert";
+import { Helper } from "../../../utils/Helper";
 
-export default function Bansos() {
-  const [data, setData] = useState([]);
+export default function ManageBansos() {
+  const [bansos, setBansos] = useState([]);
+  const [lastUpdated, setLastUpdated] = useState(null);
   const [showForm, setShowForm] = useState(false);
-  const [isAdding, setIsAdding] = useState(true);
-  const [editingIndex, setEditingIndex] = useState(null);
-  const [formData, setFormData] = useState({ nama: "", penerima: "" });
+  const [formData, setFormData] = useState({
+    id: null,
+    nama: "",
+    penerima: "",
+  });
+  const [isEditing, setIsEditing] = useState(false);
 
-  const handleAdd = () => {
-    setFormData({ nama: "", penerima: "" });
-    setIsAdding(true);
-    setEditingIndex(null);
-    setShowForm(true);
-  };
-
-  const handleEdit = (index) => {
-    const item = data[index];
-    setFormData({
-      id: item.id, // ← tambahkan ini
-      nama: item.nama,
-      penerima: item.penerima.toString(),
-    });
-    setIsAdding(false);
-    setEditingIndex(index);
-    setShowForm(true);
-  };
-
-  const handleDelete = async (index) => {
-    const confirm = await alertConfirm(
-      `Yakin ingin menghapus "${data[index].nama}"?`
-    );
-    if (!confirm) return;
-
-    const id = data[index].id;
-    const response = await InfografisApi.deleteBansos(id);
-
-    if (!response.ok) {
-      alertError("Gagal menghapus data.");
-      return;
-    }
-
-    setData((prev) => prev.filter((_, i) => i !== index));
-    alertSuccess("Data berhasil dihapus!");
-  };
-
-  const handleSave = async () => {
-    if (!formData.nama.trim()) {
-      alertError("Nama bantuan harus diisi!");
-      return;
-    }
-    const penerimaNum = parseInt(formData.penerima);
-    if (isNaN(penerimaNum) || penerimaNum < 0) {
-      alertError("Jumlah penerima harus angka positif!");
-      return;
-    }
-
-    const payload = {
-      name: formData.nama.trim(),
-      amount: penerimaNum,
-    };
-
-    if (isAdding) {
-      const response = await InfografisApi.createBansos(payload);
-      if (!response.ok) {
-        alertError("Gagal menyimpan data ke server.");
-        return;
-      }
-
-      const result = await response.json();
-      const newItem = {
-        id: result.bansos.id,
-        nama: result.bansos.name,
-        penerima: result.bansos.amount,
-      };
-      setData((prev) => [newItem, ...prev]);
-      alertSuccess("Data berhasil ditambahkan!");
-    } else {
-      const response = await InfografisApi.updateBansos(formData.id, payload);
-      if (!response.ok) {
-        alertError("Gagal mengupdate data.");
-        return;
-      }
-
-      const updated = [...data];
-      updated[editingIndex] = {
-        id: formData.id, // pastikan tetap simpan id-nya
-        nama: formData.nama.trim(),
-        penerima: penerimaNum,
-      };
-      setData(updated);
-      alertSuccess("Data berhasil diperbarui!");
-    }
-
-    setShowForm(false);
-  };
-
-  const fetchData = async () => {
+  const fetchBansos = async () => {
     const response = await InfografisApi.getBansos();
+    const result = await response.json();
 
     if (!response.ok) {
       alertError("Gagal mengambil data bansos");
       return;
     }
 
-    const result = await response.json();
+    setBansos(result.bansos);
 
-    const mapped = result.bansos.map((item) => ({
+    const latest = result.bansos.reduce((a, b) => {
+      return new Date(a.updated_at || 0) > new Date(b.updated_at || 0) ? a : b;
+    }, {});
+    if (latest.updated_at) {
+      setLastUpdated(latest.updated_at);
+    }
+  };
+
+  const handleAdd = () => {
+    setFormData({ id: null, nama: "", penerima: "" });
+    setIsEditing(false);
+    setShowForm(true);
+  };
+
+  const handleEdit = (item) => {
+    setFormData({
       id: item.id,
       nama: item.name,
-      penerima: item.amount,
-    }));
+      penerima: item.amount.toString(),
+    });
+    setIsEditing(true);
+    setShowForm(true);
+  };
 
-    setData(mapped);
+  const handleDelete = async (id, name) => {
+    const confirm = await alertConfirm(`Yakin ingin menghapus "${name}"?`);
+    if (!confirm) return;
+
+    const res = await InfografisApi.deleteBansos(id);
+    if (res.ok) {
+      setBansos((prev) => prev.filter((item) => item.id !== id));
+      alertSuccess("Data berhasil dihapus!");
+    } else {
+      alertError("Gagal menghapus data.");
+    }
+  };
+
+  const handleSave = async () => {
+    const { nama, penerima, id } = formData;
+    if (!nama.trim()) {
+      alertError("Nama bantuan harus diisi!");
+      return;
+    }
+
+    const amount = parseInt(penerima);
+    if (isNaN(amount) || amount < 0) {
+      alertError("Jumlah penerima harus angka positif!");
+      return;
+    }
+
+    const payload = { name: nama.trim(), amount };
+
+    if (isEditing) {
+      const res = await InfografisApi.updateBansos(id, payload);
+      if (res.ok) {
+        const updated = [...bansos].map((item) =>
+          item.id === id ? { ...item, name: nama.trim(), amount } : item
+        );
+        setBansos(updated);
+        alertSuccess("Data berhasil diperbarui!");
+        setShowForm(false);
+      } else {
+        alertError("Gagal memperbarui data.");
+      }
+    } else {
+      const res = await InfografisApi.createBansos(payload);
+      const json = await res.json();
+      if (res.ok) {
+        const newItem = {
+          id: json.bansos.id,
+          name: json.bansos.name,
+          amount: json.bansos.amount,
+          created_at: json.bansos.created_at,
+        };
+        setBansos((prev) => [newItem, ...prev]);
+        alertSuccess("Data berhasil ditambahkan!");
+        setShowForm(false);
+      } else {
+        alertError("Gagal menambahkan data.");
+      }
+    }
   };
 
   useEffect(() => {
-    fetchData();
+    fetchBansos();
   }, []);
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-8 font-poppins bg-gray-50 min-h-screen">
-      {/* - Header + tombol tambah */}
+      {/* Header */}
       <div className="flex justify-between items-center mb-8">
         <div>
           <h2 className="text-3xl font-bold text-gray-800">
-            Data Bantuan Sosial
+            Kelola Bantuan Sosial
           </h2>
           <p className="mt-2 text-gray-600">
-            Daftar bantuan sosial yang diterima warga Desa Babakan Asem.
+            Manajemen data bantuan sosial di desa.
           </p>
+          {lastUpdated && (
+            <p className="text-sm text-gray-500 mt-1">
+              Terakhir diperbarui: {Helper.formatTanggal(lastUpdated)}
+            </p>
+          )}
         </div>
         <button
           onClick={handleAdd}
-          className="px-4 py-2 bg-green-500 text-white rounded-lg shadow hover:bg-green-600 transition"
+          className="px-4 py-2 bg-green-500 text-white rounded shadow hover:bg-green-600 transition"
         >
-          + Tambah Data
+          + Tambah
         </button>
       </div>
 
-      {/* - Grid data bansos */}
-      <div className="grid sm:grid-cols-2 md:grid-cols-2 gap-6">
-        {data.length > 0 ? (
-          data.map((item, idx) => (
+      {/* List Card */}
+      <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
+        {bansos.length > 0 ? (
+          bansos.map((item) => (
             <div
               key={item.id}
-              className="bg-white p-6 rounded-xl shadow hover:shadow-lg hover:scale-[1.02] transition relative"
+              className="bg-white p-6 rounded-xl shadow relative hover:shadow-lg hover:scale-[1.02] transition"
             >
-              {/* Nama bantuan */}
-              <p className="font-semibold text-gray-800">{item.nama}</p>
-              <p className="text-gray-500 text-sm">Jumlah Penerima</p>
-
-              {/* Jumlah */}
-              <span className="block mt-2 text-2xl font-bold text-[#B6F500]">
-                {item.penerima}
-              </span>
-
-              {/* Tombol Edit & Hapus */}
+              <p className="font-semibold text-gray-800">{item.name}</p>
+              <p className="text-sm text-gray-500">Jumlah Penerima</p>
+              <p className="mt-2 text-2xl font-bold text-[#B6F500]">
+                {item.amount}
+              </p>
+              {item.updated_at && (
+                <p className="text-xs text-gray-400 mt-2">
+                  Diperbarui: {Helper.formatTanggal(item.updated_at)}
+                </p>
+              )}
               <div className="absolute top-3 right-3 flex gap-3 opacity-0 hover:opacity-100 transition-opacity">
                 <button
-                  onClick={() => handleEdit(idx)}
+                  onClick={() => handleEdit(item)}
                   className="text-blue-600 hover:underline text-sm"
                 >
                   Edit
                 </button>
                 <button
-                  onClick={() => handleDelete(idx)}
+                  onClick={() => handleDelete(item.id, item.name)}
                   className="text-red-600 hover:underline text-sm"
                 >
                   Hapus
@@ -175,36 +172,33 @@ export default function Bansos() {
             </div>
           ))
         ) : (
-          <p className="col-span-2 text-center text-gray-500 mt-4">
-            Belum ada data bantuan sosial.
+          <p className="col-span-3 text-center text-gray-500">
+            Tidak ada data bansos.
           </p>
         )}
       </div>
 
-      {/* - Modal form tambah/edit */}
+      {/* Modal Form */}
       {showForm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-80">
+          <div className="bg-white p-6 rounded-xl shadow-lg w-80">
             <h3 className="text-xl font-semibold mb-4">
-              {isAdding ? "Tambah Bantuan" : "Edit Bantuan"}
+              {isEditing ? "Edit Bantuan Sosial" : "Tambah Bantuan Sosial"}
             </h3>
-
-            {/* Nama Bantuan */}
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="text-sm font-medium text-gray-700 mb-1 block">
               Nama Bantuan
             </label>
             <input
               type="text"
               value={formData.nama}
               onChange={(e) =>
-                setFormData({ ...formData, nama: e.target.value })
+                setFormData((prev) => ({ ...prev, nama: e.target.value }))
               }
               className="w-full p-2 border rounded mb-4"
-              placeholder="Misal: BLT Dana Desa"
+              placeholder="Contoh: BLT Dana Desa"
             />
 
-            {/* Jumlah Penerima */}
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="text-sm font-medium text-gray-700 mb-1 block">
               Jumlah Penerima
             </label>
             <input
@@ -212,13 +206,12 @@ export default function Bansos() {
               min="0"
               value={formData.penerima}
               onChange={(e) =>
-                setFormData({ ...formData, penerima: e.target.value })
+                setFormData((prev) => ({ ...prev, penerima: e.target.value }))
               }
               className="w-full p-2 border rounded mb-4"
-              placeholder="Misal: 100"
+              placeholder="Contoh: 150"
             />
 
-            {/* Tombol Modal */}
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => setShowForm(false)}

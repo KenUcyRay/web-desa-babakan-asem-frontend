@@ -86,6 +86,17 @@
       "news": "Gagal mengambil data berita. Silakan coba lagi nanti."
     }
   },
+  "detailAchievement": {
+    "backToProfile": "Kembali ke Profil Desa",
+    "villageAchievement": "Prestasi Desa",
+    "achievementDetails": "Detail Prestasi",
+    "commentPlaceholder": "Berikan komentar atau apresiasi Anda tentang prestasi ini...",
+    "noComments": "Belum ada komentar. Jadilah yang pertama memberikan apresiasi!",
+    "errors": {
+      "notFound": "Prestasi tidak ditemukan",
+      "fetchFailed": "Gagal mengambil detail prestasi"
+    }
+  },
   "contact": {
     "hero": {
       "title": "Jangan Ragu untuk Terhubung dengan Kami",
@@ -827,7 +838,7 @@
       "news": "Berita",
       "agenda": "Agenda",
       "messages": "Pesan",
-      "users": "Users"
+      "users": "Pengguna"
     },
     "infographics": {
       "title": "Infografis Penduduk",
@@ -880,7 +891,7 @@
       "manageNews": "Kelola Berita",
       "manageAgenda": "Kelola Agenda",
       "manageMessages": "Kelola Pesan",
-      "manageUsers": "Kelola User",
+      "manageUsers": "Kelola Pengguna",
       "bumdesProducts": "Produk BUMDes",
       "villageGallery": "Galeri Desa",
       "administration": "Administrasi",

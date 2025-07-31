@@ -86,6 +86,17 @@
       "news": "Failed to fetch news data. Please try again later."
     }
   },
+  "detailAchievement": {
+    "backToProfile": "Back to Village Profile",
+    "villageAchievement": "Village Achievement",
+    "achievementDetails": "Achievement Details",
+    "commentPlaceholder": "Share your comments or appreciation about this achievement...",
+    "noComments": "No comments yet. Be the first to give appreciation!",
+    "errors": {
+      "notFound": "Achievement not found",
+      "fetchFailed": "Failed to fetch achievement details"
+    }
+  },
   "contact": {
     "hero": {
       "title": "Don't Hesitate to Get in Touch with Us",
