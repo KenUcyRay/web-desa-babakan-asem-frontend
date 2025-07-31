@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   FaFacebook,
   FaInstagram,
@@ -7,6 +7,8 @@ import {
   FaTiktok,
   FaMapMarkerAlt,
   FaPhoneAlt,
+  FaArrowLeft,
+  FaArrowRight,
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import AOS from "aos";
@@ -16,10 +18,23 @@ import { useTranslation } from "react-i18next";
 
 export default function ProfilDesa() {
   const { t } = useTranslation();
+  const [activeMilestone, setActiveMilestone] = useState(0);
 
   useEffect(() => {
     AOS.init({ duration: 800, once: true });
   }, []);
+
+  const handleNextMilestone = () => {
+    setActiveMilestone((prev) => 
+      prev < t("profileVillage.achievements", { returnObjects: true }).length - 1 ? prev + 1 : 0
+    );
+  };
+
+  const handlePrevMilestone = () => {
+    setActiveMilestone((prev) => 
+      prev > 0 ? prev - 1 : t("profileVillage.achievements", { returnObjects: true }).length - 1
+    );
+  };
 
   return (
     <div className="font-poppins bg-gray-50">
@@ -99,12 +114,12 @@ export default function ProfilDesa() {
       </section>
 
       {/* - Prestasi */}
-       <section className="bg-white py-14" data-aos="fade-up">
+      <section className="bg-white py-14" data-aos="fade-up">
         <div className="max-w-5xl mx-auto px-6">
           <h2 className="text-3xl font-bold text-center text-green-700 mb-10">
             {t("profileVillage.achievementsTitle")}
           </h2>
-          <div className="space-y-10">
+          <div className="space-y-10 mb-16">
             {t("profileVillage.achievements", { returnObjects: true }).map((item, index) => (
               <div
                 key={index}
@@ -123,8 +138,66 @@ export default function ProfilDesa() {
               </div>
             ))}
           </div>
+          {/* Milestone Horizontal - Updated */}
+          <div className="relative w-full py-10">
+            <h3 className="text-xl font-bold text-center text-gray-800 mb-14">
+              Jejak Penghargaan Desa
+            </h3>
+            
+            {/* Timeline Container */}
+            <div className="relative">
+              {/* Timeline Line */}
+              <div className="absolute top-1/2 left-0 right-0 h-1 bg-gray-300 transform -translate-y-1/2 z-0"></div>
+              
+              {/* Milestone Items */}
+              <div className="relative flex justify-between z-10">
+                {t("profileVillage.achievements", { returnObjects: true }).map((item, index) => (
+                  <div 
+                    key={index} 
+                    className="relative flex flex-col items-center"
+                  >
+                    {/* Milestone Dot & Connector */}
+                    <div className="absolute top-1/2 w-full h-1 transform -translate-y-1/2 -z-10">
+                      <div className="w-full h-full bg-gray-300"></div>
+                    </div>
+                    
+                    {/* Milestone Dot */}
+                    <div 
+                      className="relative w-10 h-10 rounded-full bg-white border-4 border-green-600 flex items-center justify-center mb-2 cursor-pointer shadow-md hover:shadow-lg transition-all duration-300 group"
+                      onClick={() => window.location.href = `/prestasi/${item.id}`} // Ganti dengan link yang sesuai
+                    >
+                      <div className="w-4 h-4 rounded-full bg-green-600"></div>
+                      
+                      {/* Milestone Popup */}
+                      <div className="absolute bottom-full mb-3 w-64 p-4 rounded-lg shadow-lg bg-white opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform -translate-x-1/2 left-1/2">
+                        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1 w-4 h-4 bg-white rotate-45"></div>
+                        <div className="text-xs font-semibold text-green-600 mb-1">
+                          {item.year}
+                        </div>
+                        <div className="text-sm font-medium text-gray-800 mb-2">
+                          {item.title}
+                        </div>
+                        <p className="text-xs text-gray-600 line-clamp-2">
+                          {item.description}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    {/* Milestone Label */}
+                    <div className="text-xs font-medium text-gray-700 mt-10 text-center px-2">
+                      {item.year}
+                    </div>
+                    <div className="text-sm font-semibold text-gray-900 mt-1 text-center px-2">
+                      {item.title}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </section>
+
       {/* - KONTAK & SOSMED */}
       <section className="bg-white py-16" data-aos="fade-up">
         <div className="max-w-6xl mx-auto px-6">

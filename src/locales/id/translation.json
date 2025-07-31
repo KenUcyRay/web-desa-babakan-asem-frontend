@@ -122,16 +122,19 @@
   "achievementsTitle": "Penghargaan Desa",
 "achievements": [
   {
+    "years": "2022",
     "title": "Desa Terbaik dalam Keberlanjutan Lingkungan – Kabupaten Sumedang (2023)",
     "description": "Diberikan atas inisiatif lingkungan yang luar biasa serta partisipasi aktif masyarakat dalam menjaga ruang hijau.",
     "image": "/images/awards/award-2023.jpg"
   },
   {
+    "years": "2023",
     "title": "3 Besar Inovasi Desa Digital – Jawa Barat (2022)",
     "description": "Diakui atas terobosan dalam pelayanan publik berbasis digital dan keterlibatan warga secara daring.",
     "image": "/images/awards/award-2022.jpg"
   },
   {
+    "years": "2024",
     "title": "Desa Aktif dalam Program Kesehatan Posyandu – 2021",
     "description": "Penghargaan atas keterlibatan masyarakat yang konsisten dalam kegiatan kesehatan dan layanan Posyandu.",
     "image": "/images/awards/award-2021.jpg"
