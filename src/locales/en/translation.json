@@ -887,6 +887,7 @@
     "title": "Babakan Village",
     "subtitle": "Admin Panel",
     "menu": {
+      "ManageApb": "Manage APBDes",
       "ManageProgram": "Manage Programs",
       "ManagePrestasi": "Manage Achievements",
       "dashboard": "Dashboard",

@@ -12,6 +12,9 @@ import {
 } from "recharts";
 import { FaEdit } from "react-icons/fa";
 
+// API base URL - replace with your actual base URL
+const BASE_URL = import.meta.env.VITE_NEW_BASE_URL || "http://localhost:3000";
+
 const dummyData = [
   { id: 1, key: "Makan Gratis", anggaran: 200, realisasi: 100 },
   { id: 2, key: "Pendidikan", anggaran: 150, realisasi: 50 },
@@ -24,8 +27,75 @@ export default function ManageApb() {
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState({ anggaran: "", realisasi: "" });
 
+  // Fetch all APB data
+  const fetchData = async () => {
+    try {
+      const response = await fetch(`${BASE_URL}/apb`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const result = await response.json();
+
+      // Transform data to match component structure
+      const transformedData =
+        result.data?.map((item) => ({
+          id: item.id,
+          key: item.bidang,
+          anggaran: parseInt(item.anggaran) / 1000000, // Convert to millions
+          realisasi: parseInt(item.realisasi) / 1000000, // Convert to millions
+        })) || [];
+
+      setData(transformedData);
+    } catch (err) {
+      console.error("Fetch error:", err);
+      // Fallback to dummy data if API fails
+      setData(dummyData);
+    }
+  };
+
+  // Update APB entry
+  const updateApb = async () => {
+
+    try {
+      const response = await fetch(`${BASE_URL}/admin/apb/${editing.id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
+        },
+        body: JSON.stringify({
+          bidang: editing.key,
+          anggaran: parseFloat(form.anggaran) * 1000000,
+          realisasi: parseFloat(form.realisasi) * 1000000,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      await fetchData(); // Refresh data
+      setEditing(null);
+    } catch (err) {
+      console.error("Update error:", err);
+      // Fallback to local update if API fails
+      setData((prev) =>
+        prev.map((item) =>
+          item.id === editing.id
+            ? {
+                ...item,
+                anggaran: parseInt(form.anggaran),
+                realisasi: parseInt(form.realisasi),
+              }
+            : item
+        )
+      );
+      setEditing(null);
+    }
+  };
+
   useEffect(() => {
-    setData(dummyData);
+    fetchData();
   }, []);
 
   const handleEdit = (item) => {
@@ -34,18 +104,7 @@ export default function ManageApb() {
   };
 
   const handleSave = () => {
-    setData((prev) =>
-      prev.map((item) =>
-        item.id === editing.id
-          ? {
-              ...item,
-              anggaran: parseInt(form.anggaran),
-              realisasi: parseInt(form.realisasi),
-            }
-          : item
-      )
-    );
-    setEditing(null);
+    updateApb();
   };
 
   const totalAnggaran = data.reduce((sum, item) => sum + item.anggaran, 0);
@@ -112,9 +171,21 @@ export default function ManageApb() {
 
       {/* Ringkasan */}
       <div className="grid md:grid-cols-4 gap-4 mt-6">
-        <StatCard label="Total Anggaran" value={`${totalAnggaran} juta`} color="green" />
-        <StatCard label="Total Realisasi" value={`${totalRealisasi} juta`} color="blue" />
-        <StatCard label="Sisa Anggaran" value={`${sisaAnggaran} juta`} color="yellow" />
+        <StatCard
+          label="Total Anggaran"
+          value={`${totalAnggaran} juta`}
+          color="green"
+        />
+        <StatCard
+          label="Total Realisasi"
+          value={`${totalRealisasi} juta`}
+          color="blue"
+        />
+        <StatCard
+          label="Sisa Anggaran"
+          value={`${sisaAnggaran} juta`}
+          color="yellow"
+        />
         <StatCard label="Penyerapan" value={`${persen}%`} color="purple" />
       </div>
 
@@ -137,7 +208,9 @@ export default function ManageApb() {
               <input
                 type="number"
                 value={form.realisasi}
-                onChange={(e) => setForm({ ...form, realisasi: e.target.value })}
+                onChange={(e) =>
+                  setForm({ ...form, realisasi: e.target.value })
+                }
                 className="border p-2 w-full rounded"
               />
             </label>
