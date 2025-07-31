@@ -887,6 +887,7 @@
     "title": "Desa Babakan",
     "subtitle": "Panel Admin",
     "menu": {
+      "ManageProgram": "Kelola Program",
       "ManagePrestasi": "Kelola Prestasi",
       "dashboard": "Dashboard",
       "manageNews": "Kelola Berita",
