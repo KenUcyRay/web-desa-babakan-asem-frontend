@@ -13,33 +13,21 @@ import {
   FaTimesCircle,
 } from "react-icons/fa";
 
-// Dummy data for prestasi
-const initialPrestasi = [
-  {
-    id: 1,
-    title: "Prestasi A",
-    content: "Deskripsi prestasi A yang luar biasa.",
-    featured_image: "https://via.placeholder.com/150",
-    created_at: new Date().toISOString(),
-    is_published: true,
-  },
-  {
-    id: 2,
-    title: "Prestasi B",
-    content: "Deskripsi prestasi B yang luar biasa.",
-    featured_image: "https://via.placeholder.com/150",
-    created_at: new Date().toISOString(),
-    is_published: false,
-  },
-  // Tambah data dummy lainnya sesuai kebutuhan
-];
+// Helper untuk mengambil image url
+const getImageUrl = (filename) => {
+  if (!filename) return "";
+  // Jika sudah full url, balikin langsung
+  if (filename.startsWith("http")) return filename;
+  return `${import.meta.env.VITE_NEW_BASE_URL}/public/images/${filename}`;
+};
 
 export default function ManagePrestasi() {
   const { t } = useTranslation();
-  const [prestasi, setPrestasi] = useState(initialPrestasi);
+  const [prestasi, setPrestasi] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
   const itemsPerPage = 6;
-  const totalPages = Math.ceil(prestasi.length / itemsPerPage);
 
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -48,69 +36,174 @@ export default function ManagePrestasi() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [featuredImage, setFeaturedImage] = useState(null);
-  const [isPublished, setIsPublished] = useState(false);
+  const [isPublished, setIsPublished] = useState(true); // Default publikasi aktif
+  const [date, setDate] = useState("");
+  const [imageError, setImageError] = useState("");
 
-  // Paginated data
-  const paginatedPrestasi = prestasi.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  // Get token for API calls
+  const getAuthHeader = () => {
+    try {
+      const token = localStorage.getItem("token");
+      return token ? { Authorization: `Bearer ${JSON.parse(token)}` } : {};
+    } catch (e) {
+      console.error("Error parsing token", e);
+      return {};
+    }
+  };
+
+  // Fetch prestasi dari API
+  const fetchPrestasi = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_NEW_BASE_URL
+        }/village-achievements?page=${currentPage}&per_page=${itemsPerPage}`
+      );
+      const json = await response.json();
+
+      // Set data
+      setPrestasi(json.data || []);
+
+      // Set pagination info
+      if (json.meta) {
+        setTotalPages(Math.ceil(json.meta.total / itemsPerPage) || 1);
+      } else {
+        setTotalPages(Math.ceil((json.data || []).length / itemsPerPage) || 1);
+      }
+    } catch (err) {
+      alertError("Gagal mengambil data prestasi.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPrestasi();
+  }, []);
 
   const resetForm = () => {
     setTitle("");
     setContent("");
     setFeaturedImage(null);
-    setIsPublished(false);
+    setIsPublished(true); // Default publikasi aktif
     setEditingId(null);
+    setDate("");
+    setImageError("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (editingId) {
-      if (!(await alertConfirm(t("managePrestasi.confirmation.editPrestasi")))) return;
-      // Update locally
-      setPrestasi((prev) =>
-        prev.map((item) =>
-          item.id === editingId
-            ? {
-                ...item,
-                title,
-                content,
-                featured_image: featuredImage
-                  ? URL.createObjectURL(featuredImage)
-                  : item.featured_image,
-                is_published: isPublished,
-              }
-            : item
-        )
-      );
-      resetForm();
-      setShowForm(false);
-      await alertSuccess(t("managePrestasi.success.updatePrestasi"));
+
+    if (!title || !content || !date) {
+      alertError("Title, Deskripsi, dan Tanggal wajib diisi!");
       return;
     }
 
-    // Add new dummy
-    const newItem = {
-      id: Date.now(),
-      title,
-      content,
-      featured_image: featuredImage
-        ? URL.createObjectURL(featuredImage)
-        : "https://via.placeholder.com/150",
-      created_at: new Date().toISOString(),
-      is_published: isPublished,
-    };
-    setPrestasi((prev) => [newItem, ...prev]);
-    await alertSuccess(t("managePrestasi.success.addPrestasi"));
-    resetForm();
-    setShowForm(false);
+    const isEdit = Boolean(editingId);
+
+    // Validasi gambar wajib saat membuat baru, opsional saat edit
+    if (!isEdit && !featuredImage) {
+      setImageError("Gambar wajib diupload saat membuat prestasi baru!");
+      return;
+    } else {
+      setImageError("");
+    }
+
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("description", content);
+    formData.append("date", date);
+    formData.append(
+      "featured_image",
+      featuredImage ? featuredImage : undefined
+    );
+
+    try {
+      if (isEdit) {
+        if (
+          !(await alertConfirm(
+            t(
+              "managePrestasi.confirmation.editPrestasi",
+              "Yakin ingin mengubah prestasi ini?"
+            )
+          ))
+        )
+          return;
+
+        await fetch(
+          `${
+            import.meta.env.VITE_NEW_BASE_URL
+          }/admin/village-achievements/${editingId}`,
+          {
+            method: "PATCH",
+            body: formData,
+            headers: getAuthHeader(),
+          }
+        );
+
+        await alertSuccess(
+          t(
+            "managePrestasi.success.updatePrestasi",
+            "Prestasi berhasil diperbarui!"
+          )
+        );
+      } else {
+        await fetch(
+          `${import.meta.env.VITE_NEW_BASE_URL}/admin/village-achievements`,
+          {
+            method: "POST",
+            body: formData,
+            headers: getAuthHeader(),
+          }
+        );
+        await alertSuccess(
+          t(
+            "managePrestasi.success.addPrestasi",
+            "Prestasi berhasil ditambahkan!"
+          )
+        );
+      }
+      resetForm();
+      setShowForm(false);
+      fetchPrestasi();
+    } catch (error) {
+      console.error("Error:", error);
+      alertError(
+        isEdit ? "Gagal memperbarui prestasi." : "Gagal menambahkan prestasi."
+      );
+    }
   };
 
   const handleDelete = async (id) => {
-    if (await alertConfirm(t("managePrestasi.confirmation.deletePrestasi"))) {
-      setPrestasi((prev) => prev.filter((p) => p.id !== id));
-      await alertSuccess(t("managePrestasi.success.deletePrestasi"));
+    if (
+      await alertConfirm(
+        t(
+          "managePrestasi.confirmation.deletePrestasi",
+          "Yakin ingin menghapus prestasi ini?"
+        )
+      )
+    ) {
+      try {
+        await fetch(
+          `${
+            import.meta.env.VITE_NEW_BASE_URL
+          }/admin/village-achievements/${id}`,
+          {
+            method: "DELETE",
+            headers: getAuthHeader(),
+          }
+        );
+        await alertSuccess(
+          t(
+            "managePrestasi.success.deletePrestasi",
+            "Prestasi berhasil dihapus!"
+          )
+        );
+        fetchPrestasi();
+      } catch {
+        alertError("Gagal menghapus prestasi.");
+      }
     }
   };
 
@@ -118,9 +211,11 @@ export default function ManagePrestasi() {
     const item = prestasi.find((p) => p.id === id);
     if (!item) return;
     setTitle(item.title);
-    setContent(item.content);
-    setIsPublished(item.is_published);
+    setContent(item.description);
+    setIsPublished(item.is_published || false);
+    setDate(item.date ? item.date.split("T")[0] : ""); // Format YYYY-MM-DD
     setEditingId(id);
+    setImageError("");
     setShowForm(true);
   };
 
@@ -129,7 +224,7 @@ export default function ManagePrestasi() {
       {/* HEADER */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-green-700">
-          {t("managePrestasi.title")}
+          {t("managePrestasi.title", "Manajemen Prestasi")}
         </h1>
         {!showForm && (
           <button
@@ -139,7 +234,8 @@ export default function ManagePrestasi() {
             }}
             className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded shadow hover:bg-green-600 transition"
           >
-            <FaPlus /> {t("managePrestasi.buttons.addPrestasi")}
+            <FaPlus />
+            {t("managePrestasi.buttons.addPrestasi", "Tambah Prestasi")}
           </button>
         )}
       </div>
@@ -150,70 +246,178 @@ export default function ManagePrestasi() {
           onSubmit={handleSubmit}
           className="bg-white p-6 rounded-xl shadow-md mb-6 space-y-4 max-w-2xl border"
         >
-          {/* title, content, image, status, buttons as before */}
-          {/* ... reuse form JSX from original with minor adjustments ... */}
-          {/* For brevity, insert the form code here as in the example above */}
+          <div>
+            <label className="block font-medium text-gray-700 mb-1">
+              {t("managePrestasi.form.prestasiTitle", "Judul Prestasi")}
+            </label>
+            <input
+              className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-green-300 outline-none"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Masukkan judul prestasi"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block font-medium text-gray-700 mb-1">
+              {t("managePrestasi.form.content", "Deskripsi")}
+            </label>
+            <textarea
+              className="w-full border rounded-lg p-3 h-32 resize-none focus:ring-2 focus:ring-green-300 outline-none"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              placeholder="Masukkan deskripsi prestasi"
+              required
+            ></textarea>
+          </div>
+
+          <div>
+            <label className="block font-medium text-gray-700 mb-1">
+              {t("managePrestasi.form.date", "Tanggal")}
+            </label>
+            <input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-green-300 outline-none"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block font-medium text-gray-700 mb-1">
+              {t("managePrestasi.form.uploadMainImage", "Gambar Utama")}
+              {!editingId && <span className="text-red-500 ml-1">*</span>}
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                setFeaturedImage(e.target.files[0]);
+                if (e.target.files[0]) setImageError("");
+              }}
+              className={`w-full border p-2 rounded ${
+                imageError ? "border-red-500" : ""
+              }`}
+            />
+            {imageError && (
+              <p className="text-red-500 text-sm mt-1">{imageError}</p>
+            )}
+            {(featuredImage ||
+              (editingId &&
+                prestasi.find((p) => p.id === editingId)?.featured_image)) && (
+              <img
+                src={
+                  featuredImage
+                    ? URL.createObjectURL(featuredImage)
+                    : getImageUrl(
+                        prestasi.find((p) => p.id === editingId)?.featured_image
+                      )
+                }
+                alt={t("managePrestasi.preview", "Pratinjau")}
+                className="mt-3 w-40 rounded-lg shadow-sm"
+              />
+            )}
+          </div>
+
+          {/* BUTTONS */}
+          <div className="flex gap-3">
+            <button
+              type="submit"
+              className="flex items-center gap-2 bg-green-500 text-white px-5 py-2 rounded-lg shadow hover:bg-green-600 transition"
+            >
+              <FaSave />
+              {editingId
+                ? t("managePrestasi.buttons.updatePrestasi", "Simpan Perubahan")
+                : t("managePrestasi.buttons.savePrestasi", "Simpan Prestasi")}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                resetForm();
+                setShowForm(false);
+              }}
+              className="flex items-center gap-2 bg-gray-400 text-white px-4 py-2 rounded-lg hover:bg-gray-500 transition"
+            >
+              <FaTimes /> {t("managePrestasi.buttons.cancel", "Batal")}
+            </button>
+          </div>
         </form>
       )}
 
       {/* LIST PRESTASI */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {paginatedPrestasi.map((item) => (
-          <div
-            key={item.id}
-            className="bg-white rounded-xl shadow-md border hover:shadow-lg transition"
-          >
-            <img
-              src={item.featured_image}
-              alt={item.title}
-              className="rounded-t-xl w-full h-40 object-cover"
-            />
-            <div className="p-4">
-              <h2 className="text-lg font-semibold text-gray-800 line-clamp-2">
-                {item.title}
-              </h2>
-              <p className="text-gray-600 text-sm line-clamp-3 mt-1">
-                {Helper.truncateText(item.content)}
-              </p>
-              <div className="flex justify-between items-center mt-3 text-xs text-gray-400">
-                <span>{Helper.formatTanggal(item.created_at)}</span>
-                {item.is_published ? (
-                  <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs flex items-center gap-1">
-                    <FaCheck /> {t("managePrestasi.status.published")}
-                  </span>
-                ) : (
-                  <span className="bg-red-100 text-red-600 px-2 py-0.5 rounded-full text-xs flex items-center gap-1">
-                    <FaTimesCircle /> {t("managePrestasi.status.unpublished")}
-                  </span>
-                )}
-              </div>
-              <div className="flex gap-4 mt-4">
-                <button
-                  onClick={() => handleEdit(item.id)}
-                  className="flex items-center gap-1 text-blue-500 hover:text-blue-700 transition text-sm"
-                >
-                  <FaEdit /> {t("managePrestasi.buttons.edit")}
-                </button>
-                <button
-                  onClick={() => handleDelete(item.id)}
-                  className="flex items-center gap-1 text-red-500 hover:text-red-700 transition text-sm"
-                >
-                  <FaTrash /> {t("managePrestasi.buttons.delete")}
-                </button>
-              </div>
+      {isLoading ? (
+        <div className="text-center py-10">Memuat data...</div>
+      ) : (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {prestasi.length === 0 ? (
+            <div className="col-span-full text-center py-10 text-gray-500">
+              Belum ada data prestasi
             </div>
-          </div>
-        ))}
-      </div>
+          ) : (
+            prestasi.map((item) => (
+              <div
+                key={item.id}
+                className="bg-white rounded-xl shadow-md border hover:shadow-lg transition"
+              >
+                <img
+                  src={getImageUrl(item.featured_image)}
+                  alt={item.title}
+                  className="rounded-t-xl w-full h-40 object-cover"
+                  onError={(e) => {
+                    e.target.src =
+                      "https://via.placeholder.com/640x360?text=Tidak+Ada+Gambar";
+                  }}
+                />
+
+                <div className="p-4">
+                  <h2 className="text-lg font-semibold text-gray-800 line-clamp-2">
+                    {item.title}
+                  </h2>
+                  <p className="text-gray-600 text-sm line-clamp-3 mt-1">
+                    {Helper.truncateText
+                      ? Helper.truncateText(item.description)
+                      : item.description}
+                  </p>
+
+                  <div className="flex justify-between items-center mt-3 text-xs text-gray-400">
+                    {Helper.formatTanggal
+                      ? Helper.formatTanggal(item.created_at)
+                      : item.created_at}
+                  </div>
+
+                  <div className="flex gap-4 mt-4">
+                    <button
+                      onClick={() => handleEdit(item.id)}
+                      className="flex items-center gap-1 text-blue-500 hover:text-blue-700 transition text-sm"
+                    >
+                      <FaEdit /> {t("managePrestasi.buttons.edit", "Edit")}
+                    </button>
+                    <button
+                      onClick={() => handleDelete(item.id)}
+                      className="flex items-center gap-1 text-red-500 hover:text-red-700 transition text-sm"
+                    >
+                      <FaTrash /> {t("managePrestasi.buttons.delete", "Hapus")}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      )}
 
       {/* PAGINATION */}
-      <div className="mt-6 flex justify-center">
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-        />
-      </div>
+      {prestasi.length > 0 && (
+        <div className="mt-6 flex justify-center">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+        </div>
+      )}
     </div>
   );
 }

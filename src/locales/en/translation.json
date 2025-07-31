@@ -1170,5 +1170,45 @@
     "meta": {
       "createdAt": "Created date"
     }
+  },
+  "managePrestasi": {
+    "title": "Manage Achievements",
+    "buttons": {
+      "addPrestasi": "Add Achievement",
+      "edit": "Edit",
+      "delete": "Delete",
+      "save": "Save",
+      "update": "Update",
+      "cancel": "Cancel"
+    },
+    "form": {
+      "title": {
+        "add": "Add Achievement",
+        "edit": "Edit Achievement"
+      },
+      "fields": {
+        "title": "Achievement Title",
+        "content": "Description",
+        "image": "Achievement Image",
+        "publish": "Publish achievement"
+      },
+      "placeholders": {
+        "title": "Enter achievement title",
+        "content": "Enter achievement description"
+      }
+    },
+    "status": {
+      "published": "Published",
+      "unpublished": "Unpublished"
+    },
+    "confirmation": {
+      "editPrestasi": "Are you sure you want to edit this achievement?",
+      "deletePrestasi": "Are you sure you want to delete this achievement?"
+    },
+    "success": {
+      "addPrestasi": "Achievement successfully added!",
+      "updatePrestasi": "Achievement successfully updated!",
+      "deletePrestasi": "Achievement successfully deleted!"
+    }
   }
 }

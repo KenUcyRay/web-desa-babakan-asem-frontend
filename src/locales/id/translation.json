@@ -1170,5 +1170,45 @@
     "meta": {
       "createdAt": "Tanggal dibuat"
     }
+  },
+  "managePrestasi": {
+    "title": "Kelola Prestasi",
+    "buttons": {
+      "addPrestasi": "Tambah Prestasi",
+      "edit": "Edit",
+      "delete": "Hapus",
+      "save": "Simpan",
+      "update": "Perbarui",
+      "cancel": "Batal"
+    },
+    "form": {
+      "title": {
+        "add": "Tambah Prestasi",
+        "edit": "Edit Prestasi"
+      },
+      "fields": {
+        "title": "Judul Prestasi",
+        "content": "Deskripsi",
+        "image": "Gambar Prestasi",
+        "publish": "Publikasikan prestasi"
+      },
+      "placeholders": {
+        "title": "Masukkan judul prestasi",
+        "content": "Masukkan deskripsi prestasi"
+      }
+    },
+    "status": {
+      "published": "Dipublikasi",
+      "unpublished": "Belum Dipublikasi"
+    },
+    "confirmation": {
+      "editPrestasi": "Yakin ingin mengubah prestasi ini?",
+      "deletePrestasi": "Yakin ingin menghapus prestasi ini?"
+    },
+    "success": {
+      "addPrestasi": "Prestasi berhasil ditambahkan!",
+      "updatePrestasi": "Prestasi berhasil diperbarui!",
+      "deletePrestasi": "Prestasi berhasil dihapus!"
+    }
   }
 }
