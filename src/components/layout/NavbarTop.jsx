@@ -53,7 +53,7 @@ export default function NavbarTop() {
             ["Karang Taruna", "/karang-taruna"],
             ["BPD", "/bpd"],
             ["Galeri", "/galeri"],
-            ["Koperasi Merah Putih", "/koperasi-merah-putih"],
+            // ["Koperasi Merah Putih", "/koperasi-merah-putih"],
           ].map(([label, to]) => (
             <Link
               key={to}

@@ -276,6 +276,48 @@ export default function Penduduk() {
             });
           }
 
+          // Urutan khusus untuk usia (dari muda ke tua)
+          if (type === "USIA") {
+            return mapped.sort((a, b) => {
+              const aKey = a.key.toLowerCase();
+              const bKey = b.key.toLowerCase();
+
+              // Extract angka dari key untuk sorting numerik
+              const aMatch = aKey.match(/(\d+)/);
+              const bMatch = bKey.match(/(\d+)/);
+
+              if (aMatch && bMatch) {
+                const aNum = parseInt(aMatch[1]);
+                const bNum = parseInt(bMatch[1]);
+                return aNum - bNum;
+              }
+
+              // Fallback ke sorting alfabetis
+              return aKey.localeCompare(bKey);
+            });
+          }
+
+          // Urutan khusus untuk dusun (dimulai dari A)
+          if (type === "DUSUN") {
+            return mapped.sort((a, b) => {
+              const aKey = a.key.toLowerCase();
+              const bKey = b.key.toLowerCase();
+
+              // Extract huruf dari key untuk sorting alfabetis
+              const aMatch = aKey.match(/([a-z])/);
+              const bMatch = bKey.match(/([a-z])/);
+
+              if (aMatch && bMatch) {
+                const aLetter = aMatch[1];
+                const bLetter = bMatch[1];
+                return aLetter.localeCompare(bLetter);
+              }
+
+              // Fallback ke sorting alfabetis normal
+              return aKey.localeCompare(bKey);
+            });
+          }
+
           return mapped;
         };
 
@@ -293,12 +335,7 @@ export default function Penduduk() {
             icon: getIconForCategory("AGAMA", item.key),
           }))
         );
-        setUsiaData(
-          usia.map((item) => ({
-            ...item,
-            icon: getIconForCategory("USIA", item.key),
-          }))
-        );
+        setUsiaData(sortData(usia, "USIA"));
         setKepalaKeluargaData(
           kepalaKeluarga.map((item) => ({
             ...item,
@@ -318,12 +355,7 @@ export default function Penduduk() {
             icon: getIconForCategory("WAJIB_PILIH", item.key),
           }))
         );
-        setDusunData(
-          dusun.map((item) => ({
-            ...item,
-            icon: getIconForCategory("DUSUN", item.key),
-          }))
-        );
+        setDusunData(sortData(dusun, "DUSUN"));
         setAnakAnakData(
           anakAnak.map((item) => ({
             ...item,
