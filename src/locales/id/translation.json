@@ -1,22 +1,22 @@
 {
-  "home": {
+ "home": {
     "hero": {
       "title": "Selamat Datang di Desa Babakan Asem",
-      "description": "Desa yang asri, ramah, dan penuh gotong royong.",
+      "description": "Desa hijau yang ramah penuh dengan semangat gotong royong.",
       "location": "Kabupaten Sumedang"
     },
     "quickmenu": {
       "profile": {
         "title": "Profil Desa",
-        "desc": "Sejarah, visi & misi desa"
+        "desc": "Sejarah, visi & misi"
       },
       "news": {
         "title": "Berita Desa",
         "desc": "Informasi terkini"
       },
       "service": {
-        "title": "Layanan Publik",
-        "desc": "Pengajuan surat & layanan"
+        "title": "Pelayanan Publik",
+        "desc": "Pengajuan dokumen & layanan"
       },
       "infografis": {
         "title": "Infografis",
@@ -25,8 +25,8 @@
     },
     "about": {
       "title": "Tentang Desa Babakan Asem",
-      "desc1": "Desa Babakan Asem merupakan desa yang terletak di kawasan asri dengan mayoritas penduduk bermata pencaharian sebagai petani dan pengrajin. Desa ini memiliki potensi alam yang melimpah, budaya gotong royong yang kuat, serta berbagai produk unggulan yang dikelola oleh Badan Usaha Milik Desa (BUMDes).",
-      "desc2": "Kami terus berkomitmen untuk membangun desa yang mandiri, berdaya saing, dan sejahtera melalui pemberdayaan masyarakat lokal."
+      "desc1": "Babakan Asem adalah desa yang terletak di daerah yang asri dimana sebagian besar penduduknya adalah petani dan pengrajin. Memiliki potensi alam yang melimpah, budaya gotong royong yang kuat, serta berbagai produk unggulan yang dikelola oleh Badan Usaha Milik Desa (BUMDes).",
+      "desc2": "Kami berkomitmen untuk membangun desa yang mandiri, berdaya saing, dan sejahtera melalui pemberdayaan masyarakat lokal."
     },
     "latestnews": {
       "title": "Berita Terbaru",
@@ -38,12 +38,38 @@
       "order": "Pesan"
     },
     "apb": {
-      "title": "📊 APB Desa Tahun 2025",
+      "title": "📊 Anggaran Desa 2025",
       "budget": "Anggaran",
-      "realization": "Realisasi"
+      "realization": "Realisasi",
+      "education": "Pendidikan",
+      "health": "Kesehatan",
+      "infrastructure": "Infrastruktur",
+      "social": "Sosial",
+      "value": "Nilai",
+      "field": "Bidang",
+      "totalbudget": "Total Anggaran",
+      "totalrealization": "Total Realisasi",
+      "remaining": "Sisa Anggaran",
+      "absorption": "Penyerapan Anggaran"
     },
     "map": {
       "title": "Peta Desa Babakan Asem"
+    },
+    "workprograms": {
+      "title": "Program Kerja Desa",
+      "program": "Program",
+      "dates": "Tanggal Pelaksanaan",
+      "status": "Status",
+      "statuses": {
+        "planned": "Direncanakan",
+        "in_progress": "Sedang Berjalan",
+        "completed": "Selesai",
+        "cancelled": "Dibatalkan"
+      },
+      "paving": "Pembangunan Jalan Paving",
+      "entrepreneur": "Pelatihan Wirausaha",
+      "lighting": "Pemasangan Penerangan Jalan",
+      "hall": "Renovasi Balai Desa"
     }
   },
   "contact": {
@@ -448,10 +474,28 @@
     }
   },
   "bansos": {
-    "title": "Data Bantuan Sosial",
-    "description": "Daftar bantuan sosial yang diterima warga desa.",
-    "jumlah": "Jumlah Penerima"
-  },
+  "title": "Data Bantuan Sosial",
+  "description": "Daftar bantuan sosial yang diterima warga desa.",
+  "jumlah": "Jumlah Penerima",
+  "trend_title": "Tren Penerima Bantuan Sosial",
+  "recipients": "penerima",
+  "year": "Tahun",
+  "analysis_title": "Analisis Tren",
+  "analysis_text": "Data menunjukkan penurunan signifikan dalam jumlah penerima bansos dari tahun 2020 hingga 2024. Penurunan sebesar <bold>39%</bold> ini menunjukkan peningkatan kesejahteraan masyarakat dan efektivitas program pengentasan kemiskinan. Faktor utama penurunan meliputi:",
+  "analysis_point_1": "Pertumbuhan ekonomi yang stabil",
+  "analysis_point_2": "Program pemberdayaan masyarakat yang efektif",
+  "analysis_point_3": "Peningkatan lapangan pekerjaan",
+  "analysis_point_4": "Pendidikan dan pelatihan keterampilan",
+  "active_programs": "Program Bansos Aktif",
+  "about_title": "Tentang Program Bansos",
+  "what_is": "Apa itu Bansos?",
+  "what_is_text": "Bantuan Sosial (Bansos) adalah program pemerintah untuk memberikan bantuan kepada masyarakat yang membutuhkan. Program ini bertujuan untuk mengurangi beban ekonomi masyarakat miskin dan rentan.",
+  "goals": "Tujuan Program",
+  "goal_1": "Meningkatkan akses pelayanan dasar",
+  "goal_2": "Mengurangi kesenjangan sosial",
+  "goal_3": "Meningkatkan kesejahteraan masyarakat",
+  "goal_4": "Memberikan perlindungan sosial"
+},
   "sdgs": {
     "title": "SDGs Desa",
     "description": "17 Tujuan Pembangunan Berkelanjutan di Desa Babakan Asem."
