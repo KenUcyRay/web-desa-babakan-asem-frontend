@@ -19,20 +19,69 @@ import { useTranslation } from "react-i18next";
 export default function ProfilDesa() {
   const { t } = useTranslation();
   const [activeMilestone, setActiveMilestone] = useState(0);
+  const [achievements, setAchievements] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Base URL dari environment variable
+  const BASE_URL = import.meta.env.VITE_NEW_BASE_URL;
 
   useEffect(() => {
     AOS.init({ duration: 800, once: true });
+    fetchAchievements();
   }, []);
 
+  const fetchAchievements = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${BASE_URL}/village-achievements`);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      // Berdasarkan struktur API response, data ada di result.data
+      if (result.data && Array.isArray(result.data)) {
+        // Transform data untuk menambahkan full image URL
+        const transformedData = result.data.map((item) => ({
+          ...item,
+          // Menambahkan full URL untuk gambar
+          imageUrl: item.featured_image
+            ? `${BASE_URL}/public/images/${item.featured_image}`
+            : kumpul, // fallback image jika tidak ada featured_image
+          // Format tanggal jika diperlukan
+          year: item.date
+            ? new Date(item.date).getFullYear()
+            : new Date().getFullYear(),
+        }));
+        setAchievements(transformedData);
+      } else {
+        console.warn("Data format tidak sesuai:", result);
+        setAchievements([]);
+      }
+    } catch (err) {
+      console.error("Error fetching achievements:", err);
+      setError(err.message);
+      // Fallback ke data translation jika API gagal
+      setAchievements(
+        t("profileVillage.achievements", { returnObjects: true }) || []
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleNextMilestone = () => {
-    setActiveMilestone((prev) => 
-      prev < t("profileVillage.achievements", { returnObjects: true }).length - 1 ? prev + 1 : 0
+    setActiveMilestone((prev) =>
+      prev < achievements.length - 1 ? prev + 1 : 0
     );
   };
 
   const handlePrevMilestone = () => {
-    setActiveMilestone((prev) => 
-      prev > 0 ? prev - 1 : t("profileVillage.achievements", { returnObjects: true }).length - 1
+    setActiveMilestone((prev) =>
+      prev > 0 ? prev - 1 : achievements.length - 1
     );
   };
 
@@ -119,82 +168,134 @@ export default function ProfilDesa() {
           <h2 className="text-3xl font-bold text-center text-green-700 mb-10">
             {t("profileVillage.achievementsTitle")}
           </h2>
-          <div className="space-y-10 mb-16">
-            {t("profileVillage.achievements", { returnObjects: true }).map((item, index) => (
-              <div
-                key={index}
-                className="flex flex-col md:flex-row gap-6 items-center bg-gray-50 rounded-xl shadow-md p-6"
-                data-aos="fade-up"
+
+          {/* Loading State */}
+          {loading && (
+            <div className="flex justify-center items-center py-10">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-700"></div>
+              <span className="ml-3 text-gray-600">Memuat prestasi...</span>
+            </div>
+          )}
+
+          {/* Error State */}
+          {error && !loading && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+              <p className="text-red-700">
+                Error memuat data prestasi: {error}
+              </p>
+              <button
+                onClick={fetchAchievements}
+                className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
               >
-                <img
-                  src={item.image}
-                  alt={item.title}
-                  className="w-full md:w-1/3 h-56 object-cover rounded-lg shadow"
-                />
-                <div className="md:w-2/3">
-                  <h3 className="text-xl font-semibold text-gray-800 mb-2">{item.title}</h3>
-                  <p className="text-gray-600">{item.description}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-          {/* Milestone Horizontal - Updated */}
-          <div className="relative w-full py-10">
-            <h3 className="text-xl font-bold text-center text-gray-800 mb-14">
-              Jejak Penghargaan Desa
-            </h3>
-            
-            {/* Timeline Container */}
-            <div className="relative">
-              {/* Timeline Line */}
-              <div className="absolute top-1/2 left-0 right-0 h-1 bg-gray-300 transform -translate-y-1/2 z-0"></div>
-              
-              {/* Milestone Items */}
-              <div className="relative flex justify-between z-10">
-                {t("profileVillage.achievements", { returnObjects: true }).map((item, index) => (
-                  <div 
-                    key={index} 
-                    className="relative flex flex-col items-center"
+                Coba Lagi
+              </button>
+            </div>
+          )}
+
+          {/* Achievements List */}
+          {!loading && achievements.length > 0 && (
+            <>
+              <div className="space-y-10 mb-16">
+                {achievements.map((item, index) => (
+                  <div
+                    key={item.id || index}
+                    className="flex flex-col md:flex-row gap-6 items-center bg-gray-50 rounded-xl shadow-md p-6"
+                    data-aos="fade-up"
                   >
-                    {/* Milestone Dot & Connector */}
-                    <div className="absolute top-1/2 w-full h-1 transform -translate-y-1/2 -z-10">
-                      <div className="w-full h-full bg-gray-300"></div>
-                    </div>
-                    
-                    {/* Milestone Dot */}
-                    <div 
-                      className="relative w-10 h-10 rounded-full bg-white border-4 border-green-600 flex items-center justify-center mb-2 cursor-pointer shadow-md hover:shadow-lg transition-all duration-300 group"
-                      onClick={() => window.location.href = `/prestasi/${item.id}`} // Ganti dengan link yang sesuai
-                    >
-                      <div className="w-4 h-4 rounded-full bg-green-600"></div>
-                      
-                      {/* Milestone Popup */}
-                      <div className="absolute bottom-full mb-3 w-64 p-4 rounded-lg shadow-lg bg-white opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform -translate-x-1/2 left-1/2">
-                        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1 w-4 h-4 bg-white rotate-45"></div>
-                        <div className="text-xs font-semibold text-green-600 mb-1">
-                          {item.year}
-                        </div>
-                        <div className="text-sm font-medium text-gray-800 mb-2">
-                          {item.title}
-                        </div>
-                        <p className="text-xs text-gray-600 line-clamp-2">
-                          {item.description}
+                    <img
+                      src={item.imageUrl || item.image || kumpul}
+                      alt={item.title}
+                      className="w-full md:w-1/3 h-56 object-cover rounded-lg shadow"
+                      onError={(e) => {
+                        e.target.src = kumpul; // Fallback jika gambar tidak bisa dimuat
+                      }}
+                    />
+                    <div className="md:w-2/3">
+                      <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                        {item.title}
+                      </h3>
+                      <p className="text-gray-600">{item.description}</p>
+                      {item.date && (
+                        <p className="text-sm text-green-600 mt-2">
+                          {new Date(item.date).toLocaleDateString("id-ID", {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          })}
                         </p>
-                      </div>
-                    </div>
-                    
-                    {/* Milestone Label */}
-                    <div className="text-xs font-medium text-gray-700 mt-10 text-center px-2">
-                      {item.year}
-                    </div>
-                    <div className="text-sm font-semibold text-gray-900 mt-1 text-center px-2">
-                      {item.title}
+                      )}
                     </div>
                   </div>
                 ))}
               </div>
+
+              {/* Milestone Horizontal Timeline */}
+              <div className="relative w-full py-10">
+                <h3 className="text-xl font-bold text-center text-gray-800 mb-14">
+                  Jejak Penghargaan Desa
+                </h3>
+
+                {/* Timeline Container */}
+                <div className="relative">
+                  {/* Timeline Line */}
+                  <div className="absolute top-1/2 left-0 right-0 h-1 bg-gray-300 transform -translate-y-1/2 z-0"></div>
+
+                  {/* Milestone Items */}
+                  <div className="relative flex justify-between z-10">
+                    {achievements.map((item, index) => (
+                      <div
+                        key={item.id || index}
+                        className="relative flex flex-col items-center"
+                      >
+                        {/* Milestone Dot */}
+                        <div
+                          className="relative w-10 h-10 rounded-full bg-white border-4 border-green-600 flex items-center justify-center mb-2 cursor-pointer shadow-md hover:shadow-lg transition-all duration-300 group"
+                          onClick={() => {
+                            if (item.id) {
+                              window.location.href = `/prestasi/${item.id}`;
+                            }
+                          }}
+                        >
+                          <div className="w-4 h-4 rounded-full bg-green-600"></div>
+
+                          {/* Milestone Popup */}
+                          <div className="absolute bottom-full mb-3 w-64 p-4 rounded-lg shadow-lg bg-white opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform -translate-x-1/2 left-1/2">
+                            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1 w-4 h-4 bg-white rotate-45"></div>
+                            <div className="text-xs font-semibold text-green-600 mb-1">
+                              {item.year || new Date(item.date).getFullYear()}
+                            </div>
+                            <div className="text-sm font-medium text-gray-800 mb-2">
+                              {item.title}
+                            </div>
+                            <p className="text-xs text-gray-600 line-clamp-2">
+                              {item.description}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Milestone Label */}
+                        <div className="text-xs font-medium text-gray-700 mt-10 text-center px-2">
+                          {item.year || new Date(item.date).getFullYear()}
+                        </div>
+                        <div className="text-sm font-semibold text-gray-900 mt-1 text-center px-2">
+                          {item.title}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* Empty State */}
+          {!loading && achievements.length === 0 && !error && (
+            <div className="text-center py-10">
+              <p className="text-gray-600">
+                Belum ada data prestasi yang tersedia.
+              </p>
             </div>
-          </div>
+          )}
         </div>
       </section>
 
