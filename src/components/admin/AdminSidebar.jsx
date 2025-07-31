@@ -31,6 +31,9 @@ export default function AdminSidebar({ isOpen, onClose }) {
   const { t } = useTranslation();
   const { logout, setAdminStatus } = useAuth();
   const [openInfografis, setOpenInfografis] = useState(false);
+  const [openManagePublik, setOpenManagePublik] = useState(false);
+  const [openManageInformasi, setOpenManageInformasi] = useState(false);
+  const [openManageOrganisasi, setOpenManageOrganisasi] = useState(false);
 
   // - supaya sidebar mobile gak langsung hilang
   const [isVisible, setIsVisible] = useState(false);
@@ -55,6 +58,9 @@ export default function AdminSidebar({ isOpen, onClose }) {
       label: t("adminSidebar.menu.dashboard"),
       icon: <FaTachometerAlt />,
     },
+  ];
+
+  const managePublikSubmenu = [
     {
       to: "/admin/manage-berita",
       label: t("adminSidebar.menu.manageNews"),
@@ -66,39 +72,45 @@ export default function AdminSidebar({ isOpen, onClose }) {
       icon: <FaCalendarAlt />,
     },
     {
-      to: "/admin/manage-pesan",
-      label: t("adminSidebar.menu.manageMessages"),
-      icon: <FaEnvelope />,
+      to: "/admin/manage-galery",
+      label: t("adminSidebar.menu.villageGallery"),
+      icon: <FaImage />,
     },
+    {
+      to: "/admin/manage-anggota",
+      label: t("adminSidebar.menu.organizationStructure"),
+      icon: <FaSitemap />,
+    },
+  ];
+
+  const manageInformasiSubmenu = [
     {
       to: "/admin/manage-user",
       label: t("adminSidebar.menu.manageUsers"),
       icon: <FaUsers />,
     },
     {
-      to: "/admin/manage-bumdes",
-      label: t("adminSidebar.menu.bumdesProducts"),
-      icon: <FaStore />,
-    },
-    {
-      to: "/admin/manage-galery",
-      label: t("adminSidebar.menu.villageGallery"),
-      icon: <FaImage />,
+      to: "/admin/manage-pesan",
+      label: t("adminSidebar.menu.manageMessages"),
+      icon: <FaEnvelope />,
     },
     {
       to: "/admin/manage-administrasi",
       label: t("adminSidebar.menu.administration"),
       icon: <FaClipboardList />,
     },
+  ];
+
+  const manageOrganisasiSubmenu = [
     {
       to: "/admin/manage-pkk",
       label: t("adminSidebar.menu.pkkPrograms"),
       icon: <FaUsersCog />,
     },
     {
-      to: "/admin/manage-anggota",
-      label: t("adminSidebar.menu.organizationStructure"),
-      icon: <FaSitemap />,
+      to: "/admin/manage-bumdes",
+      label: t("adminSidebar.menu.bumdesProducts"),
+      icon: <FaStore />,
     },
   ];
 
@@ -166,6 +178,141 @@ export default function AdminSidebar({ isOpen, onClose }) {
             </Link>
           );
         })}
+
+        {/* DROPDOWN MANAGE PUBLIK */}
+        <div>
+          <button
+            onClick={() => setOpenManagePublik(!openManagePublik)}
+            className={`flex items-center justify-between w-full px-3 py-2 rounded-md text-sm transition ${
+              managePublikSubmenu.some(item => location.pathname === item.to)
+                ? "bg-green-100 text-green-700 font-semibold border-l-4 border-green-500"
+                : "hover:bg-green-50 text-gray-700"
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <FaUserFriends />
+              <span>{t("adminSidebar.managePublik")}</span>
+            </div>
+            {openManagePublik ? (
+              <FiChevronUp className="text-gray-500" />
+            ) : (
+              <FiChevronDown className="text-gray-500" />
+            )}
+          </button>
+
+          {openManagePublik && (
+            <div className="ml-6 mt-1 space-y-1 border-l pl-3">
+              {managePublikSubmenu.map((sub) => {
+                const isActive = location.pathname === sub.to;
+                return (
+                  <Link
+                    key={sub.to}
+                    to={sub.to}
+                    onClick={onClose}
+                    className={`flex items-center gap-2 px-2 py-1 rounded-md text-xs transition ${
+                      isActive
+                        ? "bg-green-50 text-green-700 font-semibold"
+                        : "hover:bg-green-50 text-gray-700"
+                    }`}
+                  >
+                    {sub.icon}
+                    <span>{sub.label}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* DROPDOWN MANAGE INFORMASI */}
+        <div>
+          <button
+            onClick={() => setOpenManageInformasi(!openManageInformasi)}
+            className={`flex items-center justify-between w-full px-3 py-2 rounded-md text-sm transition ${
+              manageInformasiSubmenu.some(item => location.pathname === item.to)
+                ? "bg-green-100 text-green-700 font-semibold border-l-4 border-green-500"
+                : "hover:bg-green-50 text-gray-700"
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <FaClipboardList />
+              <span>{t("adminSidebar.manageInformasi")}</span>
+            </div>
+            {openManageInformasi ? (
+              <FiChevronUp className="text-gray-500" />
+            ) : (
+              <FiChevronDown className="text-gray-500" />
+            )}
+          </button>
+
+          {openManageInformasi && (
+            <div className="ml-6 mt-1 space-y-1 border-l pl-3">
+              {manageInformasiSubmenu.map((sub) => {
+                const isActive = location.pathname === sub.to;
+                return (
+                  <Link
+                    key={sub.to}
+                    to={sub.to}
+                    onClick={onClose}
+                    className={`flex items-center gap-2 px-2 py-1 rounded-md text-xs transition ${
+                      isActive
+                        ? "bg-green-50 text-green-700 font-semibold"
+                        : "hover:bg-green-50 text-gray-700"
+                    }`}
+                  >
+                    {sub.icon}
+                    <span>{sub.label}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* DROPDOWN MANAGE ORGANISASI */}
+        <div>
+          <button
+            onClick={() => setOpenManageOrganisasi(!openManageOrganisasi)}
+            className={`flex items-center justify-between w-full px-3 py-2 rounded-md text-sm transition ${
+              manageOrganisasiSubmenu.some(item => location.pathname === item.to)
+                ? "bg-green-100 text-green-700 font-semibold border-l-4 border-green-500"
+                : "hover:bg-green-50 text-gray-700"
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <FaSitemap />
+              <span>{t("adminSidebar.manageOrganisasi")}</span>
+            </div>
+            {openManageOrganisasi ? (
+              <FiChevronUp className="text-gray-500" />
+            ) : (
+              <FiChevronDown className="text-gray-500" />
+            )}
+          </button>
+
+          {openManageOrganisasi && (
+            <div className="ml-6 mt-1 space-y-1 border-l pl-3">
+              {manageOrganisasiSubmenu.map((sub) => {
+                const isActive = location.pathname === sub.to;
+                return (
+                  <Link
+                    key={sub.to}
+                    to={sub.to}
+                    onClick={onClose}
+                    className={`flex items-center gap-2 px-2 py-1 rounded-md text-xs transition ${
+                      isActive
+                        ? "bg-green-50 text-green-700 font-semibold"
+                        : "hover:bg-green-50 text-gray-700"
+                    }`}
+                  >
+                    {sub.icon}
+                    <span>{sub.label}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+        </div>
 
         {/* DROPDOWN INFOGRAFIS */}
         <div>
