@@ -35,6 +35,7 @@ import PotensiDesa from "./components/pages/PotensiDesa";
 import Pemerintahan from "./components/pages/Pemerintahan";
 import KontakKami from "./components/pages/KontakKami";
 import ProfilDesa from "./components/pages/ProfilDesa";
+import DetailPrestasi from "./components/pages/DetailPrestasi";
 
 // - Autentikasi
 import Login from "./components/auth/Login";
@@ -136,6 +137,7 @@ function LayoutUmum() {
           <Route path="/pemerintahan" element={<Pemerintahan />} />
           <Route path="/bpd" element={<Bpd />} />
           <Route path="/profil" element={<ProfilDesa />} />
+          
           <Route path="/kontak" element={<KontakKami />} />
           <Route path="/pkk/struktur" element={<StPkk />} />
 

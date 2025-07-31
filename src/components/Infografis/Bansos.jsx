@@ -1,20 +1,20 @@
 import { useEffect, useState } from "react";
-import { Line } from "react-chartjs-2"; // Import library chart
-import { 
-  Chart as ChartJS, 
-  CategoryScale, 
-  LinearScale, 
-  PointElement, 
-  LineElement, 
-  Title, 
-  Tooltip, 
-  Legend 
+import { Line } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
 } from "chart.js";
 import { InfografisApi } from "../../libs/api/InfografisApi";
 import { alertError } from "../../libs/alert";
 import { useTranslation } from "react-i18next";
 
-// Daftarkan komponen Chart.js
+// Daftarkan ChartJS
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -28,7 +28,7 @@ ChartJS.register(
 export default function Bansos() {
   const { t } = useTranslation();
   const [bansos, setBansos] = useState([]);
-  const [trendData, setTrendData] = useState([]); // Data untuk grafik
+  const [trendData, setTrendData] = useState([]);
 
   const fetchBansos = async () => {
     const response = await InfografisApi.getBansos();
@@ -40,78 +40,109 @@ export default function Bansos() {
     setBansos(responseBody.bansos);
   };
 
-  // Fungsi baru untuk mengambil data tren
-  const fetchTrendData = async () => {
-    const response = await InfografisApi.getBansosTrend(); // Anda perlu membuat API ini
-    const responseBody = await response.json();
-    if (!response.ok) {
-      await alertError("Gagal mengambil data tren Bansos.");
-      return;
-    }
-    setTrendData(responseBody.trend);
+  const getDummyTrendData = () => {
+    return [
+      { year: 2020, total: 18500 },
+      { year: 2021, total: 16300 },
+      { year: 2022, total: 14200 },
+      { year: 2023, total: 12800 },
+      { year: 2024, total: 11200 }
+    ];
   };
 
   useEffect(() => {
     fetchBansos();
-    fetchTrendData();
+    setTrendData(getDummyTrendData());
   }, []);
 
-  // Siapkan data untuk grafik
   const chartData = {
     labels: trendData.map(item => item.year),
     datasets: [
       {
-        label: t("bansos.total_recipients"),
+        label: "", // kosongkan agar legend tidak muncul
         data: trendData.map(item => item.total),
         borderColor: "#B6F500",
         backgroundColor: "rgba(182, 245, 0, 0.2)",
         tension: 0.3,
+        pointBackgroundColor: "#fff",
+        pointBorderColor: "#B6F500",
+        pointBorderWidth: 2,
+        pointHoverRadius: 6,
+        pointRadius: 5,
+        fill: true
       }
     ]
   };
 
-  // Konfigurasi opsi grafik
   const chartOptions = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
-        position: "top",
-        labels: {
-          font: {
-            family: "Poppins, sans-serif"
-          }
-        }
+        display: false
       },
       title: {
         display: true,
         text: t("bansos.trend_title"),
+        align: "center",
         font: {
-          size: 16,
-          family: "Poppins, sans-serif"
+          family: "Poppins, sans-serif",
+          size: 18,
+          weight: "bold"
+        },
+        color: "#111",
+        padding: {
+          top: 10,
+          bottom: 20
         }
       },
       tooltip: {
-        bodyFont: {
-          family: "Poppins, sans-serif"
-        },
+        backgroundColor: "#1a1c23",
         titleFont: {
-          family: "Poppins, sans-serif"
+          family: "Poppins, sans-serif",
+          size: 14
+        },
+        bodyFont: {
+          family: "Poppins, sans-serif",
+          size: 14,
+          weight: "bold"
+        },
+        padding: 12,
+        displayColors: false,
+        callbacks: {
+          label: function (context) {
+            return `${context.parsed.y.toLocaleString()} ${t("bansos.recipients")}`;
+          },
+          title: function (context) {
+            return `${t("bansos.year")} ${context[0].label}`;
+          }
         }
       }
     },
     scales: {
       y: {
-        beginAtZero: true,
+        beginAtZero: false,
+        grid: {
+          color: "rgba(0, 0, 0, 0.05)"
+        },
         ticks: {
           font: {
-            family: "Poppins, sans-serif"
+            family: "Poppins, sans-serif",
+            size: 12
+          },
+          callback: function (value) {
+            return value.toLocaleString();
           }
         }
       },
       x: {
+        grid: {
+          display: false
+        },
         ticks: {
           font: {
-            family: "Poppins, sans-serif"
+            family: "Poppins, sans-serif",
+            size: 12
           }
         }
       }
@@ -119,31 +150,113 @@ export default function Bansos() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-8 font-poppins">
-      <h2 className="text-3xl font-bold text-gray-800">{t("bansos.title")}</h2>
-      <p className="mt-2 text-gray-600">{t("bansos.description")}</p>
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 font-poppins">
+      <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <h2 className="text-3xl font-bold text-gray-800">
+          {t("bansos.title")}
+        </h2>
+        <p className="mt-2 text-gray-600 max-w-3xl">
+          {t("bansos.description")}
+        </p>
 
-      {/* Grafik Tren */}
-      <div className="mt-8 bg-white p-6 rounded-xl shadow">
-        <Line data={chartData} options={chartOptions} />
-      </div>
-
-      <div className="grid sm:grid-cols-2 md:grid-cols-2 gap-6 mt-8">
-        {bansos.map((item) => (
-          <div
-            key={item.id}
-            className="bg-white p-6 rounded-xl shadow flex justify-between hover:shadow-md hover:-translate-y-1 transition"
-          >
-            <div>
-              <p className="font-semibold text-gray-800">{item.name}</p>
-              <p className="text-gray-500 text-sm">{t("bansos.jumlah")}</p>
-            </div>
-            <span className="text-xl font-bold text-[#B6F500]">
-              {item.amount}
+        {/* Grafik Tren */}
+        <div className="mt-8 bg-gradient-to-br from-gray-50 to-white p-6 rounded-xl border border-gray-200">
+          <div className="flex items-center gap-2 mb-6 bg-yellow-50 px-3 py-1 rounded-full w-fit mx-auto">
+            <span className="text-sm text-yellow-700">
+              Tren menurun 39% dalam 5 tahun
             </span>
           </div>
-        ))}
+
+          <div className="h-80">
+            <Line data={chartData} options={chartOptions} />
+          </div>
+
+          {/* Legenda dan Analisis */}
+          <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+            {trendData.map((item, index) => (
+              <div
+                key={index}
+                className="bg-white p-3 rounded-lg border border-gray-200 shadow-sm flex flex-col items-center"
+              >
+                <div className="text-sm font-medium text-gray-500">
+                  {item.year}
+                </div>
+                <div className="mt-1 text-lg font-bold text-[#B6F500]">
+                  {item.total.toLocaleString()}
+                </div>
+                <div className="text-xs text-gray-500 mt-1">
+                  {t("bansos.recipients")}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-6 bg-blue-50 p-4 rounded-lg border border-blue-100">
+            <h4 className="font-bold text-blue-800 mb-2">
+              {t("bansos.analysis_title")}
+            </h4>
+            <p className="text-gray-700">
+              {t("bansos.analysis_text")}
+            </p>
+            <ul className="mt-2 list-disc list-inside text-gray-700 space-y-1">
+              <li>{t("bansos.analysis_point_1")}</li>
+              <li>{t("bansos.analysis_point_2")}</li>
+              <li>{t("bansos.analysis_point_3")}</li>
+              <li>{t("bansos.analysis_point_4")}</li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Daftar Program Bansos */}
+        <div className="mt-10">
+          <h3 className="text-xl font-bold text-gray-800 mb-4">
+            {t("bansos.active_programs")}
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {bansos.map((item) => (
+              <div
+                key={item.id}
+                className="bg-white p-6 rounded-xl shadow flex justify-between items-center border border-gray-200 hover:shadow-md hover:-translate-y-1 transition-all duration-300"
+              >
+                <div>
+                  <p className="font-semibold text-gray-800">{item.name}</p>
+                  <p className="text-gray-500 text-sm mt-1">
+                    {t("bansos.jumlah")}
+                  </p>
+                </div>
+                <span className="text-xl font-bold text-[#B6F500]">
+                  {item.amount.toLocaleString()}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-xl shadow-lg p-6">
+        <h3 className="text-xl font-bold text-gray-800 mb-4">
+          {t("bansos.about_title")}
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <h4 className="font-bold text-gray-800 mb-2">
+              {t("bansos.what_is")}
+            </h4>
+            <p className="text-gray-700">{t("bansos.what_is_text")}</p>
+          </div>
+          <div>
+            <h4 className="font-bold text-gray-800 mb-2">
+              {t("bansos.goals")}
+            </h4>
+            <ul className="list-disc list-inside text-gray-700 space-y-1">
+              <li>{t("bansos.goal_1")}</li>
+              <li>{t("bansos.goal_2")}</li>
+              <li>{t("bansos.goal_3")}</li>
+              <li>{t("bansos.goal_4")}</li>
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
   );
-} 
+}
