@@ -14,6 +14,12 @@ import {
   FaSitemap,
   FaChartBar,
   FaDatabase,
+  FaClock,
+  FaPlus,
+  FaEdit,
+  FaTrash,
+  FaEye,
+  FaUpload,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -59,6 +65,60 @@ export default function AdminDashboard() {
   const [strukturPreview, setStrukturPreview] = useState([]);
   const [dokumenPreview, setDokumenPreview] = useState([]);
   const [programKerjaPreview, setProgramKerjaPreview] = useState([]);
+
+  // State untuk log aktivitas
+  const [activityLog, setActivityLog] = useState([
+    {
+      id: 1,
+      type: "create",
+      module: "Berita",
+      description: "Menambahkan berita baru 'Gotong Royong Desa'",
+      user: "Admin Desa",
+      timestamp: new Date(Date.now() - 5 * 60000), // 5 menit lalu
+      icon: FaNewspaper,
+      color: "text-blue-500"
+    },
+    {
+      id: 2,
+      type: "edit",
+      module: "Program Kerja",
+      description: "Memperbarui status program 'Perbaikan Jalan'",
+      user: "Admin Desa",
+      timestamp: new Date(Date.now() - 15 * 60000), // 15 menit lalu
+      icon: FaTasks,
+      color: "text-yellow-500"
+    },
+    {
+      id: 3,
+      type: "upload",
+      module: "Galeri",
+      description: "Mengunggah 3 foto kegiatan desa",
+      user: "Admin Desa",
+      timestamp: new Date(Date.now() - 30 * 60000), // 30 menit lalu
+      icon: FaImage,
+      color: "text-green-500"
+    },
+    {
+      id: 4,
+      type: "view",
+      module: "Pesan",
+      description: "Membaca 5 pesan baru dari warga",
+      user: "Admin Desa",
+      timestamp: new Date(Date.now() - 45 * 60000), // 45 menit lalu
+      icon: FaComments,
+      color: "text-purple-500"
+    },
+    {
+      id: 5,
+      type: "create",
+      module: "BUMDes",
+      description: "Menambahkan produk baru 'Keripik Singkong'",
+      user: "Admin Desa",
+      timestamp: new Date(Date.now() - 60 * 60000), // 1 jam lalu
+      icon: FaStore,
+      color: "text-teal-500"
+    }
+  ]);
 
   // - Fetch TOTAL data
   const fetchNews = async () => {
@@ -161,6 +221,20 @@ export default function AdminDashboard() {
     setStrukturPreview(data.members || []);
   };
 
+  // Fungsi untuk format waktu relatif
+  const formatRelativeTime = (timestamp) => {
+    const now = new Date();
+    const diff = now - timestamp;
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
+
+    if (minutes < 1) return "Baru saja";
+    if (minutes < 60) return `${minutes} menit lalu`;
+    if (hours < 24) return `${hours} jam lalu`;
+    return `${days} hari lalu`;
+  };
+
   useEffect(() => {
     fetchNews();
     fetchAgenda();
@@ -185,28 +259,28 @@ export default function AdminDashboard() {
       {/* - EMPAT KARTU UTAMA DI ATAS - DIKECILKAN */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <SmallMainCard
-  icon={<FaChartBar className="text-xl text-green-500" />}
-  title="Dashboard Desa"
-  onClick={() => navigate("/admin/dashboard-desa")} // ke DashboardDesa.jsx
-/>
+          icon={<FaChartBar className="text-xl text-green-500" />}
+          title="Dashboard Desa"
+          onClick={() => navigate("/admin/dashboard-desa")} // ke DashboardDesa.jsx
+        />
 
-<SmallMainCard
-  icon={<FaDatabase className="text-xl text-blue-500" />}
-  title="Data Master"
-  onClick={() => navigate("/admin/data-master")} // ke DataMaster.jsx
-/>
+        <SmallMainCard
+          icon={<FaDatabase className="text-xl text-blue-500" />}
+          title="Data Master"
+          onClick={() => navigate("/admin/data-master")} // ke DataMaster.jsx
+        />
 
-<SmallMainCard
-  icon={<FaFolderOpen className="text-xl text-purple-500" />}
-  title="Repository Dokumen"
-  onClick={() => window.open("https://drive.google.com/drive/folders/1H6wPE94ywdVsbH3XF7z2UpJ23sKFajr_?usp=sharing", "_blank")} // ganti dengan link Drive
-/>
+        <SmallMainCard
+          icon={<FaFolderOpen className="text-xl text-purple-500" />}
+          title="Repository Dokumen"
+          onClick={() => window.open("https://drive.google.com/drive/folders/1H6wPE94ywdVsbH3XF7z2UpJ23sKFajr_?usp=sharing", "_blank")} // ganti dengan link Drive
+        />
 
-<SmallMainCard
-  icon={<FaMapMarkedAlt className="text-xl text-yellow-500" />}
-  title="GIS Desa"
-  onClick={() => navigate("/admin/gis-desa")} // ke GisDesa.jsx
-/>
+        <SmallMainCard
+          icon={<FaMapMarkedAlt className="text-xl text-yellow-500" />}
+          title="GIS Desa"
+          onClick={() => navigate("/admin/gis-desa")} // ke GisDesa.jsx
+        />
       </div>
 
       {/* - GRID STATISTIK DETAIL */}
@@ -227,7 +301,6 @@ export default function AdminDashboard() {
           onClick={() => navigate("/admin/manage-user")}
         />
 
-
         <DetailStatCard
           icon={<FaSitemap className="text-red-500" />}
           title="Struktur Desa"
@@ -236,7 +309,6 @@ export default function AdminDashboard() {
           onClick={() => navigate("/admin/struktur-desa")}
         />
 
-
         <DetailStatCard
           icon={<FaStore className="text-teal-500" />}
           title="BUMDes"
@@ -244,6 +316,11 @@ export default function AdminDashboard() {
           detail="Produk unggulan"
           onClick={() => navigate("/admin/manage-bumdes")}
         />
+      </div>
+
+      {/* Log Aktivitas */}
+      <div className="mb-8">
+        <ActivityLog activities={activityLog} formatTime={formatRelativeTime} />
       </div>
 
       {/* - PREVIEW SECTIONS DENGAN URUTAN BARU */}
@@ -326,6 +403,52 @@ export default function AdminDashboard() {
         }))}
         onClick={() => navigate("/admin/manage-galery")}
       />
+    </div>
+  );
+}
+
+// Komponen Log Aktivitas
+function ActivityLog({ activities, formatTime }) {
+  return (
+    <div className="bg-white rounded-xl shadow-md p-4">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+          <FaClock className="text-gray-500" />
+          Log Aktivitas
+        </h3>
+        <span className="text-xs text-gray-500">Hari ini</span>
+      </div>
+      
+      <div className="space-y-3 max-h-80 overflow-y-auto">
+        {activities.map((activity) => {
+          const IconComponent = activity.icon;
+          return (
+            <div key={activity.id} className="flex gap-3 items-start">
+              <div className={`p-2 rounded-lg bg-gray-50 ${activity.color}`}>
+                <IconComponent className="text-sm" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-800 leading-tight">
+                  {activity.description}
+                </p>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-xs text-gray-500">
+                    {activity.module}
+                  </span>
+                  <span className="text-xs text-gray-400">•</span>
+                  <span className="text-xs text-gray-500">
+                    {formatTime(activity.timestamp)}
+                  </span>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      
+      <button className="w-full mt-4 text-sm text-blue-600 hover:text-blue-800 font-medium">
+        Lihat Semua Aktivitas
+      </button>
     </div>
   );
 }
