@@ -17,6 +17,7 @@ import {
   FaHandshake,
   FaGlobeAsia,
   FaPeopleCarry,
+  FaStar, // ✅ Ganti ke FaStar yang pasti ada
 } from "react-icons/fa";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 import { useEffect, useState } from "react";
@@ -61,27 +62,34 @@ export default function AdminSidebar({ isOpen, onClose }) {
   ];
 
   const managePublikSubmenu = [
-    {
-      to: "/admin/manage-berita",
-      label: t("adminSidebar.menu.manageNews"),
-      icon: <FaNewspaper />,
-    },
-    {
-      to: "/admin/manage-agenda",
-      label: t("adminSidebar.menu.manageAgenda"),
-      icon: <FaCalendarAlt />,
-    },
-    {
-      to: "/admin/manage-galery",
-      label: t("adminSidebar.menu.villageGallery"),
-      icon: <FaImage />,
-    },
-    {
-      to: "/admin/manage-anggota",
-      label: t("adminSidebar.menu.organizationStructure"),
-      icon: <FaSitemap />,
-    },
-  ];
+  {
+    to: "/admin/manage-berita",
+    label: t("adminSidebar.menu.manageNews"),
+    icon: <FaNewspaper />,
+  },
+  {
+    to: "/admin/manage-agenda",
+    label: t("adminSidebar.menu.manageAgenda"),
+    icon: <FaCalendarAlt />,
+  },
+  {
+    to: "/admin/manage-galery",
+    label: t("adminSidebar.menu.villageGallery"),
+    icon: <FaImage />,
+  },
+  {
+    to: "/admin/manage-anggota",
+    label: t("adminSidebar.menu.organizationStructure"),
+    icon: <FaSitemap />,
+  },
+  {
+    to: "/admin/manage-prestasi",
+    label: t("adminSidebar.menu.ManagePrestasi"),
+    icon: <FaStar />, // ✅ Icon bintang yang pasti ada
+  },
+];
+
+  
 
   const manageInformasiSubmenu = [
     {
