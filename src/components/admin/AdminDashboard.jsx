@@ -76,7 +76,7 @@ export default function AdminDashboard() {
       user: "Admin Desa",
       timestamp: new Date(Date.now() - 5 * 60000), // 5 menit lalu
       icon: FaNewspaper,
-      color: "text-blue-500",
+      color: "text-blue-500"
     },
     {
       id: 2,
@@ -86,7 +86,7 @@ export default function AdminDashboard() {
       user: "Admin Desa",
       timestamp: new Date(Date.now() - 15 * 60000), // 15 menit lalu
       icon: FaTasks,
-      color: "text-yellow-500",
+      color: "text-yellow-500"
     },
     {
       id: 3,
@@ -96,7 +96,7 @@ export default function AdminDashboard() {
       user: "Admin Desa",
       timestamp: new Date(Date.now() - 30 * 60000), // 30 menit lalu
       icon: FaImage,
-      color: "text-green-500",
+      color: "text-green-500"
     },
     {
       id: 4,
@@ -106,7 +106,7 @@ export default function AdminDashboard() {
       user: "Admin Desa",
       timestamp: new Date(Date.now() - 45 * 60000), // 45 menit lalu
       icon: FaComments,
-      color: "text-purple-500",
+      color: "text-purple-500"
     },
     {
       id: 5,
@@ -116,10 +116,13 @@ export default function AdminDashboard() {
       user: "Admin Desa",
       timestamp: new Date(Date.now() - 60 * 60000), // 1 jam lalu
       icon: FaStore,
-      color: "text-teal-500",
-    },
+      color: "text-teal-500"
+    }
   ]);
 
+  // State untuk data dusun
+  const [dusunData, setDusunData] = useState([]);
+  
   // - Fetch TOTAL data
   const fetchNews = async () => {
     const res = await NewsApi.getOwnNews();
@@ -141,7 +144,7 @@ export default function AdminDashboard() {
     if (!res.ok)
       return alertError(t("adminDashboard.errors.failedToGetMessages"));
     const data = await res.json();
-    setMessageCount(data.data?.length || 0);
+    setMessageCount(data.messages?.length || 0);
   };
 
   const fetchUsers = async () => {
@@ -176,9 +179,15 @@ export default function AdminDashboard() {
 
   const fetchAdministrasiPreview = async () => {
     try {
+      const online = await AdministrasiApi.getOnline();
+      const layanan = await AdministrasiApi.getLayanan();
       const pengantar = await AdministrasiApi.getPengantar();
 
-      const merge = [...(await pengantar.json()).data.slice(0, 1)];
+      const merge = [
+        ...(await online.json()).data.slice(0, 1),
+        ...(await layanan.json()).data.slice(0, 1),
+        ...(await pengantar.json()).data.slice(0, 1),
+      ];
       setAdministrasiPreview(merge);
     } catch (e) {
       alertError(t("adminDashboard.errors.failedToGetAdministrationPreview"));
@@ -215,6 +224,36 @@ export default function AdminDashboard() {
     setStrukturPreview(data.members || []);
   };
 
+  // Fetch data dusun
+  const fetchDusunData = async () => {
+    try {
+      const baseUrl = import.meta.env.VITE_BASE_URL_NEW || "http://localhost:4000/api";
+      const response = await fetch(`${baseUrl}/residents?type=DUSUN`);
+      
+      if (!response.ok) {
+        throw new Error("Gagal mengambil data dusun");
+      }
+      
+      const result = await response.json();
+      const sortedData = (result.data || []).sort((a, b) => {
+        const aKey = a.key.toLowerCase();
+        const bKey = b.key.toLowerCase();
+        const aMatch = aKey.match(/([a-z])/);
+        const bMatch = bKey.match(/([a-z])/);
+
+        if (aMatch && bMatch) {
+          return aMatch[1].localeCompare(bMatch[1]);
+        }
+        return aKey.localeCompare(bKey);
+      });
+      
+      setDusunData(sortedData);
+    } catch (error) {
+      console.error("Error fetching dusun data:", error);
+      alertError("Gagal mengambil data penduduk per dusun");
+    }
+  };
+
   // Fungsi untuk format waktu relatif
   const formatRelativeTime = (timestamp) => {
     const now = new Date();
@@ -242,7 +281,21 @@ export default function AdminDashboard() {
     fetchPkkPreview();
     fetchProgramKerjaPreview();
     fetchStrukturPreview();
+    fetchDusunData(); // Fetch dusun data
   }, []);
+
+  // Tooltip untuk chart dusun
+  const DusunTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white p-3 rounded-lg shadow-lg border">
+          <p className="font-semibold text-gray-800">{`${label}`}</p>
+          <p className="text-blue-600">{`Jumlah: ${payload[0].value} orang`}</p>
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <div className="w-full font-[Poppins,sans-serif]">
@@ -267,12 +320,7 @@ export default function AdminDashboard() {
         <SmallMainCard
           icon={<FaFolderOpen className="text-xl text-purple-500" />}
           title="Repository Dokumen"
-          onClick={() =>
-            window.open(
-              "https://drive.google.com/drive/folders/1H6wPE94ywdVsbH3XF7z2UpJ23sKFajr_?usp=sharing",
-              "_blank"
-            )
-          } // ganti dengan link Drive
+          onClick={() => window.open("https://drive.google.com/drive/folders/1H6wPE94ywdVsbH3XF7z2UpJ23sKFajr_?usp=sharing", "_blank")} // ganti dengan link Drive
         />
 
         <SmallMainCard
@@ -322,6 +370,50 @@ export default function AdminDashboard() {
         <ActivityLog activities={activityLog} formatTime={formatRelativeTime} />
       </div>
 
+      {/* Grafik Distribusi Penduduk per Dusun */}
+      {dusunData.length > 0 && (
+        <div className="bg-white rounded-xl shadow-md p-5 mb-8">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold flex items-center gap-2">
+              <FaMapMarkedAlt className="text-blue-500" /> 
+              Distribusi Penduduk per Dusun
+            </h2>
+          </div>
+          
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart
+              data={dusunData.map(d => ({ name: d.key, jumlah: d.value }))}
+              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis allowDecimals={false} />
+              <Tooltip content={<DusunTooltip />} />
+              <Bar 
+                dataKey="jumlah" 
+                name="Jumlah Penduduk" 
+                fill="#8884d8" 
+                radius={[6, 6, 0, 0]}
+              />
+            </BarChart>
+          </ResponsiveContainer>
+          
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mt-6">
+            {dusunData.map((dusun, index) => (
+              <div key={index} className="bg-gray-50 p-3 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <FaMapMarkerAlt className="text-blue-500" />
+                  <span className="font-medium">{dusun.key}</span>
+                </div>
+                <p className="mt-1 text-2xl font-bold text-gray-800">
+                  {dusun.value} <span className="text-sm font-normal">orang</span>
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* - PREVIEW SECTIONS DENGAN URUTAN BARU */}
       <PreviewSection
         title="Struktur Desa"
@@ -344,18 +436,6 @@ export default function AdminDashboard() {
         }))}
         onClick={() => navigate("/admin/manage-program")}
         showStatus={true}
-      />
-
-      <PreviewSection
-        title="Repository Dokumen"
-        icon={<FaFolderOpen />}
-        data={dokumenPreview.map((d) => ({
-          title: d.nama_dokumen,
-          desc: d.jenis_dokumen,
-          link: d.link,
-        }))}
-        onClick={() => navigate("/admin/repository")}
-        showLink={true}
       />
 
       <PreviewSection
@@ -382,17 +462,7 @@ export default function AdminDashboard() {
         }))}
         onClick={() => navigate("/admin/manage-bumdes")}
       />
-
-      <PreviewSection
-        title={t("adminDashboard.preview.administration.title")}
-        icon={<FaClipboardList />}
-        data={administrasiPreview.map((a) => ({
-          title: a.name,
-          desc: a.type,
-        }))}
-        onClick={() => navigate("/admin/manage-administrasi")}
-      />
-
+      
       <PreviewSection
         title={t("adminDashboard.preview.gallery.title")}
         icon={<FaImage />}
@@ -417,7 +487,7 @@ function ActivityLog({ activities, formatTime }) {
         </h3>
         <span className="text-xs text-gray-500">Hari ini</span>
       </div>
-
+      
       <div className="space-y-3 max-h-80 overflow-y-auto">
         {activities.map((activity) => {
           const IconComponent = activity.icon;
