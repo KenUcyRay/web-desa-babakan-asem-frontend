@@ -445,10 +445,6 @@ function ActivityLog({ activities, formatTime }) {
           );
         })}
       </div>
-      
-      <button className="w-full mt-4 text-sm text-blue-600 hover:text-blue-800 font-medium">
-        Lihat Semua Aktivitas
-      </button>
     </div>
   );
 }
