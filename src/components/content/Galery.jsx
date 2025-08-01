@@ -56,7 +56,7 @@ export default function Galery() {
               >
                 <div className="relative w-full aspect-[4/3] overflow-hidden">
                   <img
-                    src={`${import.meta.env.VITE_BASE_URL}/galeri/images/${
+                    src={`${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
                       img.image
                     }`}
                     alt={`Galeri ${idx + 1}`}

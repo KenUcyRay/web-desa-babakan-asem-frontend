@@ -179,7 +179,7 @@ export default function ManageGalery() {
                 src={
                   image
                     ? URL.createObjectURL(image)
-                    : `${import.meta.env.VITE_BASE_URL}/galeri/images/${
+                    : `${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
                         galeries.find((b) => b.id === editingId)?.image
                       }`
                 }
@@ -223,7 +223,7 @@ export default function ManageGalery() {
               className="bg-white rounded-xl shadow-md border hover:shadow-lg transition overflow-hidden"
             >
               <img
-                src={`${import.meta.env.VITE_BASE_URL}/galeri/images/${
+                src={`${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
                   galeri.image
                 }`}
                 alt={galeri.title}
