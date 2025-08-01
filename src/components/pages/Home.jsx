@@ -410,7 +410,7 @@ export default function Home() {
               data-aos="zoom-in"
             >
               <img
-                src={`${import.meta.env.VITE_BASE_URL}/news/images/${
+                src={`${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
                   item.news.featured_image
                 }`}
                 alt={item.news.title}

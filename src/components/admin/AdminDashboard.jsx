@@ -398,7 +398,7 @@ export default function AdminDashboard() {
         icon={<FaImage />}
         data={galeriPreview.map((g) => ({
           title: g.title,
-          img: `${import.meta.env.VITE_BASE_URL}/galeri/images/${g.image}`,
+          img: `${import.meta.env.VITE_NEW_BASE_URL}/public/images/${g.image}`,
         }))}
         onClick={() => navigate("/admin/manage-galery")}
       />

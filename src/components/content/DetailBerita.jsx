@@ -148,7 +148,7 @@ export default function DetailBerita() {
         </button>
 
         <img
-          src={`${import.meta.env.VITE_BASE_URL}/news/images/${
+          src={`${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
             news.featured_image
           }`}
           alt="Detail Berita"

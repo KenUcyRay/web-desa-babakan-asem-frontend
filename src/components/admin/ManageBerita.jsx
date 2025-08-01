@@ -124,7 +124,9 @@ export default function ManageBerita() {
     <div className="font-[Poppins,sans-serif]">
       {/* HEADER */}
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-green-700">{t("manageNews.title")}</h1>
+        <h1 className="text-2xl font-bold text-green-700">
+          {t("manageNews.title")}
+        </h1>
 
         {!showForm && (
           <button
@@ -233,7 +235,10 @@ export default function ManageBerita() {
               type="submit"
               className="flex items-center gap-2 bg-green-500 text-white px-5 py-2 rounded-lg shadow hover:bg-green-600 transition"
             >
-              <FaSave /> {editingId ? t("manageNews.buttons.updateNews") : t("manageNews.buttons.saveNews")}
+              <FaSave />{" "}
+              {editingId
+                ? t("manageNews.buttons.updateNews")
+                : t("manageNews.buttons.saveNews")}
             </button>
             <button
               type="button"
@@ -257,7 +262,9 @@ export default function ManageBerita() {
             className="bg-white rounded-xl shadow-md border hover:shadow-lg transition"
           >
             <img
-              src={`${import.meta.env.VITE_BASE_URL}/news/images/${item.featured_image}`}
+              src={`${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
+                item.featured_image
+              }`}
               alt={item.title}
               className="rounded-t-xl w-full h-40 object-cover"
             />
