@@ -348,18 +348,6 @@ export default function AdminDashboard() {
       />
 
       <PreviewSection
-        title="Repository Dokumen"
-        icon={<FaFolderOpen />}
-        data={dokumenPreview.map((d) => ({
-          title: d.nama_dokumen,
-          desc: d.jenis_dokumen,
-          link: d.link,
-        }))}
-        onClick={() => navigate("/admin/repository")}
-        showLink={true}
-      />
-
-      <PreviewSection
         title="Data Penduduk"
         icon={<FaUserAlt />}
         data={[
