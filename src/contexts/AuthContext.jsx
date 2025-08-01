@@ -6,6 +6,7 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useLocalStorage("token", null);
   const [admin, setAdmin] = useLocalStorage("admin", false);
+  const [role, setRole] = useLocalStorage("role", null);
 
   const login = (newToken) => setToken(newToken);
   const logout = () => setToken(null);
@@ -15,7 +16,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ token, login, logout, isLoggedIn, isAdmin, setAdminStatus }}
+      value={{ token, login, logout, isLoggedIn, isAdmin, setAdminStatus, role, setRole }}
     >
       {children}
     </AuthContext.Provider>

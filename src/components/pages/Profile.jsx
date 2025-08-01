@@ -11,7 +11,7 @@ export default function Profile() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
-  const { logout, setAdminStatus } = useAuth();
+  const { logout, setAdminStatus, setRole } = useAuth();
 
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({
@@ -45,6 +45,7 @@ export default function Profile() {
     if (!confirm) return;
 
     setAdminStatus(false);
+    setRole(null);
     logout();
     await alertSuccess(t("profile.logoutSuccess"));
     navigate("/login");
@@ -76,6 +77,7 @@ export default function Profile() {
     }
 
     setAdminStatus(false);
+    setRole(null);
     logout();
     await alertSuccess(t("profile.deleteSuccess"));
     navigate("/");

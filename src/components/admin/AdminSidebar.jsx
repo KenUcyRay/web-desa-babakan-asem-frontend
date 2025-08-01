@@ -27,12 +27,13 @@ import { useTranslation } from "react-i18next";
 import logo from "../../assets/logo.png";
 import { useAuth } from "../../contexts/AuthContext";
 import { alertConfirm, alertSuccess } from "../../libs/alert";
+import { set } from "nprogress";
 
 export default function AdminSidebar({ isOpen, onClose }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
-  const { logout, setAdminStatus } = useAuth();
+  const { logout, setAdminStatus, setRole } = useAuth();
   const [openInfografis, setOpenInfografis] = useState(false);
   const [openManagePublik, setOpenManagePublik] = useState(false);
   const [openManageInformasi, setOpenManageInformasi] = useState(false);
@@ -50,6 +51,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
     const confirm = await alertConfirm(t("adminSidebar.actions.logoutConfirm"));
     if (!confirm) return;
     setAdminStatus(false);
+    setRole(null);
     logout();
     await alertSuccess(t("adminSidebar.actions.logoutSuccess"));
     navigate("/login");

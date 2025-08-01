@@ -149,7 +149,7 @@
     "masuk": "Masuk",
     "logout": "Logout",
     "profilSaya": "Profil Saya",
-    "dashboardAdmin": "Dashboard Admin",
+    "dashboardAdmin": "Dashboard {{role}}",
     "logoutConfirm": "Apakah Anda yakin ingin keluar?",
     "logoutSuccess": "Anda telah keluar.",
     "desaName": "Desa Babakan Asem",
