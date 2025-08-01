@@ -6,6 +6,7 @@ import { NewsApi } from "../../libs/api/NewsApi";
 import { AgendaApi } from "../../libs/api/AgendaApi";
 import { GaleryApi } from "../../libs/api/GaleryApi";
 import { alertError } from "../../libs/alert";
+import { VillageWorkProgramApi } from "../../libs/api/VillageWorkProgramApi";
 
 export default function DashboardDesa() {
   const navigate = useNavigate();
@@ -30,10 +31,11 @@ export default function DashboardDesa() {
   };
 
   const fetchProgram = async () => {
-    const res = await ProgramApi.getPrograms(1, 1);
+    const res = await VillageWorkProgramApi.getVillageWorkPrograms(1, 1);
     if (!res.ok) return alertError("Gagal ambil program");
     const data = await res.json();
-    setProgramCount(data.total || 0);
+
+    setProgramCount(data.length || 0);
   };
 
   const fetchGaleri = async () => {

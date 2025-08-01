@@ -32,7 +32,8 @@ export default function ManagePkk() {
     }
 
     if (editingId) {
-      if (!(await alertConfirm(t("managePkk.confirmation.saveChanges")))) return;
+      if (!(await alertConfirm(t("managePkk.confirmation.saveChanges"))))
+        return;
 
       const rawData = {
         title,
@@ -43,7 +44,11 @@ export default function ManagePkk() {
       const body = await response.json();
 
       if (!response.ok) {
-        alertError(typeof body.error === "string" ? body.error : t("managePkk.error.saveChanges"));
+        alertError(
+          typeof body.error === "string"
+            ? body.error
+            : t("managePkk.error.saveChanges")
+        );
         return;
       }
 
@@ -63,7 +68,11 @@ export default function ManagePkk() {
       const body = await response.json();
 
       if (!response.ok) {
-        alertError(typeof body.error === "string" ? body.error : t("managePkk.error.saveProgram"));
+        alertError(
+          typeof body.error === "string"
+            ? body.error
+            : t("managePkk.error.saveProgram")
+        );
         return;
       }
 
@@ -85,7 +94,8 @@ export default function ManagePkk() {
   };
 
   const handleDelete = async (id) => {
-    if (!(await alertConfirm(t("managePkk.confirmation.deleteProgram")))) return;
+    if (!(await alertConfirm(t("managePkk.confirmation.deleteProgram"))))
+      return;
 
     const response = await ProgramApi.deleteProgram(id);
     if (!response.ok) {
@@ -119,7 +129,9 @@ export default function ManagePkk() {
     <div className="font-[Poppins,sans-serif]">
       {/* HEADER */}
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-green-700">{t("managePkk.title")}</h1>
+        <h1 className="text-2xl font-bold text-green-700">
+          {t("managePkk.title")}
+        </h1>
 
         {!showForm && (
           <button
@@ -139,7 +151,9 @@ export default function ManagePkk() {
         >
           {/* Nama Program */}
           <div>
-            <label className="block font-medium text-gray-700 mb-1">{t("managePkk.form.programName")}</label>
+            <label className="block font-medium text-gray-700 mb-1">
+              {t("managePkk.form.programName")}
+            </label>
             <input
               type="text"
               className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-green-300 outline-none"
@@ -152,19 +166,23 @@ export default function ManagePkk() {
 
           {/* Upload Gambar */}
           <div>
-            <label className="block font-medium text-gray-700 mb-1">{t("managePkk.form.uploadImage")}</label>
+            <label className="block font-medium text-gray-700 mb-1">
+              {t("managePkk.form.uploadImage")}
+            </label>
             <input
               type="file"
               accept="image/*"
               className="w-full border rounded-lg p-2"
               onChange={(e) => setImage(e.target.files[0])}
             />
-            {(image || (editingId && programs.find((p) => p.id === editingId)?.featured_image)) && (
+            {(image ||
+              (editingId &&
+                programs.find((p) => p.id === editingId)?.featured_image)) && (
               <img
                 src={
                   image
                     ? URL.createObjectURL(image)
-                    : `${import.meta.env.VITE_BASE_URL}/programs/images/${
+                    : `${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
                         programs.find((p) => p.id === editingId)?.featured_image
                       }`
                 }
@@ -176,7 +194,9 @@ export default function ManagePkk() {
 
           {/* Deskripsi */}
           <div>
-            <label className="block font-medium text-gray-700 mb-1">{t("managePkk.form.description")}</label>
+            <label className="block font-medium text-gray-700 mb-1">
+              {t("managePkk.form.description")}
+            </label>
             <textarea
               rows={4}
               className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-green-300 outline-none"
@@ -193,7 +213,10 @@ export default function ManagePkk() {
               type="submit"
               className="flex items-center gap-2 bg-green-500 text-white px-5 py-2 rounded-lg shadow hover:bg-green-600 transition"
             >
-              <FaSave /> {editingId ? t("managePkk.buttons.updateProgram") : t("managePkk.buttons.saveProgram")}
+              <FaSave />{" "}
+              {editingId
+                ? t("managePkk.buttons.updateProgram")
+                : t("managePkk.buttons.saveProgram")}
             </button>
             <button
               type="button"
@@ -209,7 +232,9 @@ export default function ManagePkk() {
       {/* LIST PROGRAM */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {programs.length === 0 ? (
-          <p className="text-gray-500 italic">{t("managePkk.empty.noPrograms")}</p>
+          <p className="text-gray-500 italic">
+            {t("managePkk.empty.noPrograms")}
+          </p>
         ) : (
           programs.map((program) => (
             <div
@@ -217,7 +242,9 @@ export default function ManagePkk() {
               className="bg-white rounded-xl shadow-md border hover:shadow-lg transition overflow-hidden"
             >
               <img
-                src={`${import.meta.env.VITE_BASE_URL}/programs/images/${program.featured_image}`}
+                src={`${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
+                  program.featured_image
+                }`}
                 alt={program.title}
                 className="w-full h-48 object-cover"
               />

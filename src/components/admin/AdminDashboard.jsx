@@ -44,6 +44,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { VillageWorkProgramApi } from "../../libs/api/VillageWorkProgramApi";
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
@@ -152,7 +153,7 @@ export default function AdminDashboard() {
   };
 
   const fetchProgramCount = async () => {
-    const res = await ProgramApi.getPrograms(1, 1);
+    const res = await VillageWorkProgramApi.getVillageWorkPrograms(1, 1);
     if (!res.ok) return alertError("Gagal mengambil jumlah program");
     const data = await res.json();
     setProgramCount(data.total || 0);
@@ -202,7 +203,7 @@ export default function AdminDashboard() {
   };
 
   const fetchProgramKerjaPreview = async () => {
-    const res = await ProgramApi.getPrograms();
+    const res = await VillageWorkProgramApi.getVillageWorkPrograms();
     if (!res.ok) return alertError("Gagal mengambil data program kerja");
     const data = await res.json();
     setProgramKerjaPreview(data || []);
