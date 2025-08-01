@@ -18,7 +18,21 @@ export default function ManageUser() {
     email: "",
     password: "",
     confirm_password: "",
+    role: "REGULAR", // Default role
   });
+
+  // Role options
+  const roleOptions = [
+    { value: "REGULAR", label: "Regular User" },
+    { value: "ADMIN", label: "Admin" },
+    { value: "PKK", label: "PKK" },
+    { value: "BUMDES", label: "BUMDES" },
+    { value: "KARANG_TARUNA", label: "Karang Taruna" },
+    { value: "BPD", label: "BPD" },
+  ];
+
+  // State for promote form
+  const [promoteToRole, setPromoteToRole] = useState("ADMIN");
 
   const fetchUsers = async () => {
     try {
@@ -37,24 +51,26 @@ export default function ManageUser() {
     fetchUsers();
   }, [currentPage]);
 
-  const handleAddAdmin = async (e) => {
+  // Updated function to handle adding account with selected role
+  const handleAddAccount = async (e) => {
     e.preventDefault();
-    if (!(await alertConfirm(t("manageUser.alerts.confirmAddAdmin")))) return;
+    if (!(await alertConfirm(`Apakah Anda yakin ingin menambah akun dengan role ${form.role}?`))) return;
 
     if (form.confirm_password !== form.password) {
       return alertError(t("manageUser.alerts.passwordMismatch"));
     }
 
     try {
+      // Use existing createAdmin API but with selected role
       const response = await UserApi.createAdmin(form);
       const resBody = await response.json();
       if (!response.ok)
-        throw new Error(resBody.error || t("manageUser.alerts.addAdminError"));
+        throw new Error(resBody.error || "Gagal menambahkan akun");
 
       setUsers([...users, resBody.user]);
       setShowAddForm(false);
-      setForm({ name: "", email: "", password: "", confirm_password: "" });
-      alertSuccess(t("manageUser.alerts.addAdminSuccess"));
+      setForm({ name: "", email: "", password: "", confirm_password: "", role: "REGULAR" });
+      alertSuccess(`Akun ${form.role} berhasil ditambahkan`);
     } catch (err) {
       alertError(err.message);
     }
@@ -88,33 +104,46 @@ export default function ManageUser() {
     }
   };
 
+  // Updated promote user function
   const handlePromoteUser = async (e) => {
     e.preventDefault();
-    if (!(await alertConfirm(t("manageUser.alerts.confirmPromoteUser"))))
+    if (!(await alertConfirm(`Apakah Anda yakin ingin mengubah role user menjadi ${promoteToRole}?`)))
       return;
 
     const formData = new FormData(e.target);
     const userId = formData.get("userId");
 
     try {
-      const response = await UserApi.updateRoleById(userId, "ADMIN");
+      const response = await UserApi.updateRoleById(userId, promoteToRole);
       const resBody = await response.json();
       if (!response.ok)
         throw new Error(
-          resBody.error || t("manageUser.alerts.promoteUserError")
+          resBody.error || "Gagal mengubah role user"
         );
 
       setUsers([...users, resBody.user]);
 
-      const successMessage = t("manageUser.alerts.promoteSuccess", {
-        name: resBody.user.name,
-        interpolation: { escapeValue: false },
-      });
-      alertSuccess(successMessage);
+      alertSuccess(`User berhasil diubah menjadi ${promoteToRole}`);
       setShowPromoteForm(false);
       e.target.reset();
     } catch (err) {
       alertError(err.message);
+    }
+  };
+
+  // Function to get role display name
+  const getRoleDisplayName = (role) => {
+    const roleOption = roleOptions.find(option => option.value === role);
+    return roleOption ? roleOption.label : role;
+  };
+
+  // Function to get role icon
+  const getRoleIcon = (role) => {
+    switch (role) {
+      case "ADMIN":
+        return <FaUserShield />;
+      default:
+        return <FaUserShield />;
     }
   };
 
@@ -134,7 +163,7 @@ export default function ManageUser() {
             }}
             className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded shadow text-sm"
           >
-            <FaUserPlus /> {t("manageUser.buttons.addAdmin")}
+            <FaUserPlus /> Tambah Akun
           </button>
 
           <button
@@ -144,24 +173,24 @@ export default function ManageUser() {
             }}
             className="flex items-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded shadow text-sm"
           >
-            <FaExchangeAlt /> {t("manageUser.buttons.promoteUser")}
+            <FaExchangeAlt /> Ubah Role User
           </button>
         </div>
       </div>
 
-      {/* - Form Tambah Admin */}
+      {/* - Form Tambah Akun */}
       {showAddForm && (
         <form
-          onSubmit={handleAddAdmin}
+          onSubmit={handleAddAccount}
           className="bg-white p-4 mb-4 rounded-lg shadow space-y-3"
         >
           <h2 className="text-lg font-semibold text-gray-700">
-            {t("manageUser.forms.addAdminTitle")}
+            Tambah Akun Baru
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <input
               type="text"
-              placeholder={t("manageUser.forms.placeholders.name")}
+              placeholder="Nama"
               className="border p-2 rounded"
               required
               value={form.name}
@@ -169,7 +198,7 @@ export default function ManageUser() {
             />
             <input
               type="email"
-              placeholder={t("manageUser.forms.placeholders.email")}
+              placeholder="Email"
               className="border p-2 rounded"
               required
               value={form.email}
@@ -177,7 +206,7 @@ export default function ManageUser() {
             />
             <input
               type="password"
-              placeholder={t("manageUser.forms.placeholders.password")}
+              placeholder="Password"
               className="border p-2 rounded"
               required
               value={form.password}
@@ -185,7 +214,7 @@ export default function ManageUser() {
             />
             <input
               type="password"
-              placeholder={t("manageUser.forms.placeholders.confirmPassword")}
+              placeholder="Konfirmasi Password"
               className="border p-2 rounded"
               required
               value={form.confirm_password}
@@ -193,6 +222,23 @@ export default function ManageUser() {
                 setForm({ ...form, confirm_password: e.target.value })
               }
             />
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Pilih Role:
+              </label>
+              <select
+                value={form.role}
+                onChange={(e) => setForm({ ...form, role: e.target.value })}
+                className="border p-2 rounded w-full"
+                required
+              >
+                {roleOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
           <div className="flex justify-end gap-2 mt-3">
             <button
@@ -212,22 +258,41 @@ export default function ManageUser() {
         </form>
       )}
 
-      {/* - Form Promote User */}
+      {/* - Form Ubah Role User */}
       {showPromoteForm && (
         <form
           onSubmit={handlePromoteUser}
           className="bg-white p-4 mb-4 rounded-lg shadow space-y-3"
         >
           <h2 className="text-lg font-semibold text-gray-700">
-            {t("manageUser.forms.promoteUserTitle")}
+            Ubah Role User
           </h2>
-          <input
-            type="text"
-            name="userId"
-            placeholder={t("manageUser.forms.placeholders.userId")}
-            className="border p-2 rounded w-full"
-            required
-          />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <input
+              type="text"
+              name="userId"
+              placeholder="User ID"
+              className="border p-2 rounded"
+              required
+            />
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Ubah ke Role:
+              </label>
+              <select
+                value={promoteToRole}
+                onChange={(e) => setPromoteToRole(e.target.value)}
+                className="border p-2 rounded w-full"
+                required
+              >
+                {roleOptions.filter(option => option.value !== "REGULAR").map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
           <div className="flex justify-end gap-2 mt-3">
             <button
               type="button"
@@ -240,7 +305,7 @@ export default function ManageUser() {
               type="submit"
               className="px-4 py-2 rounded bg-yellow-500 hover:bg-yellow-600 text-white"
             >
-              {t("manageUser.buttons.promote")}
+              Ubah Role
             </button>
           </div>
         </form>
@@ -267,18 +332,22 @@ export default function ManageUser() {
                 <td className="p-4 font-medium text-gray-800">{user.name}</td>
                 <td className="p-4 text-gray-600">{user.email}</td>
                 <td className="p-4">
-                  <span className="flex items-center gap-1 text-green-600 font-semibold">
-                    <FaUserShield /> {t("manageUser.table.role")}
-                  </span>
+                  {user.role && user.role !== "REGULAR" && (
+                    <span className="flex items-center gap-1 text-green-600 font-semibold">
+                      {getRoleIcon(user.role)} {getRoleDisplayName(user.role)}
+                    </span>
+                  )}
                 </td>
                 <td className="p-4 text-center">
-                  <button
-                    onClick={() => adminToUser(user)}
-                    className="px-3 py-2 rounded bg-yellow-500 hover:bg-yellow-600 text-white"
-                    title={t("manageUser.buttons.demote")}
-                  >
-                    <FaExchangeAlt />
-                  </button>
+                  {user.role && user.role !== "REGULAR" && (
+                    <button
+                      onClick={() => adminToUser(user)}
+                      className="px-3 py-2 rounded bg-yellow-500 hover:bg-yellow-600 text-white"
+                      title="Jadikan User Biasa"
+                    >
+                      <FaExchangeAlt />
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}
@@ -304,16 +373,19 @@ export default function ManageUser() {
               {index + 1}. {user.name}
             </p>
             <p className="text-sm text-gray-600">{user.email}</p>
-            <p className="text-green-600 flex items-center gap-1 font-semibold">
-              <FaUserShield /> {t("manageUser.table.role")}
-            </p>
-            <button
-              onClick={() => adminToUser(user)}
-              className="mt-2 w-full px-3 py-2 rounded bg-yellow-500 hover:bg-yellow-600 text-white text-sm"
-            >
-              <FaExchangeAlt className="inline mr-1" />{" "}
-              {t("manageUser.buttons.demote")}
-            </button>
+            {user.role && user.role !== "REGULAR" && (
+              <>
+                <p className="text-green-600 flex items-center gap-1 font-semibold">
+                  {getRoleIcon(user.role)} {getRoleDisplayName(user.role)}
+                </p>
+                <button
+                  onClick={() => adminToUser(user)}
+                  className="mt-2 w-full px-3 py-2 rounded bg-yellow-500 hover:bg-yellow-600 text-white text-sm"
+                >
+                  <FaExchangeAlt className="inline mr-1" /> Jadikan User Biasa
+                </button>
+              </>
+            )}
           </div>
         ))}
         {users.length === 0 && (
