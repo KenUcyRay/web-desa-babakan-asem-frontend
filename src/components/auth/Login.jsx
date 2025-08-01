@@ -22,7 +22,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [reCaptchaToken, setReCaptchaToken] = useState("");
-  const { isLoggedIn, login, setAdminStatus } = useAuth();
+  const { isLoggedIn, login, setAdminStatus, setRole } = useAuth();
 
   useEffect(() => {
     AOS.init({ duration: 700, once: true });
@@ -43,10 +43,12 @@ export default function Login() {
     if (response.status === 200) {
       login(responseBody.token);
       await alertSuccess(t("login.success"));
+      setRole(responseBody.user.role);
+
       if (responseBody.user.role === "ADMIN") {
         await alertSuccess(t("login.admin_welcome"));
         setAdminStatus(true);
-        navigate("/admin");
+        await navigate("/admin");
         return;
       }
       navigate("/");

@@ -14,7 +14,8 @@ export default function NavbarBottom() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [avatarMenuOpen, setAvatarMenuOpen] = useState(false);
 
-  const { isLoggedIn, logout, isAdmin, setAdminStatus } = useAuth();
+  const { isLoggedIn, logout, isAdmin, setAdminStatus, setRole, role } =
+    useAuth();
 
   const isTentangActive = ["/profil", "/pemerintahan", "/potensi"].includes(
     location.pathname
@@ -31,6 +32,7 @@ export default function NavbarBottom() {
     if (!confirm) return;
 
     setAdminStatus(false);
+    setRole(null);
     logout();
     await alertSuccess(t("navbarTop.logoutSuccess"));
     setAvatarMenuOpen(false);
@@ -43,13 +45,13 @@ export default function NavbarBottom() {
   };
 
   const userMenu = () => {
-    if (isAdmin) {
+    if (role !== "REGULAR") {
       return (
         <Link
           to="/admin"
           className="bg-gradient-to-r from-green-400 to-[#B6F500] text-white px-4 py-2 rounded hover:opacity-90 transition"
         >
-          {t("navbarTop.dashboardAdmin")}
+          {t("navbarTop.dashboardAdmin", { role: role })}
         </Link>
       );
     }
@@ -99,14 +101,14 @@ export default function NavbarBottom() {
 
   const buttomMobile = () => {
     if (isLoggedIn) {
-      if (isAdmin) {
+      if (role !== "REGULAR") {
         return (
           <NavLink
             to="/admin"
             onClick={() => setMobileOpen(false)}
             className="bg-gradient-to-r from-green-400 to-[#B6F500] text-white px-4 py-2 rounded text-center"
           >
-            {t("navbarTop.dashboardAdmin")}
+            {t("navbarTop.dashboardAdmin", { role: role })}
           </NavLink>
         );
       }

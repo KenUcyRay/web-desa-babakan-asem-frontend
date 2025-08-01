@@ -149,7 +149,7 @@
     "masuk": "Login",
     "logout": "Logout",
     "profilSaya": "My Profile",
-    "dashboardAdmin": "Admin Dashboard",
+    "dashboardAdmin": "{{role}} Dashboard",
     "logoutConfirm": "Are you sure you want to logout?",
     "logoutSuccess": "You have been logged out.",
     "desaName": "Babakan Asem Village",

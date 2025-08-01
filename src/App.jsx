@@ -96,7 +96,7 @@ import { UserApi } from "./libs/api/UserApi";
 
 // ✅ Layout Umum (Navbar + Footer aktif + Floating Menu)
 function LayoutUmum() {
-  const { isLoggedIn, setAdminStatus } = useAuth();
+  const { isLoggedIn, setAdminStatus, setRole } = useAuth();
 
   const fetchProfile = async () => {
     if (!isLoggedIn) return;
@@ -105,8 +105,10 @@ function LayoutUmum() {
     if (response.status === 200) {
       const responseBody = await response.json();
       setAdminStatus(responseBody.user.role === "ADMIN");
+      setRole(responseBody.user.role);
     } else {
       setAdminStatus(false);
+      setRole(null);
     }
   };
   useEffect(() => {

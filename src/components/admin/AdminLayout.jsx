@@ -11,7 +11,7 @@ export default function AdminLayout() {
   const { t } = useTranslation();
   const { isLoggedIn } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { setAdminStatus } = useAuth();
+  const { setAdminStatus, setRole } = useAuth();
 
   // - Cek Auth & Role
   const checkAuth = async () => {
@@ -27,7 +27,8 @@ export default function AdminLayout() {
         return;
       }
       const data = await response.json();
-      if (!data.user || data.user.role !== "ADMIN") {
+      if (!data.user || data.user.role === "REGULAR") {
+        setRole(data.user.role);
         setAdminStatus(false);
         navigate("/");
         return;
