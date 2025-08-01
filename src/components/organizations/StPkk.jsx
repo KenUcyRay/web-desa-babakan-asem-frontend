@@ -108,7 +108,7 @@ export default function StPkk() {
               data-aos-delay={idx * 100}
             >
               <img
-                src={`${import.meta.env.VITE_BASE_URL}/galeri/images/${
+                src={`${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
                   item.image
                 }`}
                 alt="Galeri PKK"

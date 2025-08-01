@@ -56,10 +56,26 @@ export default function DashboardDesa() {
 
       {/* Kartu statistik */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <StatCard icon={<FaNewspaper />} title="Jumlah Berita" count={newsCount} />
-        <StatCard icon={<FaCalendarAlt />} title="Jumlah Agenda" count={agendaCount} />
-        <StatCard icon={<FaTasks />} title="Program Kerja" count={programCount} />
-        <StatCard icon={<FaImage />} title="Galeri Desa" count={galeriPreview.length} />
+        <StatCard
+          icon={<FaNewspaper />}
+          title="Jumlah Berita"
+          count={newsCount}
+        />
+        <StatCard
+          icon={<FaCalendarAlt />}
+          title="Jumlah Agenda"
+          count={agendaCount}
+        />
+        <StatCard
+          icon={<FaTasks />}
+          title="Program Kerja"
+          count={programCount}
+        />
+        <StatCard
+          icon={<FaImage />}
+          title="Galeri Desa"
+          count={galeriPreview.length}
+        />
       </div>
 
       {/* Galeri preview */}
@@ -71,7 +87,9 @@ export default function DashboardDesa() {
           {galeriPreview.map((g, idx) => (
             <div key={idx} className="bg-gray-100 rounded overflow-hidden">
               <img
-                src={`${import.meta.env.VITE_BASE_URL}/galeri/images/${g.image}`}
+                src={`${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
+                  g.image
+                }`}
                 alt={g.title}
                 className="w-full h-32 object-cover"
               />
@@ -87,7 +105,9 @@ export default function DashboardDesa() {
 function StatCard({ icon, title, count }) {
   return (
     <div className="bg-white p-5 rounded-xl shadow text-center">
-      <div className="text-3xl mb-2 text-green-500 flex justify-center">{icon}</div>
+      <div className="text-3xl mb-2 text-green-500 flex justify-center">
+        {icon}
+      </div>
       <h2 className="text-lg font-semibold text-gray-700">{title}</h2>
       <p className="text-2xl font-bold text-gray-900 mt-1">{count}</p>
     </div>
