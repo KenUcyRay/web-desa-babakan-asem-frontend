@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { 
   FaEdit, 
   FaUsers, 
@@ -7,36 +7,159 @@ import {
   FaPray, 
   FaBriefcase, 
   FaGraduationCap, 
-  FaHeart, 
   FaHandHoldingHeart, 
-  FaUserAlt,
   FaNewspaper,
   FaCalendarAlt,
   FaTasks,
   FaImage,
-  FaComments,
   FaEnvelope,
   FaFolderOpen,
   FaCog,
-  FaFlag,
   FaChartLine,
   FaMap
 } from "react-icons/fa";
 import { GiProgression } from "react-icons/gi";
 import { MdVolunteerActivism } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
+import { alertError } from "../../libs/alert";
+import { NewsApi } from "../../libs/api/NewsApi";
+import { AgendaApi } from "../../libs/api/AgendaApi";
+import { GaleryApi } from "../../libs/api/GaleryApi";
+import { MessageApi } from "../../libs/api/MessageApi";
+import { VillageWorkProgramApi } from "../../libs/api/VillageWorkProgramApi";
+
 
 export default function DataMaster() {
   const navigate = useNavigate(); 
   const [activeCategory, setActiveCategory] = useState("all");
+  const [stats, setStats] = useState({
+    newsCount: 0,
+    agendaCount: 0,
+    programCount: 0,
+    galeriCount: 0,
+    pesanCount: 0
+  });
+  const [masterStats, setMasterStats] = useState({
+    pendudukCount: 0,
+    kkCount: 0,
+    wilayahCount: { dusun: 0, rw: 0, rt: 0 }
+  });
   
-  // Statistik untuk card bagian atas (dihapus pengguna)
+  // Fetch statistics for top cards
+  const fetchStats = async () => {
+    try {
+      // Berita
+      const newsRes = await NewsApi.getOwnNews();
+      if (!newsRes.ok) throw new Error("Gagal ambil berita");
+      const newsData = await newsRes.json();
+      
+      // Agenda
+      const agendaRes = await AgendaApi.getOwnAgenda();
+      if (!agendaRes.ok) throw new Error("Gagal ambil agenda");
+      const agendaData = await agendaRes.json();
+      
+      // Program Kerja
+      const programRes = await VillageWorkProgramApi.getVillageWorkPrograms(1, 1);
+      if (!programRes.ok) throw new Error("Gagal ambil program");
+      const programData = await programRes.json();
+      
+      // Galeri
+      const galeriRes = await GaleryApi.getGaleri(1, 1);
+      if (!galeriRes.ok) throw new Error("Gagal ambil galeri");
+      const galeriData = await galeriRes.json();
+      
+      // Pesan
+      const pesanRes = await MessageApi.getMessages(1, 1);
+      const pesanData = pesanRes.ok ? await pesanRes.json() : { total: 0 };
+
+      console.log(pesanData); 
+      
+      setStats({
+        newsCount: newsData.news?.length || 0,
+        agendaCount: agendaData.agenda?.length || 0,
+        programCount: programData.length || 0,
+        galeriCount: galeriData.total || galeriData.galeri?.length || 0,
+        pesanCount: pesanData.length || pesanData.messages?.length || 0
+      });
+    } catch (error) {
+      alertError(error.message);
+    }
+  };
+
+  // Fetch statistics for master data cards
+  const fetchMasterStats = async () => {
+    try {
+      // Penduduk
+      const pendudukRes = await PendudukApi.getPenduduk();
+      const pendudukCount = pendudukRes.ok ? (await pendudukRes.json()).length : 0;
+      
+      // Kartu Keluarga
+      const kkRes = await KartuKeluargaApi.getKartuKeluarga();
+      const kkCount = kkRes.ok ? (await kkRes.json()).length : 0;
+      
+      // Wilayah
+      const wilayahRes = await WilayahApi.getWilayah();
+      const wilayahData = wilayahRes.ok ? await wilayahRes.json() : [];
+      
+      const wilayahCount = wilayahData.reduce((acc, wilayah) => {
+        acc.dusun += wilayah.dusun ? 1 : 0;
+        acc.rw += wilayah.rw ? 1 : 0;
+        acc.rt += wilayah.rt ? 1 : 0;
+        return acc;
+      }, { dusun: 0, rw: 0, rt: 0 });
+      
+      setMasterStats({
+        pendudukCount,
+        kkCount,
+        wilayahCount
+      });
+    } catch (error) {
+      console.error("Error fetching master stats:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchStats();
+    fetchMasterStats();
+  }, []);
+
+  // Statistik untuk card bagian atas
   const statsData = [
-    { id: 1, name: "Jumlah Berita", value: "5", icon: <FaNewspaper className="text-blue-500 text-xl" />, link: "/admin/manage-berita" },
-    { id: 2, name: "Jumlah Agenda", value: "10", icon: <FaCalendarAlt className="text-green-500 text-xl" />, link: "/admin/manage-agenda" },
-    { id: 3, name: "Program Kerja", value: "0", icon: <FaTasks className="text-purple-500 text-xl" />, link: "/admin/manage-program" },
-    { id: 4, name: "Galeri Desa", value: "1", icon: <FaImage className="text-red-500 text-xl" />, link: "/admin/manage-galery" },
-    { id: 5, name: "Pesan Masuk", value: "25", icon: <FaEnvelope className="text-yellow-500 text-xl" />, link: "/admin/manage-pesan" }
+    { 
+      id: 1, 
+      name: "Jumlah Berita", 
+      value: stats.newsCount, 
+      icon: <FaNewspaper className="text-blue-500 text-xl" />, 
+      link: "/admin/manage-berita" 
+    },
+    { 
+      id: 2, 
+      name: "Jumlah Agenda", 
+      value: stats.agendaCount, 
+      icon: <FaCalendarAlt className="text-green-500 text-xl" />, 
+      link: "/admin/manage-agenda" 
+    },
+    { 
+      id: 3, 
+      name: "Program Kerja", 
+      value: stats.programCount, 
+      icon: <FaTasks className="text-purple-500 text-xl" />, 
+      link: "/admin/manage-program" 
+    },
+    { 
+      id: 4, 
+      name: "Galeri Desa", 
+      value: stats.galeriCount, 
+      icon: <FaImage className="text-red-500 text-xl" />, 
+      link: "/admin/manage-galery" 
+    },
+    { 
+      id: 5, 
+      name: "Pesan Masuk", 
+      value: stats.pesanCount, 
+      icon: <FaEnvelope className="text-yellow-500 text-xl" />, 
+      link: "/admin/manage-pesan" 
+    }
   ];
 
   // Data master utama dengan perubahan
@@ -47,7 +170,7 @@ export default function DataMaster() {
       icon: <FaUsers className="text-blue-500 text-3xl" />,
       description: "Kelola data seluruh penduduk desa secara komprehensif",
       category: "penduduk",
-      stats: "1.245 data",
+      stats: `${masterStats.pendudukCount.toLocaleString()} data`,
       link: "/admin/kelola-infografis/penduduk"
     },
     { 
@@ -56,7 +179,7 @@ export default function DataMaster() {
       icon: <FaIdCard className="text-green-500 text-3xl" />,
       description: "Kelola data jumlah kartu keluarga dan hubungan antar anggota keluarga",
       category: "penduduk",
-      stats: "340 KK",
+      stats: `${masterStats.kkCount} KK`,
       link: "/admin/kelola-infografis/penduduk"
     },
     { 
@@ -65,7 +188,7 @@ export default function DataMaster() {
       icon: <FaMapMarkedAlt className="text-purple-500 text-3xl" />,
       description: "Kelola pembagian wilayah administratif desa",
       category: "wilayah",
-      stats: "4 Dusun, 12 RW, 36 RT",
+      stats: `${masterStats.wilayahCount.dusun} Dusun, ${masterStats.wilayahCount.rw} RW, ${masterStats.wilayahCount.rt} RT`,
       link: "/admin/manage-wilayah"
     },
     { 
@@ -128,7 +251,7 @@ export default function DataMaster() {
       icon: <FaMap className="text-blue-600 text-3xl" />,
       description: "Sistem Informasi Geografis wilayah desa",
       category: "infografis",
-      stats: "4 wilayah",
+      stats: `${masterStats.wilayahCount.dusun} wilayah`,
       link: "/admin/gis-desa"
     },
   ];
@@ -250,9 +373,9 @@ export default function DataMaster() {
           {filteredData.map(item => (
             <div 
               key={item.id}
-              className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+              className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex flex-col h-full"
             >
-              <div className="p-5">
+              <div className="p-5 flex-grow">
                 <div className="flex items-start">
                   <div className="bg-gray-100 p-3 rounded-lg mr-4">
                     {item.icon}
@@ -262,8 +385,10 @@ export default function DataMaster() {
                     <p className="text-gray-600 mt-1 text-sm">{item.description}</p>
                   </div>
                 </div>
-                
-                <div className="flex justify-between items-center mt-4">
+              </div>
+              
+              <div className="p-5 pt-0">
+                <div className="flex justify-between items-center">
                   <span className="text-xs font-semibold bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
                     {item.stats}
                   </span>
@@ -277,15 +402,15 @@ export default function DataMaster() {
                 </div>
               </div>
               
-              <div className="bg-gradient-to-r from-blue-500 to-indigo-600 h-1 w-full"></div>
+              <div className="bg-gradient-to-r from-blue-500 to-indigo-600 h-1 w-full mt-auto"></div>
             </div>
           ))}
         </div>
 
         {/* Footer */}
         <div className="mt-12 text-center text-gray-500 text-sm">
-          <p>Total {filteredData.length} data master ditemukan • Terakhir diperbarui: 12 Juni 2023</p>
-          <p className="mt-2">© 2023 Sistem Informasi Desa • Hak Cipta Dilindungi</p>
+          <p>Total {filteredData.length} data master ditemukan • Terakhir diperbarui: {new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+          <p className="mt-2">© {new Date().getFullYear()} Sistem Informasi Desa • Hak Cipta Dilindungi</p>
         </div>
       </div>
     </div>
