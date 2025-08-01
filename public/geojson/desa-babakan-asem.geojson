@@ -1,0 +1,82 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "nama": "Desa Babakan Asem",
+        "kategori": "batas_desa"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [106.6590, -6.0770],
+            [106.6615, -6.0770],
+            [106.6625, -6.0750],
+            [106.6610, -6.0730],
+            [106.6580, -6.0735],
+            [106.6570, -6.0755],
+            [106.6590, -6.0770]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "nama": "Kantor Desa Babakan Asem",
+        "kategori": "pemerintahan"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [106.6605, -6.0758]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "nama": "Masjid Al-Falah",
+        "kategori": "ibadah"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [106.6610, -6.0750]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "nama": "Lapangan Sepak Bola",
+        "kategori": "olahraga"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [106.6602, -6.0756],
+            [106.6606, -6.0756],
+            [106.6606, -6.0752],
+            [106.6602, -6.0752],
+            [106.6602, -6.0756]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "nama": "Jalan Utama Desa",
+        "kategori": "jalan"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [106.6595, -6.0765],
+          [106.6605, -6.0755],
+          [106.6615, -6.0745]
+        ]
+      }
+    }
+  ]
+}

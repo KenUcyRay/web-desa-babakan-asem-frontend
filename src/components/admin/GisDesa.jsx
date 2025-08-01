@@ -1,7 +1,40 @@
-import React from "react";
+import { useEffect, useState } from "react";
+import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
 import peta from "../../assets/peta.png";
 
 const GisDesa = () => {
+  const [geoData, setGeoData] = useState(null);
+
+  useEffect(() => {
+    fetch("/geojson/desa-babakan-asem.geojson")
+      .then((res) => res.json())
+      .then((data) => setGeoData(data));
+  }, []);
+
+  const onEachFeature = (feature, layer) => {
+    const { nama, kategori } = feature.properties;
+    if (nama) {
+      layer.bindPopup(`<b>${nama}</b><br/>Kategori: ${kategori}`);
+    }
+
+    if (feature.geometry.type === "Polygon") {
+      layer.setStyle({
+        color: kategori === "batas_desa" ? "red" :
+               kategori === "olahraga" ? "green" : "blue",
+        weight: 2,
+        fillOpacity: 0.3,
+      });
+    }
+
+    if (feature.geometry.type === "LineString") {
+      layer.setStyle({
+        color: "orange",
+        weight: 3,
+      });
+    }
+  };
+
   return (
     <div className="p-6 space-y-8">
       <h1 className="text-3xl font-bold text-gray-800">GIS Desa Babakan Asem</h1>
@@ -17,6 +50,17 @@ const GisDesa = () => {
           referrerPolicy="no-referrer-when-downgrade"
           title="Peta Interaktif"
         ></iframe>
+      </div>
+
+      {/* Leaflet GeoJSON Map */}
+      <div className="w-full h-[500px] shadow-lg border rounded-xl overflow-hidden">
+        <MapContainer center={[-6.0758, 106.6605]} zoom={16} style={{ height: "100%", width: "100%" }}>
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+          {geoData && <GeoJSON data={geoData} onEachFeature={onEachFeature} />}
+        </MapContainer>
       </div>
 
       {/* Gambar Peta Statis */}
@@ -37,7 +81,7 @@ const GisDesa = () => {
         </p>
       </div>
     </div>
-  );  
+  );
 };
 
 export default GisDesa;
