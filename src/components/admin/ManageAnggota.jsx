@@ -174,7 +174,7 @@ export default function ManageAnggota() {
               src={
                 member.profile_photo.startsWith("http")
                   ? member.profile_photo
-                  : `${import.meta.env.VITE_BASE_URL}/organizations/images/${
+                  : `${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
                       member.profile_photo
                     }`
               }

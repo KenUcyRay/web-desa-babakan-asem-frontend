@@ -114,7 +114,7 @@ export default function Bpd() {
               <img
                 src={
                   member.profile_photo
-                    ? `${import.meta.env.VITE_BASE_URL}/organizations/images/${
+                    ? `${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
                         member.profile_photo
                       }`
                     : "/default-user.png"

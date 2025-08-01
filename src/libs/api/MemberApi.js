@@ -2,7 +2,7 @@ export class MemberApi {
   static async getMembers(type, page = 1, limit = 10) {
     return await fetch(
       `${
-        import.meta.env.VITE_BASE_URL
+        import.meta.env.VITE_NEW_BASE_URL
       }/organizations/members?organizationType=${type}&page=${page}&limit=${limit}`,
       {
         method: "GET",
@@ -24,7 +24,7 @@ export class MemberApi {
     formData.append("is_term", data.is_term);
     formData.append("important_level", data.important_level);
     return await fetch(
-      `${import.meta.env.VITE_BASE_URL}/organizations/admin/members`,
+      `${import.meta.env.VITE_NEW_BASE_URL}/admin/organizations/members`,
       {
         method: "POST",
         body: formData,
@@ -38,8 +38,8 @@ export class MemberApi {
   static async getAllMembers(type, page = 1, limit = 10) {
     return await fetch(
       `${
-        import.meta.env.VITE_BASE_URL
-      }/organizations/admin/members?organizationType=${type}&page=${page}&limit=${limit}`,
+        import.meta.env.VITE_NEW_BASE_URL
+      }/admin/organizations/members?organizationType=${type}&page=${page}&limit=${limit}`,
       {
         method: "GET",
         headers: {
@@ -63,7 +63,7 @@ export class MemberApi {
     formData.append("important_level", data.important_level) ?? undefined;
 
     return await fetch(
-      `${import.meta.env.VITE_BASE_URL}/organizations/admin/members/${id}`,
+      `${import.meta.env.VITE_NEW_BASE_URL}/admin/organizations/members/${id}`,
       {
         method: "PATCH",
         body: formData,
@@ -75,7 +75,7 @@ export class MemberApi {
   }
   static async deleteMember(id) {
     return await fetch(
-      `${import.meta.env.VITE_BASE_URL}/organizations/admin/members/${id}`,
+      `${import.meta.env.VITE_NEW_BASE_URL}/admin/organizations/members/${id}`,
       {
         method: "DELETE",
         headers: {

@@ -118,11 +118,15 @@ export default function Pemerintahan() {
                 data-aos="zoom-in"
               >
                 <img
-                  src={`${import.meta.env.VITE_BASE_URL}/organizations/images/${member.profile_photo}`}
+                  src={`${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
+                    member.profile_photo
+                  }`}
                   alt={member.name}
                   className="w-20 h-20 mx-auto rounded-full border-4 border-gray-100 mb-4 object-cover"
                 />
-                <h3 className="text-lg font-semibold text-gray-800">{member.name}</h3>
+                <h3 className="text-lg font-semibold text-gray-800">
+                  {member.name}
+                </h3>
                 <p className="text-sm text-gray-500">{member.position}</p>
                 <p className="text-xs text-gray-400 mt-1">
                   {member.term_start} - {member.term_end}
@@ -152,7 +156,8 @@ export default function Pemerintahan() {
                 className="w-full flex items-center justify-between bg-gray-50 hover:bg-green-50 p-4 rounded-lg border transition"
               >
                 <span className="flex items-center gap-2 text-gray-700 font-medium">
-                  <span className="text-green-600">{item.icon}</span> {item.nama}
+                  <span className="text-green-600">{item.icon}</span>{" "}
+                  {item.nama}
                 </span>
                 <span className="text-gray-400 text-lg">›</span>
               </button>
@@ -199,7 +204,10 @@ export default function Pemerintahan() {
               </thead>
               <tbody>
                 {regulasi.map((item, index) => (
-                  <tr key={index} className="border-b hover:bg-gray-50 transition">
+                  <tr
+                    key={index}
+                    className="border-b hover:bg-gray-50 transition"
+                  >
                     <td className="p-4">{item.judul}</td>
                     <td className="p-4">{item.tahun}</td>
                     <td className="p-4 text-center">
