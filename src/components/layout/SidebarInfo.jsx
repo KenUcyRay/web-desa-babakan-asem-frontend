@@ -85,7 +85,7 @@ export default function SidebarInfo() {
               className="flex items-center mb-3 bg-gradient-to-r from-[#FFFCE2] to-white p-2 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 hover:scale-[1.02]"
             >
               <img
-                src={`${import.meta.env.VITE_BASE_URL}/agenda/images/${
+                src={`${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
                   item.agenda.featured_image
                 }`}
                 alt={`Agenda ${item.agenda.title}`}

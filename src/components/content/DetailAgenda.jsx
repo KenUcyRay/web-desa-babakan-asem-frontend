@@ -36,7 +36,9 @@ export default function DetailAgenda() {
     const response = await CommentApi.createComment(id, "AGENDA", pesan);
     const responseBody = await response.json();
     if (response.status !== 201) {
-      await alertError(t("detailAgenda.alert.sendFailed", { error: responseBody.error }));
+      await alertError(
+        t("detailAgenda.alert.sendFailed", { error: responseBody.error })
+      );
       return;
     }
 
@@ -103,7 +105,9 @@ export default function DetailAgenda() {
       setEditingCommentId(null);
       fetchComments();
     } else {
-      await alertError(t("detailAgenda.alert.updateFailed", { error: resBody.error }));
+      await alertError(
+        t("detailAgenda.alert.updateFailed", { error: resBody.error })
+      );
     }
   };
 
@@ -118,7 +122,9 @@ export default function DetailAgenda() {
       await alertSuccess(t("detailAgenda.alert.deleteSuccess"));
       fetchComments();
     } else {
-      await alertError(t("detailAgenda.alert.deleteFailed", { error: resBody.error }));
+      await alertError(
+        t("detailAgenda.alert.deleteFailed", { error: resBody.error })
+      );
     }
   };
 
@@ -134,7 +140,9 @@ export default function DetailAgenda() {
         </button>
 
         <img
-          src={`${import.meta.env.VITE_BASE_URL}/agenda/images/${agenda.featured_image}`}
+          src={`${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
+            agenda.featured_image
+          }`}
           alt="Detail Agenda"
           className="w-full h-96 object-cover rounded-lg mb-6"
         />
@@ -151,7 +159,9 @@ export default function DetailAgenda() {
         </div>
 
         <div className="mt-10 p-6 bg-gray-50 rounded-lg shadow">
-          <h2 className="text-xl font-semibold mb-4">{t("detailAgenda.leaveComment")}</h2>
+          <h2 className="text-xl font-semibold mb-4">
+            {t("detailAgenda.leaveComment")}
+          </h2>
 
           <form className="space-y-4" onSubmit={handleKomentar}>
             <textarea
@@ -228,7 +238,9 @@ export default function DetailAgenda() {
               </div>
             ))}
             {comments.length === 0 && (
-              <p className="text-center text-gray-400">{t("detailAgenda.noComment")}</p>
+              <p className="text-center text-gray-400">
+                {t("detailAgenda.noComment")}
+              </p>
             )}
           </div>
         </div>

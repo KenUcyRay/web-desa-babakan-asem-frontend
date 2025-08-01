@@ -152,7 +152,7 @@ export default function Bpd() {
               <img
                 src={
                   item.agenda.featured_image
-                    ? `${import.meta.env.VITE_BASE_URL}/agenda/images/${
+                    ? `${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
                         item.agenda.featured_image
                       }`
                     : "/default-agenda.jpg"
