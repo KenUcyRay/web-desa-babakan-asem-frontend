@@ -174,20 +174,19 @@ export default function ManageAgenda() {
       <div className="flex flex-wrap gap-2 mb-6">
         {kategoriList.map((k) => (
           <button
-  key={k}
-  onClick={() => {
-    setKategori(k);
-    setCurrentPage(1);
-  }}
-  className={`px-4 py-2 rounded-full text-sm font-medium transition cursor-pointer shadow-sm ${
-    kategori === k
-      ? "bg-blue-500 text-white shadow"
-      : "bg-gray-100 hover:bg-blue-50 text-gray-700"
-  }`}
->
-  {kategoriLabel[k]}
-</button>
-
+            key={k}
+            onClick={() => {
+              setKategori(k);
+              setCurrentPage(1);
+            }}
+            className={`px-4 py-2 rounded-full text-sm font-medium transition cursor-pointer shadow-sm ${
+              kategori === k
+                ? "bg-blue-500 text-white shadow"
+                : "bg-gray-100 hover:bg-blue-50 text-gray-700"
+            }`}
+          >
+            {kategoriLabel[k]}
+          </button>
         ))}
       </div>
 
@@ -358,7 +357,7 @@ export default function ManageAgenda() {
             className="bg-white rounded-xl shadow-md hover:shadow-lg transition transform hover:-translate-y-1"
           >
             <img
-              src={`${import.meta.env.VITE_BASE_URL}/agenda/images/${
+              src={`${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
                 a.featured_image
               }`}
               alt={a.title}

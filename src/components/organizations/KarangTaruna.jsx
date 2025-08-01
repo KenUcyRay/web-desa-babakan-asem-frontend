@@ -158,7 +158,7 @@ export default function KarangTaruna() {
             >
               <div className="relative w-full aspect-[4/3] overflow-hidden">
                 <img
-                  src={`${import.meta.env.VITE_BASE_URL}/agenda/images/${
+                  src={`${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
                     item.agenda.featured_image
                   }`}
                   alt={item.agenda.title}

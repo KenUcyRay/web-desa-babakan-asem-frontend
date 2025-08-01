@@ -112,9 +112,9 @@ export default function Agenda() {
                     data-aos-delay={index * 100}
                   >
                     <img
-                      src={`${import.meta.env.VITE_BASE_URL}/agenda/images/${
-                        item.agenda.featured_image
-                      }`}
+                      src={`${
+                        import.meta.env.VITE_NEW_BASE_URL
+                      }/public/images/${item.agenda.featured_image}`}
                       alt={item.agenda.title}
                       className="w-24 h-24 object-cover rounded-md mr-4"
                     />

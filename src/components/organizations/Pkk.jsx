@@ -129,7 +129,7 @@ export default function Pkk() {
               data-aos-delay={idx * 120}
             >
               <img
-                src={`${import.meta.env.VITE_BASE_URL}/agenda/images/${
+                src={`${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
                   item.agenda.featured_image
                 }`}
                 alt={item.agenda.title}
