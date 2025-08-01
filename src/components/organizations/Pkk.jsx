@@ -97,7 +97,7 @@ export default function Pkk() {
               data-aos-delay={idx * 100}
             >
               <img
-                src={`${import.meta.env.VITE_BASE_URL}/programs/images/${
+                src={`${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
                   item.featured_image
                 }`}
                 alt="Program PKK"

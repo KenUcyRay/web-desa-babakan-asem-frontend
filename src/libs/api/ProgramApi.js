@@ -1,18 +1,15 @@
 export class ProgramApi {
   static async getPrograms() {
-    return await fetch(
-      `${import.meta.env.VITE_NEW_BASE_URL}/village-work-programs`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-      }
-    );
+    return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/programs`, {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    });
   }
   static async deleteProgram(id) {
     return await fetch(
-      `${import.meta.env.VITE_BASE_URL}/programs/admin/${id}`,
+      `${import.meta.env.VITE_NEW_BASE_URL}/admin/programs/${id}`,
       {
         method: "DELETE",
         headers: {
@@ -29,7 +26,7 @@ export class ProgramApi {
     formData.append("description", data.description);
     formData.append("featured_image", data.featured_image);
 
-    return await fetch(`${import.meta.env.VITE_BASE_URL}/programs/admin/`, {
+    return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/admin/programs/`, {
       method: "POST",
       body: formData,
       headers: {
@@ -46,7 +43,7 @@ export class ProgramApi {
     formData.append("featured_image", data.featured_image ?? null);
 
     return await fetch(
-      `${import.meta.env.VITE_BASE_URL}/programs/admin/${id}`,
+      `${import.meta.env.VITE_NEW_BASE_URL}/admin/programs/${id}`,
       {
         method: "PATCH",
         body: formData,
