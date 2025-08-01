@@ -1,7 +1,7 @@
 export class NewsApi {
   static async getNews(page = 1, limit = 10) {
     return await fetch(
-      `${import.meta.env.VITE_BASE_URL}/news/?page=${page}&limit=${limit}`,
+      `${import.meta.env.VITE_NEW_BASE_URL}/news?page=${page}&limit=${limit}`,
       {
         method: "GET",
         headers: {
@@ -13,7 +13,7 @@ export class NewsApi {
   }
 
   static async getDetailNews(id) {
-    return await fetch(`${import.meta.env.VITE_BASE_URL}/news/${id}`, {
+    return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/news/${id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -28,20 +28,23 @@ export class NewsApi {
     formData.append("is_published", data.is_published ? "true" : "false");
     formData.append("featured_image", data.featured_image); // File
 
-    return await fetch(`${import.meta.env.VITE_BASE_URL}/news/admin/create`, {
-      method: "POST",
-      body: formData,
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
-      },
-    });
+    return await fetch(
+      `${import.meta.env.VITE_NEW_BASE_URL}/admin/news/create`,
+      {
+        method: "POST",
+        body: formData,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
+        },
+      }
+    );
   }
 
   static async getOwnNews(page = 1, limit = 10) {
     return await fetch(
       `${
-        import.meta.env.VITE_BASE_URL
-      }/news/admin/me?page=${page}&limit=${limit}`,
+        import.meta.env.VITE_NEW_BASE_URL
+      }/admin/news/me?page=${page}&limit=${limit}`,
       {
         method: "GET",
         headers: {
@@ -63,7 +66,7 @@ export class NewsApi {
     formData.append("featured_image", data.featured_image ?? null); // File
 
     return await fetch(
-      `${import.meta.env.VITE_BASE_URL}/news/admin/update-by-news/${id}`,
+      `${import.meta.env.VITE_NEW_BASE_URL}/admin/news/update-by-news/${id}`,
       {
         method: "PATCH",
         body: formData,
@@ -75,7 +78,7 @@ export class NewsApi {
   }
   static async deleteNews(id) {
     return await fetch(
-      `${import.meta.env.VITE_BASE_URL}/news/admin/delete-by-news/${id}`,
+      `${import.meta.env.VITE_NEW_BASE_URL}/admin/news/delete-by-news/${id}`,
       {
         method: "DELETE",
         headers: {

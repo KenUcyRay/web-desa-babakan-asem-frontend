@@ -63,7 +63,7 @@ export default function Berita() {
                 >
                   {/* Gambar Berita */}
                   <img
-                    src={`${import.meta.env.VITE_BASE_URL}/news/images/${
+                    src={`${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
                       n.news.featured_image
                     }`}
                     alt="Berita"
