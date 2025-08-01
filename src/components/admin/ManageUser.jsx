@@ -18,12 +18,12 @@ export default function ManageUser() {
     email: "",
     password: "",
     confirm_password: "",
-    role: "REGULAR", // Default role
+    role: "ADMIN",
   });
 
   // Role options
   const roleOptions = [
-    { value: "REGULAR", label: "Regular User" },
+    { value: "REGULAR", label: "User Regular" },
     { value: "ADMIN", label: "Admin" },
     { value: "PKK", label: "PKK" },
     { value: "BUMDES", label: "BUMDES" },
@@ -54,7 +54,12 @@ export default function ManageUser() {
   // Updated function to handle adding account with selected role
   const handleAddAccount = async (e) => {
     e.preventDefault();
-    if (!(await alertConfirm(`Apakah Anda yakin ingin menambah akun dengan role ${form.role}?`))) return;
+    if (
+      !(await alertConfirm(
+        `Apakah Anda yakin ingin menambah akun dengan role ${form.role}?`
+      ))
+    )
+      return;
 
     if (form.confirm_password !== form.password) {
       return alertError(t("manageUser.alerts.passwordMismatch"));
@@ -69,7 +74,13 @@ export default function ManageUser() {
 
       setUsers([...users, resBody.user]);
       setShowAddForm(false);
-      setForm({ name: "", email: "", password: "", confirm_password: "", role: "REGULAR" });
+      setForm({
+        name: "",
+        email: "",
+        password: "",
+        confirm_password: "",
+        role: "REGULAR",
+      });
       alertSuccess(`Akun ${form.role} berhasil ditambahkan`);
     } catch (err) {
       alertError(err.message);
@@ -107,7 +118,12 @@ export default function ManageUser() {
   // Updated promote user function
   const handlePromoteUser = async (e) => {
     e.preventDefault();
-    if (!(await alertConfirm(`Apakah Anda yakin ingin mengubah role user menjadi ${promoteToRole}?`)))
+
+    if (
+      !(await alertConfirm(
+        `Apakah Anda yakin ingin mengubah role menjadi ${promoteToRole}?`
+      ))
+    )
       return;
 
     const formData = new FormData(e.target);
@@ -117,11 +133,12 @@ export default function ManageUser() {
       const response = await UserApi.updateRoleById(userId, promoteToRole);
       const resBody = await response.json();
       if (!response.ok)
-        throw new Error(
-          resBody.error || "Gagal mengubah role user"
-        );
+        throw new Error(resBody.error || "Gagal mengubah role user");
 
-      setUsers([...users, resBody.user]);
+      setUsers((prevUsers) => {
+        const filtered = prevUsers.filter((u) => u.id !== resBody.user.id);
+        return [...filtered, resBody.user];
+      });
 
       alertSuccess(`User berhasil diubah menjadi ${promoteToRole}`);
       setShowPromoteForm(false);
@@ -133,7 +150,7 @@ export default function ManageUser() {
 
   // Function to get role display name
   const getRoleDisplayName = (role) => {
-    const roleOption = roleOptions.find(option => option.value === role);
+    const roleOption = roleOptions.find((option) => option.value === role);
     return roleOption ? roleOption.label : role;
   };
 
@@ -285,11 +302,13 @@ export default function ManageUser() {
                 className="border p-2 rounded w-full"
                 required
               >
-                {roleOptions.filter(option => option.value !== "REGULAR").map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
+                {roleOptions
+                  .filter((option) => option.value !== "REGULAR")
+                  .map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
               </select>
             </div>
           </div>

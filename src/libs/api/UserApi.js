@@ -119,7 +119,8 @@ export class UserApi {
       }),
     });
   }
-  static async createAdmin(name, email, password, confirmPassword) {
+  static async createAdmin(body) {
+    console.log(body);
     return await fetch(`${import.meta.env.VITE_BASE_URL}/users/admin`, {
       method: "POST",
       headers: {
@@ -128,10 +129,11 @@ export class UserApi {
         Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
       },
       body: JSON.stringify({
-        name: name,
-        email: email,
-        password: password,
-        confirm_password: confirmPassword,
+        name: body.name,
+        email: body.email,
+        password: body.password,
+        confirm_password: body.confirm_password,
+        role: body.role || "ADMIN",
       }),
     });
   }
@@ -159,23 +161,6 @@ export class UserApi {
         },
       }
     );
-  }
-  static async createAdmin({ name, email, password, confirm_password }) {
-    return await fetch(`${import.meta.env.VITE_BASE_URL}/users/admin`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
-      },
-      body: JSON.stringify({
-        name: name,
-        email: email,
-        password: password,
-        confirm_password: confirm_password,
-        role: "ADMIN",
-      }),
-    });
   }
   static async updateRoleById(userId, role) {
     return await fetch(
