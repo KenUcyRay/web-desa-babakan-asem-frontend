@@ -32,7 +32,7 @@ export default function ManagePesan() {
         return;
       }
 
-      setMessages(resBody.messages || []);
+      setMessages(resBody.data || []);
       setTotalPages(resBody.total_page);
     } catch (err) {
       console.error(err);

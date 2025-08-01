@@ -76,7 +76,7 @@ export default function AdminDashboard() {
       user: "Admin Desa",
       timestamp: new Date(Date.now() - 5 * 60000), // 5 menit lalu
       icon: FaNewspaper,
-      color: "text-blue-500"
+      color: "text-blue-500",
     },
     {
       id: 2,
@@ -86,7 +86,7 @@ export default function AdminDashboard() {
       user: "Admin Desa",
       timestamp: new Date(Date.now() - 15 * 60000), // 15 menit lalu
       icon: FaTasks,
-      color: "text-yellow-500"
+      color: "text-yellow-500",
     },
     {
       id: 3,
@@ -96,7 +96,7 @@ export default function AdminDashboard() {
       user: "Admin Desa",
       timestamp: new Date(Date.now() - 30 * 60000), // 30 menit lalu
       icon: FaImage,
-      color: "text-green-500"
+      color: "text-green-500",
     },
     {
       id: 4,
@@ -106,7 +106,7 @@ export default function AdminDashboard() {
       user: "Admin Desa",
       timestamp: new Date(Date.now() - 45 * 60000), // 45 menit lalu
       icon: FaComments,
-      color: "text-purple-500"
+      color: "text-purple-500",
     },
     {
       id: 5,
@@ -116,8 +116,8 @@ export default function AdminDashboard() {
       user: "Admin Desa",
       timestamp: new Date(Date.now() - 60 * 60000), // 1 jam lalu
       icon: FaStore,
-      color: "text-teal-500"
-    }
+      color: "text-teal-500",
+    },
   ]);
 
   // - Fetch TOTAL data
@@ -141,7 +141,7 @@ export default function AdminDashboard() {
     if (!res.ok)
       return alertError(t("adminDashboard.errors.failedToGetMessages"));
     const data = await res.json();
-    setMessageCount(data.messages?.length || 0);
+    setMessageCount(data.data?.length || 0);
   };
 
   const fetchUsers = async () => {
@@ -273,7 +273,12 @@ export default function AdminDashboard() {
         <SmallMainCard
           icon={<FaFolderOpen className="text-xl text-purple-500" />}
           title="Repository Dokumen"
-          onClick={() => window.open("https://drive.google.com/drive/folders/1H6wPE94ywdVsbH3XF7z2UpJ23sKFajr_?usp=sharing", "_blank")} // ganti dengan link Drive
+          onClick={() =>
+            window.open(
+              "https://drive.google.com/drive/folders/1H6wPE94ywdVsbH3XF7z2UpJ23sKFajr_?usp=sharing",
+              "_blank"
+            )
+          } // ganti dengan link Drive
         />
 
         <SmallMainCard
@@ -418,7 +423,7 @@ function ActivityLog({ activities, formatTime }) {
         </h3>
         <span className="text-xs text-gray-500">Hari ini</span>
       </div>
-      
+
       <div className="space-y-3 max-h-80 overflow-y-auto">
         {activities.map((activity) => {
           const IconComponent = activity.icon;
@@ -445,7 +450,7 @@ function ActivityLog({ activities, formatTime }) {
           );
         })}
       </div>
-      
+
       <button className="w-full mt-4 text-sm text-blue-600 hover:text-blue-800 font-medium">
         Lihat Semua Aktivitas
       </button>
