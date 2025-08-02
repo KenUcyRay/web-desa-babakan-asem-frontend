@@ -397,7 +397,7 @@ export default function ManageBumdes() {
                 src={
                   featuredImage
                     ? URL.createObjectURL(featuredImage)
-                    : `${import.meta.env.VITE_BASE_URL}/products/images/${
+                    : `${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
                         products.find((p) => p.product.id === editingId)
                           ?.product?.featured_image
                       }`
@@ -438,7 +438,7 @@ export default function ManageBumdes() {
             className="bg-white rounded-xl shadow-md border hover:shadow-lg transition"
           >
             <img
-              src={`${import.meta.env.VITE_BASE_URL}/products/images/${
+              src={`${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
                 item.product.featured_image
               }`}
               alt={item.product.title}

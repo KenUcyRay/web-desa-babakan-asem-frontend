@@ -448,7 +448,7 @@ export default function Home() {
               >
                 <Link to={`/bumdes/${item.product.id}`}>
                   <img
-                    src={`${import.meta.env.VITE_BASE_URL}/products/images/${
+                    src={`${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
                       item.product.featured_image
                     }`}
                     alt={item.product.title}

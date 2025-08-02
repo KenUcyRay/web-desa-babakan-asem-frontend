@@ -1,7 +1,9 @@
 export class ProductApi {
   static async getProducts(page = 1, limit = 10) {
     return await fetch(
-      `${import.meta.env.VITE_BASE_URL}/products/?page=${page}&limit=${limit}`,
+      `${
+        import.meta.env.VITE_NEW_BASE_URL
+      }/products/?page=${page}&limit=${limit}`,
       {
         method: "GET",
         headers: {
@@ -13,7 +15,7 @@ export class ProductApi {
   }
 
   static async getDetailProduct(id) {
-    return await fetch(`${import.meta.env.VITE_BASE_URL}/products/${id}`, {
+    return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/products/${id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -24,7 +26,9 @@ export class ProductApi {
 
   static async getOwnProducts(page = 1, limit = 10) {
     return await fetch(
-      `${import.meta.env.VITE_BASE_URL}/products/admin/me?page=${page}&limit=${limit}`,
+      `${
+        import.meta.env.VITE_NEW_BASE_URL
+      }/admin/products/me?page=${page}&limit=${limit}`,
       {
         method: "GET",
         headers: {
@@ -46,7 +50,7 @@ export class ProductApi {
     formData.append("featured_image", data.featured_image);
 
     return await fetch(
-      `${import.meta.env.VITE_BASE_URL}/products/admin/create`,
+      `${import.meta.env.VITE_NEW_BASE_URL}/admin/products/create`,
       {
         method: "POST",
         body: formData,
@@ -67,7 +71,9 @@ export class ProductApi {
     formData.append("featured_image", data.featured_image ?? null);
 
     return await fetch(
-      `${import.meta.env.VITE_BASE_URL}/products/admin/update-by-product/${id}`,
+      `${
+        import.meta.env.VITE_NEW_BASE_URL
+      }/admin/products/update-by-product/${id}`,
       {
         method: "PATCH",
         body: formData,
@@ -80,7 +86,9 @@ export class ProductApi {
 
   static async deleteProduct(id) {
     return await fetch(
-      `${import.meta.env.VITE_BASE_URL}/products/admin/delete-by-product/${id}`,
+      `${
+        import.meta.env.VITE_NEW_BASE_URL
+      }/admin/products/delete-by-product/${id}`,
       {
         method: "DELETE",
         headers: {
@@ -95,7 +103,7 @@ export class ProductApi {
   // - CREATE Rating
   static async createRating(productId, rating) {
     return await fetch(
-      `${import.meta.env.VITE_BASE_URL}/products/rating/${productId}`,
+      `${import.meta.env.VITE_NEW_BASE_URL}/private/products/rating/${productId}`,
       {
         method: "POST",
         headers: {
@@ -111,7 +119,7 @@ export class ProductApi {
   // - CHECK kalau user sudah pernah rating
   static async alreadyRated(productId) {
     return await fetch(
-      `${import.meta.env.VITE_BASE_URL}/products/rating/${productId}`,
+      `${import.meta.env.VITE_NEW_BASE_URL}/private/products/rating/${productId}`,
       {
         method: "GET",
         headers: {
@@ -126,7 +134,7 @@ export class ProductApi {
   // - UPDATE Rating
   static async updateRating(ratingId, rating) {
     return await fetch(
-      `${import.meta.env.VITE_BASE_URL}/products/rating/${ratingId}`,
+      `${import.meta.env.VITE_NEW_BASE_URL}/private/products/rating/${ratingId}`,
       {
         method: "PUT",
         headers: {
@@ -142,7 +150,7 @@ export class ProductApi {
   // - DELETE Rating
   static async deleteRating(ratingId) {
     return await fetch(
-      `${import.meta.env.VITE_BASE_URL}/products/rating/${ratingId}`,
+      `${import.meta.env.VITE_NEW_BASE_URL}/private/products/rating/${ratingId}`,
       {
         method: "DELETE",
         headers: {

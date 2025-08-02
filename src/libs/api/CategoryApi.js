@@ -1,7 +1,7 @@
 export class CategoryApi {
   static async getCategories() {
     return await fetch(
-      `${import.meta.env.VITE_BASE_URL}/products/admin/categories`,
+      `${import.meta.env.VITE_NEW_BASE_URL}/admin/products/categories`,
       {
         method: "GET",
         headers: {
@@ -14,7 +14,7 @@ export class CategoryApi {
   }
   static async addCategory(name) {
     return await fetch(
-      `${import.meta.env.VITE_BASE_URL}/products/admin/categories`,
+      `${import.meta.env.VITE_NEW_BASE_URL}/admin/products/categories`,
       {
         method: "POST",
         headers: {
@@ -28,7 +28,7 @@ export class CategoryApi {
   }
   static async updateCategory(id, name) {
     return await fetch(
-      `${import.meta.env.VITE_BASE_URL}/products/admin/categories/${id}`,
+      `${import.meta.env.VITE_NEW_BASE_URL}/admin/products/categories/${id}`,
       {
         method: "PUT",
         headers: {
@@ -42,7 +42,7 @@ export class CategoryApi {
   }
   static async deleteCategory(id) {
     return await fetch(
-      `${import.meta.env.VITE_BASE_URL}/products/admin/categories/${id}`,
+      `${import.meta.env.VITE_NEW_BASE_URL}/admin/products/categories/${id}`,
       {
         method: "DELETE",
         headers: {

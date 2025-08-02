@@ -38,10 +38,16 @@ export default function Bumdes() {
     <div className="font-poppins bg-[#f7ffe5] min-h-screen">
       <div className="bg-gradient-to-r from-[#9BEC00] to-[#D2FF72] py-16 text-center shadow-sm">
         <div className="max-w-4xl mx-auto px-6">
-          <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 drop-shadow-sm" data-aos="fade-down">
+          <h1
+            className="text-4xl md:text-5xl font-extrabold text-gray-900 drop-shadow-sm"
+            data-aos="fade-down"
+          >
             {t("bumdes.title")}
           </h1>
-          <p className="text-gray-700 mt-4 text-lg leading-relaxed" data-aos="fade-up">
+          <p
+            className="text-gray-700 mt-4 text-lg leading-relaxed"
+            data-aos="fade-up"
+          >
             {t("bumdes.subtitle")}
           </p>
         </div>
@@ -49,7 +55,9 @@ export default function Bumdes() {
 
       <div className="max-w-6xl mx-auto px-4 py-12">
         {products.length === 0 ? (
-          <p className="text-center text-gray-500 text-lg">{t("bumdes.empty")}</p>
+          <p className="text-center text-gray-500 text-lg">
+            {t("bumdes.empty")}
+          </p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
             {products.map((item, idx) => {
@@ -65,7 +73,9 @@ export default function Bumdes() {
                 >
                   <Link to={`/bumdes/${item.product.id}`}>
                     <img
-                      src={`${import.meta.env.VITE_BASE_URL}/products/images/${item.product.featured_image}`}
+                      src={`${
+                        import.meta.env.VITE_NEW_BASE_URL
+                      }/public/images/${item.product.featured_image}`}
                       alt={item.product.title}
                       className="w-full h-56 object-cover rounded-t-xl hover:opacity-95 transition"
                     />
@@ -127,10 +137,17 @@ export default function Bumdes() {
       </div>
 
       <div className="bg-gradient-to-r from-[#9BEC00] to-[#D2FF72] py-12 mt-12 text-center shadow-inner">
-        <h2 className="text-3xl md:text-4xl font-bold text-gray-900" data-aos="zoom-in">
+        <h2
+          className="text-3xl md:text-4xl font-bold text-gray-900"
+          data-aos="zoom-in"
+        >
           🌱 {t("bumdes.footerTitle")}
         </h2>
-        <p className="text-gray-700 mt-3 text-lg max-w-2xl mx-auto" data-aos="zoom-in" data-aos-delay="200">
+        <p
+          className="text-gray-700 mt-3 text-lg max-w-2xl mx-auto"
+          data-aos="zoom-in"
+          data-aos-delay="200"
+        >
           {t("bumdes.footerText")}
         </p>
       </div>

@@ -6,7 +6,7 @@ export class UserApi {
     rememberMe,
     reCaptchaToken
   ) {
-    return await fetch(`${import.meta.env.VITE_BASE_URL}/users/login`, {
+    return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/users/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -30,7 +30,7 @@ export class UserApi {
     rememberMe,
     reCaptchaToken
   ) {
-    return await fetch(`${import.meta.env.VITE_BASE_URL}/users/register`, {
+    return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/users/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -49,7 +49,7 @@ export class UserApi {
   }
   static async forgetPassword(email) {
     return await fetch(
-      `${import.meta.env.VITE_BASE_URL}/users/forgot-password`,
+      `${import.meta.env.VITE_NEW_BASE_URL}/users/forgot-password`,
       {
         method: "POST",
         headers: {
@@ -65,7 +65,7 @@ export class UserApi {
   static async verifyResetToken(token) {
     return await fetch(
       `${
-        import.meta.env.VITE_BASE_URL
+        import.meta.env.VITE_NEW_BASE_URL
       }/users/verify-reset-token?token=${token}`,
       {
         method: "POST",
@@ -78,7 +78,7 @@ export class UserApi {
   }
   static async resetPassword(token, password, confirmPassword) {
     return await fetch(
-      `${import.meta.env.VITE_BASE_URL}/users/reset-password?token=${token}`,
+      `${import.meta.env.VITE_NEW_BASE_URL}/users/reset-password?token=${token}`,
       {
         method: "POST",
         headers: {
@@ -93,7 +93,7 @@ export class UserApi {
     );
   }
   static async getUserProfile() {
-    return await fetch(`${import.meta.env.VITE_BASE_URL}/users/`, {
+    return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/private/users`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -103,8 +103,7 @@ export class UserApi {
     });
   }
   static async updateUser(name, email, password, phone) {
-    console.log();
-    return await fetch(`${import.meta.env.VITE_BASE_URL}/users/`, {
+    return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/private/users/`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -121,7 +120,7 @@ export class UserApi {
   }
   static async createAdmin(body) {
     console.log(body);
-    return await fetch(`${import.meta.env.VITE_BASE_URL}/users/admin`, {
+    return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/admin/users`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -138,7 +137,7 @@ export class UserApi {
     });
   }
   static async deleteUser() {
-    return await fetch(`${import.meta.env.VITE_BASE_URL}/users/`, {
+    return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/private/users`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -150,8 +149,8 @@ export class UserApi {
   static async getAllUsers(page = 1, limit = 10) {
     return await fetch(
       `${
-        import.meta.env.VITE_BASE_URL
-      }/users/admin/user?page=${page}&limit=${limit}`,
+        import.meta.env.VITE_NEW_BASE_URL
+      }/admin/users/user?page=${page}&limit=${limit}`,
       {
         method: "GET",
         headers: {
@@ -164,7 +163,7 @@ export class UserApi {
   }
   static async updateRoleById(userId, role) {
     return await fetch(
-      `${import.meta.env.VITE_BASE_URL}/users/admin/${userId}`,
+      `${import.meta.env.VITE_NEW_BASE_URL}/admin/users/${userId}`,
       {
         method: "PATCH",
         headers: {

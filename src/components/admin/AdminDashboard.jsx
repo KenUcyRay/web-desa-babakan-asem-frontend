@@ -446,7 +446,7 @@ export default function AdminDashboard() {
           data={bumdesPreview.map((p) => ({
             title: p.product.title,
             desc: p.product.description,
-            img: `${import.meta.env.VITE_BASE_URL}/products/images/${
+            img: `${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
               p.product.featured_image
             }`,
           }))}

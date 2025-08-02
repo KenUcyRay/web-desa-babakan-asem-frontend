@@ -190,7 +190,7 @@ export default function DetailProduk() {
 
         <div className="w-full h-96 flex items-center justify-center bg-white rounded-lg mb-6">
           <img
-            src={`${import.meta.env.VITE_BASE_URL}/products/images/${
+            src={`${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
               product.featured_image
             }`}
             alt={product.title}
