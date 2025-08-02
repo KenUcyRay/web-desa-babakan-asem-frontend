@@ -273,8 +273,7 @@ export default function AdminDashboard() {
             <FaChartBar className="text-xl text-white bg-green-500 p-2 rounded-lg" />
           }
           title="Dashboard Desa"
-          description="Statistik lengkap desa"
-          onClick={() => navigate("/admin/dashboard-desa")}
+          onClick={() => navigate("/admin/dashboard-desa")} // ke DashboardDesa.jsx
         />
 
         <SmallMainCard
@@ -282,8 +281,7 @@ export default function AdminDashboard() {
             <FaDatabase className="text-xl text-white bg-blue-500 p-2 rounded-lg" />
           }
           title="Data Master"
-          description="Kelola data dasar desa"
-          onClick={() => navigate("/admin/data-master")}
+          onClick={() => navigate("/admin/data-master")} // ke DataMaster.jsx
         />
 
         <SmallMainCard
@@ -291,13 +289,12 @@ export default function AdminDashboard() {
             <FaFolderOpen className="text-xl text-white bg-purple-500 p-2 rounded-lg" />
           }
           title="Repository Dokumen"
-          description="Arsip dokumen desa"
           onClick={() =>
             window.open(
               "https://drive.google.com/drive/folders/1H6wPE94ywdVsbH3XF7z2UpJ23sKFajr_?usp=sharing",
               "_blank"
             )
-          }
+          } // ganti dengan link Drive
         />
 
         <SmallMainCard
@@ -305,33 +302,30 @@ export default function AdminDashboard() {
             <FaMapMarkedAlt className="text-xl text-white bg-yellow-500 p-2 rounded-lg" />
           }
           title="GIS Desa"
-          description="Peta digital wilayah"
-          onClick={() => navigate("/admin/gis-desa")}
+          onClick={() => navigate("/admin/gis-desa")} // ke GisDesa.jsx
         />
       </div>
 
       {/* - GRID STATISTIK DETAIL */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <DetailStatCard
-          icon={<FaComments className="text-2xl text-orange-500" />}
+          icon={<FaComments className="text-orange-500" />}
           title={t("adminDashboard.statistics.messages")}
           count={messageCount}
           detail="Pesan masuk"
           onClick={() => navigate("/admin/manage-pesan")}
-          color="bg-yellow-100"
         />
 
         <DetailStatCard
-          icon={<FaUsers className="text-2xl text-purple-500" />}
+          icon={<FaUsers className="text-purple-500" />}
           title={t("adminDashboard.statistics.users")}
           count={userCount}
           detail="Pengguna terdaftar"
           onClick={() => navigate("/admin/manage-user")}
-          color="bg-purple-100"
         />
 
         <DetailStatCard
-          icon={<FaSitemap className="text-2xl text-red-500" />}
+          icon={<FaSitemap className="text-red-500" />}
           title="Struktur Desa"
           count={strukturPreview.length}
           detail="Pengurus desa"
@@ -340,12 +334,11 @@ export default function AdminDashboard() {
         />
 
         <DetailStatCard
-          icon={<FaStore className="text-2xl text-teal-500" />}
+          icon={<FaStore className="text-teal-500" />}
           title="BUMDes"
           count={bumdesPreview.length}
           detail="Produk unggulan"
           onClick={() => navigate("/admin/manage-bumdes")}
-          color="bg-teal-50"
         />
       </div>
 
@@ -414,18 +407,29 @@ export default function AdminDashboard() {
           description="Pengurus dan struktur organisasi desa"
         />
 
-        <PreviewSection
-          title="Program Kerja Desa"
-          icon={<FaTasks className="text-green-500" />}
-          data={programKerjaPreview.map((p) => ({
-            title: p.title || p.judul || p.name,
-            desc: p.description || p.deskripsi || p.desc,
-            status: p.status || "Aktif",
-          }))}
-          onClick={() => navigate("/admin/manage-program")}
-          showStatus={true}
-          description="Program dan kegiatan desa"
-        />
+      <PreviewSection
+        title="Program Kerja Desa"
+        icon={<FaTasks />}
+        data={programKerjaPreview.map((p) => ({
+          title: p.title || p.judul || p.name,
+          desc: p.description || p.deskripsi || p.desc,
+          status: p.status || "Aktif",
+        }))}
+        onClick={() => navigate("/admin/manage-program")}
+        showStatus={true}
+      />
+
+      <PreviewSection
+        title="Repository Dokumen"
+        icon={<FaFolderOpen />}
+        data={dokumenPreview.map((d) => ({
+          title: d.nama_dokumen,
+          desc: d.jenis_dokumen,
+          link: d.link,
+        }))}
+        onClick={() => navigate("/admin/repository")}
+        showLink={true}
+      />
 
         <PreviewSection
           title="Data Penduduk"
@@ -454,16 +458,15 @@ export default function AdminDashboard() {
           description="Produk unggulan BUMDes"
         />
 
-        <PreviewSection
-          title={t("adminDashboard.preview.administration.title")}
-          icon={<FaClipboardList className="text-red-500" />}
-          data={administrasiPreview.map((a) => ({
-            title: a.name,
-            desc: a.type,
-          }))}
-          onClick={() => navigate("/admin/manage-administrasi")}
-          description="Layanan administrasi warga"
-        />
+      <PreviewSection
+        title={t("adminDashboard.preview.administration.title")}
+        icon={<FaClipboardList />}
+        data={administrasiPreview.map((a) => ({
+          title: a.name,
+          desc: a.type,
+        }))}
+        onClick={() => navigate("/admin/manage-administrasi")}
+      />
 
         <PreviewSection
           title={t("adminDashboard.preview.gallery.title")}
@@ -501,18 +504,16 @@ function StatItem({ icon, title, value, onClick }) {
 // Komponen Log Aktivitas (diperbarui)
 function ActivityLog({ activities, formatTime }) {
   return (
-    <div className="bg-white rounded-xl shadow-md p-5 h-full">
+    <div className="bg-white rounded-xl shadow-md p-4">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
           <FaClock className="text-gray-500" />
-          Log Aktivitas Terbaru
+          Log Aktivitas
         </h3>
-        <button className="text-sm text-blue-600 hover:text-blue-800 font-medium">
-          Lihat Semua
-        </button>
+        <span className="text-xs text-gray-500">Hari ini</span>
       </div>
 
-      <div className="space-y-4 max-h-[420px] overflow-y-auto pr-2">
+      <div className="space-y-3 max-h-80 overflow-y-auto">
         {activities.map((activity) => {
           const IconComponent = activity.icon;
           const actionColors = {
@@ -540,28 +541,29 @@ function ActivityLog({ activities, formatTime }) {
                   {activity.description}
                 </p>
                 <div className="flex items-center gap-2 mt-1">
-                  <span className="text-xs px-2 py-1 bg-gray-100 rounded-md text-gray-600">
+                  <span className="text-xs text-gray-500">
                     {activity.module}
                   </span>
                   <span className="text-xs text-gray-500">{activity.user}</span>
                 </div>
               </div>
-              <div className="text-xs text-gray-400 whitespace-nowrap">
-                {formatTime(activity.timestamp)}
-              </div>
             </div>
           );
         })}
       </div>
+
+      <button className="w-full mt-4 text-sm text-blue-600 hover:text-blue-800 font-medium">
+        Lihat Semua Aktivitas
+      </button>
     </div>
   );
 }
 
-// - KARTU UTAMA KECIL (diperbarui)
-function SmallMainCard({ icon, title, description, onClick }) {
+// - KARTU UTAMA KECIL (4 di atas)
+function SmallMainCard({ icon, title, onClick }) {
   return (
     <div
-      className="bg-white p-4 rounded-lg shadow hover:shadow-md transition cursor-pointer flex flex-col h-full"
+      className="bg-white p-4 rounded-lg shadow hover:shadow-md transition cursor-pointer flex items-center gap-3"
       onClick={onClick}
     >
       <div className="mb-3">{icon}</div>
@@ -571,8 +573,8 @@ function SmallMainCard({ icon, title, description, onClick }) {
   );
 }
 
-// - KARTU STATISTIK DENGAN DETAIL (diperbarui)
-function DetailStatCard({ icon, title, count, detail, trend, onClick, color }) {
+// - KARTU STATISTIK DENGAN DETAIL
+function DetailStatCard({ icon, title, count, detail, onClick }) {
   return (
     <div
       className={`p-5 rounded-xl shadow hover:shadow-lg transition cursor-pointer ${color} border-l-4 ${color.replace(
@@ -583,22 +585,17 @@ function DetailStatCard({ icon, title, count, detail, trend, onClick, color }) {
     >
       <div className="flex items-start justify-between">
         <div>
-          <div className="mb-3">{icon}</div>
+          <div className="text-3xl mb-2 text-gray-500">{icon}</div>
           <h2 className="text-lg font-semibold text-gray-700">{title}</h2>
         </div>
         <p className="text-3xl font-bold text-gray-900">{count}</p>
       </div>
-      <div className="flex justify-between items-end mt-4">
-        <p className="text-sm text-gray-600">{detail}</p>
-        <span className="text-xs bg-white px-2 py-1 rounded-full text-gray-700 shadow-sm">
-          {trend}
-        </span>
-      </div>
+      <p className="text-sm text-gray-500 mt-3">{detail}</p>
     </div>
   );
 }
 
-// - PREVIEW SECTION LIST (diperbarui)
+// - PREVIEW SECTION LIST YANG LEBIH FLEKSIBEL
 function PreviewSection({
   title,
   icon,
@@ -612,19 +609,16 @@ function PreviewSection({
   const { t } = useTranslation();
 
   return (
-    <div className="bg-white rounded-xl shadow-md p-5 h-full flex flex-col">
-      <div className="flex justify-between items-start mb-3">
-        <div>
-          <h2 className="text-xl font-semibold flex items-center gap-2 mb-1">
-            {icon} {title}
-          </h2>
-          <p className="text-sm text-gray-600">{description}</p>
-        </div>
+    <div className="bg-white rounded-xl shadow-md p-5 mb-6">
+      <div className="flex justify-between items-center mb-3">
+        <h2 className="text-xl font-semibold flex items-center gap-2">
+          {icon} {title}
+        </h2>
         <button
           onClick={onClick}
-          className="text-blue-600 font-medium hover:text-blue-800 flex items-center text-sm"
+          className="text-green-600 font-medium hover:underline flex items-center"
         >
-          Kelola <span className="ml-1">→</span>
+          Lihat Semua <span className="ml-1">➜</span>
         </button>
       </div>
 
@@ -673,38 +667,37 @@ function PreviewSection({
                     </>
                   )}
 
-                  {item.rw && (
-                    <p className="text-xs text-gray-500 mt-1">RW: {item.rw}</p>
-                  )}
+                {item.rw && (
+                  <p className="text-xs text-gray-400 mt-1">RW: {item.rw}</p>
+                )}
 
-                  {item.status && showStatus && (
-                    <span
-                      className={`inline-block text-xs px-2 py-1 rounded-full mt-1 ${
-                        item.status === "Berjalan" || item.status === "Aktif"
-                          ? "bg-yellow-100 text-yellow-800"
-                          : item.status === "Selesai"
-                          ? "bg-green-100 text-green-800"
-                          : "bg-blue-100 text-blue-800"
-                      }`}
-                    >
-                      {item.status}
-                    </span>
-                  )}
-                </div>
-
-                {showLink && item.link && (
-                  <a
-                    href={item.link}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-blue-500 hover:underline text-sm whitespace-nowrap flex items-center"
+                {item.status && showStatus && (
+                  <span
+                    className={`text-xs px-2 py-1 rounded-full mt-1 ${
+                      item.status === "Berjalan"
+                        ? "bg-yellow-100 text-yellow-800"
+                        : item.status === "Selesai"
+                        ? "bg-green-100 text-green-800"
+                        : "bg-blue-100 text-blue-800"
+                    }`}
                   >
-                    <FaEye className="mr-1" /> Lihat
-                  </a>
+                    {item.status}
+                  </span>
                 )}
               </div>
-            ))}
-          </div>
+
+              {showLink && item.link && (
+                <a
+                  href={item.link}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-blue-500 hover:underline text-sm whitespace-nowrap"
+                >
+                  Lihat
+                </a>
+              )}
+            </div>
+          ))
         )}
       </div>
 
