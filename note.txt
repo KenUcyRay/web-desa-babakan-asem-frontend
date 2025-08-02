@@ -1,0 +1,29 @@
+Jangan lupa hapus comment untuk recaptcha
+
+// jadi kalo mau kita usernya bisa bagi-bagi
+// pembuat pkk
+// pembuat bumdes
+// pembuat karang taruna
+// pembuat dpd
+// pembuat bpd
+
+//untuk organisasi pemerintah sama admin
+
+// yang bisa buat berita cuman kontributor
+// yang bisa buat agenda cuman kontributor regular
+
+
+//Message done
+//Administrasi done
+//Galeri Done
+//News Done
+//Program PKK Done
+//Organization Done
+
+//Agenda Done
+
+//Product Done
+//Comment Done
+
+//Bug
+ada bug saat tokennya basi gk bisa logout!!

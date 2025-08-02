@@ -1,0 +1,469 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+//fix i think
+
+model Message {
+  id           String   @id @default(uuid())
+  name         String   @db.VarChar(255)
+  email        String?  @db.VarChar(255)
+  phone_number String?  @db.VarChar(20)
+  message      String   @db.Text()
+  is_read      Boolean  @default(false)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  @@map("messages")
+}
+
+model Pengantar {
+  id         String        @id @default(uuid())
+  name       String
+  nik        String
+  type       PengantarType
+  keterangan String
+  is_pending Boolean       @default(true)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  @@map("pengantar")
+}
+
+enum PengantarType {
+  KTP
+  KK
+  SKCK
+  LAINNYA
+}
+
+model Galeri {
+  id         String   @id @default(uuid())
+  image      String   @db.VarChar(255)
+  title      String   @db.VarChar(255)
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
+
+  @@map("galeri")
+}
+
+model News {
+  id             String    @id @default(uuid())
+  userId         String
+  title          String    @db.VarChar(255)
+  content        String    @db.Text
+  featured_image String    @db.VarChar(255)
+  view_count     Int       @default(0)
+  is_published   Boolean   @default(false)
+  published_at   DateTime?
+  created_at     DateTime  @default(now())
+  updated_at     DateTime  @updatedAt
+
+  @@map("news")
+}
+
+model Program {
+  id             String   @id @default(uuid())
+  title          String   @db.VarChar(255)
+  description    String   @db.Text
+  featured_image String   @db.VarChar(255)
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+
+  @@map("programs")
+}
+
+model Member {
+  id                String       @id @default(uuid())
+  name              String       @db.VarChar(255)
+  position          String       @db.VarChar(255)
+  profile_photo     String       @db.VarChar(255)
+  term_start        Int
+  term_end          Int
+  is_term           Boolean      @default(false)
+  important_level   Int          @default(1)
+  organization_type Organization
+
+  @@map("members")
+}
+
+enum Organization {
+  PEMERINTAH
+  PKK
+  KARANG_TARUNA
+  DPD
+  BPD
+}
+
+model Idm {
+  id         String   @id @default(uuid())
+  year       Int
+  skor       Float
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("idms")
+}
+
+model ExtraIdm {
+  id          String     @id @default(uuid())
+  status_desa StatusDesa
+  sosial      Float
+  ekonomi     Float
+  lingkungan  Float
+  created_at  DateTime   @default(now())
+  updated_at  DateTime   @updatedAt
+
+  @@map("extra_idms")
+}
+
+enum StatusDesa {
+  MAJU
+  BERKEMBANG
+  MANDIRI
+  TERTINGGAL
+  SANGAT_TERTINGGAL
+}
+
+model SocialAssistance {
+  id         String   @id @default(uuid())
+  name       String
+  amount     Int
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("social_assistances")
+}
+
+model Sdgs {
+  id         String   @id @default(uuid())
+  name       String
+  progress   Int
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("sdgs")
+}
+
+model Agenda {
+  id             String     @id @default(uuid())
+  userId         String
+  title          String     @db.VarChar(255)
+  content        String     @db.Text
+  featured_image String     @db.VarChar(255)
+  location       String     @db.VarChar(255)
+  start_time     DateTime
+  end_time       DateTime
+  view_count     Int        @default(0)
+  is_published   Boolean    @default(false)
+  published_at   DateTime?
+  type           AgendaType @default(REGULAR)
+  created_at     DateTime   @default(now())
+  updated_at     DateTime   @updatedAt
+
+  @@map("agenda")
+}
+
+enum AgendaType {
+  REGULAR
+  PKK
+  KARANG_TARUNA
+  DPD
+  BPD
+}
+
+model Product {
+  id             String   @id @default(uuid())
+  user_id        String
+  category_id    String
+  title          String   @db.VarChar(255)
+  description    String   @db.Text
+  price          Float
+  featured_image String   @db.VarChar(255)
+  link_whatsapp  String   @db.VarChar(255)
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+
+  category Category @relation(fields: [category_id], references: [id], onDelete: Cascade)
+  ratings  Rating[]
+
+  @@map("products")
+}
+
+model Category {
+  id         String   @id @default(uuid())
+  name       String   @db.VarChar(255)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  products Product[]
+
+  @@map("categories")
+}
+
+model Rating {
+  id         String   @id @default(uuid())
+  user_id    String
+  product_id String
+  rating     Int
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  product Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
+
+  @@map("ratings")
+}
+
+model Comment {
+  id          String     @id @default(uuid())
+  user_id     String
+  target_id   String
+  target_type TargetType
+  content     String     @db.Text()
+  created_at  DateTime   @default(now())
+  updated_at  DateTime   @updatedAt
+
+  @@map("comments")
+}
+
+enum TargetType {
+  NEWS
+  AGENDA
+  PRODUCT
+}
+
+model User {
+  id                 String    @id @default(uuid())
+  name               String    @db.VarChar(255)
+  phone_number       String?   @db.VarChar(20)
+  email              String?   @db.VarChar(255)
+  password           String    @db.VarChar(255)
+  role               Role
+  reset_token        String?   @db.VarChar(500)
+  reset_token_expiry DateTime?
+  created_at         DateTime  @default(now())
+  updated_at         DateTime  @updatedAt
+
+  @@map("users")
+}
+
+enum Role {
+  REGULAR
+  ADMIN
+  PKK
+  BUMDES
+  KARANG_TARUNA
+  BPD
+  // CONTRIBUTOR
+}
+
+// yang atas migrasi dari microservice
+
+model VillageWorkProgram {
+  id            String                   @id @default(uuid())
+  description   String                   @db.Text
+  date          DateTime                 @db.Date
+  status        VillageWorkProgramStatus
+  justification String                   @db.Text
+  budget_amount Decimal                  @db.Decimal(15, 2)
+  created_at    DateTime                 @default(now())
+  updated_at    DateTime                 @updatedAt
+
+  @@map("village_work_programs")
+}
+
+enum VillageWorkProgramStatus {
+  PLANNED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+model VillageAchievement {
+  id             String   @id @default(uuid())
+  title          String   @db.VarChar(255)
+  description    String   @db.Text
+  date           DateTime @db.Date
+  featured_image String   @db.VarChar(255)
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+
+  @@map("village_achievements")
+}
+
+model Resident {
+  id            String       @id @default(uuid())
+  key           String       @unique @db.VarChar(255)
+  value         Int          @db.Int
+  resident_type ResidentType
+  created_at    DateTime     @default(now())
+  updated_at    DateTime     @updatedAt
+
+  @@map("resident_statistics")
+}
+
+enum ResidentType {
+  GENDER
+  PERNIKAHAN
+  AGAMA
+  USIA
+  KEPALA_KELUARGA
+  PERKERJAAN
+  PENDIDIKAN
+  WAJIB_PILIH
+  DUSUN
+  ANAK_ANAK
+}
+
+model Apb {
+  id        String   @id @default(uuid())
+  bidang    String
+  anggaran  Decimal  @db.Decimal(15, 2)
+  realisasi Decimal  @db.Decimal(15, 2)
+  tahun     DateTime @db.Date
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("apb")
+}
+
+//
+
+enum OrganizationCategory {
+  REGULAR
+  PKK
+  KARANG_TARUNA
+  DPD
+  BPD
+}
+
+enum OrganizationType {
+  GOVERNMENT
+  PKK
+  KARANG_TARUNA
+  DPD
+  BPD
+}
+
+enum OnlineRequestType {
+  LETTER_TRACKING
+  SERVICE_STATUS_CHECK
+  SERVICE_REQUEST
+}
+
+enum PublicServiceType {
+  COMPLAINT
+  REQUEST
+  OTHER
+}
+
+enum LetterType {
+  ID_CARD
+  FAMILY_CARD
+  POLICE_CLEARANCE
+  OTHER
+}
+
+enum VillageStatus {
+  ADVANCED
+  DEVELOPING
+  INDEPENDENT
+  UNDERDEVELOPED
+  VERY_UNDERDEVELOPED
+}
+
+model Gallery {
+  id         String               @id @default(uuid())
+  image      String               @db.VarChar(255)
+  title      String               @db.VarChar(255)
+  type       OrganizationCategory
+  created_at DateTime             @default(now())
+  updated_at DateTime             @default(now()) @updatedAt
+
+  @@map("galleries")
+}
+
+model ProgramPkk {
+  id             String   @id @default(uuid())
+  title          String   @db.VarChar(255)
+  description    String   @db.Text
+  featured_image String   @db.VarChar(255)
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+
+  @@map("program_pkks")
+}
+
+model OnlineRequest {
+  id           String            @id @default(uuid())
+  name         String
+  email        String
+  phone_number String
+  type         OnlineRequestType
+  is_accept    Boolean           @default(false)
+  created_at   DateTime          @default(now())
+  updated_at   DateTime          @updatedAt
+
+  @@map("online_requests")
+}
+
+model PublicService {
+  id         String            @id @default(uuid())
+  name       String
+  email      String
+  message    String
+  type       PublicServiceType
+  is_accept  Boolean           @default(false)
+  created_at DateTime          @default(now())
+  updated_at DateTime          @updatedAt
+
+  @@map("public_services")
+}
+
+model IdmIndex {
+  id         String   @id @default(uuid())
+  year       Int
+  score      Float
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("idm_indexes")
+}
+
+model IdmDetail {
+  id             String        @id @default(uuid())
+  village_status VillageStatus
+  social         Float
+  economy        Float
+  environment    Float
+  created_at     DateTime      @default(now())
+  updated_at     DateTime      @updatedAt
+
+  @@map("idm_details")
+}
+
+model SocialAid {
+  id         String   @id @default(uuid())
+  name       String
+  amount     Int
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("social_aids")
+}
+
+model SdgsGoal {
+  id         String   @id @default(uuid())
+  name       String
+  progress   Int
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("sdgs_goals")
+}

@@ -1,0 +1,12 @@
+{
+  "user": {
+    "cannot_login": "Email, nomor telepon, atau kata sandi salah"
+  },
+  "zodErrors":{
+    "required": "{{field}} harus diisi",
+    "invalid_type": "{{field}} harus berupa {{type}}",
+    "min_length": "{{field}} harus memiliki setidaknya {{min}} karakter",
+    "max_length": "{{field}} tidak boleh lebih dari {{max}} karakter",
+    "email": "{{field}} harus berupa alamat email yang valid"
+  }
+}
