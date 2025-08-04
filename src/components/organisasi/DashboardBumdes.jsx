@@ -7,6 +7,7 @@ import Pagination from "../ui/Pagination";
 import { FaPlus, FaSave, FaTimes, FaEdit, FaTrash } from "react-icons/fa";
 
 export default function ManageBumdes() {
+  const { t, i18n } = useTranslation();
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
 
@@ -29,7 +30,7 @@ export default function ManageBumdes() {
   const [categoryName, setCategoryName] = useState("");
 
   const fetchProducts = async () => {
-    const response = await ProductApi.getOwnProducts(currentPage, 6);
+    const response = await ProductApi.getOwnProducts(currentPage, 6, i18n.language);
     if (!response.ok) {
       alertError("Gagal mengambil produk.");
       return;
@@ -41,7 +42,7 @@ export default function ManageBumdes() {
   };
 
   const fetchCategories = async () => {
-    const response = await CategoryApi.getCategories();
+    const response = await CategoryApi.getCategories(i18n.language);
     if (!response.ok) {
       alertError("Gagal mengambil kategori.");
       return;
@@ -53,7 +54,7 @@ export default function ManageBumdes() {
   useEffect(() => {
     fetchProducts();
     fetchCategories();
-  }, [currentPage]);
+  }, [currentPage, i18n.language]);
 
   const resetForm = () => {
     setTitle("");
@@ -84,7 +85,7 @@ export default function ManageBumdes() {
 
     if (editingId) {
       if (!(await alertConfirm("Yakin ingin mengedit produk ini?"))) return;
-      const response = await ProductApi.updateProduct(editingId, rawData);
+      const response = await ProductApi.updateProduct(editingId, rawData, i18n.language);
       const body = await response.json();
       if (!response.ok) {
         alertError(Helper.parseError(body));
@@ -97,7 +98,7 @@ export default function ManageBumdes() {
       return;
     }
 
-    const response = await ProductApi.createProduct(rawData);
+    const response = await ProductApi.createProduct(rawData, i18n.language);
     const body = await response.json();
     if (response.ok) {
       await alertSuccess("Produk berhasil ditambahkan!");
@@ -123,7 +124,7 @@ export default function ManageBumdes() {
 
   const handleDelete = async (id) => {
     if (await alertConfirm("Yakin hapus produk ini?")) {
-      const response = await ProductApi.deleteProduct(id);
+      const response = await ProductApi.deleteProduct(id, i18n.language);
       if (!response.ok) {
         const body = await response.json();
         alertError(`Gagal menghapus produk. ${body.error}`);
@@ -143,7 +144,8 @@ export default function ManageBumdes() {
       if (!(await alertConfirm("Yakin ingin mengedit kategori ini?"))) return;
       const response = await CategoryApi.updateCategory(
         editingCategoryId,
-        rawData
+        rawData,
+        i18n.language
       );
       const body = await response.json();
       if (!response.ok) {
@@ -157,7 +159,7 @@ export default function ManageBumdes() {
       return;
     }
 
-    const response = await CategoryApi.addCategory(rawData);
+    const response = await CategoryApi.addCategory(rawData, i18n.language);
     const body = await response.json();
     if (response.ok) {
       await alertSuccess("Kategori berhasil ditambahkan!");
@@ -179,7 +181,7 @@ export default function ManageBumdes() {
 
   const handleDeleteCategory = async (id) => {
     if (await alertConfirm("Yakin hapus kategori ini?")) {
-      const response = await CategoryApi.deleteCategory(id);
+      const response = await CategoryApi.deleteCategory(id, i18n.language);
       if (!response.ok) {
         const body = await response.json();
         alertError(`Gagal menghapus kategori. ${body.error}`);
@@ -397,7 +399,7 @@ export default function ManageBumdes() {
                 src={
                   featuredImage
                     ? URL.createObjectURL(featuredImage)
-                    : `${import.meta.env.VITE_BASE_URL}/products/images/${
+                    : `${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
                         products.find((p) => p.product.id === editingId)
                           ?.product?.featured_image
                       }`
@@ -438,7 +440,7 @@ export default function ManageBumdes() {
             className="bg-white rounded-xl shadow-md border hover:shadow-lg transition"
           >
             <img
-              src={`${import.meta.env.VITE_BASE_URL}/products/images/${
+              src={`${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
                 item.product.featured_image
               }`}
               alt={item.product.title}

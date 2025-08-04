@@ -1,26 +1,28 @@
 export class ProgramApi {
-  static async getPrograms() {
+  static async getPrograms(language) {
     return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/programs`, {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
+        "Accept-Language": language,
       },
     });
   }
-  static async deleteProgram(id) {
+  static async deleteProgram(id, language) {
     return await fetch(
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/programs/${id}`,
       {
         method: "DELETE",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
+          "Accept-Language": language,
         },
       }
     );
   }
-  static async createProgram(data) {
+  static async createProgram(data, language) {
     const formData = new FormData();
     formData.append("title", data.title);
     formData.append("description", data.description);
@@ -29,13 +31,14 @@ export class ProgramApi {
     return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/admin/programs/`, {
       method: "POST",
       body: formData,
+      credentials: "include",
       headers: {
-        Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
+        "Accept-Language": language,
       },
     });
   }
 
-  static async updateProgram(id, data) {
+  static async updateProgram(id, data, language) {
     const formData = new FormData();
 
     formData.append("title", data.title ?? null);
@@ -47,8 +50,9 @@ export class ProgramApi {
       {
         method: "PATCH",
         body: formData,
+        credentials: "include",
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
+          "Accept-Language": language,
         },
       }
     );

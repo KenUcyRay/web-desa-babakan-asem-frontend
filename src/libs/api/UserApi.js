@@ -1,4 +1,24 @@
 export class UserApi {
+  static async register(body, language) {
+    return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/users/register`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "Accept-Language": language,
+      },
+      body: JSON.stringify({
+        name: body.name,
+        email: body.email === "" ? undefined : body.email,
+        phone_number: body.phone_number === "" ? undefined : body.phone_number,
+        password: body.password,
+        confirm_password: body.confirmPassword,
+        remember_me: body.rememberMe,
+        recaptcha_token: body.reCaptchaToken,
+      }),
+    });
+  }
   static async login(body, language) {
     return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/users/login`, {
       method: "POST",
@@ -17,17 +37,18 @@ export class UserApi {
       }),
     });
   }
-  static async profile() {
+  static async profile(language) {
     return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/private/users`, {
       method: "GET",
       credentials: "include",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
+        "Accept-Language": language,
       },
     });
   }
-  static async logout() {
+  static async logout(language) {
     return await fetch(
       `${import.meta.env.VITE_NEW_BASE_URL}/private/users/logout`,
       {
@@ -36,41 +57,13 @@ export class UserApi {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
+          "Accept-Language": language,
         },
       }
     );
   }
 
-  static async register(
-    name,
-    email,
-    phone_number,
-    password,
-    confirmPassword,
-    rememberMe,
-    reCaptchaToken,
-    language
-  ) {
-    return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/users/register`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "Accept-Language": language,
-      },
-      body: JSON.stringify({
-        name: name,
-        email: email === "" ? undefined : email,
-        phone_number: phone_number === "" ? undefined : phone_number,
-        password: password,
-        confirm_password: confirmPassword,
-        remember_me: rememberMe,
-        recaptcha_token: reCaptchaToken,
-      }),
-    });
-  }
-  static async forgetPassword(email) {
+  static async forgetPassword(email, language) {
     return await fetch(
       `${import.meta.env.VITE_NEW_BASE_URL}/users/forgot-password`,
       {
@@ -78,6 +71,7 @@ export class UserApi {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
+          "Accept-Language": language,
         },
         body: JSON.stringify({
           email: email,
@@ -85,7 +79,7 @@ export class UserApi {
       }
     );
   }
-  static async verifyResetToken(token) {
+  static async verifyResetToken(token, language) {
     return await fetch(
       `${
         import.meta.env.VITE_NEW_BASE_URL
@@ -95,11 +89,12 @@ export class UserApi {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
+          "Accept-Language": language,
         },
       }
     );
   }
-  static async resetPassword(token, password, confirmPassword) {
+  static async resetPassword(token, password, confirmPassword, language) {
     return await fetch(
       `${
         import.meta.env.VITE_NEW_BASE_URL
@@ -109,6 +104,7 @@ export class UserApi {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
+          "Accept-Language": language,
         },
         body: JSON.stringify({
           password: password,
@@ -118,13 +114,14 @@ export class UserApi {
     );
   }
 
-  static async updateUser(name, email, password, phone) {
-    return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/users/`, {
+  static async updateUser(name, email, password, phone, language) {
+    return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/private/users`, {
       method: "PATCH",
       credentials: "include",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
+        "Accept-Language": language,
       },
       body: JSON.stringify({
         name: name,
@@ -134,35 +131,36 @@ export class UserApi {
       }),
     });
   }
-  static async createAdmin(body) {
-    console.log(body);
-    return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/users/admin`, {
+  static async createAdmin(body, language) {
+    return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/admin/users`, {
       method: "POST",
       credentials: "include",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
+        "Accept-Language": language,
       },
       body: JSON.stringify({
         name: body.name,
         email: body.email,
         password: body.password,
         confirm_password: body.confirm_password,
-        role: body.role || "ADMIN",
+        role: body.role,
       }),
     });
   }
-  static async deleteUser() {
-    return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/users/`, {
+  static async deleteUser(language) {
+    return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/private/users/`, {
       method: "DELETE",
       credentials: "include",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
+        "Accept-Language": language,
       },
     });
   }
-  static async getAllUsers(page = 1, limit = 10) {
+  static async getAllUsers(page = 1, limit = 10, language) {
     return await fetch(
       `${
         import.meta.env.VITE_NEW_BASE_URL
@@ -173,11 +171,12 @@ export class UserApi {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
+          "Accept-Language": language,
         },
       }
     );
   }
-  static async updateRoleById(userId, role) {
+  static async updateRoleById(userId, role, language) {
     return await fetch(
       `${import.meta.env.VITE_NEW_BASE_URL}/users/admin/${userId}`,
       {
@@ -186,6 +185,7 @@ export class UserApi {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
+          "Accept-Language": language,
         },
         body: JSON.stringify({
           role: role,

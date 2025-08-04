@@ -10,17 +10,17 @@ import { useTranslation } from "react-i18next";
 export default function SidebarInfo() {
   const [news, setNews] = useState([]);
   const [agenda, setAgenda] = useState([]);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const fetchNews = async () => {
-    const response = await NewsApi.getNews(1, 4);
+    const response = await NewsApi.getNews(1, 4, i18n.language);
     if (!response.ok) return;
     const responseBody = await response.json();
     setNews(responseBody.news);
   };
 
   const fetchAgenda = async () => {
-    const response = await AgendaApi.getAgenda(1, 4);
+    const response = await AgendaApi.getAgenda(1, 4, "", i18n.language);
     if (response.status === 200) {
       const responseBody = await response.json();
       setAgenda(responseBody.agenda);
@@ -35,7 +35,7 @@ export default function SidebarInfo() {
 
   useEffect(() => {
     fetchAll();
-  }, []);
+  }, [i18n.language]);
 
   return (
     <div className="space-y-6">

@@ -12,10 +12,14 @@ export default function Bumdes() {
   const [products, setProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const fetchProduct = async () => {
-    const response = await ProductApi.getProducts(currentPage);
+    const response = await ProductApi.getProducts(
+      currentPage,
+      10,
+      i18n.language
+    );
     if (response.status === 200) {
       const responseBody = await response.json();
       setTotalPages(responseBody.total_page);
@@ -28,7 +32,7 @@ export default function Bumdes() {
 
   useEffect(() => {
     fetchProduct();
-  }, [currentPage]);
+  }, [currentPage, i18n.language]);
 
   useEffect(() => {
     AOS.init({ duration: 700, once: true });

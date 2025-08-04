@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
 import { FiUsers } from "react-icons/fi";
+import { useTranslation } from "react-i18next";
 import Pagination from "../ui/Pagination";
 import { MemberApi } from "../../libs/api/MemberApi";
 import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 
 export default function ManageAnggota() {
+  const { t, i18n } = useTranslation();
   const [members, setMembers] = useState([]);
   const [kategori, setKategori] = useState("Semua");
   const kategoriList = [
@@ -39,7 +41,8 @@ export default function ManageAnggota() {
     const response = await MemberApi.getAllMembers(
       kategoriValue,
       currentPage,
-      9
+      9,
+      i18n.language
     );
     if (!response.ok) {
       alertError("Gagal mengambil data anggota.");
@@ -53,7 +56,7 @@ export default function ManageAnggota() {
 
   useEffect(() => {
     fetchMembers();
-  }, [currentPage, kategori]);
+  }, [currentPage, kategori, i18n.language]);
 
   const handleAdd = () => {
     setEditingId(null);
@@ -89,7 +92,7 @@ export default function ManageAnggota() {
 
   const handleDelete = async (id) => {
     if (!(await alertConfirm("Yakin ingin menghapus anggota ini?"))) return;
-    const response = await MemberApi.deleteMember(id);
+    const response = await MemberApi.deleteMember(id, i18n.language);
     if (!response.ok) {
       alertError("Gagal menghapus anggota.");
       return;
@@ -102,8 +105,8 @@ export default function ManageAnggota() {
     e.preventDefault();
 
     const apiCall = editingId
-      ? MemberApi.updateMember(editingId, formData)
-      : MemberApi.createMember(formData);
+      ? MemberApi.updateMember(editingId, formData, i18n.language)
+      : MemberApi.createMember(formData, i18n.language);
 
     const response = await apiCall;
     if (!response.ok) {

@@ -6,7 +6,7 @@ import { UserApi } from "../../libs/api/UserApi";
 import { useTranslation, Trans } from "react-i18next";
 
 export default function ResetPassword() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
@@ -20,7 +20,8 @@ export default function ResetPassword() {
     const response = await UserApi.resetPassword(
       token,
       password,
-      confirmPassword
+      confirmPassword,
+      i18n.language
     );
 
     if (response.status === 204) {
@@ -35,7 +36,7 @@ export default function ResetPassword() {
   };
 
   const verifyToken = async () => {
-    const response = await UserApi.verifyResetToken(token);
+    const response = await UserApi.verifyResetToken(token, i18n.language);
     if (!response.ok) {
       await alertError(t("resetPassword.tokenInvalid"));
       navigate("/forgot-password");
@@ -44,7 +45,7 @@ export default function ResetPassword() {
 
   useEffect(() => {
     verifyToken();
-  }, []);
+  }, [i18n.language]);
 
   return (
     <div className="flex min-h-screen font-poppins">

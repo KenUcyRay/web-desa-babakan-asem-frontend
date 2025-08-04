@@ -40,12 +40,13 @@ import { useTranslation } from "react-i18next";
 class ApbApi {
   static baseURL = import.meta.env.VITE_NEW_BASE_URL || "http://localhost:8000";
 
-  static async getApbData() {
+  static async getApbData(language = "id") {
     try {
       const response = await fetch(`${this.baseURL}/apb`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
+          "Accept-Language": language,
           // Add authorization header if needed
           // 'Authorization': `Bearer ${token}`
         },
@@ -120,23 +121,35 @@ export default function Home() {
   ];
 
   const fetchProduct = async () => {
-    const response = await ProductApi.getProducts(1, 3);
-    if (!response.ok) return;
-    const responseBody = await response.json();
-    setProducts(responseBody.products);
+    try {
+      const response = await ProductApi.getProducts(1, 3, i18n.language);
+      if (!response.ok) return;
+      const responseBody = await response.json();
+      setProducts(responseBody.products);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      setProducts([]);
+    }
   };
 
   const fetchNews = async () => {
-    const response = await NewsApi.getNews(1, 3);
-    if (!response.ok) return;
-    const responseBody = await response.json();
-    setNews(responseBody.news);
+    try {
+      const response = await NewsApi.getNews(1, 3, i18n.language);
+      if (!response.ok) return;
+      const responseBody = await response.json();
+      setNews(responseBody.news);
+    } catch (error) {
+      console.error("Error fetching news:", error);
+      setNews([]);
+    }
   };
 
   const fetchVillageWorkPrograms = async () => {
     try {
       setIsLoadingWorkPrograms(true);
-      const response = await VillageWorkProgramApi.getVillageWorkPrograms();
+      const response = await VillageWorkProgramApi.getVillageWorkPrograms(
+        i18n.language
+      );
 
       if (response.status === 200) {
         const responseBody = await response.json();
@@ -159,7 +172,7 @@ export default function Home() {
   const fetchApbData = async () => {
     try {
       setIsLoadingApb(true);
-      const response = await ApbApi.getApbData();
+      const response = await ApbApi.getApbData(i18n.language);
 
       if (response.status === 200) {
         const responseBody = await response.json();
@@ -168,8 +181,8 @@ export default function Home() {
         const transformedData =
           responseBody.data?.map((item) => ({
             bidang: item.bidang || "Unknown",
-            anggaran: parseInt(item.anggaran) || 0,
-            realisasi: parseInt(item.realisasi) || 0,
+            anggaran: parseInt(item.anggaran) || 0, // Keep original value from API
+            realisasi: parseInt(item.realisasi) || 0, // Keep original value from API
             id: item.id,
             tahun: item.tahun,
             createdAt: item.createdAt,
@@ -209,23 +222,23 @@ export default function Home() {
       setApbData([
         {
           bidang: t("home.apb.education"),
-          anggaran: 120000000,
-          realisasi: 100000000,
+          anggaran: 120000000, // 120 juta
+          realisasi: 100000000, // 100 juta
         },
         {
           bidang: t("home.apb.health"),
-          anggaran: 80000000,
-          realisasi: 75000000,
+          anggaran: 80000000, // 80 juta
+          realisasi: 75000000, // 75 juta
         },
         {
           bidang: t("home.apb.infrastructure"),
-          anggaran: 100000000,
-          realisasi: 85000000,
+          anggaran: 100000000, // 100 juta
+          realisasi: 85000000, // 85 juta
         },
         {
           bidang: t("home.apb.social"),
-          anggaran: 50000000,
-          realisasi: 40000000,
+          anggaran: 50000000, // 50 juta
+          realisasi: 40000000, // 40 juta
         },
       ]);
     } finally {
@@ -273,6 +286,33 @@ export default function Home() {
     }
   };
 
+  // Format currency for very large numbers (billions)
+  const formatRupiahBillion = (angka, language = "id") => {
+    if (angka >= 1000000000000) {
+      // Triliun
+      const trillion = angka / 1000000000000;
+      const trillionText = language === "en" ? "trillion" : "triliun";
+      return `${
+        trillion % 1 === 0 ? trillion.toFixed(0) : trillion.toFixed(1)
+      } ${trillionText}`;
+    } else if (angka >= 1000000000) {
+      // Miliar
+      const billion = angka / 1000000000;
+      const billionText = language === "en" ? "billion" : "miliar";
+      return `${
+        billion % 1 === 0 ? billion.toFixed(0) : billion.toFixed(1)
+      } ${billionText}`;
+    } else if (angka >= 1000000) {
+      // Juta
+      const million = angka / 1000000;
+      const millionText = language === "en" ? "million" : "juta";
+      return `${
+        million % 1 === 0 ? million.toFixed(0) : million.toFixed(1)
+      } ${millionText}`;
+    }
+    return Helper.formatRupiah(angka);
+  };
+
   // Calculate APB summary
   const getApbSummary = () => {
     if (!apbData || apbData.length === 0) {
@@ -309,7 +349,7 @@ export default function Home() {
     fetchProduct();
     fetchVillageWorkPrograms();
     fetchApbData();
-  }, []);
+  }, [i18n.language]);
 
   const apbSummary = getApbSummary();
 
@@ -497,7 +537,7 @@ export default function Home() {
           <div className="flex justify-center items-center py-12">
             <FaSpinner className="text-4xl text-green-600 animate-spin" />
             <span className="ml-3 text-lg text-gray-600">
-              {t("workprograms.loading")}
+              {t("home.workprograms.loading")}
             </span>
           </div>
         ) : workPrograms.length > 0 ? (
@@ -525,7 +565,7 @@ export default function Home() {
                     <td className="py-3 px-4 font-medium">
                       {program.description ||
                         program.name ||
-                        t("workprograms.nodesc")}
+                        t("home.workprograms.nodesc")}
                     </td>
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-2">
@@ -535,7 +575,7 @@ export default function Home() {
                             ? Helper.formatTanggal(program.date)
                             : program.created_at
                             ? Helper.formatTanggal(program.created_at)
-                            : t("workprograms.nodate")}
+                            : t("home.workprograms.nodate")}
                         </span>
                       </div>
                     </td>
@@ -545,7 +585,7 @@ export default function Home() {
                             program.budget_amount,
                             i18n.language
                           )
-                        : t("workprograms.nobudget")}
+                        : t("home.workprograms.nobudget")}
                     </td>
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-2">
@@ -568,9 +608,9 @@ export default function Home() {
           <div className="text-center py-12">
             <FaCalendarAlt className="text-6xl text-gray-300 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-gray-600 mb-2">
-              {t("workprograms.nodata")}
+              {t("home.workprograms.nodata")}
             </h3>
-            <p className="text-gray-500">{t("workprograms.nodata")}</p>
+            <p className="text-gray-500">{t("home.workprograms.nodata")}</p>
           </div>
         )}
       </div>
@@ -588,7 +628,7 @@ export default function Home() {
           <div className="flex justify-center items-center py-12">
             <FaSpinner className="text-4xl text-green-600 animate-spin" />
             <span className="ml-3 text-lg text-gray-600">
-              {t("apbchart.loading")}
+              {t("home.apbchart.loading")}
             </span>
           </div>
         ) : (
@@ -599,8 +639,11 @@ export default function Home() {
                 <XAxis dataKey="bidang" />
                 <YAxis
                   tickFormatter={(value) => {
+                    if (value >= 1000000000) {
+                      return `${(value / 1000000000).toFixed(0)}B`;
+                    }
                     if (value >= 1000000) {
-                      return `${(value / 1000000).toFixed(0)}`;
+                      return `${(value / 1000000).toFixed(0)}M`;
                     }
                     if (value >= 1000) {
                       return `${(value / 1000).toFixed(0)}K`;
@@ -609,7 +652,10 @@ export default function Home() {
                   }}
                   width={60}
                   label={{
-                    value: i18n.language === "en" ? "Million" : "Juta",
+                    value:
+                      i18n.language === "en"
+                        ? "Billion/Million"
+                        : "Miliar/Juta",
                     angle: -90,
                     position: "insideLeft",
                     offset: 10,
@@ -618,7 +664,7 @@ export default function Home() {
                 />
                 <Tooltip
                   formatter={(value, name) => [
-                    `${Helper.formatRupiahMillion(value, i18n.language)}`,
+                    `${formatRupiahBillion(value, i18n.language)}`,
                     name === "anggaran"
                       ? t("home.apb.budget")
                       : t("home.apb.realization"),
@@ -650,10 +696,7 @@ export default function Home() {
                   {t("home.apb.totalbudget")}
                 </p>
                 <p className="text-xl font-bold">
-                  {Helper.formatRupiahMillion(
-                    apbSummary.totalBudget,
-                    i18n.language
-                  )}
+                  {formatRupiahBillion(apbSummary.totalBudget, i18n.language)}
                 </p>
               </div>
               <div className="bg-blue-50 p-4 rounded-lg">
@@ -661,7 +704,7 @@ export default function Home() {
                   {t("home.apb.totalrealization")}
                 </p>
                 <p className="text-xl font-bold">
-                  {Helper.formatRupiahMillion(
+                  {formatRupiahBillion(
                     apbSummary.totalRealization,
                     i18n.language
                   )}
@@ -672,10 +715,7 @@ export default function Home() {
                   {t("home.apb.remaining")}
                 </p>
                 <p className="text-xl font-bold">
-                  {Helper.formatRupiahMillion(
-                    apbSummary.remaining,
-                    i18n.language
-                  )}
+                  {formatRupiahBillion(apbSummary.remaining, i18n.language)}
                 </p>
               </div>
               <div className="bg-purple-50 p-4 rounded-lg">

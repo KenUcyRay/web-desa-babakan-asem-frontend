@@ -11,14 +11,14 @@ import "aos/dist/aos.css";
 import { useTranslation } from "react-i18next";
 
 export default function KarangTaruna() {
-  const { t } = useTranslation();
+  const {i18n,t } = useTranslation();
   const [agenda, setAgenda] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [members, setMembers] = useState([]);
 
   const fetchAgenda = async () => {
-    const response = await AgendaApi.getAgenda(currentPage, 3, "KARANG_TARUNA");
+    const response = await AgendaApi.getAgenda(currentPage, 3, "KARANG_TARUNA", i18n.language);
     if (response.status === 200) {
       const responseBody = await response.json();
       setTotalPages(responseBody.total_page);
@@ -30,7 +30,7 @@ export default function KarangTaruna() {
   };
 
   const fetchMembers = async () => {
-    const response = await MemberApi.getMembers("KARANG_TARUNA");
+    const response = await MemberApi.getMembers("KARANG_TARUNA", i18n.language);
     const responseBody = await response.json();
     if (!response.ok) {
       await alert(t("karangTaruna.error"));
@@ -48,12 +48,12 @@ export default function KarangTaruna() {
 
   useEffect(() => {
     fetchAgenda(currentPage);
-  }, [currentPage]);
+  }, [currentPage, i18n.language]);
 
   useEffect(() => {
     fetchMembers();
     AOS.init({ duration: 700, once: true });
-  }, []);
+  }, [i18n.language]);
 
   return (
     <div className="bg-gray-50 py-12 w-full max-w-screen-2xl mx-auto px-4 sm:px-6 md:px-8 font-poppins">

@@ -1,5 +1,5 @@
 export class NewsApi {
-  static async getNews(page = 1, limit = 10) {
+  static async getNews(page = 1, limit = 10, language) {
     return await fetch(
       `${import.meta.env.VITE_NEW_BASE_URL}/news?page=${page}&limit=${limit}`,
       {
@@ -7,21 +7,23 @@ export class NewsApi {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
+          "Accept-Language": language,
         },
       }
     );
   }
 
-  static async getDetailNews(id) {
+  static async getDetailNews(id, language) {
     return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/news/${id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
+        "Accept-Language": language,
       },
     });
   }
-  static async createNews(data) {
+  static async createNews(data, language) {
     const formData = new FormData();
     formData.append("title", data.title);
     formData.append("content", data.content);
@@ -32,10 +34,13 @@ export class NewsApi {
       method: "POST",
       credentials: "include",
       body: formData,
+      headers: {
+        "Accept-Language": language,
+      },
     });
   }
 
-  static async getOwnNews(page = 1, limit = 10) {
+  static async getOwnNews(page = 1, limit = 10, language) {
     return await fetch(
       `${
         import.meta.env.VITE_NEW_BASE_URL
@@ -46,11 +51,12 @@ export class NewsApi {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
+          "Accept-Language": language,
         },
       }
     );
   }
-  static async updateNews(id, data) {
+  static async updateNews(id, data, language) {
     const formData = new FormData();
     formData.append("title", data.title ?? null);
     formData.append("content", data.content ?? null);
@@ -66,10 +72,13 @@ export class NewsApi {
         method: "PATCH",
         body: formData,
         credentials: "include",
+        headers: {
+          "Accept-Language": language,
+        },
       }
     );
   }
-  static async deleteNews(id) {
+  static async deleteNews(id, language) {
     return await fetch(
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/news/${id}`,
       {
@@ -78,6 +87,7 @@ export class NewsApi {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
+          "Accept-Language": language,
         },
       }
     );

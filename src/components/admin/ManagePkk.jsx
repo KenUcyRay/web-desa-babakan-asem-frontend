@@ -6,7 +6,7 @@ import { ProgramApi } from "../../libs/api/ProgramApi";
 import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 
 export default function ManagePkk() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [programs, setPrograms] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -40,7 +40,11 @@ export default function ManagePkk() {
         description: desc,
         featured_image: image,
       };
-      const response = await ProgramApi.updateProgram(editingId, rawData);
+      const response = await ProgramApi.updateProgram(
+        editingId,
+        rawData,
+        i18n.language
+      );
       const body = await response.json();
 
       if (!response.ok) {
@@ -64,7 +68,7 @@ export default function ManagePkk() {
         featured_image: image,
       };
 
-      const response = await ProgramApi.createProgram(rawData);
+      const response = await ProgramApi.createProgram(rawData, i18n.language);
       const body = await response.json();
 
       if (!response.ok) {
@@ -97,7 +101,7 @@ export default function ManagePkk() {
     if (!(await alertConfirm(t("managePkk.confirmation.deleteProgram"))))
       return;
 
-    const response = await ProgramApi.deleteProgram(id);
+    const response = await ProgramApi.deleteProgram(id, i18n.language);
     if (!response.ok) {
       await alertError(t("managePkk.error.deleteProgram"));
       return;
@@ -108,7 +112,11 @@ export default function ManagePkk() {
   };
 
   const fetchPrograms = async () => {
-    const response = await ProgramApi.getPrograms(currentPage, 9);
+    const response = await ProgramApi.getPrograms(
+      currentPage,
+      9,
+      i18n.language
+    );
     const body = await response.json();
 
     if (!response.ok) {
@@ -123,7 +131,7 @@ export default function ManagePkk() {
 
   useEffect(() => {
     fetchPrograms();
-  }, [currentPage]);
+  }, [currentPage, i18n.language]);
 
   return (
     <div className="font-[Poppins,sans-serif]">

@@ -147,7 +147,7 @@
     "berita": "Berita",
     "kontak": "Kontak Kami",
     "masuk": "Masuk",
-    "logout": "Logout",
+    "logout": "Keluar",
     "profilSaya": "Profil Saya",
     "dashboardAdmin": "Dashboard {{role}}",
     "logoutConfirm": "Apakah Anda yakin ingin keluar?",
@@ -391,9 +391,34 @@
     "note": "<strong>Catatan:</strong> Pelayanan hanya dilakukan pada hari kerja (Senin - Jumat) pukul 08.00 - 15.00 WIB. Harap membawa dokumen asli dan fotokopi."
   },
   "administrasi": {
+    "title": "Layanan Administrasi Desa",
+    "subtitle": "Nikmati kemudahan layanan administrasi desa yang lebih cepat dan praktis. Ajukan permohonan surat atau lihat data kependudukan dengan mudah.",
     "topButtons": {
       "ajukan": "Ajukan Sekarang",
       "panduan": "Panduan Layanan"
+    },
+    "featuredTitle": "Layanan Unggulan Kami",
+    "onlineLetterService": {
+      "title": "Surat Pengantar Online",
+      "desc": "Buat dan ajukan permohonan surat pengantar secara online. Proses cepat, mudah, dan dapat diakses kapan saja tanpa perlu datang ke kantor desa.",
+      "features": {
+        "online": "24/7 Online",
+        "fast": "Proses Cepat"
+      }
+    },
+    "populationInfoService": {
+      "title": "Infografis Kependudukan",
+      "desc": "Lihat data dan statistik kependudukan desa dalam bentuk infografis yang menarik dan mudah dipahami. Data selalu ter-update real-time.",
+      "features": {
+        "realtime": "Data Real-time",
+        "visual": "Visual Menarik"
+      }
+    },
+    "footerTip": "Tips: Butuh bantuan? Hubungi kami atau baca panduan lengkap untuk informasi lebih lanjut",
+    "footerFeatures": {
+      "service247": "Layanan 24/7",
+      "mobileFriendly": "Mobile Friendly",
+      "secure": "Aman & Terpercaya"
     },
     "services": [
       {
@@ -694,7 +719,7 @@
     "copied": "ID berhasil disalin ke clipboard -",
     "copyFail": "Gagal menyalin ID",
     "edit": "Edit Profil",
-    "logout": "Logout",
+    "logout": "Keluar",
     "logoutConfirm": "Apakah Anda yakin ingin keluar?",
     "logoutSuccess": "Anda telah keluar.",
     "delete": "Hapus Akun",
@@ -724,6 +749,7 @@
     "delete": "Hapus",
     "save": "Simpan",
     "cancel": "Batal",
+    "loginRequired": "Silakan login dulu.",
     "alert": {
       "mustLogin": "\u26A0 Silakan <strong>login</strong> dulu untuk memberikan komentar!",
       "sendSuccess": "Komentar berhasil dikirim!",
@@ -747,6 +773,7 @@
     "delete": "Hapus",
     "save": "Simpan",
     "cancel": "Batal",
+    "loginRequired": "Silakan login dulu.",
     "alert": {
       "needLogin": "⚠ <strong>Silakan login dulu</strong> untuk memberikan komentar!",
       "fetchError": "Gagal mengambil detail berita. Silakan coba lagi nanti.",
@@ -772,6 +799,8 @@
     "sendRating": "Kirim Rating",
     "cancel": "Batal",
     "deleteRating": "Hapus Rating",
+    "confirmDeleteRating": "Yakin ingin menghapus rating ini?",
+    "deleteRatingSuccess": "Rating berhasil dihapus!",
     "leaveComment": "Tinggalkan Komentar",
     "commentPlaceholder": "Tulis komentar kamu...",
     "sendComment": "Kirim Komentar",
@@ -779,7 +808,18 @@
     "delete": "Hapus",
     "noComments": "Belum ada komentar",
     "editComment": "Simpan",
-    "cancelEdit": "Batal"
+    "cancelEdit": "Batal",
+    "loginRequired": "Silakan login dulu.",
+    "commentSent": "Komentar berhasil dikirim!",
+    "commentUpdated": "Komentar diupdate.",
+    "commentUpdateFailed": "Gagal update: {{error}}",
+    "confirmDeleteComment": "Yakin hapus komentar?",
+    "commentDeleted": "Komentar dihapus!",
+    "commentDeleteFailed": "Gagal hapus: {{error}}",
+    "ratingFailed": "Gagal kirim rating.",
+    "ratingThanks": "Terima kasih! {{rating}} ⭐",
+    "ratingUpdateFailed": "Gagal update rating.",
+    "ratingUpdated": "Rating diupdate jadi {{rating}} ⭐"
   },
   "floatingMenu": {
     "greeting": "👋 <strong>Butuh bantuan?</strong>",
@@ -921,25 +961,25 @@
     },
     "actions": {
       "backToWebsite": "Kembali ke Website",
-      "logout": "Logout",
+      "logout": "Keluar",
       "logoutConfirm": "Apakah Anda yakin ingin keluar?",
       "logoutSuccess": "Anda telah keluar."
     }
   },
   "settingProfile": {
-    "title": "Pengaturan Profil Admin",
-    "subtitle": "Kelola informasi akun & keamanan admin",
+    "title": "Pengaturan Profil",
+    "subtitle": "Kelola informasi akun & keamanan",
     "form": {
       "fields": {
-        "adminId": "ID Admin",
+        "adminId": "ID",
         "name": "Nama",
         "email": "Email",
         "newPassword": "Password Baru",
         "confirmPassword": "Konfirmasi Password"
       },
       "placeholders": {
-        "nameAdmin": "Nama admin",
-        "emailAdmin": "Email admin",
+        "nameAdmin": "Nama",
+        "emailAdmin": "Email",
         "enterNewPassword": "Masukkan password baru",
         "confirmNewPassword": "Konfirmasi password baru"
       },
@@ -1261,5 +1301,9 @@
     "success": {
       "add": "Data berhasil ditambahkan"
     }
+  },
+  "pagination": {
+    "prev": "Sebelumnya",
+    "next": "Berikutnya"
   }
 }

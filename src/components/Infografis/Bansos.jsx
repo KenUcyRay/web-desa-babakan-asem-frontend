@@ -27,7 +27,7 @@ ChartJS.register(
 );
 
 export default function Bansos() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [bansos, setBansos] = useState([]);
   const [trendData, setTrendData] = useState([]);
   const [lastUpdated, setLastUpdated] = useState(null);
@@ -51,7 +51,7 @@ export default function Bansos() {
   };
 
   const fetchBansos = async () => {
-    const response = await InfografisApi.getBansos();
+    const response = await InfografisApi.getBansos(i18n.language);
     const responseBody = await response.json();
     if (!response.ok) {
       await alertError("Gagal mengambil data Bantuan Sosial.");
@@ -90,7 +90,7 @@ export default function Bansos() {
   useEffect(() => {
     fetchBansos();
     setTrendData(getDummyTrendData());
-  }, []);
+  }, [i18n.language]);
 
   const chartData = {
     labels: trendData.map((item) => item.year),

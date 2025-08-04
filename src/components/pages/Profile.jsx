@@ -8,7 +8,7 @@ import { FiArrowLeft } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
 
 export default function Profile() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const { setProfile } = useAuth();
@@ -23,7 +23,7 @@ export default function Profile() {
   });
 
   const fetchProfile = async () => {
-    const response = await UserApi.profile();
+    const response = await UserApi.profile(i18n.language);
     if (!response.ok) return;
 
     const responseBody = await response.json();
@@ -42,7 +42,7 @@ export default function Profile() {
     const confirm = await alertConfirm(t("profile.logoutConfirm"));
     if (!confirm) return;
 
-    const response = await UserApi.logout();
+    const response = await UserApi.logout(i18n.language);
     if (!response.ok) {
       const responseBody = await response.json();
       await Helper.errorResponseHandler(responseBody);
@@ -58,14 +58,7 @@ export default function Profile() {
     const confirm = await alertConfirm(t("profile.deleteConfirm"));
     if (!confirm) return;
 
-    const responseLogout = await UserApi.logout();
-    if (!responseLogout.ok) {
-      const responseBody = await responseLogout.json();
-      await Helper.errorResponseHandler(responseBody);
-      return;
-    }
-
-    const response = await UserApi.deleteUser(user.id);
+    const response = await UserApi.deleteUser(i18n.language);
     if (!response.ok) {
       const responseBody = await response.json();
       await Helper.handleErrorResponse(responseBody);
@@ -101,26 +94,12 @@ export default function Profile() {
       payload.name,
       payload.email,
       payload.password,
-      payload.phone
+      payload.phone,
+      i18n.language
     );
 
     if (!response.ok) {
-      const responseBody = await response.json();
-      let errorMessage = t("profile.updateFail");
-
-      if (responseBody.error && Array.isArray(responseBody.error)) {
-        const errorMessages = responseBody.error.map((err) => {
-          if (err.path && err.path.length > 0) {
-            return `${err.path[0]}: ${err.message}`;
-          }
-          return err.message;
-        });
-        errorMessage = errorMessages.join(", ");
-      } else if (responseBody.error && typeof responseBody.error === "string") {
-        errorMessage = responseBody.error;
-      }
-
-      alertError(errorMessage);
+      await Helper.errorResponseHandler(await response.json());
       return;
     }
     await alertSuccess(t("profile.updateSuccess"));
@@ -153,7 +132,7 @@ export default function Profile() {
 
   useEffect(() => {
     fetchProfile();
-  }, []);
+  }, [i18n.language]);
 
   if (!user) {
     return (
@@ -261,7 +240,6 @@ export default function Profile() {
                     setFormData({ ...formData, name: e.target.value })
                   }
                   className="w-full border rounded-lg p-2 mt-1"
-                  required
                 />
               </div>
               <div>
@@ -269,7 +247,7 @@ export default function Profile() {
                   {t("profile.email")}
                 </label>
                 <input
-                  type="email"
+                  type="text"
                   value={formData.email}
                   onChange={(e) =>
                     setFormData({ ...formData, email: e.target.value })

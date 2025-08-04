@@ -4,9 +4,10 @@ import { useTranslation, Trans } from "react-i18next";
 import Pagination from "../ui/Pagination";
 import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 import { UserApi } from "../../libs/api/UserApi";
+import { Helper } from "../../utils/Helper";
 
 export default function ManageUser() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [users, setUsers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -23,18 +24,18 @@ export default function ManageUser() {
 
   // Role options
   const roleOptions = [
-    { value: "REGULAR", label: "User Regular" },
     { value: "ADMIN", label: "Admin" },
     { value: "PKK", label: "PKK" },
     { value: "KARANG_TARUNA", label: "Karang Taruna" },
     { value: "BPD", label: "BPD" },
+    { value: "CONTRIBUTOR", label: "Contributor" },
   ];
 
   // State for promote form
   const [promoteToRole, setPromoteToRole] = useState("ADMIN");
 
   const fetchUsers = async () => {
-    const response = await UserApi.getAllUsers(currentPage, 10);
+    const response = await UserApi.getAllUsers(currentPage, 10, i18n.language);
     const resBody = await response.json();
     if (!response.ok) return;
     setUsers(resBody.data);
@@ -44,7 +45,7 @@ export default function ManageUser() {
 
   useEffect(() => {
     fetchUsers();
-  }, [currentPage]);
+  }, [currentPage, i18n.language]);
 
   // Updated function to handle adding account with selected role
   const handleAddAccount = async (e) => {
@@ -60,26 +61,22 @@ export default function ManageUser() {
       return alertError(t("manageUser.alerts.passwordMismatch"));
     }
 
-    try {
-      // Use existing createAdmin API but with selected role
-      const response = await UserApi.createAdmin(form);
-      const resBody = await response.json();
-      if (!response.ok)
-        throw new Error(resBody.error || "Gagal menambahkan akun");
-
-      setUsers([...users, resBody.user]);
-      setShowAddForm(false);
-      setForm({
-        name: "",
-        email: "",
-        password: "",
-        confirm_password: "",
-        role: "REGULAR",
-      });
-      alertSuccess(`Akun ${form.role} berhasil ditambahkan`);
-    } catch (err) {
-      alertError(err.message);
+    const response = await UserApi.createAdmin(form, i18n.language);
+    const resBody = await response.json();
+    if (!response.ok) {
+      await Helper.errorResponseHandler(resBody);
+      return;
     }
+    await fetchUsers();
+    setShowAddForm(false);
+    setForm({
+      name: "",
+      email: "",
+      password: "",
+      confirm_password: "",
+      role: "REGULAR",
+    });
+    await alertSuccess(`Akun ${form.role} berhasil ditambahkan`);
   };
 
   const adminToUser = async (admin) => {
@@ -91,7 +88,11 @@ export default function ManageUser() {
     if (!(await alertConfirm(confirmMessage))) return;
 
     try {
-      const response = await UserApi.updateRoleById(admin.id, "REGULAR");
+      const response = await UserApi.updateRoleById(
+        admin.id,
+        "REGULAR",
+        i18n.language
+      );
       const resBody = await response.json();
       if (!response.ok)
         throw new Error(
@@ -125,7 +126,11 @@ export default function ManageUser() {
     const userId = formData.get("userId");
 
     try {
-      const response = await UserApi.updateRoleById(userId, promoteToRole);
+      const response = await UserApi.updateRoleById(
+        userId,
+        promoteToRole,
+        i18n.language
+      );
       const resBody = await response.json();
       if (!response.ok)
         throw new Error(resBody.error || "Gagal mengubah role user");

@@ -174,11 +174,7 @@ const ManageProgram = () => {
         }/admin/village-work-programs/${id}`,
         {
           method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${JSON.parse(
-              localStorage.getItem("token") || '"token"'
-            )}`,
-          },
+          credentials: "include",
         }
       );
 
@@ -221,11 +217,9 @@ const ManageProgram = () => {
           }/admin/village-work-programs/${editingId}`,
           {
             method: "PATCH",
+            credentials: "include",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${JSON.parse(
-                localStorage.getItem("token") || '"token"'
-              )}`,
             },
             body: JSON.stringify(payload),
           }
@@ -236,11 +230,9 @@ const ManageProgram = () => {
           `${import.meta.env.VITE_NEW_BASE_URL}/admin/village-work-programs`,
           {
             method: "POST",
+            credentials: "include",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${JSON.parse(
-                localStorage.getItem("token") || '"token"'
-              )}`,
             },
             body: JSON.stringify(payload),
           }

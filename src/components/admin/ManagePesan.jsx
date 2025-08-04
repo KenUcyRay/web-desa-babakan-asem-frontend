@@ -6,7 +6,7 @@ import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 import Pagination from "../ui/Pagination";
 
 export default function ManagePesan() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [messages, setMessages] = useState([]);
   const [filter, setFilter] = useState("all");
   const [totalPages, setTotalPages] = useState(1);
@@ -22,7 +22,7 @@ export default function ManagePesan() {
         : ""
     }`;
 
-    const response = await MessageApi.get(query);
+    const response = await MessageApi.get(query, i18n.language);
     const responseBody = await response.json();
 
     if (!response.ok) {
@@ -38,7 +38,7 @@ export default function ManagePesan() {
   }, [filter, page]);
 
   const handleMarkRead = async (id) => {
-    const response = await MessageApi.markAsRead(id);
+    const response = await MessageApi.markAsRead(id, i18n.language);
     const responseBody = await response.json();
     if (!response.ok) {
       await Helper.errorResponseHandler(responseBody);

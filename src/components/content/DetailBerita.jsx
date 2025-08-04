@@ -8,105 +8,56 @@ import { CommentApi } from "../../libs/api/CommentApi";
 import { HiArrowLeft } from "react-icons/hi";
 import { UserApi } from "../../libs/api/UserApi";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function DetailBerita() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const [news, setNews] = useState({});
   const [userCreated, setUserCreated] = useState({});
   const [comments, setComments] = useState([]);
   const [pesan, setPesan] = useState("");
+  const { profile } = useAuth();
 
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editingContent, setEditingContent] = useState("");
 
-  const loggedInUser = JSON.parse(localStorage.getItem("user"));
-
+  // Comments
   const handleKomentar = async (e) => {
     e.preventDefault();
-
-    const token = JSON.parse(localStorage.getItem("token"));
-    if (!token) {
-      alert(t("detailNews.alert.needLogin"));
-      navigate("/login");
+    if (profile === null) {
+      await alertError(t("detailNews.loginRequired"));
       return;
     }
 
-    const response = await CommentApi.createComment(id, "NEWS", pesan);
+    const response = await CommentApi.createComment(
+      id,
+      "NEWS",
+      pesan,
+      i18n.language
+    );
     const responseBody = await response.json();
-    if (response.status !== 201) {
-      await alertError(
-        t("detailNews.alert.commentFail", { error: responseBody.error })
-      );
+    if (!response.ok) {
+      await Helper.errorResponseHandler(responseBody);
       return;
     }
-
     await alertSuccess(t("detailNews.alert.commentSuccess"));
     setPesan("");
     fetchComment();
   };
-
-  const fetchDetailBerita = async () => {
-    const response = await NewsApi.getDetailNews(id);
-    const responseBody = await response.json();
-    if (response.status === 200) {
-      setNews(responseBody.news);
-      setUserCreated(responseBody.user_created);
-      setComments(responseBody.comments);
-    } else {
-      await alertError(t("detailNews.alert.fetchError"));
-      navigate("/berita");
-    }
-  };
-
   const fetchComment = async () => {
-    const response = await CommentApi.getComments(id);
+    const response = await CommentApi.getComments(id, i18n.language);
     const responseBody = await response.json();
-    if (response.status === 200) {
-      setComments(responseBody.comments);
-    } else {
-      await alertError(t("detailNews.alert.fetchCommentError"));
-    }
+    if (!response.ok) return;
+    setComments(responseBody.comments);
   };
-
-  useEffect(() => {
-    fetchDetailBerita();
-  }, [id]);
-
-  const [user, setUser] = useState({});
-
-  const fetchUser = async () => {
-    const response = await UserApi.getUserProfile();
-    const responseBody = await response.json();
-    if (response.status === 200) {
-      setUser(responseBody.user);
-    }
-  };
-
-  useEffect(() => {
-    fetchUser();
-  }, []);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      fetchComment();
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [id]);
-
-  const handleBack = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-    setTimeout(() => navigate("/berita"), 300);
-  };
-
-  const startEditComment = (comment) => {
-    setEditingCommentId(comment.id);
-    setEditingContent(comment.content);
-  };
-
   const handleUpdateComment = async (commentId) => {
-    const response = await CommentApi.updateComment(commentId, editingContent);
+    const response = await CommentApi.updateComment(
+      commentId,
+      editingContent,
+      i18n.language
+    );
     const resBody = await response.json();
 
     if (response.status === 200) {
@@ -119,11 +70,10 @@ export default function DetailBerita() {
       );
     }
   };
-
   const handleDeleteComment = async (commentId) => {
     if (!(await alertConfirm(t("detailNews.alert.confirmDelete")))) return;
 
-    const response = await CommentApi.deleteComment(commentId);
+    const response = await CommentApi.deleteComment(commentId, i18n.language);
     const resBody = await response.json();
 
     if (response.status === 200) {
@@ -135,6 +85,36 @@ export default function DetailBerita() {
       );
     }
   };
+  const startEditComment = (comment) => {
+    setEditingCommentId(comment.id);
+    setEditingContent(comment.content);
+  };
+
+  // News
+  const fetchDetailBerita = async () => {
+    const response = await NewsApi.getDetailNews(id, i18n.language);
+    const responseBody = await response.json();
+    if (response.status === 200) {
+      setNews(responseBody.news);
+      setUserCreated(responseBody.user_created);
+      setComments(responseBody.comments);
+    } else {
+      await Helper.errorResponseHandler(responseBody);
+      navigate("/berita");
+    }
+  };
+
+  //Any
+  const handleBack = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    setTimeout(() => navigate("/berita"), 300);
+  };
+
+  useEffect(() => {
+    fetchDetailBerita();
+    const interval = setInterval(fetchComment, 5000);
+    return () => clearInterval(interval);
+  }, [id, i18n.language]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-4 gap-6 font-poppins">
@@ -158,7 +138,7 @@ export default function DetailBerita() {
         <h1 className="text-2xl font-bold mb-3">{news.title}</h1>
         <p className="text-sm text-gray-500 mb-6">
           {t("detailNews.postedBy", {
-            name: userCreated.name,
+            name: userCreated?.name || "Unknown Author",
             date: Helper.formatTanggal(news.published_at),
             views: news.view_count,
           })}
@@ -173,7 +153,7 @@ export default function DetailBerita() {
             {t("detailNews.leaveComment")}
           </h2>
 
-          <form className="space-y-4" onSubmit={handleKomentar}>
+          <form onSubmit={handleKomentar} className="space-y-4">
             <textarea
               placeholder={t("detailNews.writeComment")}
               rows="4"
@@ -191,63 +171,66 @@ export default function DetailBerita() {
           </form>
 
           <div className="mt-6 space-y-4">
-            {comments.map((c, i) => (
-              <div key={i} className="p-4 bg-white rounded-lg shadow">
-                {editingCommentId === c.id ? (
-                  <div className="space-y-2">
-                    <textarea
-                      className="w-full p-2 border rounded"
-                      rows="3"
-                      value={editingContent}
-                      onChange={(e) => setEditingContent(e.target.value)}
-                    />
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => handleUpdateComment(c.id)}
-                        className="px-4 py-1 bg-green-500 text-white rounded hover:bg-green-600"
-                      >
-                        {t("detailNews.save")}
-                      </button>
-                      <button
-                        onClick={() => setEditingCommentId(null)}
-                        className="px-4 py-1 bg-gray-300 rounded hover:bg-gray-400"
-                      >
-                        {t("detailNews.cancel")}
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    <p className="text-sm text-gray-700">{c.content}</p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      ✍ {c.user.name} • {Helper.formatTanggal(c.updated_at)}
-                    </p>
-
-                    {user && (
-                      <div className="flex gap-3 mt-2">
-                        {user.id === c.user.id && (
-                          <button
-                            onClick={() => startEditComment(c)}
-                            className="text-blue-500 text-sm hover:underline"
-                          >
-                            {t("detailNews.edit")}
-                          </button>
-                        )}
-
-                        {(user.id === c.user.id || user.role === "ADMIN") && (
-                          <button
-                            onClick={() => handleDeleteComment(c.id)}
-                            className="text-red-500 text-sm hover:underline"
-                          >
-                            {t("detailNews.delete")}
-                          </button>
-                        )}
+            {comments.map((c) => {
+              return (
+                <div key={c.id} className="p-4 bg-white rounded-lg shadow">
+                  {editingCommentId === c.id ? (
+                    <div className="space-y-2">
+                      <textarea
+                        className="w-full p-2 border rounded"
+                        rows="3"
+                        value={editingContent}
+                        onChange={(e) => setEditingContent(e.target.value)}
+                      />
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleUpdateComment(c.id)}
+                          className="px-4 py-1 bg-green-500 text-white rounded hover:bg-green-600"
+                        >
+                          {t("detailNews.save")}
+                        </button>
+                        <button
+                          onClick={() => setEditingCommentId(null)}
+                          className="px-4 py-1 bg-gray-300 rounded hover:bg-gray-400"
+                        >
+                          {t("detailNews.cancel")}
+                        </button>
                       </div>
-                    )}
-                  </>
-                )}
-              </div>
-            ))}
+                    </div>
+                  ) : (
+                    <>
+                      <p className="text-sm text-gray-700">{c.content}</p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        ✍ {c.user?.name || "Unknown User"} •{" "}
+                        {Helper.formatTanggal(c.updated_at)}
+                      </p>
+                      {profile !== null && (
+                        <div className="flex gap-3 mt-2">
+                          {profile.id === c.user?.id && (
+                            <button
+                              onClick={() => startEditComment(c)}
+                              className="text-blue-500 text-sm hover:underline"
+                            >
+                              {t("detailNews.edit")}
+                            </button>
+                          )}
+
+                          {(profile.id === c.user?.id ||
+                            profile.role === "ADMIN") && (
+                            <button
+                              onClick={() => handleDeleteComment(c.id)}
+                              className="text-red-500 text-sm hover:underline"
+                            >
+                              {t("detailNews.delete")}
+                            </button>
+                          )}
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              );
+            })}
             {comments.length === 0 && (
               <p className="text-center text-gray-400">
                 {t("detailNews.noComment")}

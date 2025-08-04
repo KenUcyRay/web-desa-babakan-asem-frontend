@@ -10,7 +10,7 @@ import { UserApi } from "../../libs/api/UserApi";
 import { Helper } from "../../utils/Helper";
 
 export default function NavbarBottom() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -32,7 +32,7 @@ export default function NavbarBottom() {
     const confirm = await alertConfirm(t("navbarTop.logoutConfirm"));
     if (!confirm) return;
 
-    const response = await UserApi.logout();
+    const response = await UserApi.logout(i18n.language);
     if (!response.ok) {
       const responseBody = await response.json();
       await Helper.errorResponseHandler(responseBody);

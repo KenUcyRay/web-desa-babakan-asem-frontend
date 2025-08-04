@@ -1,5 +1,5 @@
 export class MemberApi {
-  static async getMembers(type, page = 1, limit = 10) {
+  static async getMembers(type, page = 1, limit = 10, language) {
     return await fetch(
       `${
         import.meta.env.VITE_NEW_BASE_URL
@@ -9,11 +9,12 @@ export class MemberApi {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
+          "Accept-Language": language,
         },
       }
     );
   }
-  static async createMember(data) {
+  static async createMember(data, language) {
     const formData = new FormData();
     formData.append("name", data.name);
     formData.append("position", data.position);
@@ -29,11 +30,14 @@ export class MemberApi {
         method: "POST",
         body: formData,
         credentials: "include",
+        headers: {
+          "Accept-Language": language,
+        },
       }
     );
   }
 
-  static async getAllMembers(type, page = 1, limit = 10) {
+  static async getAllMembers(type, page = 1, limit = 10, language) {
     return await fetch(
       `${
         import.meta.env.VITE_NEW_BASE_URL
@@ -44,12 +48,13 @@ export class MemberApi {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
+          "Accept-Language": language,
         },
       }
     );
   }
 
-  static async updateMember(id, data) {
+  static async updateMember(id, data, language) {
     const formData = new FormData();
     formData.append("name", data.name) ?? undefined;
     formData.append("position", data.position) ?? undefined;
@@ -66,15 +71,23 @@ export class MemberApi {
         method: "PATCH",
         body: formData,
         credentials: "include",
+        headers: {
+          "Accept-Language": language,
+        },
       }
     );
   }
-  static async deleteMember(id) {
+  static async deleteMember(id, language) {
     return await fetch(
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/organizations/members/${id}`,
       {
         method: "DELETE",
         credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "Accept-Language": language,
+        },
       }
     );
   }

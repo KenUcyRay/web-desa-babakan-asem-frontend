@@ -7,7 +7,7 @@ import { Helper } from "../../utils/Helper";
 
 export default function SuratPengantar() {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [formData, setFormData] = useState({
     name: "",
     nik: "",
@@ -22,7 +22,10 @@ export default function SuratPengantar() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await AdministrasiApi.createPengantar(formData);
+    const response = await AdministrasiApi.createPengantar(
+      formData,
+      i18n.language
+    );
     const responseBody = await response.json();
 
     if (!response.ok) {

@@ -15,7 +15,7 @@ import {
 } from "react-icons/fa";
 
 export default function ManageBerita() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [news, setNews] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -30,7 +30,7 @@ export default function ManageBerita() {
   const [isPublished, setIsPublished] = useState(false);
 
   const fetchNews = async () => {
-    const response = await NewsApi.getOwnNews(currentPage, 6);
+    const response = await NewsApi.getOwnNews(currentPage, 6, i18n.language);
     if (!response.ok) {
       alertError(t("manageNews.error.fetchFailed"));
       return;
@@ -43,7 +43,7 @@ export default function ManageBerita() {
 
   useEffect(() => {
     fetchNews();
-  }, [currentPage]);
+  }, [currentPage, i18n.language]);
 
   const resetForm = () => {
     setTitle("");
@@ -65,7 +65,11 @@ export default function ManageBerita() {
     if (editingId) {
       if (!(await alertConfirm(t("manageNews.confirmation.editNews")))) return;
 
-      const response = await NewsApi.updateNews(editingId, rawData);
+      const response = await NewsApi.updateNews(
+        editingId,
+        rawData,
+        i18n.language
+      );
       const responseBody = await response.json();
       if (!response.ok) {
         await Helper.errorResponseHandler(responseBody);
@@ -79,7 +83,7 @@ export default function ManageBerita() {
       return;
     }
 
-    const response = await NewsApi.createNews(rawData);
+    const response = await NewsApi.createNews(rawData, i18n.language);
     const responseBody = await response.json();
 
     if (!response.ok) {
@@ -95,7 +99,7 @@ export default function ManageBerita() {
 
   const handleDelete = async (id) => {
     if (await alertConfirm(t("manageNews.confirmation.deleteNews"))) {
-      const response = await NewsApi.deleteNews(id);
+      const response = await NewsApi.deleteNews(id, i18n.language);
       if (!response.ok) {
         const responseBody = await response.json();
         await Helper.errorResponseHandler(responseBody);

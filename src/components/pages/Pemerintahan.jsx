@@ -10,7 +10,7 @@ import { useTranslation } from "react-i18next";
 
 export default function Pemerintahan() {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const regulasi = [
     {
@@ -40,7 +40,12 @@ export default function Pemerintahan() {
   const [members, setMembers] = useState([]);
 
   const fetchMembers = async () => {
-    const response = await MemberApi.getMembers("PEMERINTAH", 1, 4);
+    const response = await MemberApi.getMembers(
+      "PEMERINTAH",
+      1,
+      4,
+      i18n.language
+    );
     const responseBody = await response.json();
     if (!response.ok) {
       let errorMessage = "Gagal mengambil data.";
@@ -64,7 +69,7 @@ export default function Pemerintahan() {
   useEffect(() => {
     fetchMembers();
     AOS.init({ duration: 800, once: true });
-  }, []);
+  }, [i18n.language]);
 
   return (
     <div className="font-poppins bg-gray-50">

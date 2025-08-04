@@ -7,12 +7,12 @@ import { alertError } from "../../libs/alert";
 import { useTranslation } from "react-i18next";
 
 export default function StPkk() {
-  const { t } = useTranslation();
+  const { t,i18n } = useTranslation();
   const [members, setMembers] = useState([]);
   const [galery, setGalery] = useState([]);
 
   const fetchMembers = async () => {
-    const response = await MemberApi.getMembers("PKK");
+    const response = await MemberApi.getMembers("PKK", i18n.language);
     const responseBody = await response.json();
 
     if (!response.ok) {
@@ -23,7 +23,7 @@ export default function StPkk() {
   };
 
   const fetchGalery = async () => {
-    const response = await GaleryApi.getGaleri(1, 8, "PKK");
+    const response = await GaleryApi.getGaleri(1, 8, "PKK", i18n.language);
     if (response.status === 200) {
       const responseBody = await response.json();
       setGalery(responseBody.galeri);
@@ -37,7 +37,7 @@ export default function StPkk() {
     AOS.refresh();
     fetchMembers();
     fetchGalery();
-  }, []);
+  }, [i18n.language]);
 
   return (
     <div className="font-poppins text-gray-800 w-full">

@@ -262,12 +262,10 @@ export default function ManagePenduduk() {
         `${baseUrl}/admin/residents/${editingData.id}`,
         {
           method: "PATCH",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
-            Authorization: `Bearer ${localStorage
-              .getItem("token")
-              ?.slice(1, -1)}`,
           },
           body: JSON.stringify({ value: jumlah }),
         }

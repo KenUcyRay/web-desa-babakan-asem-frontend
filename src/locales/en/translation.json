@@ -391,9 +391,34 @@
     "note": "<strong>Note:</strong> Services are only available on weekdays (Monday - Friday) from 08.00 to 15.00 WIB. Please bring original and photocopy documents."
   },
   "administrasi": {
+    "title": "Village Administration Services",
+    "subtitle": "Enjoy the convenience of faster and more practical village administration services. Submit letter requests or view population data easily.",
     "topButtons": {
       "ajukan": "Submit Now",
       "panduan": "Service Guide"
+    },
+    "featuredTitle": "Our Featured Services",
+    "onlineLetterService": {
+      "title": "Online Introductory Letter",
+      "desc": "Create and submit introductory letter requests online. Fast, easy process that can be accessed anytime without needing to visit the village office.",
+      "features": {
+        "online": "24/7 Online",
+        "fast": "Fast Process"
+      }
+    },
+    "populationInfoService": {
+      "title": "Population Infographics",
+      "desc": "View village population data and statistics in attractive and easy-to-understand infographics. Data is always updated in real-time.",
+      "features": {
+        "realtime": "Real-time Data",
+        "visual": "Attractive Visual"
+      }
+    },
+    "footerTip": "Tips: Need help? Contact us or read the complete guide for more information",
+    "footerFeatures": {
+      "service247": "24/7 Service",
+      "mobileFriendly": "Mobile Friendly",
+      "secure": "Safe & Trusted"
     },
     "services": [
       {
@@ -724,6 +749,7 @@
     "delete": "Delete",
     "save": "Save",
     "cancel": "Cancel",
+    "loginRequired": "Please login first.",
     "alert": {
       "mustLogin": "⚠ Please <strong>login</strong> first to post a comment!",
       "sendSuccess": "Comment sent successfully!",
@@ -747,6 +773,7 @@
     "delete": "Delete",
     "save": "Save",
     "cancel": "Cancel",
+    "loginRequired": "Please login first.",
     "alert": {
       "needLogin": "⚠ <strong>Please login first</strong> to post a comment!",
       "fetchError": "Failed to fetch news detail. Please try again later.",
@@ -772,6 +799,8 @@
     "sendRating": "Submit Rating",
     "cancel": "Cancel",
     "deleteRating": "Delete Rating",
+    "confirmDeleteRating": "Are you sure you want to delete your rating?",
+    "deleteRatingSuccess": "Rating deleted successfully!",
     "leaveComment": "Leave a Comment",
     "commentPlaceholder": "Write your comment...",
     "sendComment": "Send Comment",
@@ -779,7 +808,18 @@
     "delete": "Delete",
     "noComments": "No comments yet",
     "editComment": "Save",
-    "cancelEdit": "Cancel"
+    "cancelEdit": "Cancel",
+    "loginRequired": "Please login first.",
+    "commentSent": "Comment sent successfully!",
+    "commentUpdated": "Comment updated.",
+    "commentUpdateFailed": "Update failed: {{error}}",
+    "confirmDeleteComment": "Are you sure you want to delete this comment?",
+    "commentDeleted": "Comment deleted!",
+    "commentDeleteFailed": "Delete failed: {{error}}",
+    "ratingFailed": "Failed to submit rating.",
+    "ratingThanks": "Thank you! {{rating}} ⭐",
+    "ratingUpdateFailed": "Failed to update rating.",
+    "ratingUpdated": "Rating updated to {{rating}} ⭐"
   },
   "floatingMenu": {
     "greeting": "👋 <strong>Need help?</strong>",
@@ -927,19 +967,19 @@
     }
   },
   "settingProfile": {
-    "title": "Admin Profile Settings",
+    "title": "Profile Settings",
     "subtitle": "Manage account information & admin security",
     "form": {
       "fields": {
-        "adminId": "Admin ID",
+        "adminId": "ID",
         "name": "Name",
         "email": "Email",
         "newPassword": "New Password",
         "confirmPassword": "Confirm Password"
       },
       "placeholders": {
-        "nameAdmin": "Admin name",
-        "emailAdmin": "Admin email",
+        "nameAdmin": "Name",
+        "emailAdmin": "Email",
         "enterNewPassword": "Enter new password",
         "confirmNewPassword": "Confirm new password"
       },
@@ -1261,5 +1301,9 @@
     "success": {
       "add": "Data successfully added"
     }
+  },
+  "pagination": {
+    "prev": "Previous",
+    "next": "Next"
   }
 }

@@ -27,8 +27,10 @@ import { AgendaApi } from "../../libs/api/AgendaApi";
 import { GaleryApi } from "../../libs/api/GaleryApi";
 import { MessageApi } from "../../libs/api/MessageApi";
 import { VillageWorkProgramApi } from "../../libs/api/VillageWorkProgramApi";
+import { useTranslation } from "react-i18next";
 
 export default function DataMaster() {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState("all");
   const [stats, setStats] = useState({
@@ -48,30 +50,36 @@ export default function DataMaster() {
   const fetchStats = async () => {
     try {
       // Berita
-      const newsRes = await NewsApi.getOwnNews(1, 1000);
+      const newsRes = await NewsApi.getOwnNews(1, 1000, i18n.language);
       if (!newsRes.ok) return;
       const newsData = await newsRes.json();
 
       // Agenda
-      const agendaRes = await AgendaApi.getOwnAgenda();
+      const agendaRes = await AgendaApi.getOwnAgenda(
+        1,
+        1000,
+        "",
+        i18n.language
+      );
       if (!agendaRes.ok) throw new Error("Gagal ambil agenda");
       const agendaData = await agendaRes.json();
 
       // Program Kerja
       const programRes = await VillageWorkProgramApi.getVillageWorkPrograms(
         1,
-        1
+        1,
+        i18n.language
       );
       if (!programRes.ok) throw new Error("Gagal ambil program");
       const programData = await programRes.json();
 
       // Galeri
-      const galeriRes = await GaleryApi.getGaleri(1, 1);
+      const galeriRes = await GaleryApi.getGaleri(1, 1, i18n.language);
       if (!galeriRes.ok) throw new Error("Gagal ambil galeri");
       const galeriData = await galeriRes.json();
 
       // Pesan
-      const pesanRes = await MessageApi.get();
+      const pesanRes = await MessageApi.get("", i18n.language);
       if (!pesanRes.ok) return;
       const pesanData = await pesanRes.json("?size=1000");
 
@@ -127,7 +135,7 @@ export default function DataMaster() {
   useEffect(() => {
     fetchStats();
     // fetchMasterStats();
-  }, []);
+  }, [i18n.language]);
 
   // Statistik untuk card bagian atas
   const statsData = [
@@ -411,7 +419,7 @@ export default function DataMaster() {
                     {item.stats}
                   </span> */}
                   <button
-                    className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-sm px-4 py-2 rounded-lg shadow transition-all duration-300"
+                    className="flex items-center gap-2 bg-gradient-to-r from-green-400 to-[#B6F500] hover:from-blue-600 hover:to-indigo-700 text-white text-sm px-4 py-2 rounded-lg shadow transition-all duration-300"
                     onClick={() => navigate(item.link)}
                   >
                     <FaEdit />
@@ -420,7 +428,7 @@ export default function DataMaster() {
                 </div>
               </div>
 
-              <div className="bg-gradient-to-r from-blue-500 to-indigo-600 h-1 w-full mt-auto"></div>
+              <div className="bg-gradient-to-r from-green-400 to-[#B6F500] h-1 w-full mt-auto"></div>
             </div>
           ))}
         </div>

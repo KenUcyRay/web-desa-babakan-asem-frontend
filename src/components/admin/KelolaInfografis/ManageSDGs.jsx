@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import cuate from "../../../assets/cuate.png";
 import {
   FaLeaf,
@@ -42,6 +43,7 @@ const iconList = [
 ];
 
 export default function ManageSDGs() {
+  const { t, i18n } = useTranslation();
   const [sdg, setSdg] = useState([]);
   const [editingIndex, setEditingIndex] = useState(null);
   const [progressBaru, setProgressBaru] = useState("");
@@ -49,7 +51,7 @@ export default function ManageSDGs() {
   const [showForm, setShowForm] = useState(false);
 
   const fetchSdg = async () => {
-    const response = await InfografisApi.getSdg();
+    const response = await InfografisApi.getSdg(i18n.language);
     const data = await response.json();
 
     if (!response.ok) {
@@ -85,7 +87,7 @@ export default function ManageSDGs() {
     const id = updated[editingIndex].id;
     const body = { progress: parseInt(progressBaru) };
 
-    const res = await InfografisApi.updateSdg(id, body);
+    const res = await InfografisApi.updateSdg(id, body, i18n.language);
     if (res.ok) {
       updated[editingIndex].progress = parseInt(progressBaru);
       updated[editingIndex].updated_at = new Date().toISOString();
@@ -99,7 +101,7 @@ export default function ManageSDGs() {
 
   useEffect(() => {
     fetchSdg();
-  }, []);
+  }, [i18n.language]);
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-8 font-poppins bg-gray-50 min-h-screen">

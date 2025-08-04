@@ -23,7 +23,7 @@ import { useTranslation } from "react-i18next";
 import { Helper } from "../../utils/Helper";
 
 export default function SDGs() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const iconList = [
     <FaHeartbeat />, // 1. Tanpa Kemiskinan
     <FaLeaf />, // 2. Tanpa Kelaparan
@@ -48,7 +48,7 @@ export default function SDGs() {
   const [lastUpdated, setLastUpdated] = useState(null);
 
   const fetchSdg = async () => {
-    const response = await InfografisApi.getSdg();
+    const response = await InfografisApi.getSdg(i18n.language);
     const responseBody = await response.json();
     if (!response.ok) {
       alertError("Gagal mengambil data SDGs.");
@@ -76,7 +76,7 @@ export default function SDGs() {
 
   useEffect(() => {
     fetchSdg();
-  }, []);
+  }, [i18n.language]);
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-8 font-poppins">

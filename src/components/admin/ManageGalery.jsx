@@ -6,7 +6,7 @@ import { GaleryApi } from "../../libs/api/GaleryApi";
 import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 
 export default function ManageGalery() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [galeries, setGaleries] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -34,10 +34,14 @@ export default function ManageGalery() {
       if (!(await alertConfirm(t("manageGallery.confirmation.editPhoto"))))
         return;
 
-      const response = await GaleryApi.updateGaleri(editingId, {
-        title,
-        image,
-      });
+      const response = await GaleryApi.updateGaleri(
+        editingId,
+        {
+          title,
+          image,
+        },
+        i18n.language
+      );
       const body = await response.json();
 
       if (!response.ok) {
@@ -57,7 +61,10 @@ export default function ManageGalery() {
       return;
     }
 
-    const response = await GaleryApi.createGaleri({ title, image });
+    const response = await GaleryApi.createGaleri(
+      { title, image },
+      i18n.language
+    );
     const body = await response.json();
 
     if (!response.ok) {
@@ -78,7 +85,7 @@ export default function ManageGalery() {
     if (!(await alertConfirm(t("manageGallery.confirmation.deletePhoto"))))
       return;
 
-    const response = await GaleryApi.deleteGaleri(id);
+    const response = await GaleryApi.deleteGaleri(id, i18n.language);
     if (!response.ok) {
       const body = await response.json();
       alertError(
@@ -103,7 +110,7 @@ export default function ManageGalery() {
   };
 
   const fetchGaleries = async () => {
-    const response = await GaleryApi.getGaleri(currentPage, 9);
+    const response = await GaleryApi.getGaleri(currentPage, 9, i18n.language);
     const body = await response.json();
 
     if (!response.ok) {
@@ -122,7 +129,7 @@ export default function ManageGalery() {
 
   useEffect(() => {
     fetchGaleries();
-  }, [currentPage]);
+  }, [currentPage, i18n.language]);
 
   return (
     <div className="font-[Poppins,sans-serif]">

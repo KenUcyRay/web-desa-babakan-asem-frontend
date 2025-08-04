@@ -6,11 +6,13 @@ import {
   FiCalendar,
   FiMapPin,
 } from "react-icons/fi";
+import { useTranslation } from "react-i18next";
 import { AgendaApi } from "../../libs/api/AgendaApi";
 import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 import Pagination from "../ui/Pagination";
 
 export default function ManageAgenda() {
+  const { t, i18n } = useTranslation();
   const kategoriList = [
     "Semua",
     "REGULAR",
@@ -68,7 +70,7 @@ export default function ManageAgenda() {
 
   const handleDelete = async (id) => {
     if (!(await alertConfirm("Yakin ingin menghapus agenda ini?"))) return;
-    const response = await AgendaApi.deleteAgenda(id);
+    const response = await AgendaApi.deleteAgenda(id, i18n.language);
     if (!response.ok) return alertError("Gagal menghapus agenda.");
     setAgenda(agenda.filter((a) => a.id !== id));
   };
@@ -104,7 +106,11 @@ export default function ManageAgenda() {
     if (editingId) {
       if (!(await alertConfirm("Yakin ingin mengedit agenda ini?"))) return;
 
-      const response = await AgendaApi.updateAgenda(editingId, rawData);
+      const response = await AgendaApi.updateAgenda(
+        editingId,
+        rawData,
+        i18n.language
+      );
       const resBody = await response.json();
       if (!response.ok) return alertError(resBody.error || "Gagal update.");
       await alertSuccess("- Agenda berhasil diperbarui!");
@@ -113,7 +119,7 @@ export default function ManageAgenda() {
       return;
     }
 
-    const response = await AgendaApi.createAgenda(rawData);
+    const response = await AgendaApi.createAgenda(rawData, i18n.language);
     const resBody = await response.json();
     if (!response.ok) return alertError(resBody.error || "Gagal menambah.");
     await alertSuccess("- Agenda berhasil ditambahkan!");
@@ -129,7 +135,12 @@ export default function ManageAgenda() {
 
   const fetchAgenda = async () => {
     // Ambil semua dulu
-    const response = await AgendaApi.getOwnAgenda(currentPage, 6, kategori);
+    const response = await AgendaApi.getOwnAgenda(
+      currentPage,
+      6,
+      kategori,
+      i18n.language
+    );
     if (!response.ok) return alertError("Gagal ambil agenda.");
     const resBody = await response.json();
 
@@ -142,7 +153,7 @@ export default function ManageAgenda() {
 
   useEffect(() => {
     fetchAgenda();
-  }, [currentPage, kategori]);
+  }, [currentPage, kategori, i18n.language]);
 
   return (
     <div className="font-[Poppins,sans-serif]">

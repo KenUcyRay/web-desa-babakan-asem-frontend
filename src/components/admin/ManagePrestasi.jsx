@@ -40,17 +40,6 @@ export default function ManagePrestasi() {
   const [date, setDate] = useState("");
   const [imageError, setImageError] = useState("");
 
-  // Get token for API calls
-  const getAuthHeader = () => {
-    try {
-      const token = localStorage.getItem("token");
-      return token ? { Authorization: `Bearer ${JSON.parse(token)}` } : {};
-    } catch (e) {
-      console.error("Error parsing token", e);
-      return {};
-    }
-  };
-
   // Fetch prestasi dari API
   const fetchPrestasi = async () => {
     setIsLoading(true);
@@ -58,7 +47,10 @@ export default function ManagePrestasi() {
       const response = await fetch(
         `${
           import.meta.env.VITE_NEW_BASE_URL
-        }/village-achievements?page=${currentPage}&per_page=${itemsPerPage}`
+        }/village-achievements?page=${currentPage}&per_page=${itemsPerPage}`,
+        {
+          credentials: "include",
+        }
       );
       const json = await response.json();
 
@@ -138,7 +130,7 @@ export default function ManagePrestasi() {
           {
             method: "PATCH",
             body: formData,
-            headers: getAuthHeader(),
+            credentials: "include",
           }
         );
 
@@ -154,7 +146,7 @@ export default function ManagePrestasi() {
           {
             method: "POST",
             body: formData,
-            headers: getAuthHeader(),
+            credentials: "include",
           }
         );
         await alertSuccess(
@@ -191,7 +183,7 @@ export default function ManagePrestasi() {
           }/admin/village-achievements/${id}`,
           {
             method: "DELETE",
-            headers: getAuthHeader(),
+            credentials: "include",
           }
         );
         await alertSuccess(

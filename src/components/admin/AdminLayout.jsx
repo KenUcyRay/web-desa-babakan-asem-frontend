@@ -8,13 +8,13 @@ import { FaBars } from "react-icons/fa";
 
 export default function AdminLayout() {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { profile, setProfile } = useAuth();
 
   // - Cek Auth & Role
   const checkAuth = async () => {
-    const response = await UserApi.profile();
+    const response = await UserApi.profile(i18n.language);
     const responseBody = await response.json();
     if (!response.ok || responseBody.data.role !== "ADMIN") {
       navigate("/");
@@ -25,7 +25,7 @@ export default function AdminLayout() {
 
   useEffect(() => {
     checkAuth();
-  }, []);
+  }, [i18n.language]);
 
   return (
     <div className="flex min-h-screen bg-gray-100">

@@ -8,9 +8,10 @@ import { Helper } from "../../utils/Helper";
 import { HiArrowLeft } from "react-icons/hi";
 import { UserApi } from "../../libs/api/UserApi";
 import { useTranslation, Trans } from "react-i18next";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function DetailAgenda() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const [agenda, setAgenda] = useState({});
@@ -18,27 +19,25 @@ export default function DetailAgenda() {
   const [pesan, setPesan] = useState("");
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editingContent, setEditingContent] = useState("");
-  const [user, setUser] = useState({});
+  const { profile } = useAuth();
 
+  // Comments
   const handleKomentar = async (e) => {
     e.preventDefault();
-    const token = JSON.parse(localStorage.getItem("token"));
-    if (!token) {
-      alert(
-        <Trans i18nKey="detailAgenda.alert.mustLogin">
-          ⚠ Please <strong>login</strong> first to post a comment!
-        </Trans>
-      );
-      navigate("/login");
+    if (profile === null) {
+      await alertError(t("detailAgenda.loginRequired"));
       return;
     }
 
-    const response = await CommentApi.createComment(id, "AGENDA", pesan);
+    const response = await CommentApi.createComment(
+      id,
+      "AGENDA",
+      pesan,
+      i18n.language
+    );
     const responseBody = await response.json();
     if (response.status !== 201) {
-      await alertError(
-        t("detailAgenda.alert.sendFailed", { error: responseBody.error })
-      );
+      await Helper.errorResponseHandler(responseBody);
       return;
     }
 
@@ -46,58 +45,16 @@ export default function DetailAgenda() {
     setPesan("");
     fetchComments();
   };
-
-  const fetchDetailAgenda = async () => {
-    const response = await AgendaApi.getDetailAgenda(id);
-    const responseBody = await response.json();
-    if (response.status === 200) {
-      setAgenda(responseBody.agenda);
-      setComments(responseBody.comments);
-    } else {
-      await alertError(t("detailAgenda.alert.loadFailed"));
-      navigate("/agenda");
-    }
-  };
-
-  const fetchComments = async () => {
-    const response = await CommentApi.getComments(id);
-    const responseBody = await response.json();
-    if (response.status === 200) {
-      setComments(responseBody.comments);
-    }
-  };
-
-  const fetchUser = async () => {
-    const response = await UserApi.getUserProfile();
-    const responseBody = await response.json();
-    if (response.status === 200) {
-      setUser(responseBody.user);
-    }
-  };
-
-  useEffect(() => {
-    fetchDetailAgenda();
-    fetchUser();
-
-    const interval = setInterval(() => {
-      fetchComments();
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, [id]);
-
-  const handleBack = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-    setTimeout(() => navigate("/agenda"), 300);
-  };
-
   const startEditComment = (comment) => {
     setEditingCommentId(comment.id);
     setEditingContent(comment.content);
   };
-
   const handleUpdateComment = async (commentId) => {
-    const response = await CommentApi.updateComment(commentId, editingContent);
+    const response = await CommentApi.updateComment(
+      commentId,
+      editingContent,
+      i18n.language
+    );
     const resBody = await response.json();
 
     if (response.status === 200) {
@@ -110,12 +67,10 @@ export default function DetailAgenda() {
       );
     }
   };
-
   const handleDeleteComment = async (commentId) => {
-    const confirm = await alertConfirm(t("detailAgenda.alert.deleteConfirm"));
-    if (!confirm) return;
+    if (!(await alertConfirm(t("detailAgenda.alert.deleteConfirm")))) return;
 
-    const response = await CommentApi.deleteComment(commentId);
+    const response = await CommentApi.deleteComment(commentId, i18n.language);
     const resBody = await response.json();
 
     if (response.status === 200) {
@@ -127,6 +82,38 @@ export default function DetailAgenda() {
       );
     }
   };
+  const fetchComments = async () => {
+    const response = await CommentApi.getComments(id, i18n.language);
+    const responseBody = await response.json();
+    if (response.status === 200) {
+      setComments(responseBody.comments);
+    }
+  };
+
+  // Agenda
+  const fetchDetailAgenda = async () => {
+    const response = await AgendaApi.getDetailAgenda(id, i18n.language);
+    const responseBody = await response.json();
+    if (response.status === 200) {
+      setAgenda(responseBody.agenda);
+      setComments(responseBody.comments);
+    } else {
+      await Helper.errorResponseHandler(responseBody);
+      navigate("/agenda");
+    }
+  };
+
+  // Any
+  const handleBack = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    setTimeout(() => navigate("/agenda"), 300);
+  };
+
+  useEffect(() => {
+    fetchDetailAgenda();
+    const interval = setInterval(fetchComments, 5000);
+    return () => clearInterval(interval);
+  }, [id, i18n.language]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-4 gap-6 font-poppins">
@@ -181,62 +168,66 @@ export default function DetailAgenda() {
           </form>
 
           <div className="mt-6 space-y-4">
-            {comments.map((c, i) => (
-              <div key={i} className="p-4 bg-white rounded-lg shadow">
-                {editingCommentId === c.id ? (
-                  <div className="space-y-2">
-                    <textarea
-                      className="w-full p-2 border rounded"
-                      rows="3"
-                      value={editingContent}
-                      onChange={(e) => setEditingContent(e.target.value)}
-                    />
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => handleUpdateComment(c.id)}
-                        className="px-4 py-1 bg-green-500 text-white rounded hover:bg-green-600"
-                      >
-                        {t("detailAgenda.save")}
-                      </button>
-                      <button
-                        onClick={() => setEditingCommentId(null)}
-                        className="px-4 py-1 bg-gray-300 rounded hover:bg-gray-400"
-                      >
-                        {t("detailAgenda.cancel")}
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    <p className="text-sm text-gray-700">{c.content}</p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      ✍ {c.user.name} • {Helper.formatTanggal(c.updated_at)}
-                    </p>
-
-                    {user && (
-                      <div className="flex gap-3 mt-2">
-                        {user.id === c.user.id && (
-                          <button
-                            onClick={() => startEditComment(c)}
-                            className="text-blue-500 text-sm hover:underline"
-                          >
-                            {t("detailAgenda.edit")}
-                          </button>
-                        )}
-                        {(user.id === c.user.id || user.role === "ADMIN") && (
-                          <button
-                            onClick={() => handleDeleteComment(c.id)}
-                            className="text-red-500 text-sm hover:underline"
-                          >
-                            {t("detailAgenda.delete")}
-                          </button>
-                        )}
+            {comments.map((c) => {
+              return (
+                <div key={c.id} className="p-4 bg-white rounded-lg shadow">
+                  {editingCommentId === c.id ? (
+                    <div className="space-y-2">
+                      <textarea
+                        className="w-full p-2 border rounded"
+                        rows="3"
+                        value={editingContent}
+                        onChange={(e) => setEditingContent(e.target.value)}
+                      />
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleUpdateComment(c.id)}
+                          className="px-4 py-1 bg-green-500 text-white rounded hover:bg-green-600"
+                        >
+                          {t("detailAgenda.save")}
+                        </button>
+                        <button
+                          onClick={() => setEditingCommentId(null)}
+                          className="px-4 py-1 bg-gray-300 rounded hover:bg-gray-400"
+                        >
+                          {t("detailAgenda.cancel")}
+                        </button>
                       </div>
-                    )}
-                  </>
-                )}
-              </div>
-            ))}
+                    </div>
+                  ) : (
+                    <>
+                      <p className="text-sm text-gray-700">{c.content}</p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        ✍ {c.user?.name || "Unknown User"} •{" "}
+                        {Helper.formatTanggal(c.updated_at)}
+                      </p>
+
+                      {profile !== null && (
+                        <div className="flex gap-3 mt-2">
+                          {profile.id === c.user?.id && (
+                            <button
+                              onClick={() => startEditComment(c)}
+                              className="text-blue-500 text-sm hover:underline"
+                            >
+                              {t("detailAgenda.edit")}
+                            </button>
+                          )}
+                          {(profile.id === c.user?.id ||
+                            profile.role === "ADMIN") && (
+                            <button
+                              onClick={() => handleDeleteComment(c.id)}
+                              className="text-red-500 text-sm hover:underline"
+                            >
+                              {t("detailAgenda.delete")}
+                            </button>
+                          )}
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              );
+            })}
             {comments.length === 0 && (
               <p className="text-center text-gray-400">
                 {t("detailAgenda.noComment")}

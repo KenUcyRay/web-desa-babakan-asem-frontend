@@ -48,7 +48,7 @@ import { VillageWorkProgramApi } from "../../libs/api/VillageWorkProgramApi";
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const [newsCount, setNewsCount] = useState(0);
   const [agendaCount, setAgendaCount] = useState(0);
@@ -123,42 +123,46 @@ export default function AdminDashboard() {
 
   // - Fetch TOTAL data
   const fetchNews = async () => {
-    const res = await NewsApi.getOwnNews();
+    const res = await NewsApi.getOwnNews(i18n.language);
     if (!res.ok) return;
     const data = await res.json();
     setNewsCount(data.data?.length || 0);
   };
 
   const fetchAgenda = async () => {
-    const res = await AgendaApi.getOwnAgenda();
+    const res = await AgendaApi.getOwnAgenda(i18n.language);
     if (!res.ok) return;
     const data = await res.json();
     setAgendaCount(data.agenda?.length || 0);
   };
 
   const fetchMessages = async () => {
-    const res = await MessageApi.get("?size=1000");
+    const res = await MessageApi.get("?size=1000", i18n.language);
     if (!res.ok) return;
     const responseBody = await res.json();
     setMessageCount(responseBody.data?.length || 0);
   };
 
   const fetchUsers = async () => {
-    const res = await UserApi.getAllUsers();
+    const res = await UserApi.getAllUsers(i18n.language);
     if (!res.ok) return;
     const data = await res.json();
     setUserCount(data.data?.length || 0);
   };
 
   const fetchProgramCount = async () => {
-    const res = await VillageWorkProgramApi.getVillageWorkPrograms(1, 1);
+    const res = await VillageWorkProgramApi.getVillageWorkPrograms(
+      1,
+      1,
+      i18n.language
+    );
     if (!res.ok) return;
     const data = await res.json();
     setProgramCount(data.total || 0);
   };
 
   const fetchGaleriCount = async () => {
-    const res = await GaleryApi.getGaleri(1, 1);
+    const res = await GaleryApi.getGaleri(1, 1, i18n.language);
     if (!res.ok) return;
     const data = await res.json();
     setGaleriCount(data.total || 0);
@@ -166,14 +170,17 @@ export default function AdminDashboard() {
 
   // - Preview 3 item
   const fetchBumdesPreview = async () => {
-    const res = await ProductApi.getOwnProducts(1, 3);
+    const res = await ProductApi.getOwnProducts(1, 3, i18n.language);
     if (!res.ok) return;
     const data = await res.json();
     setBumdesPreview(data.products || []);
   };
 
   const fetchAdministrasiPreview = async () => {
-    const pengantar = await AdministrasiApi.getPengantar("?size=3");
+    const pengantar = await AdministrasiApi.getPengantar(
+      "?size=3",
+      i18n.language
+    );
     if (!pengantar.ok) return;
 
     const merge = [...(await pengantar.json()).data];
@@ -181,7 +188,7 @@ export default function AdminDashboard() {
   };
 
   const fetchGaleriPreview = async () => {
-    const res = await GaleryApi.getGaleri(1, 3);
+    const res = await GaleryApi.getGaleri(1, 3, i18n.language);
     if (!res.ok)
       return alertError(t("adminDashboard.errors.failedToGetGallery"));
     const data = await res.json();
@@ -189,7 +196,7 @@ export default function AdminDashboard() {
   };
 
   const fetchPkkPreview = async () => {
-    const res = await ProgramApi.getPrograms(1, 3);
+    const res = await ProgramApi.getPrograms(1, 3, i18n.language);
     if (!res.ok)
       return alertError(t("adminDashboard.errors.failedToGetPkkPrograms"));
     const data = await res.json();
@@ -197,14 +204,21 @@ export default function AdminDashboard() {
   };
 
   const fetchProgramKerjaPreview = async () => {
-    const res = await VillageWorkProgramApi.getVillageWorkPrograms();
+    const res = await VillageWorkProgramApi.getVillageWorkPrograms(
+      i18n.language
+    );
     if (!res.ok) return alertError("Gagal mengambil data program kerja");
     const data = await res.json();
     setProgramKerjaPreview(data || []);
   };
 
   const fetchStrukturPreview = async () => {
-    const res = await MemberApi.getMembers("village_government", 1, 3);
+    const res = await MemberApi.getMembers(
+      "village_government",
+      1,
+      3,
+      i18n.language
+    );
     if (!res.ok) return alertError("Gagal mengambil data struktur desa");
     const data = await res.json();
     setStrukturPreview(data.members || []);
@@ -237,7 +251,7 @@ export default function AdminDashboard() {
     fetchPkkPreview();
     fetchProgramKerjaPreview();
     fetchStrukturPreview();
-  }, []);
+  }, [i18n.language]);
 
   return (
     <div className="w-full font-[Poppins,sans-serif] bg-gray-50 min-h-screen p-4 md:p-6">
@@ -312,7 +326,7 @@ export default function AdminDashboard() {
           count={messageCount}
           detail="Pesan masuk"
           onClick={() => navigate("/admin/manage-pesan")}
-          color="bg-yellow-100"
+          color="bg-yellow-200"
         />
 
         <DetailStatCard
@@ -603,7 +617,7 @@ function PreviewSection({
   showValue = false,
   description,
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   return (
     <div className="bg-white rounded-xl shadow-md p-5 h-full flex flex-col">

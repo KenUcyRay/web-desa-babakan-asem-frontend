@@ -8,10 +8,11 @@ import { Helper } from "../../utils/Helper";
 import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 import { CommentApi } from "../../libs/api/CommentApi";
 import { ProductApi } from "../../libs/api/ProductApi";
-import { UserApi } from "../../libs/api/UserApi";
+import { useAuth } from "../../contexts/AuthContext";
+import { useProfile } from "../../hook/useProfile";
 
 export default function DetailProduk() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -25,99 +26,116 @@ export default function DetailProduk() {
   const [showSubmitRating, setShowSubmitRating] = useState(false);
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editingContent, setEditingContent] = useState("");
-  const [user, setUser] = useState({});
-  const userToken = JSON.parse(localStorage.getItem("token"));
-  const loggedInUser = JSON.parse(localStorage.getItem("user"));
+  const { profile, isReady } = useProfile();
 
-  const fetchDetailProduct = async () => {
-    const res = await ProductApi.getDetailProduct(id);
-    const body = await res.json();
-    if (res.status === 200) {
-      setProduct(body.product);
-      setAverageRating(body.rating ?? 0);
-      setComments(body.comments ?? []);
-    } else {
-      await alertError("Gagal mengambil detail product.");
-      navigate("/bumdes");
-    }
-  };
-
-  const fetchComment = async () => {
-    const res = await CommentApi.getComments(id);
-    const body = await res.json();
-    if (res.status === 200) {
-      setComments(body.comments);
-    }
-  };
-
-  const checkUserRated = async () => {
-    if (!userToken) return;
-    const res = await ProductApi.alreadyRated(id);
-    const body = await res.json();
-    if (res.ok) {
-      setUserRated(true);
-      setUserTempRating(body.rating);
-      setUserRatingId(body.id);
-    }
-  };
-
-  useEffect(() => {
-    fetchDetailProduct();
-    checkUserRated();
-  }, [id]);
-
-  useEffect(() => {
-    const interval = setInterval(fetchComment, 5000);
-    return () => clearInterval(interval);
-  }, [id]);
-
-  const fetchUser = async () => {
-    const res = await UserApi.getUserProfile();
-    const body = await res.json();
-    if (res.status === 200) {
-      setUser(body.user);
-    }
-  };
-
-  useEffect(() => {
-    fetchUser();
-  }, []);
-
+  // Comments
   const handleKomentar = async (e) => {
     e.preventDefault();
-    if (!userToken) {
-      await alertError("⚠ Silakan login dulu.");
-      return navigate("/login");
+    if (profile === null) {
+      await alertError(t("detailProduct.loginRequired"));
+      return;
     }
-    const res = await CommentApi.createComment(id, "PRODUCT", pesan);
+    const res = await CommentApi.createComment(
+      id,
+      "PRODUCT",
+      pesan,
+      i18n.language
+    );
     const body = await res.json();
-    if (res.status !== 201) {
-      return await alertError(`Gagal kirim: ${body.error}`);
+    if (!res.ok) {
+      await Helper.errorResponseHandler(body);
+      return;
     }
-    await alertSuccess("Komentar berhasil dikirim!");
+    await alertSuccess(t("detailProduct.commentSent"));
     setPesan("");
     fetchComment();
   };
 
-  const handleSelectStar = (val) => {
-    if (!userToken) {
-      alertError("Silakan login dulu.");
-      return navigate("/login");
+  const fetchComment = async () => {
+    const response = await CommentApi.getComments(id, i18n.language);
+    const responseBody = await response.json();
+    if (!response.ok) return;
+    setComments(responseBody.comments);
+  };
+
+  const startEditComment = (c) => {
+    setEditingCommentId(c.id);
+    setEditingContent(c.content);
+  };
+
+  const handleUpdateComment = async (commentId) => {
+    const response = await CommentApi.updateComment(
+      commentId,
+      editingContent,
+      i18n.language
+    );
+    const resBody = await response.json();
+    if (response.status === 200) {
+      await alertSuccess(t("detailProduct.commentUpdated"));
+      setEditingCommentId(null);
+      fetchComment();
+    } else {
+      await alertError(
+        t("detailProduct.commentUpdateFailed", { error: resBody.error })
+      );
     }
-    setUserTempRating(val);
-    setShowSubmitRating(true);
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    if (!(await alertConfirm(t("detailProduct.confirmDeleteComment")))) return;
+    const response = await CommentApi.deleteComment(commentId, i18n.language);
+    const resBody = await response.json();
+    if (response.status === 200) {
+      await alertSuccess(t("detailProduct.commentDeleted"));
+      fetchComment();
+    } else {
+      await alertError(
+        t("detailProduct.commentDeleteFailed", { error: resBody.error })
+      );
+    }
+  };
+
+  // Product
+  const fetchDetailProduct = async () => {
+    const response = await ProductApi.getDetailProduct(id, i18n.language);
+    const responseBody = await response.json();
+    if (!response.ok) {
+      await Helper.errorResponseHandler(responseBody);
+      navigate("/bumdes");
+    }
+    setProduct(responseBody.product);
+    setAverageRating(responseBody.rating ?? 0);
+    setComments(responseBody.comments ?? []);
+  };
+
+  // Rating
+  const checkUserRated = async () => {
+    if (profile === null) return;
+    const response = await ProductApi.alreadyRated(id, i18n.language);
+    const responseBody = await response.json();
+    if (response.ok) {
+      setUserRated(true);
+      setUserTempRating(responseBody.rating);
+      setUserRatingId(responseBody.id);
+    }
   };
 
   const handleSubmitRating = async () => {
     let res;
     if (!userRated) {
-      res = await ProductApi.createRating(id, userTempRating);
-      if (!res.ok) return alertError("Gagal kirim rating.");
-      alertSuccess(`Terima kasih! ${userTempRating} ⭐`);
+      res = await ProductApi.createRating(id, userTempRating, i18n.language);
+      if (!res.ok) return alertError(t("detailProduct.ratingFailed"));
+      alertSuccess(t("detailProduct.ratingThanks", { rating: userTempRating }));
     } else {
-      res = await ProductApi.updateRating(userRatingId, userTempRating);
-      if (!res.ok) return alertError("Gagal update rating.");
-      alertSuccess(`Rating diupdate jadi ${userTempRating} ⭐`);
+      res = await ProductApi.updateRating(
+        userRatingId,
+        userTempRating,
+        i18n.language
+      );
+      if (!res.ok) return alertError(t("detailProduct.ratingUpdateFailed"));
+      alertSuccess(
+        t("detailProduct.ratingUpdated", { rating: userTempRating })
+      );
     }
     setShowSubmitRating(false);
     fetchDetailProduct();
@@ -125,10 +143,13 @@ export default function DetailProduk() {
   };
 
   const handleDeleteRating = async () => {
-    if (!alertConfirm("Yakin hapus rating?")) return;
-    const res = await ProductApi.deleteRating(userRatingId);
-    if (!res.ok) return alertError("Gagal hapus rating.");
-    alertSuccess("Rating dihapus.");
+    if (!(await alertConfirm(t("detailProduct.confirmDeleteRating")))) return;
+    const res = await ProductApi.deleteRating(userRatingId, i18n.language);
+    if (!res.ok) {
+      await Helper.errorResponseHandler(await res.json());
+      return;
+    }
+    alertSuccess(t("detailProduct.deleteRatingSuccess"));
     setUserRated(false);
     setUserTempRating(0);
     setUserRatingId(null);
@@ -140,42 +161,35 @@ export default function DetailProduk() {
     setShowSubmitRating(false);
   };
 
+  const handleSelectStar = async (val) => {
+    if (profile === null) {
+      await alertError(t("detailProduct.loginRequired"));
+      return;
+    }
+    setUserTempRating(val);
+    setShowSubmitRating(true);
+  };
+
+  // Any
   const handleBack = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
     setTimeout(() => navigate(-1), 300);
   };
 
-  const startEditComment = (c) => {
-    setEditingCommentId(c.id);
-    setEditingContent(c.content);
-  };
-
-  const handleUpdateComment = async (id) => {
-    const res = await CommentApi.updateComment(id, editingContent);
-    const body = await res.json();
-    if (res.status === 200) {
-      alertSuccess("Komentar diupdate.");
-      setEditingCommentId(null);
-      fetchComment();
-    } else {
-      alertError(`Gagal update: ${body.error}`);
-    }
-  };
-
-  const handleDeleteComment = async (id) => {
-    if (!(await alertConfirm("Yakin hapus komentar?"))) return;
-    const res = await CommentApi.deleteComment(id);
-    const body = await res.json();
-    if (res.status === 200) {
-      alertSuccess("Komentar dihapus!");
-      fetchComment();
-    } else {
-      alertError(`Gagal hapus: ${body.error}`);
-    }
-  };
-
   const full = Math.floor(averageRating);
   const half = averageRating - full >= 0.5;
+
+  useEffect(() => {
+    fetchDetailProduct();
+    const interval = setInterval(fetchComment, 5000);
+    return () => clearInterval(interval);
+  }, [id, i18n.language]);
+
+  useEffect(() => {
+    if (isReady) {
+      checkUserRated();
+    }
+  }, [isReady]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-4 gap-6 font-poppins">
@@ -305,7 +319,6 @@ export default function DetailProduk() {
               value={pesan}
               onChange={(e) => setPesan(e.target.value)}
               className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-300"
-              required
             />
             <button
               type="submit"
@@ -316,62 +329,66 @@ export default function DetailProduk() {
           </form>
 
           <div className="mt-6 space-y-4">
-            {comments.map((c, i) => (
-              <div key={i} className="p-4 bg-white rounded-lg shadow">
-                {editingCommentId === c.id ? (
-                  <div className="space-y-2">
-                    <textarea
-                      className="w-full p-2 border rounded"
-                      rows="3"
-                      value={editingContent}
-                      onChange={(e) => setEditingContent(e.target.value)}
-                    />
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => handleUpdateComment(c.id)}
-                        className="px-4 py-1 bg-green-500 text-white rounded hover:bg-green-600"
-                      >
-                        {t("detailProduct.editComment")}
-                      </button>
-                      <button
-                        onClick={() => setEditingCommentId(null)}
-                        className="px-4 py-1 bg-gray-300 rounded hover:bg-gray-400"
-                      >
-                        {t("detailProduct.cancelEdit")}
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    <p className="text-sm text-gray-700">{c.content}</p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      ✍ {c.user.name} • {Helper.formatTanggal(c.updated_at)}
-                    </p>
-
-                    {user && (
-                      <div className="flex gap-3 mt-2">
-                        {user.id === c.user.id && (
-                          <button
-                            onClick={() => startEditComment(c)}
-                            className="text-blue-500 text-sm hover:underline"
-                          >
-                            {t("detailProduct.edit")}
-                          </button>
-                        )}
-                        {(user.id === c.user.id || user.role === "ADMIN") && (
-                          <button
-                            onClick={() => handleDeleteComment(c.id)}
-                            className="text-red-500 text-sm hover:underline"
-                          >
-                            {t("detailProduct.delete")}
-                          </button>
-                        )}
+            {comments.map((c) => {
+              return (
+                <div key={c.id} className="p-4 bg-white rounded-lg shadow">
+                  {editingCommentId === c.id ? (
+                    <div className="space-y-2">
+                      <textarea
+                        className="w-full p-2 border rounded"
+                        rows="3"
+                        value={editingContent}
+                        onChange={(e) => setEditingContent(e.target.value)}
+                      />
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleUpdateComment(c.id)}
+                          className="px-4 py-1 bg-green-500 text-white rounded hover:bg-green-600"
+                        >
+                          {t("detailProduct.editComment")}
+                        </button>
+                        <button
+                          onClick={() => setEditingCommentId(null)}
+                          className="px-4 py-1 bg-gray-300 rounded hover:bg-gray-400"
+                        >
+                          {t("detailProduct.cancelEdit")}
+                        </button>
                       </div>
-                    )}
-                  </>
-                )}
-              </div>
-            ))}
+                    </div>
+                  ) : (
+                    <>
+                      <p className="text-sm text-gray-700">{c.content}</p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        ✍ {c.user?.name || "Unknown"} •{" "}
+                        {Helper.formatTanggal(c.updated_at)}
+                      </p>
+
+                      {profile !== null && (
+                        <div className="flex gap-3 mt-2">
+                          {profile.id === c.user?.id && (
+                            <button
+                              onClick={() => startEditComment(c)}
+                              className="text-blue-500 text-sm hover:underline"
+                            >
+                              {t("detailProduct.edit")}
+                            </button>
+                          )}
+                          {(profile.id === c.user?.id ||
+                            profile.role === "ADMIN") && (
+                            <button
+                              onClick={() => handleDeleteComment(c.id)}
+                              className="text-red-500 text-sm hover:underline"
+                            >
+                              {t("detailProduct.delete")}
+                            </button>
+                          )}
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              );
+            })}
             {comments.length === 0 && (
               <p className="text-center text-gray-400">
                 {t("detailProduct.noComments")}

@@ -19,19 +19,18 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
 
   return (
     <div className="flex justify-center mt-6">
-      <div className="flex items-center gap-2 bg-white p-2 rounded-xl shadow-md">
+      <div className="flex items-center gap-1 bg-white p-2 rounded-xl shadow-md">
         {/* Prev Button */}
         <button
           onClick={() => currentPage > 1 && onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className={`flex items-center gap-1 px-3 py-2 rounded-md transition ${
+          className={`w-10 h-10 flex items-center justify-center rounded-md transition ${
             currentPage === 1
               ? "text-gray-400 cursor-not-allowed"
-              : "hover:bg-gray-100"
+              : "hover:bg-gray-100 text-gray-700"
           }`}
         >
           <HiChevronLeft className="text-lg" />
-          <span className="hidden sm:inline">Prev</span>
         </button>
 
         {/* Nomor Halaman */}
@@ -55,13 +54,12 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
             currentPage < totalPages && onPageChange(currentPage + 1)
           }
           disabled={currentPage === totalPages}
-          className={`flex items-center gap-1 px-3 py-2 rounded-md transition ${
+          className={`w-10 h-10 flex items-center justify-center rounded-md transition ${
             currentPage === totalPages
               ? "text-gray-400 cursor-not-allowed"
-              : "hover:bg-gray-100"
+              : "hover:bg-gray-100 text-gray-700"
           }`}
         >
-          <span className="hidden sm:inline">Next</span>
           <HiChevronRight className="text-lg" />
         </button>
       </div>

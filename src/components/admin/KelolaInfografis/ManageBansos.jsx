@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { InfografisApi } from "../../../libs/api/InfografisApi";
 import { alertError, alertSuccess, alertConfirm } from "../../../libs/alert";
 import { Helper } from "../../../utils/Helper";
 
 export default function ManageBansos() {
+  const { t, i18n } = useTranslation();
   const [bansos, setBansos] = useState([]);
   const [lastUpdated, setLastUpdated] = useState(null);
   const [showForm, setShowForm] = useState(false);
@@ -15,7 +17,7 @@ export default function ManageBansos() {
   const [isEditing, setIsEditing] = useState(false);
 
   const fetchBansos = async () => {
-    const response = await InfografisApi.getBansos();
+    const response = await InfografisApi.getBansos(i18n.language);
     const result = await response.json();
 
     if (!response.ok) {
@@ -53,7 +55,7 @@ export default function ManageBansos() {
     const confirm = await alertConfirm(`Yakin ingin menghapus "${name}"?`);
     if (!confirm) return;
 
-    const res = await InfografisApi.deleteBansos(id);
+    const res = await InfografisApi.deleteBansos(id, i18n.language);
     if (res.ok) {
       setBansos((prev) => prev.filter((item) => item.id !== id));
       alertSuccess("Data berhasil dihapus!");
@@ -78,7 +80,7 @@ export default function ManageBansos() {
     const payload = { name: nama.trim(), amount };
 
     if (isEditing) {
-      const res = await InfografisApi.updateBansos(id, payload);
+      const res = await InfografisApi.updateBansos(id, payload, i18n.language);
       if (res.ok) {
         const updated = [...bansos].map((item) =>
           item.id === id ? { ...item, name: nama.trim(), amount } : item
@@ -90,7 +92,7 @@ export default function ManageBansos() {
         alertError("Gagal memperbarui data.");
       }
     } else {
-      const res = await InfografisApi.createBansos(payload);
+      const res = await InfografisApi.createBansos(payload, i18n.language);
       const json = await res.json();
       if (res.ok) {
         const newItem = {
@@ -110,7 +112,7 @@ export default function ManageBansos() {
 
   useEffect(() => {
     fetchBansos();
-  }, []);
+  }, [i18n.language]);
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-8 font-poppins bg-gray-50 min-h-screen">

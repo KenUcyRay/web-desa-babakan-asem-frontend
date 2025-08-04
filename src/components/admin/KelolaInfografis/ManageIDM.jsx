@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   LineChart,
   Line,
@@ -12,6 +13,7 @@ import { alertConfirm, alertError, alertSuccess } from "../../../libs/alert";
 import { InfografisApi } from "../../../libs/api/InfografisApi";
 
 export default function ManageIDM() {
+  const { t, i18n } = useTranslation();
   // - Data grafik IDM
   const [skorIDM, setSkorIDM] = useState([]);
   const [extraIdmId, setExtraIdmId] = useState(null);
@@ -32,12 +34,16 @@ export default function ManageIDM() {
   const handleSaveStatistik = async () => {
     if (!extraIdmId) return alertError("ID data statistik tidak ditemukan.");
 
-    const response = await InfografisApi.updateExtraIdm(extraIdmId, {
-      status_desa: tempStatus.toUpperCase(),
-      sosial: tempSosial,
-      ekonomi: tempEkonomi,
-      lingkungan: tempLingkungan,
-    });
+    const response = await InfografisApi.updateExtraIdm(
+      extraIdmId,
+      {
+        status_desa: tempStatus.toUpperCase(),
+        sosial: tempSosial,
+        ekonomi: tempEkonomi,
+        lingkungan: tempLingkungan,
+      },
+      i18n.language
+    );
 
     const resBody = await response.json();
 
@@ -82,7 +88,7 @@ export default function ManageIDM() {
   const handleDelete = async (id) => {
     if (!(await alertConfirm("Yakin ingin menghapus data ini?"))) return;
 
-    const response = await InfografisApi.deleteIdm(id);
+    const response = await InfografisApi.deleteIdm(id, i18n.language);
 
     if (!response.ok) {
       return alertError("Gagal menghapus data dari server.");
@@ -107,10 +113,13 @@ export default function ManageIDM() {
       const exists = skorIDM.some((d) => d.tahun === tahunTrimmed);
       if (exists) return alertError(`Data tahun ${tahunTrimmed} sudah ada`);
 
-      const response = await InfografisApi.createIdm({
-        year,
-        skor: skorNum * 100, // API minta skor dalam bentuk persen
-      });
+      const response = await InfografisApi.createIdm(
+        {
+          year,
+          skor: skorNum * 100, // API minta skor dalam bentuk persen
+        },
+        i18n.language
+      );
       const resBody = await response.json();
 
       if (!response.ok) {
@@ -131,10 +140,14 @@ export default function ManageIDM() {
     } else {
       if (!(await alertConfirm("Yakin ingin mengubah data ini?"))) return;
 
-      const response = await InfografisApi.updateIdm(editingIndex, {
-        year,
-        skor: skorNum * 100, // backend pakai persen
-      });
+      const response = await InfografisApi.updateIdm(
+        editingIndex,
+        {
+          year,
+          skor: skorNum * 100, // backend pakai persen
+        },
+        i18n.language
+      );
 
       const resBody = await response.json();
 
@@ -160,11 +173,11 @@ export default function ManageIDM() {
   };
   useEffect(() => {
     loadAllIdmData();
-  }, []);
+  }, [i18n.language]);
 
   const loadAllIdmData = async () => {
     // --- Ambil skor IDM (chart + tabel) ---
-    const responseIdm = await InfografisApi.getIdm();
+    const responseIdm = await InfografisApi.getIdm(i18n.language);
     const resIdmBody = await responseIdm.json();
 
     if (responseIdm.ok && Array.isArray(resIdmBody.idm)) {
@@ -179,7 +192,7 @@ export default function ManageIDM() {
     }
 
     // --- Ambil data Extra IDM (status + 3 dimensi) ---
-    const responseExtra = await InfografisApi.getExtraIdm();
+    const responseExtra = await InfografisApi.getExtraIdm(i18n.language);
     const resExtraBody = await responseExtra.json();
 
     if (

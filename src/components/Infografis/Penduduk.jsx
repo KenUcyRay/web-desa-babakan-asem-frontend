@@ -126,7 +126,7 @@ export default function Penduduk() {
   const [anakAnakData, setAnakAnakData] = useState([]);
 
   const baseUrl =
-    import.meta.env.VITE_BASE_URL_NEW || "http://localhost:4000/api";
+    import.meta.env.VITE_NEW_BASE_URL || "http://localhost:4000/api";
 
   // Function untuk fetch data berdasarkan type
   const fetchDataByType = async (type) => {

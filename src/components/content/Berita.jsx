@@ -4,19 +4,18 @@ import { useEffect, useState } from "react";
 import Pagination from "../ui/Pagination";
 import { NewsApi } from "../../libs/api/NewsApi";
 import { Helper } from "../../utils/Helper";
-import { alertError } from "../../libs/alert";
 import AOS from "aos";
 import { useTranslation } from "react-i18next";
 import "aos/dist/aos.css";
 
 export default function Berita() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [news, setNews] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
   const fetchNews = async () => {
-    const response = await NewsApi.getNews(currentPage);
+    const response = await NewsApi.getNews(currentPage, 10, i18n.language);
     if (!response.ok) return;
     const responseBody = await response.json();
     setTotalPages(responseBody.total_page);
@@ -38,7 +37,7 @@ export default function Berita() {
       easing: "ease-in-out",
       once: true,
     });
-  }, [currentPage]);
+  }, [currentPage, i18n.language]);
 
   return (
     <div className="bg-[#F8F8F8] w-full py-10">

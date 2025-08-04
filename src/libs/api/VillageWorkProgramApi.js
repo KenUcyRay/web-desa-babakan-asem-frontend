@@ -1,5 +1,5 @@
 export class VillageWorkProgramApi {
-  static async getVillageWorkPrograms() {
+  static async getVillageWorkPrograms(language) {
     try {
       const response = await fetch(
         `${import.meta.env.VITE_NEW_BASE_URL}/village-work-programs`,
@@ -8,6 +8,7 @@ export class VillageWorkProgramApi {
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
+            "Accept-Language": language,
           },
         }
       );
@@ -19,7 +20,7 @@ export class VillageWorkProgramApi {
     }
   }
 
-  static async getVillageWorkProgramById(id) {
+  static async getVillageWorkProgramById(id, language) {
     try {
       const response = await fetch(
         `${import.meta.env.VITE_NEW_BASE_URL}/village-work-programs/${id}`,
@@ -28,6 +29,7 @@ export class VillageWorkProgramApi {
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
+            "Accept-Language": language,
           },
         }
       );

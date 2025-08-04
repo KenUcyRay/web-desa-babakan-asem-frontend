@@ -34,7 +34,12 @@ export default function Agenda() {
   ) => {
     setLoading(true);
     const typeParam = category === "Semua" ? "" : category;
-    const response = await AgendaApi.getAgenda(page, limit, typeParam);
+    const response = await AgendaApi.getAgenda(
+      page,
+      limit,
+      typeParam,
+      i18n.language
+    );
     if (response.status === 200) {
       const responseBody = await response.json();
       setTotalPages(responseBody.total_page);
@@ -60,7 +65,7 @@ export default function Agenda() {
       easing: "ease-in-out",
       once: true,
     });
-  }, [currentPage]);
+  }, [currentPage, selectedCategory, i18n.language]);
 
   return (
     <div className="bg-[#F8F8F8] w-full py-10">

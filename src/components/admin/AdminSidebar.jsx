@@ -26,13 +26,13 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import logo from "../../assets/logo.png";
 import { useAuth } from "../../contexts/AuthContext";
-import { alertConfirm, alertSuccess } from "../../libs/alert";
+import { alertConfirm, alertSuccess, alertError } from "../../libs/alert";
 import { UserApi } from "../../libs/api/UserApi";
 
 export default function AdminSidebar({ isOpen, onClose }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { setProfile } = useAuth();
   const [openInfografis, setOpenInfografis] = useState(false);
   const [openManagePublik, setOpenManagePublik] = useState(false);
@@ -50,7 +50,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
   const handleLogout = async () => {
     const confirm = await alertConfirm(t("adminSidebar.actions.logoutConfirm"));
     if (!confirm) return;
-    const response = await UserApi.logout();
+    const response = await UserApi.logout(i18n.language);
     if (!response.ok) {
       await alertError(t("adminSidebar.actions.logoutError"));
       return;
@@ -177,13 +177,15 @@ export default function AdminSidebar({ isOpen, onClose }) {
   const renderSidebarContent = () => (
     <>
       {/* LOGO + JUDUL */}
-      <div className="flex items-center gap-3 px-4 py-5 border-b">
-        <img src={logo} alt="Logo Desa" className="w-11 h-11 object-contain" />
+      <div className="flex items-center gap-3 px-4 py-5 border-b bg-gradient-to-r from-green-400 to-[#B6F500]">
+        <div className="bg-white p-1 rounded-lg shadow-sm">
+          <img src={logo} alt="Logo Desa" className="w-9 h-9 object-contain" />
+        </div>
         <div>
-          <h1 className="font-bold text-green-700 leading-tight text-base">
+          <h1 className="font-bold text-white leading-tight text-base">
             {t("adminSidebar.title") || "Admin Panel Desa"}
           </h1>
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-green-100">
             {t("adminSidebar.subtitle") || "Babakan Asem"}
           </p>
         </div>
@@ -200,8 +202,8 @@ export default function AdminSidebar({ isOpen, onClose }) {
               onClick={onClose}
               className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-all duration-200 ${
                 isActive
-                  ? "bg-green-100 text-green-700 font-semibold border-l-4 border-green-500"
-                  : "text-gray-700 hover:bg-green-50"
+                  ? "bg-gradient-to-r from-green-400 to-[#B6F500] text-white font-semibold shadow-md"
+                  : "text-gray-700 hover:bg-gradient-to-r hover:from-green-50 hover:to-lime-50 hover:text-green-700"
               }`}
             >
               {item.icon}
@@ -214,10 +216,10 @@ export default function AdminSidebar({ isOpen, onClose }) {
         <div>
           <button
             onClick={() => setOpenManagePublik(!openManagePublik)}
-            className={`flex items-center justify-between w-full px-3 py-2 rounded-md text-sm transition ${
+            className={`flex items-center justify-between w-full px-3 py-2 rounded-md text-sm transition-all duration-200 ${
               managePublikSubmenu.some((item) => location.pathname === item.to)
-                ? "bg-green-100 text-green-700 font-semibold border-l-4 border-green-500"
-                : "hover:bg-green-50 text-gray-700"
+                ? "bg-gradient-to-r from-green-400 to-[#B6F500] text-white font-semibold shadow-md"
+                : "hover:bg-gradient-to-r hover:from-green-50 hover:to-lime-50 text-gray-700 hover:text-green-700"
             }`}
           >
             <div className="flex items-center gap-3">
@@ -230,14 +232,14 @@ export default function AdminSidebar({ isOpen, onClose }) {
               </span>
             </div>
             {openManagePublik ? (
-              <FiChevronUp className="text-gray-500" />
+              <FiChevronUp className="text-current" />
             ) : (
-              <FiChevronDown className="text-gray-500" />
+              <FiChevronDown className="text-current" />
             )}
           </button>
 
           {openManagePublik && (
-            <div className="ml-6 mt-1 space-y-1 border-l pl-3">
+            <div className="ml-6 mt-1 space-y-1 border-l-2 border-green-200 pl-3">
               {managePublikSubmenu.map((sub) => {
                 const isActive = location.pathname === sub.to;
                 return (
@@ -245,10 +247,10 @@ export default function AdminSidebar({ isOpen, onClose }) {
                     key={sub.to}
                     to={sub.to}
                     onClick={onClose}
-                    className={`flex items-center gap-2 px-2 py-1 rounded-md text-xs transition ${
+                    className={`flex items-center gap-2 px-2 py-1 rounded-md text-xs transition-all duration-200 ${
                       isActive
-                        ? "bg-green-50 text-green-700 font-semibold"
-                        : "hover:bg-green-50 text-gray-700"
+                        ? "bg-green-100 text-green-800 font-semibold"
+                        : "hover:bg-green-50 text-gray-700 hover:text-green-700"
                     }`}
                   >
                     {sub.icon}
@@ -264,10 +266,10 @@ export default function AdminSidebar({ isOpen, onClose }) {
         <div>
           <button
             onClick={() => setOpenManageInformasi(!openManageInformasi)}
-            className={`flex items-center justify-between w-full px-3 py-2 rounded-md text-sm transition ${
+            className={`flex items-center justify-between w-full px-3 py-2 rounded-md text-sm transition-all duration-200 ${
               manageDataSubmenu.some((item) => location.pathname === item.to)
-                ? "bg-green-100 text-green-700 font-semibold border-l-4 border-green-500"
-                : "hover:bg-green-50 text-gray-700"
+                ? "bg-gradient-to-r from-green-400 to-[#B6F500] text-white font-semibold shadow-md"
+                : "hover:bg-gradient-to-r hover:from-green-50 hover:to-lime-50 text-gray-700 hover:text-green-700"
             }`}
           >
             <div className="flex items-center gap-3">
@@ -277,14 +279,14 @@ export default function AdminSidebar({ isOpen, onClose }) {
               </span>
             </div>
             {openManageInformasi ? (
-              <FiChevronUp className="text-gray-500" />
+              <FiChevronUp className="text-current" />
             ) : (
-              <FiChevronDown className="text-gray-500" />
+              <FiChevronDown className="text-current" />
             )}
           </button>
 
           {openManageInformasi && (
-            <div className="ml-6 mt-1 space-y-1 border-l pl-3">
+            <div className="ml-6 mt-1 space-y-1 border-l-2 border-green-200 pl-3">
               {manageDataSubmenu.map((sub) => {
                 const isActive = location.pathname === sub.to;
                 return (
@@ -292,10 +294,10 @@ export default function AdminSidebar({ isOpen, onClose }) {
                     key={sub.to}
                     to={sub.to}
                     onClick={onClose}
-                    className={`flex items-center gap-2 px-2 py-1 rounded-md text-xs transition ${
+                    className={`flex items-center gap-2 px-2 py-1 rounded-md text-xs transition-all duration-200 ${
                       isActive
-                        ? "bg-green-50 text-green-700 font-semibold"
-                        : "hover:bg-green-50 text-gray-700"
+                        ? "bg-green-100 text-green-800 font-semibold"
+                        : "hover:bg-green-50 text-gray-700 hover:text-green-700"
                     }`}
                   >
                     {sub.icon}
@@ -311,12 +313,12 @@ export default function AdminSidebar({ isOpen, onClose }) {
         <div>
           <button
             onClick={() => setOpenManageOrganisasi(!openManageOrganisasi)}
-            className={`flex items-center justify-between w-full px-3 py-2 rounded-md text-sm transition ${
+            className={`flex items-center justify-between w-full px-3 py-2 rounded-md text-sm transition-all duration-200 ${
               manageOrganisasiSubmenu.some(
                 (item) => location.pathname === item.to
               )
-                ? "bg-green-100 text-green-700 font-semibold border-l-4 border-green-500"
-                : "hover:bg-green-50 text-gray-700"
+                ? "bg-gradient-to-r from-green-400 to-[#B6F500] text-white font-semibold shadow-md"
+                : "hover:bg-gradient-to-r hover:from-green-50 hover:to-lime-50 text-gray-700 hover:text-green-700"
             }`}
           >
             <div className="flex items-center gap-3">
@@ -329,14 +331,14 @@ export default function AdminSidebar({ isOpen, onClose }) {
               </span>
             </div>
             {openManageOrganisasi ? (
-              <FiChevronUp className="text-gray-500" />
+              <FiChevronUp className="text-current" />
             ) : (
-              <FiChevronDown className="text-gray-500" />
+              <FiChevronDown className="text-current" />
             )}
           </button>
 
           {openManageOrganisasi && (
-            <div className="ml-6 mt-1 space-y-1 border-l pl-3">
+            <div className="ml-6 mt-1 space-y-1 border-l-2 border-green-200 pl-3">
               {manageOrganisasiSubmenu.map((sub) => {
                 const isActive = location.pathname === sub.to;
                 return (
@@ -344,10 +346,10 @@ export default function AdminSidebar({ isOpen, onClose }) {
                     key={sub.to}
                     to={sub.to}
                     onClick={onClose}
-                    className={`flex items-center gap-2 px-2 py-1 rounded-md text-xs transition ${
+                    className={`flex items-center gap-2 px-2 py-1 rounded-md text-xs transition-all duration-200 ${
                       isActive
-                        ? "bg-green-50 text-green-700 font-semibold"
-                        : "hover:bg-green-50 text-gray-700"
+                        ? "bg-green-100 text-green-800 font-semibold"
+                        : "hover:bg-green-50 text-gray-700 hover:text-green-700"
                     }`}
                   >
                     {sub.icon}
@@ -363,10 +365,10 @@ export default function AdminSidebar({ isOpen, onClose }) {
         <div>
           <button
             onClick={() => setOpenInfografis(!openInfografis)}
-            className={`flex items-center justify-between w-full px-3 py-2 rounded-md text-sm transition ${
+            className={`flex items-center justify-between w-full px-3 py-2 rounded-md text-sm transition-all duration-200 ${
               location.pathname.includes("/admin/kelola-infografis")
-                ? "bg-green-100 text-green-700 font-semibold border-l-4 border-green-500"
-                : "hover:bg-green-50 text-gray-700"
+                ? "bg-gradient-to-r from-green-400 to-[#B6F500] text-white font-semibold shadow-md"
+                : "hover:bg-gradient-to-r hover:from-green-50 hover:to-lime-50 text-gray-700 hover:text-green-700"
             }`}
           >
             <div className="flex items-center gap-3">
@@ -376,14 +378,14 @@ export default function AdminSidebar({ isOpen, onClose }) {
               </span>
             </div>
             {openInfografis ? (
-              <FiChevronUp className="text-gray-500" />
+              <FiChevronUp className="text-current" />
             ) : (
-              <FiChevronDown className="text-gray-500" />
+              <FiChevronDown className="text-current" />
             )}
           </button>
 
           {openInfografis && (
-            <div className="ml-6 mt-1 space-y-1 border-l pl-3">
+            <div className="ml-6 mt-1 space-y-1 border-l-2 border-green-200 pl-3">
               {infografisSubmenu.map((sub) => {
                 const isActive = location.pathname === sub.to;
                 return (
@@ -391,10 +393,10 @@ export default function AdminSidebar({ isOpen, onClose }) {
                     key={sub.to}
                     to={sub.to}
                     onClick={onClose}
-                    className={`flex items-center gap-2 px-2 py-1 rounded-md text-xs transition ${
+                    className={`flex items-center gap-2 px-2 py-1 rounded-md text-xs transition-all duration-200 ${
                       isActive
-                        ? "bg-green-50 text-green-700 font-semibold"
-                        : "hover:bg-green-50 text-gray-700"
+                        ? "bg-green-100 text-green-800 font-semibold"
+                        : "hover:bg-green-50 text-gray-700 hover:text-green-700"
                     }`}
                   >
                     {sub.icon}
@@ -417,10 +419,10 @@ export default function AdminSidebar({ isOpen, onClose }) {
               key={item.to}
               to={item.to}
               onClick={onClose}
-              className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm transition ${
+              className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-all duration-200 ${
                 isActive
-                  ? "bg-green-100 text-green-700 font-semibold border-l-4 border-green-500"
-                  : "hover:bg-green-50 text-gray-700"
+                  ? "bg-gradient-to-r from-green-400 to-[#B6F500] text-white font-semibold shadow-md"
+                  : "hover:bg-gradient-to-r hover:from-green-50 hover:to-lime-50 text-gray-700 hover:text-green-700"
               }`}
             >
               {item.icon}
@@ -435,7 +437,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
         <Link
           to="/"
           onClick={onClose}
-          className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 text-gray-700 text-sm"
+          className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 text-gray-700 text-sm transition-all duration-200"
         >
           <FaArrowLeft />{" "}
           {t("adminSidebar.actions.backToWebsite") || "Kembali ke Website"}
@@ -443,7 +445,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
 
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 px-3 py-2 w-full text-left rounded-md hover:bg-red-50 text-red-500 text-sm"
+          className="flex items-center gap-3 px-3 py-2 w-full text-left rounded-md hover:bg-red-50 text-red-500 text-sm transition-all duration-200"
         >
           <FaSignOutAlt /> {t("adminSidebar.actions.logout") || "Keluar"}
         </button>

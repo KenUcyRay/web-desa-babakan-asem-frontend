@@ -49,9 +49,9 @@ export default function ManageApb() {
     try {
       const response = await fetch(`${BASE_URL}/admin/apb/${editing.id}`, {
         method: "PATCH",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
         },
         body: JSON.stringify({
           bidang: form.key,
@@ -71,9 +71,9 @@ export default function ManageApb() {
     try {
       const response = await fetch(`${BASE_URL}/admin/apb`, {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
         },
         body: JSON.stringify({
           bidang: addForm.key,
@@ -104,9 +104,7 @@ export default function ManageApb() {
 
       await fetch(`${BASE_URL}/admin/apb/${id}`, {
         method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
-        },
+        credentials: "include",
       });
       await fetchData();
     } catch (err) {

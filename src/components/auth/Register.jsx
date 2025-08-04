@@ -32,7 +32,8 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const contactValue = email;
-    const response = await UserApi.register(
+
+    const body = {
       name,
       contactValue,
       phone,
@@ -40,8 +41,8 @@ export default function Register() {
       confirmPassword,
       rememberMe,
       reCaptchaToken,
-      i18n.language
-    );
+    };
+    const response = await UserApi.register(body, i18n.language);
 
     const responseBody = await response.json();
     if (!response.ok) {

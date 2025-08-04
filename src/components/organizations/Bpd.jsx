@@ -11,17 +11,17 @@ import { Helper } from "../../utils/Helper";
 export default function Bpd() {
   const [agenda, setAgenda] = useState([]);
   const [members, setMembers] = useState([]);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const fetchAgenda = async () => {
-    const response = await AgendaApi.getAgenda(1, 3, "BPD");
+    const response = await AgendaApi.getAgenda(1, 3, "BPD", i18n.language);
     const responseBody = await response.json();
     if (!response.ok) return alertError(t("bpd.error.agenda"));
     setAgenda(responseBody.agenda);
   };
 
   const fetchMembers = async () => {
-    const response = await MemberApi.getMembers("BPD");
+    const response = await MemberApi.getMembers("BPD", 1, 8, i18n.language);
     const responseBody = await response.json();
     if (!response.ok) return alertError(t("bpd.error.members"));
     setMembers(responseBody.members);
@@ -32,7 +32,7 @@ export default function Bpd() {
     AOS.refresh();
     fetchMembers();
     fetchAgenda();
-  }, []);
+  }, [i18n.language]);
 
   return (
     <div className="font-poppins text-gray-800 w-full">

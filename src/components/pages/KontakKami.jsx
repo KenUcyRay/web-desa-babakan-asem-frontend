@@ -12,7 +12,7 @@ import { alertSuccess, alertError } from "../../libs/alert";
 import { Helper } from "../../utils/Helper";
 
 export default function KontakKami() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [message, setMessage] = React.useState("");
@@ -20,7 +20,12 @@ export default function KontakKami() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const response = await MessageApi.create(name, email, message);
+    const response = await MessageApi.create(
+      name,
+      email,
+      message,
+      i18n.language
+    );
     const responseBody = await response.json();
 
     if (!response.ok) {

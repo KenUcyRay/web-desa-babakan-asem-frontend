@@ -14,7 +14,7 @@ import { useTranslation } from "react-i18next";
 import { Helper } from "../../utils/Helper";
 
 export default function IDM() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [idm, setIdm] = useState([]);
   const [extraIdm, setExtraIdm] = useState({
     status_desa: "-",
@@ -25,7 +25,7 @@ export default function IDM() {
   const [lastUpdated, setLastUpdated] = useState(null);
 
   const fetchData = async () => {
-    const resIdm = await InfografisApi.getIdm();
+    const resIdm = await InfografisApi.getIdm(i18n.language);
     const bodyIdm = await resIdm.json();
     if (resIdm.ok && Array.isArray(bodyIdm.idm)) {
       setIdm(bodyIdm.idm.map((d) => ({ ...d, skor: d.skor / 100 })));
@@ -43,7 +43,7 @@ export default function IDM() {
       alertError("Gagal mengambil data IDM.");
     }
 
-    const resExtra = await InfografisApi.getExtraIdm();
+    const resExtra = await InfografisApi.getExtraIdm(i18n.language);
     const bodyExtra = await resExtra.json();
     if (
       resExtra.ok &&
@@ -62,7 +62,7 @@ export default function IDM() {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [i18n.language]);
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-8 font-poppins">

@@ -5,7 +5,7 @@ import {
   Navigate,
   useLocation,
 } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import NProgress, { set } from "nprogress";
 import "nprogress/nprogress.css";
 import { Toaster } from "react-hot-toast";
@@ -75,6 +75,18 @@ import GisDesa from "./components/admin/GisDesa";
 import ManageProgram from "./components/admin/ManageProgram";
 import ManageApb from "./components/admin/ManageApb";
 
+// Pengaturan Admin Organisasi
+import DashboardKarang from "./components/admin/organisasi/DashboardKarang";
+import DashboardPkk from "./components/admin/organisasi/DashboardPkk";
+import DashboardBpd from "./components/admin/organisasi/DashboardBpd";
+import DashboardBerita from "./components/admin/organisasi/DashboardBerita";
+
+//Import Layout
+import PkkLayout from "./components/admin/organisasi/PkkLayout";
+import BpdLayout from "./components/admin/organisasi/BpdLayout";
+import ContributorLayout from "./components/admin/organisasi/ContributorLayout";
+import KarangTarunaLayout from "./components/admin/organisasi/KarangTarunaLayout";
+
 // - Pengaturan Admin
 import PengaturanProfil from "./components/admin/settings/PengaturanProfil";
 import AdminLayout from "./components/admin/AdminLayout";
@@ -90,26 +102,8 @@ import ManageIDM from "./components/admin/KelolaInfografis/ManageIDM";
 import ManageSDGs from "./components/admin/KelolaInfografis/ManageSDGs";
 import ManageBansos from "./components/admin/KelolaInfografis/ManageBansos";
 
-//profile
-import { useAuth } from "./contexts/AuthContext";
-import { UserApi } from "./libs/api/UserApi";
-
 // ✅ Layout Umum (Navbar + Footer aktif + Floating Menu)
 function LayoutUmum() {
-  const { setProfile } = useAuth();
-
-  const fetchProfile = async () => {
-    const response = await UserApi.profile();
-    if (!response.ok) {
-      return;
-    }
-    const responseBody = await response.json();
-    setProfile(responseBody.data);
-  };
-  useEffect(() => {
-    fetchProfile();
-  }, []);
-
   return (
     <>
       <NavbarTop />
@@ -141,7 +135,6 @@ function LayoutUmum() {
           <Route path="/bpd" element={<Bpd />} />
           <Route path="/profil" element={<ProfilDesa />} />
           <Route path="/prestasi/:id" element={<DetailPrestasi />} />
-
           <Route path="/kontak" element={<KontakKami />} />
           <Route path="/pkk/struktur" element={<StPkk />} />
 
@@ -233,8 +226,69 @@ function AppContent() {
     return () => clearTimeout(timer);
   }, [location.pathname]);
 
-  const isAdminPage =
-    location.pathname === "/admin" || location.pathname.startsWith("/admin/");
+  // ✅ Determine which layout to render based on current path
+  const renderLayout = () => {
+    const pathname = location.pathname;
+
+    // Admin Layout
+    if (pathname === "/admin" || pathname.startsWith("/admin/")) {
+      return <LayoutAdmin />;
+    }
+
+    // PKK Admin Layout
+    if (pathname === "/pkk/admin" || pathname.startsWith("/pkk/admin/")) {
+      return (
+        <Routes>
+          <Route path="/pkk/admin" element={<PkkLayout />}>
+            <Route index element={<DashboardPkk />} />
+            <Route path="profil" element={<PengaturanProfil />} />
+          </Route>
+        </Routes>
+      );
+    }
+
+    // Karang Taruna Admin Layout
+    if (
+      pathname === "/karang-taruna/admin" ||
+      pathname.startsWith("/karang-taruna/admin/")
+    ) {
+      return (
+        <Routes>
+          <Route path="/karang-taruna/admin" element={<KarangTarunaLayout />}>
+            <Route index element={<DashboardKarang />} />
+            <Route path="profil" element={<PengaturanProfil />} />
+          </Route>
+        </Routes>
+      );
+    }
+
+    // BPD Admin Layout
+    if (pathname === "/bpd/admin" || pathname.startsWith("/bpd/admin/")) {
+      return (
+        <Routes>
+          <Route path="/bpd/admin" element={<BpdLayout />}>
+            <Route index element={<DashboardBpd />} />
+            <Route path="profil" element={<PengaturanProfil />} />
+          </Route>
+        </Routes>
+      );
+    }
+
+    // Contributor Layout
+    if (pathname === "/contributor" || pathname.startsWith("/contributor/")) {
+      return (
+        <Routes>
+          <Route path="/contributor" element={<ContributorLayout />}>
+            <Route index element={<DashboardBerita />} />
+            <Route path="profil" element={<PengaturanProfil />} />
+          </Route>
+        </Routes>
+      );
+    }
+
+    // Default ke Layout Umum
+    return <LayoutUmum />;
+  };
 
   return (
     <>
@@ -243,7 +297,9 @@ function AppContent() {
           <div className="w-12 h-12 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div>
         </div>
       )}
-      {isAdminPage ? <LayoutAdmin /> : <LayoutUmum />}
+
+      {/* ✅ Render layout berdasarkan path */}
+      {renderLayout()}
     </>
   );
 }

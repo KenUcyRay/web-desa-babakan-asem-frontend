@@ -1,16 +1,15 @@
 export class CommentApi {
   // - Buat komentar baru
-  static async createComment(id, type, content) {
+  static async createComment(id, type, content, language) {
     return await fetch(
       `${import.meta.env.VITE_NEW_BASE_URL}/private/comments/create/${id}`,
       {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
-          Authorization: `Bearer ${localStorage
-            .getItem("token")
-            ?.slice(1, -1)}`,
+          "Accept-Language": language,
         },
         body: JSON.stringify({
           target_type: type,
@@ -21,28 +20,30 @@ export class CommentApi {
   }
 
   // - Ambil komentar berdasarkan target ID (berita/agenda)
-  static async getComments(id, type) {
+  static async getComments(id, language) {
     return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/comments/${id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
+        "Accept-Language": language,
       },
     });
   }
 
   // - Update komentar
-  static async updateComment(commentId, newContent) {
+  static async updateComment(commentId, newContent, language) {
     return await fetch(
-      `${import.meta.env.VITE_NEW_BASE_URL}/private/comments/update/${commentId}`,
+      `${
+        import.meta.env.VITE_NEW_BASE_URL
+      }/private/comments/update/${commentId}`,
       {
         method: "PATCH",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
-          Authorization: `Bearer ${localStorage
-            .getItem("token")
-            ?.slice(1, -1)}`,
+          "Accept-Language": language,
         },
         body: JSON.stringify({
           content: newContent,
@@ -52,17 +53,18 @@ export class CommentApi {
   }
 
   // - Delete komentar
-  static async deleteComment(commentId) {
+  static async deleteComment(commentId, language) {
     return await fetch(
-      `${import.meta.env.VITE_NEW_BASE_URL}/private/comments/delete/${commentId}`,
+      `${
+        import.meta.env.VITE_NEW_BASE_URL
+      }/private/comments/delete/${commentId}`,
       {
+        credentials: "include",
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
-          Authorization: `Bearer ${localStorage
-            .getItem("token")
-            ?.slice(1, -1)}`,
+          "Accept-Language": language,
         },
       }
     );

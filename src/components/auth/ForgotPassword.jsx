@@ -7,7 +7,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useTranslation } from "react-i18next";
 
 export default function ForgotPassword() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const { isLoggedIn } = useAuth();
@@ -17,7 +17,7 @@ export default function ForgotPassword() {
 
     alertSuccess(t("forgotPassword.loading"));
 
-    const response = await UserApi.forgetPassword(email);
+    const response = await UserApi.forgetPassword(email, i18n.language);
 
     if (response.status === 204) {
       await alertSuccess(t("forgotPassword.successSend"));

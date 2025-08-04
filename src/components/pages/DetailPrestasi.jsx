@@ -9,7 +9,7 @@ import { UserApi } from "../../libs/api/UserApi";
 import { useTranslation } from "react-i18next";
 
 export default function DetailPrestasi() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const [achievement, setAchievement] = useState({});
@@ -32,7 +32,12 @@ export default function DetailPrestasi() {
       return;
     }
 
-    const response = await CommentApi.createComment(id, "ACHIEVEMENT", pesan);
+    const response = await CommentApi.createComment(
+      id,
+      "ACHIEVEMENT",
+      pesan,
+      i18n.language
+    );
     const responseBody = await response.json();
     if (response.status !== 201) {
       await alertError(
@@ -82,7 +87,7 @@ export default function DetailPrestasi() {
   };
 
   const fetchComment = async () => {
-    const response = await CommentApi.getComments(id);
+    const response = await CommentApi.getComments(id, i18n.language);
     const responseBody = await response.json();
     if (response.status === 200) {
       setComments(responseBody.comments);
@@ -92,7 +97,7 @@ export default function DetailPrestasi() {
   };
 
   const fetchUser = async () => {
-    const response = await UserApi.getUserProfile();
+    const response = await UserApi.profile(i18n.language);
     const responseBody = await response.json();
     if (response.status === 200) {
       setUser(responseBody.user);
@@ -100,19 +105,13 @@ export default function DetailPrestasi() {
   };
 
   useEffect(() => {
-    fetchDetailPrestasi();
-  }, [id]);
-
-  useEffect(() => {
     fetchUser();
-  }, []);
-
-  useEffect(() => {
+    fetchDetailPrestasi();
     const interval = setInterval(() => {
       fetchComment();
     }, 5000);
     return () => clearInterval(interval);
-  }, [id]);
+  }, [id, i18n.language]);
 
   const handleBack = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -125,7 +124,11 @@ export default function DetailPrestasi() {
   };
 
   const handleUpdateComment = async (commentId) => {
-    const response = await CommentApi.updateComment(commentId, editingContent);
+    const response = await CommentApi.updateComment(
+      commentId,
+      editingContent,
+      i18n.language
+    );
     const resBody = await response.json();
 
     if (response.status === 200) {
@@ -142,7 +145,7 @@ export default function DetailPrestasi() {
   const handleDeleteComment = async (commentId) => {
     if (!(await alertConfirm(t("detailNews.alert.confirmDelete")))) return;
 
-    const response = await CommentApi.deleteComment(commentId);
+    const response = await CommentApi.deleteComment(commentId, i18n.language);
     const resBody = await response.json();
 
     if (response.status === 200) {

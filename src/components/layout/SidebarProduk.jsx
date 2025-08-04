@@ -7,10 +7,10 @@ import { useTranslation } from "react-i18next";
 
 export default function SidebarProduk() {
   const [products, setProducts] = useState([]);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const fetchProduct = async () => {
-    const response = await ProductApi.getProducts(1, 4);
+    const response = await ProductApi.getProducts(1, 4, i18n.language);
     if (response.status === 200) {
       const responseBody = await response.json();
       setProducts(responseBody.products);
@@ -21,7 +21,7 @@ export default function SidebarProduk() {
 
   useEffect(() => {
     fetchProduct();
-  }, []);
+  }, [i18n.language]);
 
   return (
     <div className="space-y-6">

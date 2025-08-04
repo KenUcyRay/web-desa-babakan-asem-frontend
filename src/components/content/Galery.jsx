@@ -8,13 +8,13 @@ import { useTranslation } from "react-i18next";
 import "aos/dist/aos.css";
 
 export default function Galery() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [galery, setGalery] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
   const fetchGalery = async () => {
-    const response = await GaleryApi.getGaleri(currentPage, 12);
+    const response = await GaleryApi.getGaleri(currentPage, 12, i18n.language);
     if (response.status === 200) {
       const responseBody = await response.json();
       setTotalPages(responseBody.total_page);
@@ -27,7 +27,7 @@ export default function Galery() {
 
   useEffect(() => {
     fetchGalery();
-  }, [currentPage]);
+  }, [currentPage, i18n.language]);
 
   useEffect(() => {
     AOS.init({ duration: 700, once: true });

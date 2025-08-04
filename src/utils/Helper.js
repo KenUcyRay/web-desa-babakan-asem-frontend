@@ -74,7 +74,13 @@ export class Helper {
   }
 
   static async errorResponseHandler(responseBody) {
-    let errorMessage = "Gagal menyimpan perubahan.";
+    // Deteksi bahasa dari localStorage atau default ke Indonesia
+    const lang = localStorage.getItem("i18nextLng") || "id";
+    const isEnglish = lang.startsWith("en");
+
+    let errorMessage = isEnglish
+      ? "Failed to save changes."
+      : "Gagal menyimpan perubahan.";
 
     if (
       responseBody.errors?.name === "ZodError" &&
@@ -88,7 +94,10 @@ export class Helper {
         .map((i) => `${i.path?.[0] ?? ""}: ${i.message}`);
 
       if (totalErrors > limit) {
-        zodMessages.push(`...dan ${totalErrors - limit} error lainnya`);
+        const moreText = isEnglish
+          ? `...and ${totalErrors - limit} more errors`
+          : `...dan ${totalErrors - limit} error lainnya`;
+        zodMessages.push(moreText);
       }
 
       errorMessage = zodMessages.join("<br>");

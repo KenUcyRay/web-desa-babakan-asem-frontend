@@ -10,12 +10,12 @@ import "aos/dist/aos.css";
 import { useTranslation } from "react-i18next";
 
 export default function Pkk() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [agenda, setAgenda] = useState([]);
   const [programs, setPrograms] = useState([]);
 
   const fetchAgenda = async () => {
-    const response = await AgendaApi.getAgenda(1, 3, "PKK");
+    const response = await AgendaApi.getAgenda(1, 3, "PKK", i18n.language);
     if (response.status === 200) {
       const responseBody = await response.json();
       setAgenda(responseBody.agenda);
@@ -25,7 +25,7 @@ export default function Pkk() {
   };
 
   const fetchPrograms = async () => {
-    const response = await ProgramApi.getPrograms(1, 3);
+    const response = await ProgramApi.getPrograms(1, 3, i18n.language);
     if (!response.ok) {
       alertError(t("pkk.programError"));
       return;
@@ -38,7 +38,7 @@ export default function Pkk() {
     AOS.init({ duration: 800, once: true });
     fetchAgenda();
     fetchPrograms();
-  }, []);
+  }, [i18n.language]);
 
   return (
     <div className="font-poppins text-gray-800 bg-gradient-to-b from-green-50 via-white to-green-50">
