@@ -37,7 +37,7 @@ export default function SidebarProduk() {
               className="flex items-center mb-3 bg-gradient-to-r from-[#FFFCE2] to-white p-2 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 hover:scale-[1.02] cursor-pointer"
             >
               <img
-                src={`${import.meta.env.VITE_BASE_URL}/products/images/${
+                src={`${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
                   item.product.featured_image
                 }`}
                 alt={item.product.title}

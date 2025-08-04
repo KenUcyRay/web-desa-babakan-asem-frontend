@@ -50,6 +50,7 @@ export class UserApi {
     reCaptchaToken
   ) {
     return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/users/register`, {
+    return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/users/register`, {
       method: "POST",
       credentials: "include",
       headers: {
@@ -70,6 +71,7 @@ export class UserApi {
   static async forgetPassword(email) {
     return await fetch(
       `${import.meta.env.VITE_NEW_BASE_URL}/users/forgot-password`,
+      `${import.meta.env.VITE_NEW_BASE_URL}/users/forgot-password`,
       {
         method: "POST",
         headers: {
@@ -85,6 +87,7 @@ export class UserApi {
   static async verifyResetToken(token) {
     return await fetch(
       `${
+        import.meta.env.VITE_NEW_BASE_URL
         import.meta.env.VITE_NEW_BASE_URL
       }/users/verify-reset-token?token=${token}`,
       {

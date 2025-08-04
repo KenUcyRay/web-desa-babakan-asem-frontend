@@ -4,6 +4,9 @@ export class ProductApi {
       `${
         import.meta.env.VITE_NEW_BASE_URL
       }/products/?page=${page}&limit=${limit}`,
+      `${
+        import.meta.env.VITE_NEW_BASE_URL
+      }/products/?page=${page}&limit=${limit}`,
       {
         method: "GET",
         headers: {
@@ -16,6 +19,7 @@ export class ProductApi {
 
   static async getDetailProduct(id) {
     return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/products/${id}`, {
+    return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/products/${id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -26,6 +30,9 @@ export class ProductApi {
 
   static async getOwnProducts(page = 1, limit = 10) {
     return await fetch(
+      `${
+        import.meta.env.VITE_NEW_BASE_URL
+      }/admin/products/me?page=${page}&limit=${limit}`,
       `${
         import.meta.env.VITE_NEW_BASE_URL
       }/admin/products/me?page=${page}&limit=${limit}`,
