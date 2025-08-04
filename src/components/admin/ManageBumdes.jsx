@@ -98,13 +98,13 @@ export default function ManageBumdes() {
     }
 
     const response = await ProductApi.createProduct(rawData);
-    const body = await response.json();
-    if (response.ok) {
-      await alertSuccess("Produk berhasil ditambahkan!");
-      fetchProducts();
-    } else {
-      alertError(Helper.parseError(body));
+    const responseBody = await response.json();
+    if (!response.ok) {
+      Helper.errorResponseHandler(responseBody);
+      return;
     }
+    await alertSuccess("Produk berhasil ditambahkan!");
+    fetchProducts();
     resetForm();
     setShowForm(false);
   };

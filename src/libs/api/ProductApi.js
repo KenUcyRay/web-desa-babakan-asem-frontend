@@ -50,7 +50,7 @@ export class ProductApi {
     formData.append("featured_image", data.featured_image);
 
     return await fetch(
-      `${import.meta.env.VITE_NEW_BASE_URL}/products/admin/create`,
+      `${import.meta.env.VITE_NEW_BASE_URL}/admin/products/create`,
       {
         method: "POST",
         body: formData,
@@ -71,7 +71,7 @@ export class ProductApi {
     return await fetch(
       `${
         import.meta.env.VITE_NEW_BASE_URL
-      }/products/admin/update-by-product/${id}`,
+      }/admin/products/update-by-product/${id}`,
       {
         method: "PATCH",
         body: formData,
@@ -84,7 +84,7 @@ export class ProductApi {
     return await fetch(
       `${
         import.meta.env.VITE_NEW_BASE_URL
-      }/products/admin/delete-by-product/${id}`,
+      }/admin/products/delete-by-product/${id}`,
       {
         method: "DELETE",
         credentials: "include",
