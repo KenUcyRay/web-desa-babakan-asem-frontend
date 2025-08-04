@@ -14,7 +14,7 @@ import { useTranslation } from "react-i18next";
 export default function Login() {
   const navigate = useNavigate();
   const recaptchaRef = useRef(null);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [loginMethod, setLoginMethod] = useState("email");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -47,7 +47,7 @@ export default function Login() {
       reCaptchaToken,
     };
 
-    const response = await UserApi.login(body);
+    const response = await UserApi.login(body, i18n.language);
 
     const responseBody = await response.json();
     if (!response.ok) {

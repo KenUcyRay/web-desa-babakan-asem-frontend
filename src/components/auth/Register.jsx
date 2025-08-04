@@ -12,7 +12,7 @@ import { Helper } from "../../utils/Helper";
 import { useTranslation } from "react-i18next";
 
 export default function Register() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const recaptchaRef = useRef(null);
   const [loginMethod, setLoginMethod] = useState("email");
@@ -39,7 +39,8 @@ export default function Register() {
       password,
       confirmPassword,
       rememberMe,
-      reCaptchaToken
+      reCaptchaToken,
+      i18n.language
     );
 
     const responseBody = await response.json();

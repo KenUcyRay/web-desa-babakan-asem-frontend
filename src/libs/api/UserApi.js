@@ -1,11 +1,12 @@
 export class UserApi {
-  static async login(body) {
+  static async login(body, language) {
     return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/users/login`, {
       method: "POST",
       credentials: "include",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
+        "Accept-Language": language,
       },
       body: JSON.stringify({
         email: body.email === "" ? undefined : body.email,
@@ -47,15 +48,16 @@ export class UserApi {
     password,
     confirmPassword,
     rememberMe,
-    reCaptchaToken
+    reCaptchaToken,
+    language
   ) {
-    return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/users/register`, {
     return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/users/register`, {
       method: "POST",
       credentials: "include",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
+        "Accept-Language": language,
       },
       body: JSON.stringify({
         name: name,
@@ -70,7 +72,6 @@ export class UserApi {
   }
   static async forgetPassword(email) {
     return await fetch(
-      `${import.meta.env.VITE_NEW_BASE_URL}/users/forgot-password`,
       `${import.meta.env.VITE_NEW_BASE_URL}/users/forgot-password`,
       {
         method: "POST",
@@ -87,7 +88,6 @@ export class UserApi {
   static async verifyResetToken(token) {
     return await fetch(
       `${
-        import.meta.env.VITE_NEW_BASE_URL
         import.meta.env.VITE_NEW_BASE_URL
       }/users/verify-reset-token?token=${token}`,
       {
