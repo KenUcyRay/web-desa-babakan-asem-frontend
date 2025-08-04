@@ -23,7 +23,6 @@ import { UserValidation } from "@/validation/user-validation";
 import { transporter } from "@/application/nodemailer";
 import { Role } from "@prisma/client";
 import { verifyRecaptcha } from "@/util/recaptcha";
-import { logger } from "@/application/logging";
 
 export class UserService {
   static async register(request: RegisterUserRequest) {
@@ -67,10 +66,10 @@ export class UserService {
   static async login(t: TFunction, request: LoginUserRequest) {
     Validation.validate(UserValidation.login, request);
 
-    const success = verifyRecaptcha(request.recaptcha_token);
-    if (!success) {
-      throw new ResponseError(403, "Recaptcha verification failed");
-    }
+    // const success = await verifyRecaptcha(request.recaptcha_token);
+    // if (!success) {
+    //   throw new ResponseError(403, "Recaptcha verification failed");
+    // }
 
     const user = await prismaClient.user.findFirst({
       where: {

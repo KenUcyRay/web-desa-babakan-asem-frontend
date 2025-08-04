@@ -27,12 +27,11 @@ export class CommentService {
           where: { id: comment.user_id },
         });
         return {
-          ...toUserResponse(user!),
+          user: toUserResponse(user!),
           ...comment,
         };
       })
     );
-
     return { comments: enrichedComments };
   }
 

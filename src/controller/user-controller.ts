@@ -3,6 +3,12 @@ import { UserService } from "@/service/user-service";
 import { UserRequest } from "@/type/user-request";
 import { clearCookie, setCookie } from "@/util/cookie";
 import { Request, Response, NextFunction } from "express";
+import { TFunction } from "i18next";
+
+// Extend Request interface to include i18n
+interface RequestWithI18n extends Request {
+  t: TFunction;
+}
 
 export class UserController {
   static async register(req: Request, res: Response, next: NextFunction) {
@@ -14,12 +20,30 @@ export class UserController {
       next(error);
     }
   }
-  static async login(req: Request, res: Response, next: NextFunction) {
+  static async login(req: RequestWithI18n, res: Response, next: NextFunction) {
     try {
+      console.log("🔍 Login request received from:", req.get("origin"));
+      console.log("🔍 Request headers:", {
+        origin: req.get("origin"),
+        userAgent: req.get("user-agent"),
+        acceptLanguage: req.get("accept-language"),
+      });
+
       const response = await UserService.login(req.t, req.body);
       setCookie(res, response.token, req.body.remember_me);
-      res.status(200).json({ data: response.user });
+
+      console.log("✅ Login successful, cookie set");
+      console.log("🍪 Response headers will include Set-Cookie");
+
+      // Include token in response for cross-origin testing
+      res.status(200).json({
+        data: {
+          ...response.user,
+          token: response.token, // Add token to response for header auth testing
+        },
+      });
     } catch (error) {
+      console.log("❌ Login error:", error);
       next(error);
     }
   }

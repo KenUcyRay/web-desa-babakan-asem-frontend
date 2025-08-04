@@ -5,6 +5,7 @@ import { UserRequest } from "@/type/user-request";
 export class CommentController {
   static async getByTargetId(req: Request, res: Response, next: NextFunction) {
     try {
+      console.log("Fetching comments for target ID:", req.params.targetId);
       let page = parseInt(req.query.page as string) || 1;
       let limit = parseInt(req.query.limit as string) || 10;
       const response = await CommentService.getByTargetId(

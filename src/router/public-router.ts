@@ -34,6 +34,9 @@ publicRouter.post("/administrations", AdministrationController.pengantar);
 publicRouter.get("/news", NewsController.getAll);
 publicRouter.get("/news/:userId", NewsController.getById);
 
+//Comments
+publicRouter.get("/comments/:targetId", CommentController.getByTargetId);
+
 // publicRouter.post("/administrations", AdministrationController.create);
 
 // publicRouter.get("/agenda",)
@@ -74,6 +77,3 @@ publicRouter.get("/agenda/:agendaId", AgendaController.getById);
 //Products
 publicRouter.get("/products", ProductController.getAll);
 publicRouter.get("/products/:userId", ProductController.getById);
-
-//Comments
-publicRouter.get("/comments/:targetId", CommentController.getByTargetId);
