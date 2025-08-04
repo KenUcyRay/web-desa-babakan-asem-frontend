@@ -1,3 +1,4 @@
+import { TFunction } from "i18next";
 import { prismaClient } from "../application/database";
 import { ResponseError } from "../error/response-error";
 import { UserResponse } from "../model/user-model";
@@ -6,6 +7,7 @@ import { Validation } from "../validation/validation";
 
 export class RatingService {
   static async alreadyRated(
+    t: TFunction,
     productId: string,
     user: UserResponse
   ): Promise<{ id?: string; rated: boolean; rating?: number }> {
@@ -14,7 +16,7 @@ export class RatingService {
     });
 
     if (!product) {
-      throw new ResponseError(404, "Product not found");
+      throw new ResponseError(404, t("product.not_found"));
     }
 
     const rating = await prismaClient.rating.findFirst({
@@ -25,7 +27,7 @@ export class RatingService {
     });
 
     if (!rating) {
-      throw new ResponseError(400, "You have not rated this product yet");
+      throw new ResponseError(400, t("rating.not_rated_yet"));
     }
 
     return {
@@ -35,6 +37,7 @@ export class RatingService {
     };
   }
   static async createRating(
+    t: TFunction,
     request: { rating: number },
     productId: string,
     user: UserResponse
@@ -45,7 +48,7 @@ export class RatingService {
     });
 
     if (!product) {
-      throw new ResponseError(404, "Product not found");
+      throw new ResponseError(404, t("product.not_found"));
     }
 
     const ratingExists = await prismaClient.rating.findFirst({
@@ -56,10 +59,7 @@ export class RatingService {
     });
 
     if (ratingExists) {
-      throw new ResponseError(
-        400,
-        "You already rating already for this product"
-      );
+      throw new ResponseError(400, t("rating.already_rated"));
     }
 
     const rating = await prismaClient.rating.create({
@@ -73,6 +73,7 @@ export class RatingService {
     return { rating: rating };
   }
   static async updateRating(
+    t: TFunction,
     ratingId: string,
     request: { rating: number },
     user: UserResponse
@@ -86,11 +87,11 @@ export class RatingService {
     });
 
     if (!rating) {
-      throw new ResponseError(404, "Rating not found");
+      throw new ResponseError(404, t("rating.not_found"));
     }
 
     if (rating.user_id !== user.id) {
-      throw new ResponseError(403, "You are not allowed to update this rating");
+      throw new ResponseError(403, t("rating.not_allowed_update"));
     }
 
     const updatedRating = await prismaClient.rating.update({
@@ -100,17 +101,21 @@ export class RatingService {
 
     return { rating: updatedRating };
   }
-  static async deleteRating(ratingId: string, user: UserResponse) {
+  static async deleteRating(
+    t: TFunction,
+    ratingId: string,
+    user: UserResponse
+  ) {
     const rating = await prismaClient.rating.findUnique({
       where: { id: ratingId },
     });
 
     if (!rating) {
-      throw new ResponseError(404, "Rating not found");
+      throw new ResponseError(404, t("rating.not_found"));
     }
 
     if (rating.user_id !== user.id) {
-      throw new ResponseError(403, "You are not allowed to delete this rating");
+      throw new ResponseError(403, t("rating.not_allowed_delete"));
     }
 
     await prismaClient.rating.delete({

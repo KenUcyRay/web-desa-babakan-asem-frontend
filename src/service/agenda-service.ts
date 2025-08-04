@@ -1,3 +1,4 @@
+import { TFunction } from "i18next";
 import { prismaClient } from "../application/database";
 import { ResponseError } from "../error/response-error";
 import {
@@ -44,6 +45,7 @@ export class AgendaService {
     return toAgendaGetAllResponse(totalAgenda, page, limit, agenda);
   }
   static async create(
+    t: TFunction,
     request: AgendaCreateRequest,
     user: UserResponse,
     file?: Express.Multer.File
@@ -51,7 +53,7 @@ export class AgendaService {
     Validation.validate(AgendaValidation.create, request);
 
     if (!file) {
-      throw new ResponseError(400, "Featured image is required");
+      throw new ResponseError(400, t("agenda.featured_image_required"));
     }
 
     const agenda = await prismaClient.agenda.create({
@@ -68,6 +70,7 @@ export class AgendaService {
     return { agenda: agenda };
   }
   static async update(
+    t: TFunction,
     request: AgendaUpdateRequest,
     user: UserResponse,
     agendaId: string,
@@ -80,11 +83,11 @@ export class AgendaService {
     });
 
     if (!agenda) {
-      throw new ResponseError(404, "Agenda not found");
+      throw new ResponseError(404, t("agenda.not_found"));
     }
 
     if (agenda.userId !== user.id) {
-      throw new ResponseError(403, "Forbidden");
+      throw new ResponseError(403, t("common.forbidden"));
     }
 
     if (file) {
@@ -122,17 +125,22 @@ export class AgendaService {
 
     return { agenda: agendaUpdate };
   }
-  static async delete(agendaId: string, user: UserResponse, token: string) {
+  static async delete(
+    t: TFunction,
+    agendaId: string,
+    user: UserResponse,
+    token: string
+  ) {
     const agenda = await prismaClient.agenda.findUnique({
       where: { id: agendaId },
     });
 
     if (!agenda) {
-      throw new ResponseError(404, "Agenda not found");
+      throw new ResponseError(404, t("agenda.not_found"));
     }
 
     if (agenda.userId !== user.id) {
-      throw new ResponseError(403, "Forbidden");
+      throw new ResponseError(403, t("common.forbidden"));
     }
 
     await prismaClient.comment.deleteMany({
@@ -193,12 +201,12 @@ export class AgendaService {
       agendaWithUser
     );
   }
-  static async getById(agendaId: string) {
+  static async getById(t: TFunction, agendaId: string) {
     const agenda = await prismaClient.agenda.findUnique({
       where: { id: agendaId, is_published: true },
     });
     if (!agenda) {
-      throw new ResponseError(404, "Agenda not found");
+      throw new ResponseError(404, t("agenda.not_found"));
     }
 
     await prismaClient.agenda.update({
@@ -212,6 +220,14 @@ export class AgendaService {
       where: { target_id: agendaId, target_type: "AGENDA" },
       orderBy: {
         created_at: "desc",
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
     });
     const user = await prismaClient.user.findUnique({

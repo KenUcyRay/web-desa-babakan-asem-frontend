@@ -1,4 +1,5 @@
 import axios from "axios";
+import { TFunction } from "i18next";
 import { prismaClient } from "../application/database";
 import {
   CommentCreateRequest,
@@ -36,6 +37,7 @@ export class CommentService {
   }
 
   static async create(
+    t: TFunction,
     request: CommentCreateRequest,
     targetId: string,
     user: UserResponse
@@ -48,14 +50,14 @@ export class CommentService {
       });
 
       if (!news) {
-        throw new ResponseError(404, "News not found");
+        throw new ResponseError(404, t("news.not_found"));
       }
     } else if (request.target_type === TargetType.AGENDA) {
       const agenda = await prismaClient.agenda.findUnique({
         where: { id: targetId },
       });
       if (!agenda) {
-        throw new ResponseError(404, "Agenda not found");
+        throw new ResponseError(404, t("agenda.not_found"));
       }
     }
     const comment = await prismaClient.comment.create({
@@ -69,6 +71,7 @@ export class CommentService {
     return { comment: comment };
   }
   static async update(
+    t: TFunction,
     request: CommentUpdateRequest,
     commentId: string,
     user: UserResponse
@@ -80,14 +83,11 @@ export class CommentService {
     });
 
     if (!comment) {
-      throw new ResponseError(404, "Comment not found");
+      throw new ResponseError(404, t("comment.not_found"));
     }
 
     if (comment.user_id !== user.id) {
-      throw new ResponseError(
-        403,
-        "You are not authorized to update this comment"
-      );
+      throw new ResponseError(403, t("comment.not_authorized_update"));
     }
 
     const commentUpdate = await prismaClient.comment.update({
@@ -99,13 +99,13 @@ export class CommentService {
 
     return { comment: commentUpdate };
   }
-  static async delete(commentId: string, user: UserResponse) {
+  static async delete(t: TFunction, commentId: string, user: UserResponse) {
     const comment = await prismaClient.comment.findUnique({
       where: { id: commentId },
     });
 
     if (!comment) {
-      throw new ResponseError(404, "Comment not found");
+      throw new ResponseError(404, t("comment.not_found"));
     }
 
     if (user.role === "ADMIN" || comment.user_id === user.id) {
@@ -116,9 +116,6 @@ export class CommentService {
       return { comment: commentDelete };
     }
 
-    throw new ResponseError(
-      403,
-      "You are not authorized to delete this comment"
-    );
+    throw new ResponseError(403, t("comment.not_authorized_delete"));
   }
 }

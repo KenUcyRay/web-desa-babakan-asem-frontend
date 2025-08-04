@@ -6,6 +6,7 @@ import {
 import { Validation } from "@/validation/validation";
 import { VillageWorkProgramValidation } from "@/validation/village-work-program-validation";
 import { ResponseError } from "@/error/response-error";
+import { TFunction } from "i18next";
 export class VillageWorkProgramService {
   static async getAll() {
     const programs = await prismaClient.villageWorkProgram.findMany({});
@@ -26,7 +27,11 @@ export class VillageWorkProgramService {
     return { data: program };
   }
 
-  static async update(id: string, request: UpdateVillageWorkProgramRequest) {
+  static async update(
+    t: TFunction,
+    id: string,
+    request: UpdateVillageWorkProgramRequest
+  ) {
     const validation = Validation.validate(
       VillageWorkProgramValidation.update,
       request
@@ -37,7 +42,7 @@ export class VillageWorkProgramService {
     });
 
     if (!existingProgram) {
-      throw new ResponseError(404, "Village work program not found");
+      throw new ResponseError(404, t("village_work_program.not_found"));
     }
 
     const program = await prismaClient.villageWorkProgram.update({
@@ -48,13 +53,13 @@ export class VillageWorkProgramService {
     return { data: program };
   }
 
-  static async delete(id: string) {
+  static async delete(t: TFunction, id: string) {
     const existingProgram = await prismaClient.villageWorkProgram.findUnique({
       where: { id },
     });
 
     if (!existingProgram) {
-      throw new ResponseError(404, "Village work program not found");
+      throw new ResponseError(404, t("village_work_program.not_found"));
     }
 
     await prismaClient.villageWorkProgram.delete({

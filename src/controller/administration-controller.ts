@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { UserRequest } from "@/type/user-request";
 import { AdministrationService } from "@/service/administration-service";
+import { I18nRequest } from "@/type/i18n-request";
 
 export class AdministrationController {
   static async getPengantar(
@@ -17,12 +18,13 @@ export class AdministrationController {
   }
 
   static async updatePengantar(
-    req: UserRequest,
+    req: UserRequest & I18nRequest,
     res: Response,
     next: NextFunction
   ) {
     try {
       const response = await AdministrationService.updatePengantar(
+        req.t,
         req.params.id
       );
       res.status(200).json(response);

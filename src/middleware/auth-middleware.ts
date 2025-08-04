@@ -11,20 +11,7 @@ export const authMiddleware = async (
   next: NextFunction
 ) => {
   try {
-    // Try to get token from cookies first
-    let token = req.cookies.token;
-
-    // If no cookie token, try Authorization header
-    if (!token) {
-      const authHeader = req.headers.authorization;
-      if (authHeader && authHeader.startsWith("Bearer ")) {
-        token = authHeader.substring(7); // Remove 'Bearer ' prefix
-        console.log("🔑 Token found in Authorization header");
-      }
-    } else {
-      console.log("🍪 Token found in cookies");
-    }
-
+    const token = req.cookies.token;
     if (!token) {
       throw new ResponseError(401, "Unauthorized");
     }

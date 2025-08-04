@@ -1,5 +1,6 @@
 import { VillageAchievementService } from "@/service/village-achievement-service";
 import { Request, Response, NextFunction } from "express";
+import { I18nRequest } from "@/type/i18n-request";
 
 export class VillageAchievementController {
   //Public
@@ -11,9 +12,10 @@ export class VillageAchievementController {
       next(error);
     }
   }
-  static async get(req: Request, res: Response, next: NextFunction) {
+  static async get(req: I18nRequest, res: Response, next: NextFunction) {
     try {
       const response = await VillageAchievementService.get(
+        req.t,
         req.params.villageAchievementsId
       );
       res.status(200).json(response);
@@ -23,9 +25,10 @@ export class VillageAchievementController {
   }
 
   //Admin
-  static async create(req: Request, res: Response, next: NextFunction) {
+  static async create(req: I18nRequest, res: Response, next: NextFunction) {
     try {
       const response = await VillageAchievementService.create(
+        req.t,
         req.body,
         req.file
       );
@@ -35,9 +38,10 @@ export class VillageAchievementController {
     }
   }
 
-  static async update(req: Request, res: Response, next: NextFunction) {
+  static async update(req: I18nRequest, res: Response, next: NextFunction) {
     try {
       const response = await VillageAchievementService.update(
+        req.t,
         req.body,
         req.params.id,
         req.file
@@ -48,9 +52,9 @@ export class VillageAchievementController {
     }
   }
 
-  static async delete(req: Request, res: Response, next: NextFunction) {
+  static async delete(req: I18nRequest, res: Response, next: NextFunction) {
     try {
-      await VillageAchievementService.delete(req.params.id);
+      await VillageAchievementService.delete(req.t, req.params.id);
       res.status(204).json({});
     } catch (error) {
       next(error);

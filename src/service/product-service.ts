@@ -1,6 +1,7 @@
 import fs from "fs/promises";
 import path from "path";
 import axios from "axios";
+import { TFunction } from "i18next";
 import { prismaClient } from "../application/database";
 import { ResponseError } from "../error/response-error";
 import {
@@ -45,7 +46,7 @@ export class ProductService {
       producsWithRating
     );
   }
-  static async getById(productId: string) {
+  static async getById(t: TFunction, productId: string) {
     const product = await prismaClient.product.findUnique({
       where: { id: productId },
       include: {
@@ -53,7 +54,7 @@ export class ProductService {
       },
     });
     if (!product) {
-      throw new ResponseError(404, "Product not found");
+      throw new ResponseError(404, t("product.not_found"));
     }
 
     const averageRating =
@@ -66,6 +67,14 @@ export class ProductService {
       where: { target_id: productId, target_type: "PRODUCT" },
       orderBy: {
         created_at: "desc",
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
     });
     return {
@@ -115,13 +124,14 @@ export class ProductService {
     );
   }
   static async create(
+    t: TFunction,
     request: ProductCreateRequest,
     user: UserResponse,
     file?: Express.Multer.File
   ) {
     request.price = Number(request.price);
     if (isNaN(request.price)) {
-      throw new ResponseError(404, "Price must be a number");
+      throw new ResponseError(404, t("product.price_must_number"));
     }
     Validation.validate(ProductValidation.create, request);
 
@@ -130,11 +140,11 @@ export class ProductService {
     });
 
     if (!category) {
-      throw new ResponseError(404, "Category not found");
+      throw new ResponseError(404, t("product.category_not_found"));
     }
 
     if (!file) {
-      throw new ResponseError(400, "Featured image is required");
+      throw new ResponseError(400, t("common.image_required"));
     }
 
     const product = await prismaClient.product.create({
@@ -148,6 +158,7 @@ export class ProductService {
     return { product: product };
   }
   static async update(
+    t: TFunction,
     request: ProductUpdateRequest,
     user: UserResponse,
     productId: string,
@@ -156,7 +167,7 @@ export class ProductService {
     if (request.price) {
       request.price = Number(request.price);
       if (isNaN(request.price)) {
-        throw new ResponseError(404, "Price must be a number");
+        throw new ResponseError(404, t("product.price_must_number"));
       }
     }
 
@@ -167,11 +178,11 @@ export class ProductService {
     });
 
     if (!product) {
-      throw new ResponseError(404, "Product not found");
+      throw new ResponseError(404, t("product.not_found"));
     }
 
     if (product.user_id !== user.id) {
-      throw new ResponseError(403, "Forbidden");
+      throw new ResponseError(403, t("common.forbidden"));
     }
 
     if (file) {
@@ -200,17 +211,22 @@ export class ProductService {
 
     return { product: productUpdate };
   }
-  static async delete(productId: string, user: UserResponse, token: string) {
+  static async delete(
+    t: TFunction,
+    productId: string,
+    user: UserResponse,
+    token: string
+  ) {
     const product = await prismaClient.product.findUnique({
       where: { id: productId },
     });
 
     if (!product) {
-      throw new ResponseError(404, "Product not found");
+      throw new ResponseError(404, t("product.not_found"));
     }
 
     if (product.user_id !== user.id) {
-      throw new ResponseError(403, "Forbidden");
+      throw new ResponseError(403, t("common.forbidden"));
     }
 
     await prismaClient.comment.deleteMany({

@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { UserRequest } from "../type/user-request";
+import { I18nRequest } from "../type/i18n-request";
 import { AgendaService } from "../service/agenda-service";
 import { AgendaType } from "@prisma/client";
 
@@ -49,7 +50,11 @@ export class AgendaController {
       next(error);
     }
   }
-  static async create(req: UserRequest, res: Response, next: NextFunction) {
+  static async create(
+    req: UserRequest & I18nRequest,
+    res: Response,
+    next: NextFunction
+  ) {
     try {
       if (req.body.is_published === "false") {
         req.body.is_published = false;
@@ -57,6 +62,7 @@ export class AgendaController {
         req.body.is_published = true;
       }
       const response = await AgendaService.create(
+        req.t,
         req.body,
         req.user!,
         req.file
@@ -66,7 +72,11 @@ export class AgendaController {
       next(error);
     }
   }
-  static async update(req: UserRequest, res: Response, next: NextFunction) {
+  static async update(
+    req: UserRequest & I18nRequest,
+    res: Response,
+    next: NextFunction
+  ) {
     try {
       if (req.body.is_published === "false") {
         req.body.is_published = false;
@@ -74,6 +84,7 @@ export class AgendaController {
         req.body.is_published = true;
       }
       const response = await AgendaService.update(
+        req.t,
         req.body,
         req.user!,
         req.params.agendaId,
@@ -84,9 +95,14 @@ export class AgendaController {
       next(error);
     }
   }
-  static async delete(req: UserRequest, res: Response, next: NextFunction) {
+  static async delete(
+    req: UserRequest & I18nRequest,
+    res: Response,
+    next: NextFunction
+  ) {
     try {
       await AgendaService.delete(
+        req.t,
         req.params.agendaId,
         req.user!,
         req.header("Authorization")!
@@ -125,9 +141,9 @@ export class AgendaController {
       next(error);
     }
   }
-  static async getById(req: Request, res: Response, next: NextFunction) {
+  static async getById(req: I18nRequest, res: Response, next: NextFunction) {
     try {
-      const response = await AgendaService.getById(req.params.agendaId);
+      const response = await AgendaService.getById(req.t, req.params.agendaId);
       res.status(200).json(response);
     } catch (error) {
       next(error);

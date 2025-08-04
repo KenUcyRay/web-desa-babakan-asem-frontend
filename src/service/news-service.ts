@@ -1,3 +1,4 @@
+import { TFunction } from "i18next";
 import { prismaClient } from "../application/database";
 import { ResponseError } from "../error/response-error";
 import {
@@ -11,7 +12,6 @@ import { NewsValidation } from "../validation/news-validation";
 import { Validation } from "../validation/validation";
 import path from "node:path";
 import fs from "node:fs/promises";
-import axios from "axios";
 
 export class NewsService {
   static async getOwn(
@@ -40,6 +40,7 @@ export class NewsService {
     return toAllNewsResponse(limit, totalMessages, page, news);
   }
   static async create(
+    t: TFunction,
     request: NewsCreateRequest,
     user: UserResponse,
     file?: Express.Multer.File
@@ -47,7 +48,7 @@ export class NewsService {
     const validation = Validation.validate(NewsValidation.create, request);
 
     if (!file) {
-      throw new ResponseError(400, "Featured image is required");
+      throw new ResponseError(400, t("news.featured_image_required"));
     }
 
     const news = await prismaClient.news.create({
@@ -64,6 +65,7 @@ export class NewsService {
     return { news: news };
   }
   static async update(
+    t: TFunction,
     request: NewsUpdateRequest,
     user: UserResponse,
     newsId: string,
@@ -76,11 +78,11 @@ export class NewsService {
     });
 
     if (!news) {
-      throw new ResponseError(404, "News not found");
+      throw new ResponseError(404, t("news.not_found"));
     }
 
     if (news.userId !== user.id) {
-      throw new ResponseError(403, "Forbidden");
+      throw new ResponseError(403, t("common.forbidden"));
     }
 
     if (file) {
@@ -114,17 +116,22 @@ export class NewsService {
 
     return { news: newsUpdate };
   }
-  static async delete(newsId: string, user: UserResponse, token: string) {
+  static async delete(
+    t: TFunction,
+    newsId: string,
+    user: UserResponse,
+    token: string
+  ) {
     const news = await prismaClient.news.findUnique({
       where: { id: newsId },
     });
 
     if (!news) {
-      throw new ResponseError(404, "News not found");
+      throw new ResponseError(404, t("news.not_found"));
     }
 
     if (news.userId !== user.id) {
-      throw new ResponseError(403, "Forbidden");
+      throw new ResponseError(403, t("common.forbidden"));
     }
 
     await prismaClient.comment.deleteMany({
@@ -179,16 +186,16 @@ export class NewsService {
     );
     return toNewsWithUserGetAllResponse(totalAgenda, page, limit, newsWithUser);
   }
-  static async getById(newsId: string) {
+  static async getById(t: TFunction, newsId: string) {
     const news = await prismaClient.news.findUnique({
       where: { id: newsId, is_published: true },
     });
     if (!news) {
-      throw new ResponseError(404, "News not found");
+      throw new ResponseError(404, t("news.not_found"));
     }
 
     await prismaClient.news.update({
-      where: news,
+      where: { id: newsId },
       data: {
         view_count: { increment: 1 },
       },
@@ -197,6 +204,14 @@ export class NewsService {
     const comments = await prismaClient.comment.findMany({
       where: { target_id: newsId, target_type: "NEWS" },
       orderBy: { created_at: "desc" },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
     });
 
     const user = await prismaClient.user.findUnique({

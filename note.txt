@@ -42,3 +42,7 @@ ada bug saat tokennya basi gk bisa logout!!
 - message 
 - administration
 - news
+
+Ada masalah untuk semua yang punya komentar
+
+-- Message done all meren

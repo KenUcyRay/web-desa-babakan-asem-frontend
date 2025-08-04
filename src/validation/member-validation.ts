@@ -3,13 +3,21 @@ import z, { ZodType } from "zod";
 
 export class MemberValidation {
   static createMember: ZodType = z.object({
-    name: z.string(),
-    position: z.string(),
-    term_start: z.coerce.number().int(),
-    term_end: z.coerce.number().int(),
-    organization_type: z.nativeEnum(Organization),
-    is_term: z.coerce.boolean(),
-    important_level: z.coerce.number().int(),
+    name: z.string({ message: "zodErrors.required" }),
+    position: z.string({ message: "zodErrors.required" }),
+    term_start: z.coerce
+      .number({ message: "zodErrors.invalid_type" })
+      .int({ message: "zodErrors.invalid_type" }),
+    term_end: z.coerce
+      .number({ message: "zodErrors.invalid_type" })
+      .int({ message: "zodErrors.invalid_type" }),
+    organization_type: z.nativeEnum(Organization, {
+      message: "zodErrors.invalid_value",
+    }),
+    is_term: z.coerce.boolean({ message: "zodErrors.invalid_type" }),
+    important_level: z.coerce
+      .number({ message: "zodErrors.invalid_type" })
+      .int({ message: "zodErrors.invalid_type" }),
   });
 
   static safeBoolean = z.preprocess((val) => {
@@ -22,15 +30,26 @@ export class MemberValidation {
     }
 
     return undefined; // biar gagal validasi kalau bukan yang kita mau
-  }, z.boolean());
+  }, z.boolean({ message: "zodErrors.invalid_type" }));
 
   static updateMember: ZodType = z.object({
-    name: z.string().optional(),
-    position: z.string().optional(),
-    term_start: z.coerce.number().int().optional(),
-    term_end: z.coerce.number().int().optional(),
-    organization_type: z.nativeEnum(Organization).optional(),
+    name: z.string({ message: "zodErrors.invalid_type" }).optional(),
+    position: z.string({ message: "zodErrors.invalid_type" }).optional(),
+    term_start: z.coerce
+      .number({ message: "zodErrors.invalid_type" })
+      .int({ message: "zodErrors.invalid_type" })
+      .optional(),
+    term_end: z.coerce
+      .number({ message: "zodErrors.invalid_type" })
+      .int({ message: "zodErrors.invalid_type" })
+      .optional(),
+    organization_type: z
+      .nativeEnum(Organization, { message: "zodErrors.invalid_value" })
+      .optional(),
     is_term: this.safeBoolean.optional(),
-    important_level: z.coerce.number().int().optional(),
+    important_level: z.coerce
+      .number({ message: "zodErrors.invalid_type" })
+      .int({ message: "zodErrors.invalid_type" })
+      .optional(),
   });
 }

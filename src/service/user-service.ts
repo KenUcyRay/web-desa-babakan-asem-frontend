@@ -25,13 +25,14 @@ import { Role } from "@prisma/client";
 import { verifyRecaptcha } from "@/util/recaptcha";
 
 export class UserService {
-  static async register(request: RegisterUserRequest) {
+  // Public
+  static async register(t: TFunction, request: RegisterUserRequest) {
     Validation.validate(UserValidation.register, request);
 
-    // const success = await verifyRecaptcha(request.recaptcha_token);
-    // if (!success) {
-    //   throw new ResponseError(403, "Recaptcha verification failed");
-    // }
+    const success = await verifyRecaptcha(request.recaptcha_token);
+    if (!success) {
+      throw new ResponseError(403, t("recaptcha.verification_failed"));
+    }
 
     const findUserWithSameEmaiOrPhone = await prismaClient.user.count({
       where: {
@@ -41,7 +42,7 @@ export class UserService {
     });
 
     if (findUserWithSameEmaiOrPhone !== 0) {
-      throw new ResponseError(400, "Email or phone number already registered");
+      throw new ResponseError(400, t("user.already_registered"));
     }
 
     request.password = await bcryptjs.hash(request.password, 10);
@@ -66,10 +67,10 @@ export class UserService {
   static async login(t: TFunction, request: LoginUserRequest) {
     Validation.validate(UserValidation.login, request);
 
-    // const success = await verifyRecaptcha(request.recaptcha_token);
-    // if (!success) {
-    //   throw new ResponseError(403, "Recaptcha verification failed");
-    // }
+    const success = await verifyRecaptcha(request.recaptcha_token);
+    if (!success) {
+      throw new ResponseError(403, t("recaptcha.verification_failed"));
+    }
 
     const user = await prismaClient.user.findFirst({
       where: {
@@ -91,6 +92,99 @@ export class UserService {
       user: userResponse,
     };
   }
+  static async forgotPassword(
+    t: TFunction,
+    request: UserForgotPasswordRequest
+  ) {
+    Validation.validate(UserValidation.forgotPassword, request);
+
+    const user = await prismaClient.user.findFirst({
+      where: { email: request.email },
+    });
+
+    if (!user) {
+      throw new ResponseError(404, t("user.not_found"));
+    }
+
+    const token = jwt.sign(
+      toUserResponse(user),
+      process.env.JWT_SECRET_KEY_RESET!,
+      {
+        expiresIn: "1h",
+      }
+    );
+
+    await prismaClient.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        reset_token: token,
+      },
+    });
+
+    const resetLink = `http://localhost:3000/reset-password?token=${token}`;
+
+    const mailOptions = {
+      from: '"App Support" ranggadendiakun@gmail.com',
+      to: request.email,
+      subject: "Reset Password Desa Babakan Asem Conggeang",
+      html: `<p>Klik link ini untuk reset password:</p><a href="${resetLink}">${resetLink}</a>`,
+    };
+
+    await transporter.sendMail(mailOptions);
+  }
+  static async verifyResetToken(t: TFunction, token: string) {
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET_KEY_RESET!);
+    } catch (error) {
+      throw new ResponseError(400, t("user.invalid_or_expired_token"));
+    }
+    decoded = decoded as UserResponse;
+    const user = await prismaClient.user.findUnique({
+      where: { id: decoded.id },
+    });
+
+    if (!user) {
+      throw new ResponseError(404, t("user.not_found"));
+    }
+  }
+  static async resetPassword(
+    t: TFunction,
+    request: UserResetPasswordRequest,
+    token: string
+  ) {
+    Validation.validate(UserValidation.resetPassword, request);
+
+    if (request.password !== request.confirm_password) {
+      throw new ResponseError(400, t("user.passwords_not_match"));
+    }
+
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET_KEY_RESET!);
+    } catch (error) {
+      throw new ResponseError(400, t("user.invalid_or_expired_token"));
+    }
+    decoded = decoded as UserResponse;
+    const user = await prismaClient.user.findUnique({
+      where: { id: decoded.id },
+    });
+
+    if (!user) {
+      throw new ResponseError(404, t("user.not_found"));
+    }
+
+    const hashedPassword = await bcryptjs.hash(request.password, 10);
+
+    await prismaClient.user.update({
+      where: { id: user.id },
+      data: { password: hashedPassword },
+    });
+  }
+
+  //Private
   static async delete(user: UserResponse) {
     await prismaClient.user.delete({
       where: { id: user.id },
@@ -105,9 +199,6 @@ export class UserService {
     await prismaClient.product.deleteMany({
       where: { user_id: user.id },
     });
-    await prismaClient.comment.deleteMany({
-      where: { user_id: user.id },
-    });
   }
   static async profile(user: UserResponse) {
     const userFind = await prismaClient.user.findUnique({
@@ -115,25 +206,22 @@ export class UserService {
     });
     return { data: toUserResponse(userFind!) };
   }
-  static async update(user: UserResponse, request: UpdateUserRequest) {
+  static async update(
+    user: UserResponse,
+    t: TFunction,
+    request: UpdateUserRequest
+  ) {
     Validation.validate(UserValidation.update, request);
 
     if (request.password) {
       request.password = await bcryptjs.hash(request.password, 10);
     }
     if (request.email && user.email === null) {
-      throw new ResponseError(
-        400,
-        "You cannot update email because you already have phone number"
-      );
+      throw new ResponseError(400, t("user.cannot_update_email"));
     }
     if (request.phone_number && user.phone_number === null) {
-      throw new ResponseError(
-        400,
-        "You cannot update phone number because you already have email"
-      );
+      throw new ResponseError(400, t("user.cannot_update_phone"));
     }
-
     if (request.email) {
       const emailExists = await prismaClient.user.count({
         where: {
@@ -143,7 +231,7 @@ export class UserService {
       });
 
       if (emailExists !== 0) {
-        throw new ResponseError(400, "Email already registered");
+        throw new ResponseError(400, t("user.email_already_registered"));
       }
     }
     if (request.phone_number) {
@@ -155,7 +243,7 @@ export class UserService {
       });
 
       if (phoneExists !== 0) {
-        throw new ResponseError(400, "Phone number already registered");
+        throw new ResponseError(400, t("user.phone_already_registered"));
       }
     }
     const userUpdate = await prismaClient.user.update({
@@ -170,6 +258,8 @@ export class UserService {
 
     return { data: toUserResponse(userUpdate) };
   }
+
+  //Admin
   static async getAllUser(user: UserResponse, query: QueryUser) {
     const queryValidation = Validation.validate(
       UserValidation.queryUser,
@@ -209,7 +299,7 @@ export class UserService {
       users
     );
   }
-  static async createUser(request: CreateUserRequest) {
+  static async createUser(t: TFunction, request: CreateUserRequest) {
     Validation.validate(UserValidation.createUser, request);
 
     const findUserWithSameEmaiOrPhone = await prismaClient.user.count({
@@ -220,7 +310,7 @@ export class UserService {
     });
 
     if (findUserWithSameEmaiOrPhone !== 0) {
-      throw new ResponseError(400, "Email or phone number already registered");
+      throw new ResponseError(400, t("user.already_registered"));
     }
 
     request.password = await bcryptjs.hash(request.password, 10);
@@ -236,7 +326,11 @@ export class UserService {
 
     return { data: toUserResponse(userCreate) };
   }
-  static async updateRole(id: string, request: UpdateRoleUserRequest) {
+  static async updateRole(
+    t: TFunction,
+    id: string,
+    request: UpdateRoleUserRequest
+  ) {
     Validation.validate(UserValidation.updateRole, request);
 
     const userFind = await prismaClient.user.findUnique({
@@ -246,11 +340,11 @@ export class UserService {
     });
 
     if (!userFind) {
-      throw new ResponseError(404, "User not found");
+      throw new ResponseError(404, t("user.not_found"));
     }
 
     if (userFind.role === request.role) {
-      throw new ResponseError(400, "User already has this role");
+      throw new ResponseError(400, t("user.already_has_role"));
     }
 
     const userUpdateRole = await prismaClient.user.update({
@@ -263,93 +357,5 @@ export class UserService {
     });
 
     return { data: toUserResponse(userUpdateRole) };
-  }
-
-  static async forgotPassword(request: UserForgotPasswordRequest) {
-    Validation.validate(UserValidation.forgotPassword, request);
-
-    const user = await prismaClient.user.findFirst({
-      where: { email: request.email },
-    });
-
-    if (!user) {
-      throw new ResponseError(404, "User not found");
-    }
-
-    const token = jwt.sign(
-      toUserResponse(user),
-      process.env.JWT_SECRET_KEY_RESET!,
-      {
-        expiresIn: "1h",
-      }
-    );
-
-    await prismaClient.user.update({
-      where: {
-        id: user.id,
-      },
-      data: {
-        reset_token: token,
-      },
-    });
-
-    const resetLink = `http://localhost:3000/reset-password?token=${token}`;
-
-    const mailOptions = {
-      from: '"App Support" ranggadendiakun@gmail.com',
-      to: request.email,
-      subject: "Reset Password Desa Babakan Asem Conggeang",
-      html: `<p>Klik link ini untuk reset password:</p><a href="${resetLink}">${resetLink}</a>`,
-    };
-
-    await transporter.sendMail(mailOptions);
-  }
-
-  static async verifyResetToken(token: string) {
-    console.log("Verifying reset token:", token);
-    let decoded;
-    try {
-      decoded = jwt.verify(token, process.env.JWT_SECRET_KEY_RESET!);
-    } catch (error) {
-      throw new ResponseError(400, "Invalid or expired token");
-    }
-    decoded = decoded as UserResponse;
-    const user = await prismaClient.user.findUnique({
-      where: { id: decoded.id },
-    });
-
-    if (!user) {
-      throw new ResponseError(404, "User not found");
-    }
-  }
-
-  static async resetPassword(request: UserResetPasswordRequest, token: string) {
-    Validation.validate(UserValidation.resetPassword, request);
-
-    if (request.password !== request.confirm_password) {
-      throw new ResponseError(400, "Passwords do not match");
-    }
-
-    let decoded;
-    try {
-      decoded = jwt.verify(token, process.env.JWT_SECRET_KEY_RESET!);
-    } catch (error) {
-      throw new ResponseError(400, "Invalid or expired token");
-    }
-    decoded = decoded as UserResponse;
-    const user = await prismaClient.user.findUnique({
-      where: { id: decoded.id },
-    });
-
-    if (!user) {
-      throw new ResponseError(404, "User not found");
-    }
-
-    const hashedPassword = await bcryptjs.hash(request.password, 10);
-
-    await prismaClient.user.update({
-      where: { id: user.id },
-      data: { password: hashedPassword },
-    });
   }
 }

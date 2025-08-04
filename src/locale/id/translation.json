@@ -1,12 +1,169 @@
 {
-  "user": {
-    "cannot_login": "Email, nomor telepon, atau kata sandi salah"
+  "recaptcha": {
+    "verification_failed": "Verifikasi Recaptcha gagal"
   },
-  "zodErrors":{
+  "user": {
+    "cannot_login": "Email, nomor telepon, atau kata sandi salah",
+    "already_registered": "Email atau nomor telepon sudah terdaftar",
+    "not_found": "Pengguna tidak ditemukan",
+    "cannot_update_email": "Anda tidak dapat memperbarui email karena sudah memiliki nomor telepon",
+    "cannot_update_phone": "Anda tidak dapat memperbarui nomor telepon karena sudah memiliki email",
+    "email_already_registered": "Email sudah terdaftar",
+    "phone_already_registered": "Nomor telepon sudah terdaftar",
+    "already_has_role": "Pengguna sudah memiliki peran ini",
+    "passwords_not_match": "Kata sandi tidak cocok",
+    "invalid_or_expired_token": "Token tidak valid atau sudah kedaluwarsa"
+  },
+  "agenda": {
+    "not_found": "Agenda tidak ditemukan",
+    "featured_image_required": "Gambar unggulan diperlukan"
+  },
+  "news": {
+    "not_found": "Berita tidak ditemukan",
+    "featured_image_required": "Gambar unggulan diperlukan"
+  },
+  "common": {
+    "forbidden": "Akses ditolak",
+    "image_required": "Gambar diperlukan"
+  },
+  "comment": {
+    "not_found": "Komentar tidak ditemukan",
+    "not_authorized_update": "Anda tidak berwenang memperbarui komentar ini",
+    "not_authorized_delete": "Anda tidak berwenang menghapus komentar ini"
+  },
+  "category": {
+    "not_found": "Kategori tidak ditemukan",
+    "already_exists": "Kategori sudah ada"
+  },
+  "member": {
+    "not_found": "Anggota tidak ditemukan",
+    "profile_photo_required": "Foto profil diperlukan"
+  },
+  "galeri": {
+    "not_found": "Galeri tidak ditemukan"
+  },
+  "infografis": {
+    "extra_idm_not_found": "Data IDM tambahan tidak ditemukan",
+    "idm_not_found": "Data IDM tidak ditemukan",
+    "bansos_not_found": "Data bantuan sosial tidak ditemukan",
+    "sdgs_not_found": "Data SDGs tidak ditemukan"
+  },
+  "pkk": {
+    "featured_image_required": "Gambar unggulan diperlukan",
+    "program_not_found": "Program tidak ditemukan"
+  },
+  "apb": {
+    "not_found": "APB tidak ditemukan"
+  },
+  "administration": {
+    "pengantar_not_found": "Permintaan pengantar tidak ditemukan"
+  },
+  "village_work_program": {
+    "not_found": "Program kerja desa tidak ditemukan"
+  },
+  "resident": {
+    "not_found": "Penduduk tidak ditemukan"
+  },
+  "village_achievement": {
+    "not_found": "Prestasi desa tidak ditemukan"
+  },
+  "product": {
+    "not_found": "Produk tidak ditemukan",
+    "price_must_number": "Harga harus berupa angka",
+    "category_not_found": "Kategori tidak ditemukan"
+  },
+  "rating": {
+    "not_found": "Peringkat tidak ditemukan",
+    "not_rated_yet": "Anda belum memberikan peringkat untuk produk ini",
+    "already_rated": "Anda sudah memberikan peringkat untuk produk ini",
+    "not_allowed_update": "Anda tidak diizinkan memperbarui peringkat ini",
+    "not_allowed_delete": "Anda tidak diizinkan menghapus peringkat ini"
+  },
+  "message": {
+    "not_found": "Pesan tidak ditemukan"
+  },
+  "validation": {
+    "email_or_phone_required": "Isi salah satu antara email atau nomor telepon, tidak boleh keduanya",
+    "password_mismatch": "Password dan konfirmasi password tidak cocok"
+  },
+  "zodErrors": {
     "required": "{{field}} harus diisi",
     "invalid_type": "{{field}} harus berupa {{type}}",
     "min_length": "{{field}} harus memiliki setidaknya {{min}} karakter",
     "max_length": "{{field}} tidak boleh lebih dari {{max}} karakter",
-    "email": "{{field}} harus berupa alamat email yang valid"
+    "min_value": "{{field}} tidak boleh kurang dari {{min}}",
+    "max_value": "{{field}} tidak boleh lebih dari {{max}}",
+    "email": "{{field}} harus berupa alamat email yang valid",
+    "invalid_format": "{{field}} memiliki format yang tidak valid",
+    "invalid_string": "{{field}} tidak valid",
+    "invalid_value": "{{field}} memiliki nilai yang tidak valid",
+    "string": "teks",
+    "number": "angka",
+    "boolean": "boolean",
+    "array": "array",
+    "object": "object",
+    "date": "tanggal"
+  },
+  "fields": {
+    "name": "Nama",
+    "email": "Email",
+    "password": "Password",
+    "confirm_password": "Konfirmasi Password",
+    "phone_number": "Nomor Telepon",
+    "remember_me": "Ingat Saya",
+    "recaptcha_token": "Token Recaptcha",
+    "role": "Peran",
+    "page": "Halaman",
+    "size": "Ukuran",
+    "id": "ID",
+    "created_at": "Dibuat Pada",
+    "updated_at": "Diperbarui Pada",
+    "title": "Judul",
+    "description": "Deskripsi",
+    "content": "Konten",
+    "status": "Status",
+    "category": "Kategori",
+    "image": "Gambar",
+    "file": "File",
+    "date": "Tanggal",
+    "time": "Waktu",
+    "address": "Alamat",
+    "message": "Pesan",
+    "isRead": "Sudah Dibaca",
+    "rating": "Peringkat",
+    "location": "Lokasi",
+    "start_time": "Waktu Mulai",
+    "end_time": "Waktu Selesai",
+    "is_published": "Dipublikasikan",
+    "type": "Jenis",
+    "price": "Harga",
+    "category_id": "ID Kategori",
+    "link_whatsapp": "Link WhatsApp",
+    "target_type": "Jenis Target",
+    "nik": "NIK",
+    "keterangan": "Keterangan",
+    "isPending": "Sedang Diproses",
+    "value": "Nilai",
+    "position": "Posisi",
+    "term_start": "Awal Masa Jabatan",
+    "term_end": "Akhir Masa Jabatan",
+    "organization_type": "Jenis Organisasi",
+    "is_term": "Sedang Menjabat",
+    "important_level": "Tingkat Kepentingan",
+    "year": "Tahun",
+    "skor": "Skor",
+    "amount": "Jumlah",
+    "progres": "Progres",
+    "status_desa": "Status Desa",
+    "sosial": "Sosial",
+    "ekonomi": "Ekonomi",
+    "lingkungan": "Lingkungan",
+    "featured_image": "Gambar Unggulan",
+    "bidang": "Bidang",
+    "anggaran": "Anggaran",
+    "realisasi": "Realisasi",
+    "tahun": "Tahun",
+    "justification": "Justifikasi",
+    "budget_amount": "Jumlah Anggaran"
   }
 }

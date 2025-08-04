@@ -21,6 +21,8 @@ model User {
   created_at   DateTime @default(now())
   updated_at   DateTime @updatedAt
 
+  comments Comment[]
+
   @@map("users")
 }
 
@@ -253,6 +255,8 @@ model Comment {
   content     String     @db.Text()
   created_at  DateTime   @default(now())
   updated_at  DateTime   @updatedAt
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@map("comments")
 }

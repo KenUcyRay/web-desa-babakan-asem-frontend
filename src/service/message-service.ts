@@ -7,6 +7,7 @@ import {
 } from "@/model/message-model";
 import { MessageValidation } from "../validation/message-validation";
 import { Validation } from "../validation/validation";
+import { TFunction } from "i18next";
 
 export class MessageService {
   static async create(request: CreateMessageRequest) {
@@ -46,7 +47,7 @@ export class MessageService {
       messages
     );
   }
-  static async update(id: string) {
+  static async update(t: TFunction, id: string) {
     const message = await prismaClient.message.findUnique({
       where: {
         id: id,
@@ -54,7 +55,7 @@ export class MessageService {
     });
 
     if (!message) {
-      throw new ResponseError(404, "Message not found");
+      throw new ResponseError(404, t("message.not_found"));
     }
 
     const messageUpdate = await prismaClient.message.update({

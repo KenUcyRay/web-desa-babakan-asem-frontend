@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { ProductService } from "../service/product-service";
 import { UserRequest } from "@/type/user-request";
+import { I18nRequest } from "@/type/i18n-request";
 
 export class ProductController {
   static async getAll(req: Request, res: Response, next: NextFunction) {
@@ -14,9 +15,9 @@ export class ProductController {
     }
   }
 
-  static async getById(req: Request, res: Response, next: NextFunction) {
+  static async getById(req: I18nRequest, res: Response, next: NextFunction) {
     try {
-      const response = await ProductService.getById(req.params.userId);
+      const response = await ProductService.getById(req.t, req.params.userId);
       res.status(200).json(response);
     } catch (error) {
       next(error);
@@ -39,9 +40,14 @@ export class ProductController {
       next(error);
     }
   }
-  static async create(req: UserRequest, res: Response, next: NextFunction) {
+  static async create(
+    req: UserRequest & I18nRequest,
+    res: Response,
+    next: NextFunction
+  ) {
     try {
       const response = await ProductService.create(
+        req.t,
         req.body,
         req.user!,
         req.file
@@ -51,9 +57,14 @@ export class ProductController {
       next(error);
     }
   }
-  static async update(req: UserRequest, res: Response, next: NextFunction) {
+  static async update(
+    req: UserRequest & I18nRequest,
+    res: Response,
+    next: NextFunction
+  ) {
     try {
       const response = await ProductService.update(
+        req.t,
         req.body,
         req.user!,
         req.params.productId,
@@ -64,9 +75,14 @@ export class ProductController {
       next(error);
     }
   }
-  static async delete(req: UserRequest, res: Response, next: NextFunction) {
+  static async delete(
+    req: UserRequest & I18nRequest,
+    res: Response,
+    next: NextFunction
+  ) {
     try {
       await ProductService.delete(
+        req.t,
         req.params.productId,
         req.user!,
         req.header("Authorization")!

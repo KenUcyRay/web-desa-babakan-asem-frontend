@@ -3,6 +3,7 @@ import { ResponseError } from "@/error/response-error";
 import { CreateApbRequest, UpdateApbRequest } from "@/model/apb-model";
 import { ApbValidation } from "@/validation/apb-validation";
 import { Validation } from "@/validation/validation";
+import { TFunction } from "i18next";
 
 export class ApbService {
   static async getAll() {
@@ -25,12 +26,12 @@ export class ApbService {
 
     return { data: apb };
   }
-  static async update(request: UpdateApbRequest, id: string) {
+  static async update(t: TFunction, request: UpdateApbRequest, id: string) {
     const existingApb = await prismaClient.apb.findUnique({
       where: { id },
     });
     if (!existingApb) {
-      throw new ResponseError(404, "APB not found");
+      throw new ResponseError(404, t("apb.not_found"));
     }
 
     const validation = Validation.validate(ApbValidation.update, request);
@@ -42,12 +43,12 @@ export class ApbService {
 
     return { data: apb };
   }
-  static async delete(id: string) {
+  static async delete(t: TFunction, id: string) {
     const existingApb = await prismaClient.apb.findUnique({
       where: { id },
     });
     if (!existingApb) {
-      throw new ResponseError(404, "APB not found");
+      throw new ResponseError(404, t("apb.not_found"));
     }
 
     await prismaClient.apb.delete({

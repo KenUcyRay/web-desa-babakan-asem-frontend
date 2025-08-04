@@ -1,6 +1,7 @@
 import fs from "fs/promises";
 import path from "path";
 import { Organization } from "@prisma/client";
+import { TFunction } from "i18next";
 import { prismaClient } from "../application/database";
 import { ResponseError } from "../error/response-error";
 import {
@@ -68,6 +69,7 @@ export class MemberService {
     };
   }
   static async createMember(
+    t: TFunction,
     request: MemberCreateRequest,
     file?: Express.Multer.File
   ) {
@@ -77,7 +79,7 @@ export class MemberService {
     );
 
     if (!file) {
-      throw new ResponseError(400, "Profile photo is required");
+      throw new ResponseError(400, t("member.profile_photo_required"));
     }
 
     const member = await prismaClient.member.create({
@@ -90,6 +92,7 @@ export class MemberService {
     return { member: member };
   }
   static async updateMember(
+    t: TFunction,
     request: MemberUpdateRequest,
     memberId: string,
     file?: Express.Multer.File
@@ -104,7 +107,7 @@ export class MemberService {
     });
 
     if (!existingMember) {
-      throw new ResponseError(404, "Member not found");
+      throw new ResponseError(404, t("member.not_found"));
     }
 
     if (file) {
@@ -131,13 +134,13 @@ export class MemberService {
 
     return { member: updatedMember };
   }
-  static async deleteMember(memberId: string) {
+  static async deleteMember(t: TFunction, memberId: string) {
     const existingMember = await prismaClient.member.findUnique({
       where: { id: memberId },
     });
 
     if (!existingMember) {
-      throw new ResponseError(404, "Member not found");
+      throw new ResponseError(404, t("member.not_found"));
     }
 
     await prismaClient.member.delete({

@@ -1,5 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import axios from "axios";
+import { TFunction } from "i18next";
 import { ProductValidation } from "./../validation/product-validation";
 import { prismaClient } from "../application/database";
 import {
@@ -13,7 +15,6 @@ import { ResponseError } from "../error/response-error";
 import { CategoryCreateRequest } from "../model/category-model";
 import { CategoryValidation } from "../validation/category-validation";
 import { Helper } from "../util/helper";
-import axios from "axios";
 
 export class CategoryService {
   static async getCategories() {
@@ -24,7 +25,7 @@ export class CategoryService {
     });
     return { categories: categories };
   }
-  static async createCategory(request: CategoryCreateRequest) {
+  static async createCategory(t: TFunction, request: CategoryCreateRequest) {
     Validation.validate(CategoryValidation.create, request);
 
     request.name = Helper.toTitleCase(request.name);
@@ -36,7 +37,7 @@ export class CategoryService {
     });
 
     if (categoryCount !== 0) {
-      throw new ResponseError(400, "Category already exists");
+      throw new ResponseError(400, t("category.already_exists"));
     }
 
     const category = await prismaClient.category.create({
@@ -48,6 +49,7 @@ export class CategoryService {
     return { category: category };
   }
   static async updateCategory(
+    t: TFunction,
     categoryId: string,
     request: CategoryCreateRequest
   ) {
@@ -57,7 +59,7 @@ export class CategoryService {
       where: { id: categoryId },
     });
     if (!category) {
-      throw new ResponseError(404, "Category not found");
+      throw new ResponseError(404, t("category.not_found"));
     }
 
     request.name = Helper.toTitleCase(request.name);
@@ -70,15 +72,13 @@ export class CategoryService {
 
     return { category: categoryUpdate };
   }
-  static async deleteCategory(categoryId: string) {
+  static async deleteCategory(t: TFunction, categoryId: string) {
     const category = await prismaClient.category.findUnique({
       where: { id: categoryId },
     });
     if (!category) {
-      throw new ResponseError(404, "Category not found");
+      throw new ResponseError(404, t("category.not_found"));
     }
     await prismaClient.category.delete({ where: { id: categoryId } });
   }
-
-
 }

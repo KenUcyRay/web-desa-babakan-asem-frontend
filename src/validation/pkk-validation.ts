@@ -2,13 +2,13 @@ import z, { ZodType } from "zod";
 
 export class PkkValidation {
   static create: ZodType = z.object({
-    title: z.string(),
-    description: z.string(),
-    featured_image: z.string().optional(),
+    title: z.string({ message: "zodErrors.required" }),
+    description: z.string({ message: "zodErrors.required" }),
+    featured_image: z.string({ message: "zodErrors.invalid_type" }).optional(),
   });
   static update: ZodType = z.object({
-    title: z.string().optional(),
-    description: z.string().optional(),
-    featured_image: z.string().optional(),
+    title: z.string({ message: "zodErrors.invalid_type" }).optional(),
+    description: z.string({ message: "zodErrors.invalid_type" }).optional(),
+    featured_image: z.string({ message: "zodErrors.invalid_type" }).optional(),
   });
 }

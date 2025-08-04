@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { UserRequest } from "../type/user-request";
+import { I18nRequest } from "../type/i18n-request";
 import { InfografisService } from "../service/infografis-service";
 
 export class InfografisController {
@@ -37,12 +38,13 @@ export class InfografisController {
   }
 
   static async updateExtraIdm(
-    req: UserRequest,
+    req: UserRequest & I18nRequest,
     res: Response,
     next: NextFunction
   ) {
     try {
       const response = await InfografisService.updateExtraIdm(
+        req.t,
         req.body,
         req.params.id
       );
@@ -61,9 +63,14 @@ export class InfografisController {
     }
   }
 
-  static async updateIdm(req: UserRequest, res: Response, next: NextFunction) {
+  static async updateIdm(
+    req: UserRequest & I18nRequest,
+    res: Response,
+    next: NextFunction
+  ) {
     try {
       const response = await InfografisService.updateIdm(
+        req.t,
         req.params.idmId,
         req.body
       );
@@ -73,9 +80,13 @@ export class InfografisController {
     }
   }
 
-  static async deleteIdm(req: UserRequest, res: Response, next: NextFunction) {
+  static async deleteIdm(
+    req: UserRequest & I18nRequest,
+    res: Response,
+    next: NextFunction
+  ) {
     try {
-      await InfografisService.deleteIdm(req.params.idmId);
+      await InfografisService.deleteIdm(req.t, req.params.idmId);
       res.status(204).json();
     } catch (error) {
       next(error);
@@ -96,12 +107,13 @@ export class InfografisController {
   }
 
   static async updateBansos(
-    req: UserRequest,
+    req: UserRequest & I18nRequest,
     res: Response,
     next: NextFunction
   ) {
     try {
       const response = await InfografisService.updateBansos(
+        req.t,
         req.params.bansosId,
         req.body
       );
@@ -112,21 +124,26 @@ export class InfografisController {
   }
 
   static async deleteBansos(
-    req: UserRequest,
+    req: UserRequest & I18nRequest,
     res: Response,
     next: NextFunction
   ) {
     try {
-      await InfografisService.deleteBansos(req.params.bansosId);
+      await InfografisService.deleteBansos(req.t, req.params.bansosId);
       res.status(204).json();
     } catch (error) {
       next(error);
     }
   }
 
-  static async updateSdgs(req: UserRequest, res: Response, next: NextFunction) {
+  static async updateSdgs(
+    req: UserRequest & I18nRequest,
+    res: Response,
+    next: NextFunction
+  ) {
     try {
       const response = await InfografisService.updateSdgs(
+        req.t,
         req.body,
         req.params.sdgId
       );

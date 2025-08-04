@@ -5,6 +5,7 @@ import path from "node:path";
 import fs from "node:fs/promises";
 import { PkkCreateRequest, PkkUpdateRequest } from "../model/pkk-model";
 import { PkkValidation } from "../validation/pkk-validation";
+import { TFunction } from "i18next";
 
 export class PkkService {
   static async getAll(page: number = 1, limit: number = 10) {
@@ -24,11 +25,15 @@ export class PkkService {
     };
   }
 
-  static async create(request: PkkCreateRequest, file?: Express.Multer.File) {
+  static async create(
+    t: TFunction,
+    request: PkkCreateRequest,
+    file?: Express.Multer.File
+  ) {
     Validation.validate(PkkValidation.create, request);
 
     if (!file) {
-      throw new ResponseError(400, "Featured image is required");
+      throw new ResponseError(400, t("pkk.featured_image_required"));
     }
 
     request.featured_image = file.filename;
@@ -41,6 +46,7 @@ export class PkkService {
     return { program: program };
   }
   static async update(
+    t: TFunction,
     request: PkkUpdateRequest,
     programId: string,
     file?: Express.Multer.File
@@ -52,7 +58,7 @@ export class PkkService {
     });
 
     if (!program) {
-      throw new ResponseError(404, "Program not found");
+      throw new ResponseError(404, t("pkk.program_not_found"));
     }
 
     if (file) {
@@ -77,13 +83,13 @@ export class PkkService {
 
     return { program: programUpdate };
   }
-  static async delete(programId: string) {
+  static async delete(t: TFunction, programId: string) {
     const program = await prismaClient.program.findUnique({
       where: { id: programId },
     });
 
     if (!program) {
-      throw new ResponseError(404, "Program not found");
+      throw new ResponseError(404, t("pkk.program_not_found"));
     }
 
     const filePath = path.join(

@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { UserRequest } from "../type/user-request";
+import { I18nRequest } from "../type/i18n-request";
 import { MemberService } from "../service/member-service";
 import { Organization } from "@prisma/client";
 
@@ -68,12 +69,16 @@ export class MemberController {
     }
   }
   static async createMember(
-    req: UserRequest,
+    req: UserRequest & I18nRequest,
     res: Response,
     next: NextFunction
   ) {
     try {
-      const response = await MemberService.createMember(req.body, req.file);
+      const response = await MemberService.createMember(
+        req.t,
+        req.body,
+        req.file
+      );
       res.status(201).json(response);
     } catch (error) {
       next(error);
@@ -81,12 +86,13 @@ export class MemberController {
   }
 
   static async updateMember(
-    req: UserRequest,
+    req: UserRequest & I18nRequest,
     res: Response,
     next: NextFunction
   ) {
     try {
       const response = await MemberService.updateMember(
+        req.t,
         req.body,
         req.params.memberId,
         req.file
@@ -98,12 +104,12 @@ export class MemberController {
   }
 
   static async deleteMember(
-    req: UserRequest,
+    req: UserRequest & I18nRequest,
     res: Response,
     next: NextFunction
   ) {
     try {
-      await MemberService.deleteMember(req.params.memberId);
+      await MemberService.deleteMember(req.t, req.params.memberId);
       res.status(204).json({});
     } catch (error) {
       next(error);

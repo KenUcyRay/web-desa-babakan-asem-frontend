@@ -2,14 +2,19 @@ import { z, ZodType } from "zod";
 
 export class VillageAchievementValidation {
   static create: ZodType = z.object({
-    title: z.string().max(255),
-    description: z.string(),
-    date: z.coerce.date(),
+    title: z
+      .string({ message: "zodErrors.required" })
+      .max(255, { message: "zodErrors.max_length" }),
+    description: z.string({ message: "zodErrors.required" }),
+    date: z.coerce.date({ message: "zodErrors.invalid_type" }),
   });
 
   static update: ZodType = z.object({
-    title: z.string().max(255).optional(),
-    description: z.string().optional(),
-    date: z.coerce.date().optional(),
+    title: z
+      .string({ message: "zodErrors.invalid_type" })
+      .max(255, { message: "zodErrors.max_length" })
+      .optional(),
+    description: z.string({ message: "zodErrors.invalid_type" }).optional(),
+    date: z.coerce.date({ message: "zodErrors.invalid_type" }).optional(),
   });
 }

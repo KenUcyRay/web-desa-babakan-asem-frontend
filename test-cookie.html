@@ -6,6 +6,10 @@
 <body>
     <h1>Cookie Cross-Origin Test</h1>
     <button onclick="testLogin()">Test Login</button>
+    <button onclick="testLoginWithWrongCredentials()">Test Login (Wrong Password)</button>
+    <button onclick="testLoginWithoutRequiredFields()">Test Login (Missing Fields)</button>
+    <button onclick="testUpdateUserIndonesian()">Test Update User (Indonesian)</button>
+    <button onclick="testUpdateUserEnglish()">Test Update User (English)</button>
     <button onclick="testPrivate()">Test Private Endpoint (Cookie)</button>
     <button onclick="testPrivateWithHeader()">Test Private Endpoint (Header)</button>
     <button onclick="checkCookies()">Check Cookies</button>
@@ -48,6 +52,58 @@
                 
             } catch (error) {
                 document.getElementById('results').innerHTML = 
+                    `<h3>Login Error:</h3><pre>${error.message}</pre>`;
+            }
+        }
+        
+        async function testLoginWithWrongCredentials() {
+            try {
+                const response = await fetch(`${BASE_URL}/users/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept-Language': 'id' // Test Indonesian translation
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        email: 'admin@gmail.com',
+                        password: 'wrongpassword', // Wrong password to trigger user.cannot_login
+                        remember_me: false,
+                        recaptcha_token: 'test-token'
+                    })
+                });
+                
+                const data = await response.json();
+                document.getElementById('results').innerHTML += 
+                    `<h3>Login With Wrong Credentials Response (Indonesian):</h3><pre>${JSON.stringify(data, null, 2)}</pre>`;
+                
+            } catch (error) {
+                document.getElementById('results').innerHTML += 
+                    `<h3>Login Error:</h3><pre>${error.message}</pre>`;
+            }
+        }
+
+        async function testLoginWithoutRequiredFields() {
+            try {
+                const response = await fetch(`${BASE_URL}/users/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        email: 'admin@gmail.com',
+                        password: 'admin123'
+                        // Missing remember_me and recaptcha_token
+                    })
+                });
+                
+                const data = await response.json();
+                document.getElementById('results').innerHTML += 
+                    `<h3>Login Without Required Fields Response:</h3><pre>${JSON.stringify(data, null, 2)}</pre>`;
+                
+            } catch (error) {
+                document.getElementById('results').innerHTML += 
                     `<h3>Login Error:</h3><pre>${error.message}</pre>`;
             }
         }

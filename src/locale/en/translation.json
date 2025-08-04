@@ -1,5 +1,169 @@
 {
+  "recaptcha": {
+    "verification_failed": "Recaptcha verification failed"
+  },
   "user": {
-    "cannot_login": "Invalid email, phone number, or password"
+    "cannot_login": "Email, phone number, or password is incorrect",
+    "already_registered": "Email or phone number already registered",
+    "not_found": "User not found",
+    "cannot_update_email": "You cannot update email because you already have phone number",
+    "cannot_update_phone": "You cannot update phone number because you already have email",
+    "email_already_registered": "Email already registered",
+    "phone_already_registered": "Phone number already registered",
+    "already_has_role": "User already has this role",
+    "passwords_not_match": "Passwords do not match",
+    "invalid_or_expired_token": "Invalid or expired token"
+  },
+  "agenda": {
+    "not_found": "Agenda not found",
+    "featured_image_required": "Featured image is required"
+  },
+  "news": {
+    "not_found": "News not found",
+    "featured_image_required": "Featured image is required"
+  },
+  "common": {
+    "forbidden": "Forbidden",
+    "image_required": "Image is required"
+  },
+  "comment": {
+    "not_found": "Comment not found",
+    "not_authorized_update": "You are not authorized to update this comment",
+    "not_authorized_delete": "You are not authorized to delete this comment"
+  },
+  "category": {
+    "not_found": "Category not found",
+    "already_exists": "Category already exists"
+  },
+  "member": {
+    "not_found": "Member not found",
+    "profile_photo_required": "Profile photo is required"
+  },
+  "galeri": {
+    "not_found": "Gallery not found"
+  },
+  "infografis": {
+    "extra_idm_not_found": "Extra IDM data not found",
+    "idm_not_found": "IDM data not found",
+    "bansos_not_found": "Social assistance data not found",
+    "sdgs_not_found": "SDGs data not found"
+  },
+  "pkk": {
+    "featured_image_required": "Featured image is required",
+    "program_not_found": "Program not found"
+  },
+  "apb": {
+    "not_found": "APB not found"
+  },
+  "administration": {
+    "pengantar_not_found": "Pengantar request not found"
+  },
+  "village_work_program": {
+    "not_found": "Village work program not found"
+  },
+  "resident": {
+    "not_found": "Resident not found"
+  },
+  "village_achievement": {
+    "not_found": "Village achievement not found"
+  },
+  "product": {
+    "not_found": "Product not found",
+    "price_must_number": "Price must be a number",
+    "category_not_found": "Category not found"
+  },
+  "rating": {
+    "not_found": "Rating not found",
+    "not_rated_yet": "You have not rated this product yet",
+    "already_rated": "You already rating already for this product",
+    "not_allowed_update": "You are not allowed to update this rating",
+    "not_allowed_delete": "You are not allowed to delete this rating"
+  },
+  "message": {
+    "not_found": "Message not found"
+  },
+  "validation": {
+    "email_or_phone_required": "Fill in either email or phone number, not both",
+    "password_mismatch": "Password and confirmation do not match"
+  },
+  "zodErrors": {
+    "required": "{{field}} is required",
+    "invalid_type": "{{field}} must be a {{type}}",
+    "min_length": "{{field}} must have at least {{min}} characters",
+    "max_length": "{{field}} must not exceed {{max}} characters",
+    "min_value": "{{field}} must not be less than {{min}}",
+    "max_value": "{{field}} must not exceed {{max}}",
+    "email": "{{field}} must be a valid email address",
+    "invalid_format": "{{field}} has an invalid format",
+    "invalid_string": "{{field}} is invalid",
+    "invalid_value": "{{field}} has an invalid value",
+    "string": "string",
+    "number": "number",
+    "boolean": "boolean",
+    "array": "array",
+    "object": "object",
+    "date": "date"
+  },
+  "fields": {
+    "name": "Name",
+    "email": "Email",
+    "password": "Password",
+    "confirm_password": "Confirm Password",
+    "phone_number": "Phone Number",
+    "remember_me": "Remember Me",
+    "recaptcha_token": "Recaptcha Token",
+    "role": "Role",
+    "page": "Page",
+    "size": "Size",
+    "id": "ID",
+    "created_at": "Created At",
+    "updated_at": "Updated At",
+    "title": "Title",
+    "description": "Description",
+    "content": "Content",
+    "status": "Status",
+    "category": "Category",
+    "image": "Image",
+    "file": "File",
+    "date": "Date",
+    "time": "Time",
+    "address": "Address",
+    "message": "Message",
+    "isRead": "Is Read",
+    "rating": "Rating",
+    "location": "Location",
+    "start_time": "Start Time",
+    "end_time": "End Time",
+    "is_published": "Is Published",
+    "type": "Type",
+    "price": "Price",
+    "category_id": "Category ID",
+    "link_whatsapp": "WhatsApp Link",
+    "target_type": "Target Type",
+    "nik": "NIK",
+    "keterangan": "Description",
+    "isPending": "Is Pending",
+    "value": "Value",
+    "position": "Position",
+    "term_start": "Term Start",
+    "term_end": "Term End",
+    "organization_type": "Organization Type",
+    "is_term": "Is Term",
+    "important_level": "Important Level",
+    "year": "Year",
+    "skor": "Score",
+    "amount": "Amount",
+    "progres": "Progress",
+    "status_desa": "Village Status",
+    "sosial": "Social",
+    "ekonomi": "Economy",
+    "lingkungan": "Environment",
+    "featured_image": "Featured Image",
+    "bidang": "Field",
+    "anggaran": "Budget",
+    "realisasi": "Realization",
+    "tahun": "Year",
+    "justification": "Justification",
+    "budget_amount": "Budget Amount"
   }
 }

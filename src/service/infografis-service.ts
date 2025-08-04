@@ -1,3 +1,4 @@
+import { TFunction } from "i18next";
 import { prismaClient } from "../application/database";
 import { ResponseError } from "../error/response-error";
 import {
@@ -50,14 +51,18 @@ export class InfografisService {
     return { extraIdm: extraIdm };
   }
 
-  static async updateExtraIdm(request: ExtraIdmUpdateRequest, id: string) {
+  static async updateExtraIdm(
+    t: TFunction,
+    request: ExtraIdmUpdateRequest,
+    id: string
+  ) {
     Validation.validate(InfografisValidation.updateExtraIdm, request);
 
     const extraIdmExists = await prismaClient.extraIdm.findUnique({
       where: { id: id },
     });
     if (!extraIdmExists) {
-      throw new ResponseError(404, "Extra IDM not found");
+      throw new ResponseError(404, t("infografis.extra_idm_not_found"));
     }
 
     const updatedExtraIdm = await prismaClient.extraIdm.update({
@@ -78,14 +83,18 @@ export class InfografisService {
     return { idm: idm };
   }
 
-  static async updateIdm(idmId: string, request: IdmUpdateRequest) {
+  static async updateIdm(
+    t: TFunction,
+    idmId: string,
+    request: IdmUpdateRequest
+  ) {
     Validation.validate(InfografisValidation.updateIdm, request);
 
     const idmExists = await prismaClient.idm.findUnique({
       where: { id: idmId },
     });
     if (!idmExists) {
-      throw new ResponseError(404, "IDM not found");
+      throw new ResponseError(404, t("infografis.idm_not_found"));
     }
 
     const updatedIdm = await prismaClient.idm.update({
@@ -96,12 +105,12 @@ export class InfografisService {
     return { idm: updatedIdm };
   }
 
-  static async deleteIdm(idmId: string) {
+  static async deleteIdm(t: TFunction, idmId: string) {
     const idmExists = await prismaClient.idm.findUnique({
       where: { id: idmId },
     });
     if (!idmExists) {
-      throw new ResponseError(404, "IDM not found");
+      throw new ResponseError(404, t("infografis.idm_not_found"));
     }
 
     await prismaClient.idm.delete({
@@ -119,14 +128,14 @@ export class InfografisService {
     return { bansos: bansos };
   }
 
-  static async updateBansos(bansosId: string, request: any) {
+  static async updateBansos(t: TFunction, bansosId: string, request: any) {
     Validation.validate(InfografisValidation.updateBansos, request);
 
     const bansosExists = await prismaClient.socialAssistance.findUnique({
       where: { id: bansosId },
     });
     if (!bansosExists) {
-      throw new ResponseError(404, "Bansos not found");
+      throw new ResponseError(404, t("infografis.bansos_not_found"));
     }
 
     const updatedBansos = await prismaClient.socialAssistance.update({
@@ -137,13 +146,13 @@ export class InfografisService {
     return { bansos: updatedBansos };
   }
 
-  static async deleteBansos(bansosId: string) {
+  static async deleteBansos(t: TFunction, bansosId: string) {
     const bansosExists = await prismaClient.socialAssistance.findUnique({
       where: { id: bansosId },
     });
 
     if (!bansosExists) {
-      throw new ResponseError(404, "Bansos not found");
+      throw new ResponseError(404, t("infografis.bansos_not_found"));
     }
 
     await prismaClient.socialAssistance.delete({
@@ -151,12 +160,16 @@ export class InfografisService {
     });
   }
 
-  static async updateSdgs(request: SdgsUpdateRequest, sdgId: string) {
+  static async updateSdgs(
+    t: TFunction,
+    request: SdgsUpdateRequest,
+    sdgId: string
+  ) {
     const sdgExists = await prismaClient.sdgs.findUnique({
       where: { id: sdgId },
     });
     if (!sdgExists) {
-      throw new ResponseError(404, "SDGs not found");
+      throw new ResponseError(404, t("infografis.sdgs_not_found"));
     }
 
     const updatedSdgs = await prismaClient.sdgs.update({

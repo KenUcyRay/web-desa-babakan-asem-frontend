@@ -1,5 +1,6 @@
 import path from "path";
 import fs from "fs/promises";
+import { TFunction } from "i18next";
 import { prismaClient } from "@/application/database";
 import { ResponseError } from "@/error/response-error";
 import {
@@ -19,7 +20,7 @@ export class VillageAchievementService {
 
     return { data: achievements };
   }
-  static async get(id: string) {
+  static async get(t: TFunction, id: string) {
     const achievement = await prismaClient.villageAchievement.findUnique({
       where: {
         id: id,
@@ -27,13 +28,14 @@ export class VillageAchievementService {
     });
 
     if (!achievement) {
-      throw new ResponseError(404, "Village achievement not found");
+      throw new ResponseError(404, t("village_achievement.not_found"));
     }
 
     return { data: achievement };
   }
 
   static async create(
+    t: TFunction,
     request: CreateVillageAchievementRequest,
     file?: Express.Multer.File
   ) {
@@ -42,7 +44,7 @@ export class VillageAchievementService {
       request
     );
     if (!file) {
-      throw new ResponseError(400, "Featured image is required");
+      throw new ResponseError(400, t("common.image_required"));
     }
 
     validation.featured_image = file.filename;
@@ -55,6 +57,7 @@ export class VillageAchievementService {
   }
 
   static async update(
+    t: TFunction,
     request: UpdateVillageAchievementRequest,
     id: string,
     file?: Express.Multer.File
@@ -65,7 +68,7 @@ export class VillageAchievementService {
       },
     });
     if (!achievement) {
-      throw new ResponseError(404, "Village achievement not found");
+      throw new ResponseError(404, t("village_achievement.not_found"));
     }
 
     const validation = Validation.validate(
@@ -78,7 +81,6 @@ export class VillageAchievementService {
     } else {
       validation.featured_image = undefined;
     }
-    console.log(validation.featured_image);
 
     const achievementUpdate = await prismaClient.villageAchievement.update({
       where: {
@@ -86,7 +88,7 @@ export class VillageAchievementService {
       },
       data: validation,
     });
-    
+
     if (file) {
       const filePath = path.join(
         __dirname,
@@ -103,7 +105,7 @@ export class VillageAchievementService {
     return { data: achievementUpdate };
   }
 
-  static async delete(id: string) {
+  static async delete(t: TFunction, id: string) {
     const achievement = await prismaClient.villageAchievement.findUnique({
       where: {
         id: id,
@@ -111,7 +113,7 @@ export class VillageAchievementService {
     });
 
     if (!achievement) {
-      throw new ResponseError(404, "Village achievement not found");
+      throw new ResponseError(404, t("village_achievement.not_found"));
     }
 
     const filePath = path.join(

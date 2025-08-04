@@ -1,6 +1,7 @@
 import { VillageWorkProgramService } from "@/service/village-work-program-service";
 import { UserRequest } from "@/type/user-request";
 import { Request, Response, NextFunction } from "express";
+import { I18nRequest } from "@/type/i18n-request";
 
 export class VillageWorkProgramController {
   static async getAll(req: Request, res: Response, next: NextFunction) {
@@ -21,9 +22,14 @@ export class VillageWorkProgramController {
     }
   }
 
-  static async update(req: UserRequest, res: Response, next: NextFunction) {
+  static async update(
+    req: UserRequest & I18nRequest,
+    res: Response,
+    next: NextFunction
+  ) {
     try {
       const response = await VillageWorkProgramService.update(
+        req.t,
         req.params.villageWorkProgramId,
         req.body
       );
@@ -33,9 +39,16 @@ export class VillageWorkProgramController {
     }
   }
 
-  static async delete(req: UserRequest, res: Response, next: NextFunction) {
+  static async delete(
+    req: UserRequest & I18nRequest,
+    res: Response,
+    next: NextFunction
+  ) {
     try {
-      await VillageWorkProgramService.delete(req.params.villageWorkProgramId);
+      await VillageWorkProgramService.delete(
+        req.t,
+        req.params.villageWorkProgramId
+      );
       res.status(204).json({});
     } catch (error) {
       next(error);

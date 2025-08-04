@@ -1,3 +1,4 @@
+import { TFunction } from "i18next";
 import { prismaClient } from "../application/database";
 import { ResponseError } from "../error/response-error";
 import { UserResponse } from "../model/user-model";
@@ -13,12 +14,13 @@ import { toGaleriGetAllResponse } from "../model/galeri-model";
 
 export class GaleriService {
   static async create(
+    t: TFunction,
     request: GaleriCreateRequest,
     file?: Express.Multer.File
   ) {
     Validation.validate(GaleriValidation.create, request);
     if (!file) {
-      throw new ResponseError(400, "Featured image is required");
+      throw new ResponseError(400, t("common.image_required"));
     }
 
     const galeri = await prismaClient.galeri.create({
@@ -31,6 +33,7 @@ export class GaleriService {
     return { galeri: galeri };
   }
   static async update(
+    t: TFunction,
     galeriId: string,
     request: GaleriUpdateRequest,
     file?: Express.Multer.File
@@ -40,7 +43,7 @@ export class GaleriService {
     });
 
     if (!galeri) {
-      throw new ResponseError(404, "Galeri not found");
+      throw new ResponseError(404, t("galeri.not_found"));
     }
 
     Validation.validate(GaleriValidation.update, request);
@@ -58,13 +61,13 @@ export class GaleriService {
 
     return { galeri: galeriUpdate };
   }
-  static async delete(galeriId: string) {
+  static async delete(t: TFunction, galeriId: string) {
     const galeri = await prismaClient.galeri.findUnique({
       where: { id: galeriId },
     });
 
     if (!galeri) {
-      throw new ResponseError(404, "Galeri not found");
+      throw new ResponseError(404, t("galeri.not_found"));
     }
 
     const filePath = path.join(

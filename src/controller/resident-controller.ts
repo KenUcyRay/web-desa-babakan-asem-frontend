@@ -1,6 +1,7 @@
 import { ResidentService } from "@/service/resident-service";
 import { UserRequest } from "@/type/user-request";
 import { Request, Response, NextFunction } from "express";
+import { I18nRequest } from "@/type/i18n-request";
 
 export class ResidentController {
   static async getAll(req: Request, res: Response, next: NextFunction) {
@@ -12,9 +13,14 @@ export class ResidentController {
     }
   }
 
-  static async update(req: UserRequest, res: Response, next: NextFunction) {
+  static async update(
+    req: UserRequest & I18nRequest,
+    res: Response,
+    next: NextFunction
+  ) {
     try {
       const response = await ResidentService.update(
+        req.t,
         req.params.id,
         req.body
       );

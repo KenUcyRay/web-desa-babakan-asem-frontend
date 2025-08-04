@@ -1,5 +1,6 @@
 import { Response, NextFunction } from "express";
 import { UserRequest } from "../type/user-request";
+import { I18nRequest } from "../type/i18n-request";
 import { CategoryService } from "../service/category-service";
 
 export class CategoryController {
@@ -16,24 +17,25 @@ export class CategoryController {
     }
   }
   static async createCategory(
-    req: UserRequest,
+    req: UserRequest & I18nRequest,
     res: Response,
     next: NextFunction
   ) {
     try {
-      const response = await CategoryService.createCategory(req.body);
+      const response = await CategoryService.createCategory(req.t, req.body);
       res.status(201).json(response);
     } catch (error) {
       next(error);
     }
   }
   static async updateCategory(
-    req: UserRequest,
+    req: UserRequest & I18nRequest,
     res: Response,
     next: NextFunction
   ) {
     try {
       const response = await CategoryService.updateCategory(
+        req.t,
         req.params.categoryId,
         req.body
       );
@@ -43,12 +45,12 @@ export class CategoryController {
     }
   }
   static async deleteCategory(
-    req: UserRequest,
+    req: UserRequest & I18nRequest,
     res: Response,
     next: NextFunction
   ) {
     try {
-      await CategoryService.deleteCategory(req.params.categoryId);
+      await CategoryService.deleteCategory(req.t, req.params.categoryId);
       res.status(204).json({});
     } catch (error) {
       next(error);

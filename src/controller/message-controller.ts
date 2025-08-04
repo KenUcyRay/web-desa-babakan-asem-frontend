@@ -4,6 +4,7 @@ import {
   QueryMessageRequest,
 } from "@/model/message-model";
 import { MessageService } from "@/service/message-service";
+import { I18nRequest } from "@/type/i18n-request";
 
 export class MessageController {
   static async create(req: Request, res: Response, next: NextFunction) {
@@ -25,9 +26,9 @@ export class MessageController {
       next(error);
     }
   }
-  static async update(req: Request, res: Response, next: NextFunction) {
+  static async update(req: I18nRequest, res: Response, next: NextFunction) {
     try {
-      const response = await MessageService.update(req.params.id);
+      const response = await MessageService.update(req.t, req.params.id);
       res.status(200).json(response);
     } catch (error) {
       next(error);

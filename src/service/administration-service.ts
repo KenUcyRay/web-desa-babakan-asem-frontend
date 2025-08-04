@@ -7,14 +7,15 @@ import { prismaClient } from "../application/database";
 import { ResponseError } from "../error/response-error";
 import { Validation } from "@/validation/validation";
 import { AdministrationValidation } from "@/validation/administration-validation";
+import { TFunction } from "i18next";
 
 export class AdministrationService {
-  static async updatePengantar(id: string) {
+  static async updatePengantar(t: TFunction, id: string) {
     const pengantarExists = await prismaClient.pengantar.findUnique({
       where: { id },
     });
     if (!pengantarExists) {
-      throw new ResponseError(404, "Pengantar request not found");
+      throw new ResponseError(404, t("administration.pengantar_not_found"));
     }
 
     const updatedPengantar = await prismaClient.pengantar.update({

@@ -3,6 +3,8 @@ import { QueryResidentRequest } from "@/model/resident-model";
 import { ResidentValidation } from "@/validation/resident-validation";
 import { Validation } from "@/validation/validation";
 import { date } from "zod";
+import { ResponseError } from "@/error/response-error";
+import { TFunction } from "i18next";
 
 export class ResidentService {
   static async getAll(query: QueryResidentRequest) {
@@ -17,13 +19,13 @@ export class ResidentService {
     return { data: residents };
   }
 
-  static async update(id: string, request: any) {
+  static async update(t: TFunction, id: string, request: any) {
     const resident = await prismaClient.resident.findUnique({
       where: { id },
     });
 
     if (!resident) {
-      throw new Error("Resident not found");
+      throw new ResponseError(404, t("resident.not_found"));
     }
 
     const validation = Validation.validate(ResidentValidation.update, request);
