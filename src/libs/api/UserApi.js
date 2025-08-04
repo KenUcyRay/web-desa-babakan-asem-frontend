@@ -1,27 +1,46 @@
 export class UserApi {
-  static async userLogin(
-    email,
-    password,
-    phone_number,
-    rememberMe,
-    reCaptchaToken
-  ) {
-    return await fetch(`${import.meta.env.VITE_BASE_URL}/users/login`, {
+  static async login(body) {
+    return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/users/login`, {
       method: "POST",
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
       },
       body: JSON.stringify({
-        email: email === "" ? undefined : email,
-        phone_number: phone_number === "" ? undefined : phone_number,
-        password: password,
-        remember_me: rememberMe,
-        recaptcha_token: reCaptchaToken,
+        email: body.email === "" ? undefined : body.email,
+        phone_number: body.phone_number === "" ? undefined : body.phone_number,
+        password: body.password,
+        remember_me: body.rememberMe,
+        recaptcha_token: body.reCaptchaToken,
       }),
     });
   }
-  static async userRegister(
+  static async profile() {
+    return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/private/users`, {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    });
+  }
+  static async logout() {
+    return await fetch(
+      `${import.meta.env.VITE_NEW_BASE_URL}/private/users/logout`,
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      }
+    );
+  }
+
+  static async register(
     name,
     email,
     phone_number,
@@ -30,8 +49,9 @@ export class UserApi {
     rememberMe,
     reCaptchaToken
   ) {
-    return await fetch(`${import.meta.env.VITE_BASE_URL}/users/register`, {
+    return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/users/register`, {
       method: "POST",
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
@@ -49,7 +69,7 @@ export class UserApi {
   }
   static async forgetPassword(email) {
     return await fetch(
-      `${import.meta.env.VITE_BASE_URL}/users/forgot-password`,
+      `${import.meta.env.VITE_NEW_BASE_URL}/users/forgot-password`,
       {
         method: "POST",
         headers: {
@@ -65,7 +85,7 @@ export class UserApi {
   static async verifyResetToken(token) {
     return await fetch(
       `${
-        import.meta.env.VITE_BASE_URL
+        import.meta.env.VITE_NEW_BASE_URL
       }/users/verify-reset-token?token=${token}`,
       {
         method: "POST",
@@ -78,7 +98,9 @@ export class UserApi {
   }
   static async resetPassword(token, password, confirmPassword) {
     return await fetch(
-      `${import.meta.env.VITE_BASE_URL}/users/reset-password?token=${token}`,
+      `${
+        import.meta.env.VITE_NEW_BASE_URL
+      }/users/reset-password?token=${token}`,
       {
         method: "POST",
         headers: {
@@ -92,24 +114,14 @@ export class UserApi {
       }
     );
   }
-  static async getUserProfile() {
-    return await fetch(`${import.meta.env.VITE_BASE_URL}/users/`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
-      },
-    });
-  }
+
   static async updateUser(name, email, password, phone) {
-    console.log();
-    return await fetch(`${import.meta.env.VITE_BASE_URL}/users/`, {
+    return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/users/`, {
       method: "PATCH",
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
       },
       body: JSON.stringify({
         name: name,
@@ -121,12 +133,12 @@ export class UserApi {
   }
   static async createAdmin(body) {
     console.log(body);
-    return await fetch(`${import.meta.env.VITE_BASE_URL}/users/admin`, {
+    return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/users/admin`, {
       method: "POST",
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
       },
       body: JSON.stringify({
         name: body.name,
@@ -138,39 +150,39 @@ export class UserApi {
     });
   }
   static async deleteUser() {
-    return await fetch(`${import.meta.env.VITE_BASE_URL}/users/`, {
+    return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/users/`, {
       method: "DELETE",
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
       },
     });
   }
   static async getAllUsers(page = 1, limit = 10) {
     return await fetch(
       `${
-        import.meta.env.VITE_BASE_URL
-      }/users/admin/user?page=${page}&limit=${limit}`,
+        import.meta.env.VITE_NEW_BASE_URL
+      }/admin/users?page=${page}&limit=${limit}`,
       {
         method: "GET",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
         },
       }
     );
   }
   static async updateRoleById(userId, role) {
     return await fetch(
-      `${import.meta.env.VITE_BASE_URL}/users/admin/${userId}`,
+      `${import.meta.env.VITE_NEW_BASE_URL}/users/admin/${userId}`,
       {
         method: "PATCH",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
         },
         body: JSON.stringify({
           role: role,

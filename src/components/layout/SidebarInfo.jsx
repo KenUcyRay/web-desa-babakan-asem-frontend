@@ -14,12 +14,9 @@ export default function SidebarInfo() {
 
   const fetchNews = async () => {
     const response = await NewsApi.getNews(1, 4);
-    if (response.status === 200) {
-      const responseBody = await response.json();
-      setNews(responseBody.news);
-    } else {
-      alertError(t("sidebarInfo.alert.news_error"));
-    }
+    if (!response.ok) return;
+    const responseBody = await response.json();
+    setNews(responseBody.news);
   };
 
   const fetchAgenda = async () => {

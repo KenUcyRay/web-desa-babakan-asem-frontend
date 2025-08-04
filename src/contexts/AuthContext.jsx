@@ -1,9 +1,10 @@
-import { createContext, useContext } from "react";
+import { createContext, useContext, useState } from "react";
 import { useLocalStorage } from "react-use";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+  const [profile, setProfile] = useState(null);
   const [token, setToken] = useLocalStorage("token", null);
   const [admin, setAdmin] = useLocalStorage("admin", false);
   const [role, setRole] = useLocalStorage("role", null);
@@ -16,7 +17,18 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ token, login, logout, isLoggedIn, isAdmin, setAdminStatus, role, setRole }}
+      value={{
+        token,
+        login,
+        logout,
+        isLoggedIn,
+        isAdmin,
+        setAdminStatus,
+        role,
+        setRole,
+        profile,
+        setProfile,
+      }}
     >
       {children}
     </AuthContext.Provider>

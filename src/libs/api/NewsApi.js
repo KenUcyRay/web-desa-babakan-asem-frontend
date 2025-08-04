@@ -28,29 +28,24 @@ export class NewsApi {
     formData.append("is_published", data.is_published ? "true" : "false");
     formData.append("featured_image", data.featured_image); // File
 
-    return await fetch(
-      `${import.meta.env.VITE_NEW_BASE_URL}/admin/news/create`,
-      {
-        method: "POST",
-        body: formData,
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
-        },
-      }
-    );
+    return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/admin/news`, {
+      method: "POST",
+      credentials: "include",
+      body: formData,
+    });
   }
 
   static async getOwnNews(page = 1, limit = 10) {
     return await fetch(
       `${
         import.meta.env.VITE_NEW_BASE_URL
-      }/admin/news/me?page=${page}&limit=${limit}`,
+      }/admin/news?page=${page}&limit=${limit}`,
       {
         method: "GET",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
         },
       }
     );
@@ -66,25 +61,23 @@ export class NewsApi {
     formData.append("featured_image", data.featured_image ?? null); // File
 
     return await fetch(
-      `${import.meta.env.VITE_NEW_BASE_URL}/admin/news/update-by-news/${id}`,
+      `${import.meta.env.VITE_NEW_BASE_URL}/admin/news/${id}`,
       {
         method: "PATCH",
         body: formData,
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
-        },
+        credentials: "include",
       }
     );
   }
   static async deleteNews(id) {
     return await fetch(
-      `${import.meta.env.VITE_NEW_BASE_URL}/admin/news/delete-by-news/${id}`,
+      `${import.meta.env.VITE_NEW_BASE_URL}/admin/news/${id}`,
       {
         method: "DELETE",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
         },
       }
     );

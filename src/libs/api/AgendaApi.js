@@ -30,9 +30,8 @@ export class AgendaApi {
         import.meta.env.VITE_NEW_BASE_URL
       }/admin/agenda/me?page=${page}&limit=${limit}&type=${type}  `,
       {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
-        },
+        method: "GET",
+        credentials: "include",
       }
     );
   }
@@ -53,9 +52,7 @@ export class AgendaApi {
       {
         method: "POST",
         body: formData,
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
-        },
+        credentials: "include",
       }
     );
   }
@@ -81,9 +78,7 @@ export class AgendaApi {
       {
         method: "PATCH",
         body: formData,
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
-        },
+        credentials: "include",
       }
     );
   }
@@ -95,9 +90,7 @@ export class AgendaApi {
       }/admin/agenda/delete-by-agenda/${id}`,
       {
         method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
-        },
+        credentials: "include",
       }
     );
   }

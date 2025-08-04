@@ -11,7 +11,7 @@ export default function Profile() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
-  const { logout, setAdminStatus, setRole } = useAuth();
+  const { setProfile } = useAuth();
 
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({
@@ -23,18 +23,16 @@ export default function Profile() {
   });
 
   const fetchProfile = async () => {
-    const response = await UserApi.getUserProfile();
-    if (!response.ok) {
-      alertError(t("profile.updateFail"));
-      return;
-    }
+    const response = await UserApi.profile();
+    if (!response.ok) return;
+
     const responseBody = await response.json();
-    setUser(responseBody.user);
+    setUser(responseBody.data);
 
     setFormData({
-      name: responseBody.user.name,
-      email: responseBody.user.email || "",
-      phone: responseBody.user.phone_number || "",
+      name: responseBody.data.name,
+      email: responseBody.data.email || "",
+      phone: responseBody.data.phone_number || "",
       password: "",
       confirm_password: "",
     });
@@ -44,9 +42,14 @@ export default function Profile() {
     const confirm = await alertConfirm(t("profile.logoutConfirm"));
     if (!confirm) return;
 
-    setAdminStatus(false);
-    setRole(null);
-    logout();
+    const response = await UserApi.logout();
+    if (!response.ok) {
+      const responseBody = await response.json();
+      await Helper.errorResponseHandler(responseBody);
+      return;
+    }
+
+    setProfile(null);
     await alertSuccess(t("profile.logoutSuccess"));
     navigate("/login");
   };
@@ -55,30 +58,20 @@ export default function Profile() {
     const confirm = await alertConfirm(t("profile.deleteConfirm"));
     if (!confirm) return;
 
-    const response = await UserApi.deleteUser(user.id);
-    if (!response.ok) {
-      const responseBody = await response.json();
-      let errorMessage = t("profile.deleteFail");
-
-      if (responseBody.error && Array.isArray(responseBody.error)) {
-        const errorMessages = responseBody.error.map((err) => {
-          if (err.path && err.path.length > 0) {
-            return `${err.path[0]}: ${err.message}`;
-          }
-          return err.message;
-        });
-        errorMessage = errorMessages.join(", ");
-      } else if (responseBody.error && typeof responseBody.error === "string") {
-        errorMessage = responseBody.error;
-      }
-
-      alertError(errorMessage);
+    const responseLogout = await UserApi.logout();
+    if (!responseLogout.ok) {
+      const responseBody = await responseLogout.json();
+      await Helper.errorResponseHandler(responseBody);
       return;
     }
 
-    setAdminStatus(false);
-    setRole(null);
-    logout();
+    const response = await UserApi.deleteUser(user.id);
+    if (!response.ok) {
+      const responseBody = await response.json();
+      await Helper.handleErrorResponse(responseBody);
+      return;
+    }
+    setProfile(null);
     await alertSuccess(t("profile.deleteSuccess"));
     navigate("/");
   };

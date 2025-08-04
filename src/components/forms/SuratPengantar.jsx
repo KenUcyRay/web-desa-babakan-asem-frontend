@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AdministrasiApi } from "../../libs/api/AdministrasiApi";
-import { alertError, alertSuccess } from "../../libs/alert";
+import { alertSuccess } from "../../libs/alert";
 import { useTranslation } from "react-i18next";
+import { Helper } from "../../utils/Helper";
 
 export default function SuratPengantar() {
   const navigate = useNavigate();
@@ -25,16 +26,7 @@ export default function SuratPengantar() {
     const responseBody = await response.json();
 
     if (!response.ok) {
-      let errorMessage = "Gagal menyimpan perubahan.";
-      if (responseBody.error && Array.isArray(responseBody.error)) {
-        const errorMessages = responseBody.error.map((err) =>
-          err.path?.length ? `${err.path[0]}: ${err.message}` : err.message
-        );
-        errorMessage = errorMessages.join(", ");
-      } else if (typeof responseBody.error === "string") {
-        errorMessage = responseBody.error;
-      }
-      await alertError(errorMessage);
+      await Helper.errorResponseHandler(responseBody);
       return;
     }
 
@@ -60,7 +52,6 @@ export default function SuratPengantar() {
               name="name"
               value={formData.name}
               onChange={handleChange}
-              required
               placeholder={t("formLetter.form.namePlaceholder")}
               className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-400"
             />
@@ -76,7 +67,6 @@ export default function SuratPengantar() {
               name="nik"
               value={formData.nik}
               onChange={handleChange}
-              required
               placeholder={t("formLetter.form.nikPlaceholder")}
               className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-400"
             />
@@ -91,7 +81,6 @@ export default function SuratPengantar() {
               name="type"
               value={formData.type}
               onChange={handleChange}
-              required
               className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-400"
             >
               <option value="">{t("formLetter.form.typeDefault")}</option>

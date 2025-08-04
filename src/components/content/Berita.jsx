@@ -17,14 +17,11 @@ export default function Berita() {
 
   const fetchNews = async () => {
     const response = await NewsApi.getNews(currentPage);
-    if (response.status === 200) {
-      const responseBody = await response.json();
-      setTotalPages(responseBody.total_page);
-      setCurrentPage(responseBody.page);
-      setNews(responseBody.news);
-    } else {
-      alertError("Gagal mengambil data berita. Silakan coba lagi nanti.");
-    }
+    if (!response.ok) return;
+    const responseBody = await response.json();
+    setTotalPages(responseBody.total_page);
+    setCurrentPage(responseBody.page);
+    setNews(responseBody.news);
   };
 
   const truncateText = (text, maxLength = 100) => {

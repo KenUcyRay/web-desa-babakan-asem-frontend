@@ -1,26 +1,26 @@
 export class CategoryApi {
   static async getCategories() {
     return await fetch(
-      `${import.meta.env.VITE_BASE_URL}/products/admin/categories`,
+      `${import.meta.env.VITE_NEW_BASE_URL}/admin/products/categories`,
       {
         method: "GET",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
         },
       }
     );
   }
   static async addCategory(name) {
     return await fetch(
-      `${import.meta.env.VITE_BASE_URL}/products/admin/categories`,
+      `${import.meta.env.VITE_NEW_BASE_URL}/admin/products/categories`,
       {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
         },
         body: JSON.stringify({ name: name.name }),
       }
@@ -28,13 +28,13 @@ export class CategoryApi {
   }
   static async updateCategory(id, name) {
     return await fetch(
-      `${import.meta.env.VITE_BASE_URL}/products/admin/categories/${id}`,
+      `${import.meta.env.VITE_NEW_BASE_URL}/admin/products/categories/${id}`,
       {
         method: "PUT",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
         },
         body: JSON.stringify(name),
       }
@@ -42,13 +42,13 @@ export class CategoryApi {
   }
   static async deleteCategory(id) {
     return await fetch(
-      `${import.meta.env.VITE_BASE_URL}/products/admin/categories/${id}`,
+      `${import.meta.env.VITE_NEW_BASE_URL}/admin/products/categories/${id}`,
       {
         method: "DELETE",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
         },
       }
     );

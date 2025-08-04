@@ -18,9 +18,9 @@ export default function DashboardDesa() {
 
   const fetchNews = async () => {
     const res = await NewsApi.getOwnNews();
-    if (!res.ok) return alertError("Gagal ambil berita");
+    if (!res.ok) return;
     const data = await res.json();
-    setNewsCount(data.news?.length || 0);
+    setNewsCount(data.data?.length || 0);
   };
 
   const fetchAgenda = async () => {

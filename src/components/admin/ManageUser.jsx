@@ -26,7 +26,6 @@ export default function ManageUser() {
     { value: "REGULAR", label: "User Regular" },
     { value: "ADMIN", label: "Admin" },
     { value: "PKK", label: "PKK" },
-    { value: "BUMDES", label: "BUMDES" },
     { value: "KARANG_TARUNA", label: "Karang Taruna" },
     { value: "BPD", label: "BPD" },
   ];
@@ -35,16 +34,12 @@ export default function ManageUser() {
   const [promoteToRole, setPromoteToRole] = useState("ADMIN");
 
   const fetchUsers = async () => {
-    try {
-      const response = await UserApi.getAllUsers(currentPage, 10);
-      const resBody = await response.json();
-      if (!response.ok) throw new Error(t("manageUser.alerts.fetchUsersError"));
-      setUsers(resBody.users);
-      setCurrentPage(resBody.page);
-      setTotalPages(resBody.total_page);
-    } catch (err) {
-      alertError(t("manageUser.alerts.fetchUsersError"));
-    }
+    const response = await UserApi.getAllUsers(currentPage, 10);
+    const resBody = await response.json();
+    if (!response.ok) return;
+    setUsers(resBody.data);
+    setCurrentPage(resBody.current_page);
+    setTotalPages(resBody.total_page);
   };
 
   useEffect(() => {

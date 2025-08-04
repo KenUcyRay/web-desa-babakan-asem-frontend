@@ -9,39 +9,22 @@ import { FaBars } from "react-icons/fa";
 export default function AdminLayout() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { isLoggedIn } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { setAdminStatus, setRole } = useAuth();
+  const { profile, setProfile } = useAuth();
 
   // - Cek Auth & Role
   const checkAuth = async () => {
-    if (!isLoggedIn) {
-      navigate("/login");
+    const response = await UserApi.profile();
+    const responseBody = await response.json();
+    if (!response.ok || responseBody.data.role !== "ADMIN") {
+      navigate("/");
       return;
     }
-
-    try {
-      const response = await UserApi.getUserProfile();
-      if (!response || response.status !== 200) {
-        navigate("/login");
-        return;
-      }
-      const data = await response.json();
-      if (!data.user || data.user.role === "REGULAR") {
-        setRole(data.user.role);
-        setAdminStatus(false);
-        navigate("/");
-        return;
-      }
-    } catch (err) {
-      console.error(t("adminLayout.errors.authError"), err);
-      navigate("/login");
-    }
+    setProfile(responseBody.data);
   };
 
   useEffect(() => {
     checkAuth();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

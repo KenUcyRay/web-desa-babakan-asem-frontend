@@ -13,13 +13,11 @@ export default function PengaturanProfil() {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const fetchProfile = async () => {
-    const response = await UserApi.getUserProfile();
-    if (!response.ok) {
-      alertError(t("settingProfile.messages.errors.failedToGetProfile"));
-      return;
-    }
+    const response = await UserApi.profile();
+    if (!response.ok) return;
+
     const responseBody = await response.json();
-    setProfile(responseBody.user);
+    setProfile(responseBody.data);
   };
 
   const handleSubmit = async (e) => {

@@ -15,7 +15,6 @@ export default function Register() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const recaptchaRef = useRef(null);
-
   const [loginMethod, setLoginMethod] = useState("email");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -24,7 +23,7 @@ export default function Register() {
   const [confirmPassword, setconfirmPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [reCaptchaToken, setReCaptchaToken] = useState("");
-  const { isLoggedIn, login } = useAuth();
+  const { profile, setProfile } = useAuth();
 
   useEffect(() => {
     AOS.init({ duration: 700, once: true });
@@ -33,7 +32,7 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const contactValue = email;
-    const response = await UserApi.userRegister(
+    const response = await UserApi.register(
       name,
       contactValue,
       phone,
@@ -44,15 +43,10 @@ export default function Register() {
     );
 
     const responseBody = await response.json();
-    if (response.status === 201) {
-      login(responseBody.token);
-      await alertSuccess(t("register.successRegister"));
-      navigate("/");
-    } else {
+    if (!response.ok) {
       await Helper.errorResponseHandler(responseBody);
       return;
     }
-
     setName("");
     setEmail("");
     setPhone("");
@@ -61,13 +55,16 @@ export default function Register() {
     setRememberMe(false);
     setReCaptchaToken("");
     recaptchaRef.current?.reset();
+    setProfile(responseBody.data);
+    await alertSuccess(t("register.successRegister"));
+    navigate("/");
   };
 
   useEffect(() => {
-    if (isLoggedIn) {
+    if (profile) {
       navigate("/");
     }
-  }, [isLoggedIn, navigate]);
+  }, []);
 
   return (
     <div className="flex min-h-screen font-poppins">
@@ -94,7 +91,6 @@ export default function Register() {
                 className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-300 outline-none"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                required
               />
             </div>
 
@@ -158,12 +154,11 @@ export default function Register() {
                     transition={{ duration: 0.3 }}
                   >
                     <input
-                      type="email"
+                      type="text"
                       placeholder={t("register.emailPlaceholder")}
                       className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-300 outline-none"
                       onChange={(e) => setEmail(e.target.value)}
                       value={email}
-                      required
                     />
                   </motion.div>
                 ) : (
@@ -180,7 +175,6 @@ export default function Register() {
                       className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-300 outline-none"
                       onChange={(e) => setPhone(e.target.value)}
                       value={phone}
-                      maxLength={20}
                     />
                   </motion.div>
                 )}
@@ -197,7 +191,6 @@ export default function Register() {
                 className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-300 outline-none"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                required
               />
             </div>
 
@@ -211,7 +204,6 @@ export default function Register() {
                 className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-300 outline-none"
                 value={confirmPassword}
                 onChange={(e) => setconfirmPassword(e.target.value)}
-                required
               />
             </div>
 
@@ -244,7 +236,9 @@ export default function Register() {
 
           <div className="flex items-center my-6">
             <span className="flex-1 h-px bg-gray-200"></span>
-            <span className="px-4 text-sm text-gray-400">{t("register.or")}</span>
+            <span className="px-4 text-sm text-gray-400">
+              {t("register.or")}
+            </span>
             <span className="flex-1 h-px bg-gray-200"></span>
           </div>
 

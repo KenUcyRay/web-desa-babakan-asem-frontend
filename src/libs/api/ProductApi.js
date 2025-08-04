@@ -1,7 +1,9 @@
 export class ProductApi {
   static async getProducts(page = 1, limit = 10) {
     return await fetch(
-      `${import.meta.env.VITE_BASE_URL}/products/?page=${page}&limit=${limit}`,
+      `${
+        import.meta.env.VITE_NEW_BASE_URL
+      }/products/?page=${page}&limit=${limit}`,
       {
         method: "GET",
         headers: {
@@ -13,7 +15,7 @@ export class ProductApi {
   }
 
   static async getDetailProduct(id) {
-    return await fetch(`${import.meta.env.VITE_BASE_URL}/products/${id}`, {
+    return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/products/${id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -24,13 +26,15 @@ export class ProductApi {
 
   static async getOwnProducts(page = 1, limit = 10) {
     return await fetch(
-      `${import.meta.env.VITE_BASE_URL}/products/admin/me?page=${page}&limit=${limit}`,
+      `${
+        import.meta.env.VITE_NEW_BASE_URL
+      }/admin/products/me?page=${page}&limit=${limit}`,
       {
         method: "GET",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
         },
       }
     );
@@ -46,13 +50,11 @@ export class ProductApi {
     formData.append("featured_image", data.featured_image);
 
     return await fetch(
-      `${import.meta.env.VITE_BASE_URL}/products/admin/create`,
+      `${import.meta.env.VITE_NEW_BASE_URL}/products/admin/create`,
       {
         method: "POST",
         body: formData,
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
-        },
+        credentials: "include",
       }
     );
   }
@@ -67,26 +69,28 @@ export class ProductApi {
     formData.append("featured_image", data.featured_image ?? null);
 
     return await fetch(
-      `${import.meta.env.VITE_BASE_URL}/products/admin/update-by-product/${id}`,
+      `${
+        import.meta.env.VITE_NEW_BASE_URL
+      }/products/admin/update-by-product/${id}`,
       {
         method: "PATCH",
         body: formData,
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
-        },
+        credentials: "include",
       }
     );
   }
 
   static async deleteProduct(id) {
     return await fetch(
-      `${import.meta.env.VITE_BASE_URL}/products/admin/delete-by-product/${id}`,
+      `${
+        import.meta.env.VITE_NEW_BASE_URL
+      }/products/admin/delete-by-product/${id}`,
       {
         method: "DELETE",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
         },
       }
     );
@@ -95,13 +99,13 @@ export class ProductApi {
   // - CREATE Rating
   static async createRating(productId, rating) {
     return await fetch(
-      `${import.meta.env.VITE_BASE_URL}/products/rating/${productId}`,
+      `${import.meta.env.VITE_NEW_BASE_URL}/products/rating/${productId}`,
       {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
         },
         body: JSON.stringify({ rating }),
       }
@@ -111,13 +115,13 @@ export class ProductApi {
   // - CHECK kalau user sudah pernah rating
   static async alreadyRated(productId) {
     return await fetch(
-      `${import.meta.env.VITE_BASE_URL}/products/rating/${productId}`,
+      `${import.meta.env.VITE_NEW_BASE_URL}/products/rating/${productId}`,
       {
         method: "GET",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
         },
       }
     );
@@ -126,13 +130,13 @@ export class ProductApi {
   // - UPDATE Rating
   static async updateRating(ratingId, rating) {
     return await fetch(
-      `${import.meta.env.VITE_BASE_URL}/products/rating/${ratingId}`,
+      `${import.meta.env.VITE_NEW_BASE_URL}/products/rating/${ratingId}`,
       {
         method: "PUT",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
         },
         body: JSON.stringify({ rating }),
       }
@@ -142,13 +146,13 @@ export class ProductApi {
   // - DELETE Rating
   static async deleteRating(ratingId) {
     return await fetch(
-      `${import.meta.env.VITE_BASE_URL}/products/rating/${ratingId}`,
+      `${import.meta.env.VITE_NEW_BASE_URL}/products/rating/${ratingId}`,
       {
         method: "DELETE",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
         },
       }
     );

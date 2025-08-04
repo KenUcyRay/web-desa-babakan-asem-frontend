@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
 import "@fontsource/poppins";
 import { MessageApi } from "../../libs/api/MessageApi";
 import { alertSuccess, alertError } from "../../libs/alert";
+import { Helper } from "../../utils/Helper";
 
 export default function KontakKami() {
   const { t } = useTranslation();
@@ -19,14 +20,14 @@ export default function KontakKami() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const response = await MessageApi.createMessage(name, email, message);
+    const response = await MessageApi.create(name, email, message);
     const responseBody = await response.json();
 
-    if (response.status === 201) {
-      await alertSuccess(t("contact.form.success"));
-    } else {
-      await alertError(t("contact.form.error") + responseBody.error);
+    if (!response.ok) {
+      await Helper.errorResponseHandler(responseBody);
+      return;
     }
+    await alertSuccess(t("contact.form.success"));
 
     setName("");
     setEmail("");
@@ -72,7 +73,6 @@ export default function KontakKami() {
                   className="w-full rounded-lg p-3 bg-white shadow"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  required
                 />
               </div>
               <div>
@@ -80,12 +80,11 @@ export default function KontakKami() {
                   {t("contact.form.email")}
                 </label>
                 <input
-                  type="email"
+                  type="text"
                   placeholder={t("contact.form.placeholder_email")}
                   className="w-full rounded-lg p-3 bg-white shadow"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  required
                 />
               </div>
               <div>
@@ -98,7 +97,6 @@ export default function KontakKami() {
                   className="w-full rounded-lg p-3 bg-white shadow"
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
-                  required
                 />
               </div>
               <div className="text-center">

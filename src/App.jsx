@@ -6,7 +6,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import { useEffect, useState } from "react";
-import NProgress from "nprogress";
+import NProgress, { set } from "nprogress";
 import "nprogress/nprogress.css";
 import { Toaster } from "react-hot-toast";
 
@@ -96,24 +96,19 @@ import { UserApi } from "./libs/api/UserApi";
 
 // ✅ Layout Umum (Navbar + Footer aktif + Floating Menu)
 function LayoutUmum() {
-  const { isLoggedIn, setAdminStatus, setRole } = useAuth();
+  const { setProfile } = useAuth();
 
   const fetchProfile = async () => {
-    if (!isLoggedIn) return;
-
-    const response = await UserApi.getUserProfile();
-    if (response.status === 200) {
-      const responseBody = await response.json();
-      setAdminStatus(responseBody.user.role === "ADMIN");
-      setRole(responseBody.user.role);
-    } else {
-      setAdminStatus(false);
-      setRole(null);
+    const response = await UserApi.profile();
+    if (!response.ok) {
+      return;
     }
+    const responseBody = await response.json();
+    setProfile(responseBody.data);
   };
   useEffect(() => {
     fetchProfile();
-  });
+  }, []);
 
   return (
     <>
@@ -206,8 +201,6 @@ function LayoutAdmin() {
         <Route path="gis-desa" element={<GisDesa />} />
         <Route path="manage-program" element={<ManageProgram />} />
         <Route path="manage-apb" element={<ManageApb />} />
-
-
 
         {/* - Kelola Infografis */}
         <Route path="kelola-infografis/penduduk" element={<ManagePenduduk />} />

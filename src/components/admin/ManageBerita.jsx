@@ -37,8 +37,8 @@ export default function ManageBerita() {
     }
     const responseBody = await response.json();
     setTotalPages(responseBody.total_page);
-    setCurrentPage(responseBody.page);
-    setNews(responseBody.news);
+    setCurrentPage(responseBody.current_page);
+    setNews(responseBody.data);
   };
 
   useEffect(() => {
@@ -68,8 +68,7 @@ export default function ManageBerita() {
       const response = await NewsApi.updateNews(editingId, rawData);
       const responseBody = await response.json();
       if (!response.ok) {
-        let errorMessage = Helper.parseError(responseBody);
-        await alertError(errorMessage);
+        await Helper.errorResponseHandler(responseBody);
         return;
       }
 
@@ -83,13 +82,12 @@ export default function ManageBerita() {
     const response = await NewsApi.createNews(rawData);
     const responseBody = await response.json();
 
-    if (response.ok) {
-      await alertSuccess(t("manageNews.success.addNews"));
-      fetchNews();
-    } else {
-      let errorMessage = Helper.parseError(responseBody);
-      alertError(errorMessage);
+    if (!response.ok) {
+      await Helper.errorResponseHandler(responseBody);
+      return;
     }
+    await alertSuccess(t("manageNews.success.addNews"));
+    fetchNews();
 
     resetForm();
     setShowForm(false);
@@ -100,9 +98,7 @@ export default function ManageBerita() {
       const response = await NewsApi.deleteNews(id);
       if (!response.ok) {
         const responseBody = await response.json();
-        alertError(
-          `${t("manageNews.error.deleteFailed")} ${responseBody.error}`
-        );
+        await Helper.errorResponseHandler(responseBody);
         return;
       }
       setNews(news.filter((b) => b.id !== id));
@@ -156,7 +152,6 @@ export default function ManageBerita() {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder={t("manageNews.form.titlePlaceholder")}
-              required
             />
           </div>
 
@@ -169,7 +164,6 @@ export default function ManageBerita() {
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder={t("manageNews.form.contentPlaceholder")}
-              required
             ></textarea>
           </div>
 

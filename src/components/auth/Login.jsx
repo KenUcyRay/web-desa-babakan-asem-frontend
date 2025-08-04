@@ -15,47 +15,19 @@ export default function Login() {
   const navigate = useNavigate();
   const recaptchaRef = useRef(null);
   const { t } = useTranslation();
-
   const [loginMethod, setLoginMethod] = useState("email");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [reCaptchaToken, setReCaptchaToken] = useState("");
-  const { isLoggedIn, login, setAdminStatus, setRole } = useAuth();
+  const { profile, setProfile } = useAuth();
 
   useEffect(() => {
     AOS.init({ duration: 700, once: true });
   }, []);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const response = await UserApi.userLogin(
-      email,
-      password,
-      phone,
-      rememberMe,
-      reCaptchaToken
-    );
-
-    const responseBody = await response.json();
-    if (response.status === 200) {
-      login(responseBody.token);
-      await alertSuccess(t("login.success"));
-      setRole(responseBody.user.role);
-
-      if (responseBody.user.role === "ADMIN") {
-        await alertSuccess(t("login.admin_welcome"));
-        setAdminStatus(true);
-        await navigate("/admin");
-        return;
-      }
-      navigate("/");
-    } else {
-      await Helper.errorResponseHandler(responseBody);
-    }
-
+  const resetForm = () => {
     setEmail("");
     setPhone("");
     setPassword("");
@@ -64,9 +36,33 @@ export default function Login() {
     recaptchaRef.current?.reset();
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const body = {
+      email,
+      phone_number: phone,
+      password,
+      rememberMe,
+      reCaptchaToken,
+    };
+
+    const response = await UserApi.login(body);
+
+    const responseBody = await response.json();
+    if (!response.ok) {
+      await Helper.errorResponseHandler(responseBody);
+      return;
+    }
+    resetForm();
+    setProfile(responseBody.data);
+    await alertSuccess(t("login.success"));
+    await navigate("/");
+  };
+
   useEffect(() => {
-    if (isLoggedIn) navigate("/");
-  }, [isLoggedIn, navigate]);
+    if (profile) navigate("/");
+  }, []);
 
   return (
     <div className="flex min-h-screen font-poppins">
@@ -145,12 +141,11 @@ export default function Login() {
                     transition={{ duration: 0.3 }}
                   >
                     <input
-                      type="email"
+                      type="text"
                       placeholder={t("login.placeholder.email")}
                       className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-300 outline-none"
                       onChange={(e) => setEmail(e.target.value)}
                       value={email}
-                      required
                     />
                   </motion.div>
                 ) : (
@@ -183,7 +178,6 @@ export default function Login() {
                 className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-300 outline-none"
                 onChange={(e) => setPassword(e.target.value)}
                 value={password}
-                required
               />
             </div>
 

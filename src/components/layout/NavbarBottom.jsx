@@ -6,6 +6,8 @@ import { FaUserCircle } from "react-icons/fa";
 import logo from "../../assets/logo.png";
 import { useAuth } from "../../contexts/AuthContext";
 import { alertConfirm, alertSuccess } from "../../libs/alert";
+import { UserApi } from "../../libs/api/UserApi";
+import { Helper } from "../../utils/Helper";
 
 export default function NavbarBottom() {
   const { t } = useTranslation();
@@ -14,8 +16,7 @@ export default function NavbarBottom() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [avatarMenuOpen, setAvatarMenuOpen] = useState(false);
 
-  const { isLoggedIn, logout, isAdmin, setAdminStatus, setRole, role } =
-    useAuth();
+  const { isLoggedIn, role, setProfile, profile } = useAuth();
 
   const isTentangActive = ["/profil", "/pemerintahan", "/potensi"].includes(
     location.pathname
@@ -31,9 +32,14 @@ export default function NavbarBottom() {
     const confirm = await alertConfirm(t("navbarTop.logoutConfirm"));
     if (!confirm) return;
 
-    setAdminStatus(false);
-    setRole(null);
-    logout();
+    const response = await UserApi.logout();
+    if (!response.ok) {
+      const responseBody = await response.json();
+      await Helper.errorResponseHandler(responseBody);
+      return;
+    }
+
+    setProfile(null);
     await alertSuccess(t("navbarTop.logoutSuccess"));
     setAvatarMenuOpen(false);
     navigate("/login");
@@ -45,13 +51,13 @@ export default function NavbarBottom() {
   };
 
   const userMenu = () => {
-    if (role !== "REGULAR") {
+    if (profile.role === "ADMIN") {
       return (
         <Link
           to="/admin"
           className="bg-gradient-to-r from-green-400 to-[#B6F500] text-white px-4 py-2 rounded hover:opacity-90 transition"
         >
-          {t("navbarTop.dashboardAdmin", { role: role })}
+          {t("navbarTop.dashboardAdmin", { role: profile.role })}
         </Link>
       );
     }
@@ -85,7 +91,7 @@ export default function NavbarBottom() {
   };
 
   const button = () => {
-    if (isLoggedIn) {
+    if (profile) {
       return userMenu();
     } else {
       return (

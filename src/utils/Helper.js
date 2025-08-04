@@ -75,14 +75,27 @@ export class Helper {
 
   static async errorResponseHandler(responseBody) {
     let errorMessage = "Gagal menyimpan perubahan.";
-    if (responseBody.error && Array.isArray(responseBody.error)) {
-      const errorMessages = responseBody.error.map((err) =>
-        err.path?.length ? `${err.path[0]}: ${err.message}` : err.message
-      );
-      errorMessage = errorMessages.join(", ");
-    } else if (typeof responseBody.error === "string") {
-      errorMessage = responseBody.error;
+
+    if (
+      responseBody.errors?.name === "ZodError" &&
+      Array.isArray(responseBody.errors.issues)
+    ) {
+      const limit = 2; // Tampilkan maksimal 2 pesan
+      const totalErrors = responseBody.errors.issues.length;
+
+      const zodMessages = responseBody.errors.issues
+        .slice(0, limit)
+        .map((i) => `${i.path?.[0] ?? ""}: ${i.message}`);
+
+      if (totalErrors > limit) {
+        zodMessages.push(`...dan ${totalErrors - limit} error lainnya`);
+      }
+
+      errorMessage = zodMessages.join("<br>");
+    } else if (typeof responseBody.errors === "string") {
+      errorMessage = responseBody.errors;
     }
+
     await alertError(errorMessage);
   }
 }

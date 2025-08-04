@@ -124,44 +124,42 @@ export default function AdminDashboard() {
   // - Fetch TOTAL data
   const fetchNews = async () => {
     const res = await NewsApi.getOwnNews();
-    if (!res.ok) return alertError(t("adminDashboard.errors.failedToGetNews"));
+    if (!res.ok) return;
     const data = await res.json();
-    setNewsCount(data.news?.length || 0);
+    setNewsCount(data.data?.length || 0);
   };
 
   const fetchAgenda = async () => {
     const res = await AgendaApi.getOwnAgenda();
-    if (!res.ok)
-      return alertError(t("adminDashboard.errors.failedToGetAgenda"));
+    if (!res.ok) return;
     const data = await res.json();
     setAgendaCount(data.agenda?.length || 0);
   };
 
   const fetchMessages = async () => {
-    const res = await MessageApi.getMessages();
-    if (!res.ok)
-      return alertError(t("adminDashboard.errors.failedToGetMessages"));
-    const data = await res.json();
-    setMessageCount(data.data?.length || 0);
+    const res = await MessageApi.get("?size=1000");
+    if (!res.ok) return;
+    const responseBody = await res.json();
+    setMessageCount(responseBody.data?.length || 0);
   };
 
   const fetchUsers = async () => {
     const res = await UserApi.getAllUsers();
-    if (!res.ok) return alertError(t("adminDashboard.errors.failedToGetUsers"));
+    if (!res.ok) return;
     const data = await res.json();
-    setUserCount(data.users?.length || 0);
+    setUserCount(data.data?.length || 0);
   };
 
   const fetchProgramCount = async () => {
     const res = await VillageWorkProgramApi.getVillageWorkPrograms(1, 1);
-    if (!res.ok) return alertError("Gagal mengambil jumlah program");
+    if (!res.ok) return;
     const data = await res.json();
     setProgramCount(data.total || 0);
   };
 
   const fetchGaleriCount = async () => {
     const res = await GaleryApi.getGaleri(1, 1);
-    if (!res.ok) return alertError("Gagal mengambil jumlah galeri");
+    if (!res.ok) return;
     const data = await res.json();
     setGaleriCount(data.total || 0);
   };
@@ -169,21 +167,17 @@ export default function AdminDashboard() {
   // - Preview 3 item
   const fetchBumdesPreview = async () => {
     const res = await ProductApi.getOwnProducts(1, 3);
-    if (!res.ok)
-      return alertError(t("adminDashboard.errors.failedToGetBumdesProducts"));
+    if (!res.ok) return;
     const data = await res.json();
     setBumdesPreview(data.products || []);
   };
 
   const fetchAdministrasiPreview = async () => {
-    try {
-      const pengantar = await AdministrasiApi.getPengantar();
+    const pengantar = await AdministrasiApi.getPengantar("?size=3");
+    if (!pengantar.ok) return;
 
-      const merge = [...(await pengantar.json()).data.slice(0, 1)];
-      setAdministrasiPreview(merge);
-    } catch (e) {
-      alertError(t("adminDashboard.errors.failedToGetAdministrationPreview"));
-    }
+    const merge = [...(await pengantar.json()).data];
+    setAdministrasiPreview(merge);
   };
 
   const fetchGaleriPreview = async () => {

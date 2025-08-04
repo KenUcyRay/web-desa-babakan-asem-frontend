@@ -48,8 +48,8 @@ export default function DataMaster() {
   const fetchStats = async () => {
     try {
       // Berita
-      const newsRes = await NewsApi.getOwnNews();
-      if (!newsRes.ok) throw new Error("Gagal ambil berita");
+      const newsRes = await NewsApi.getOwnNews(1, 1000);
+      if (!newsRes.ok) return;
       const newsData = await newsRes.json();
 
       // Agenda
@@ -71,11 +71,12 @@ export default function DataMaster() {
       const galeriData = await galeriRes.json();
 
       // Pesan
-      const pesanRes = await MessageApi.getMessages();
-      const pesanData = pesanRes.ok ? await pesanRes.json() : { total: 0 };
+      const pesanRes = await MessageApi.get();
+      if (!pesanRes.ok) return;
+      const pesanData = await pesanRes.json("?size=1000");
 
       setStats({
-        newsCount: newsData.news?.length || 0,
+        newsCount: newsData.data?.length || 0,
         agendaCount: agendaData.agenda?.length || 0,
         programCount: programData.length || 0,
         galeriCount: galeriData.total || galeriData.galeri?.length || 0,

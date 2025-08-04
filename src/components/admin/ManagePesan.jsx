@@ -9,64 +9,45 @@ export default function ManagePesan() {
   const { t } = useTranslation();
   const [messages, setMessages] = useState([]);
   const [filter, setFilter] = useState("all");
-  const [totalPages, setTotalPages] = useState(1); // - ini baru // all | read | unread
+  const [totalPages, setTotalPages] = useState(1);
   const [page, setPage] = useState(1);
   const perPage = 5;
 
   const fetchMessages = async () => {
-    try {
-      // - kalau API mendukung query
-      const query = `?page=${page}&limit=${perPage}${
-        filter === "read"
-          ? "&is_read=true"
-          : filter === "unread"
-          ? "&is_read=false"
-          : ""
-      }`;
+    const query = `?page=${page}&size=${perPage}${
+      filter === "read"
+        ? "&isRead=true"
+        : filter === "unread"
+        ? "&isRead=false"
+        : ""
+    }`;
 
-      const response = await MessageApi.getMessages(query);
-      const resBody = await response.json();
+    const response = await MessageApi.get(query);
+    const responseBody = await response.json();
 
-      if (!response.ok) {
-        await alertError(t("managePesan.error.fetchMessages"));
-        return;
-      }
-
-      setMessages(resBody.data || []);
-      setTotalPages(resBody.total_page);
-    } catch (err) {
-      console.error(err);
-      alertError(t("managePesan.error.generalError"));
+    if (!response.ok) {
+      return;
     }
+
+    setMessages(responseBody.data || []);
+    setTotalPages(responseBody.total_page);
   };
 
   useEffect(() => {
     fetchMessages();
   }, [filter, page]);
 
-  const handleDelete = async (id) => {
-    if (!(await alertConfirm(t("managePesan.confirmation.deleteMessage"))))
-      return;
-
-    const response = await MessageApi.deleteMessage(id);
+  const handleMarkRead = async (id) => {
+    const response = await MessageApi.markAsRead(id);
+    const responseBody = await response.json();
     if (!response.ok) {
-      await alertError(t("managePesan.error.deleteMessage"));
+      await Helper.errorResponseHandler(responseBody);
       return;
     }
-
-    await alertSuccess(t("managePesan.success.messageDeleted"));
-    setMessages(messages.filter((p) => p.id !== id));
-  };
-
-  const handleMarkRead = async (id) => {
-    // - update state agar langsung terlihat
     const updated = messages.map((m) =>
       m.id === id ? { ...m, is_read: true } : m
     );
     setMessages(updated);
-
-    // - panggil API mark as read kalau ada
-    await MessageApi.markAsRead(id);
   };
 
   return (
@@ -126,12 +107,6 @@ export default function ManagePesan() {
                     <FaEnvelopeOpen /> {t("managePesan.buttons.markRead")}
                   </button>
                 )}
-                <button
-                  onClick={() => handleDelete(p.id)}
-                  className="flex items-center gap-1 text-red-500 hover:text-red-700 text-sm"
-                >
-                  <FaTrash /> {t("managePesan.buttons.delete")}
-                </button>
               </div>
             </div>
           ))

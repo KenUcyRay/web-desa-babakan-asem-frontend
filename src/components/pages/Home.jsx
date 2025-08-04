@@ -32,7 +32,6 @@ import LogoDesa from "../../assets/logo.png";
 import HeroVideo from "../../assets/new.mp4";
 import { NewsApi } from "../../libs/api/NewsApi";
 import { Helper } from "../../utils/Helper";
-import { alertError } from "../../libs/alert";
 import { ProductApi } from "../../libs/api/ProductApi";
 import { VillageWorkProgramApi } from "../../libs/api/VillageWorkProgramApi";
 import { useTranslation } from "react-i18next";
@@ -121,33 +120,17 @@ export default function Home() {
   ];
 
   const fetchProduct = async () => {
-    try {
-      const response = await ProductApi.getProducts(1, 3);
-      if (response.status === 200) {
-        const responseBody = await response.json();
-        setProducts(responseBody.products);
-      } else {
-        await alertError(t("errors.product"));
-      }
-    } catch (error) {
-      console.error("Error fetching products:", error);
-      await alertError(t("errors.product"));
-    }
+    const response = await ProductApi.getProducts(1, 3);
+    if (!response.ok) return;
+    const responseBody = await response.json();
+    setProducts(responseBody.products);
   };
 
   const fetchNews = async () => {
-    try {
-      const response = await NewsApi.getNews(1, 3);
-      if (response.status === 200) {
-        const responseBody = await response.json();
-        setNews(responseBody.news);
-      } else {
-        alertError(t("errors.news"));
-      }
-    } catch (error) {
-      console.error("Error fetching news:", error);
-      alertError(t("errors.news"));
-    }
+    const response = await NewsApi.getNews(1, 3);
+    if (!response.ok) return;
+    const responseBody = await response.json();
+    setNews(responseBody.news);
   };
 
   const fetchVillageWorkPrograms = async () => {

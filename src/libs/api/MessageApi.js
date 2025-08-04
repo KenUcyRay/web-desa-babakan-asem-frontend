@@ -1,5 +1,5 @@
 export class MessageApi {
-  static async createMessage(name, email, message) {
+  static async create(name, email, message) {
     return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/messages/`, {
       method: "POST",
       headers: {
@@ -14,15 +14,15 @@ export class MessageApi {
     });
   }
 
-  static async getMessages(query = "") {
+  static async get(query = "") {
     return await fetch(
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/messages${query}`,
       {
         method: "GET",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
         },
       }
     );
@@ -33,24 +33,10 @@ export class MessageApi {
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/messages/${id}`,
       {
         method: "PATCH",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
-        },
-      }
-    );
-  }
-
-  static async deleteMessage(id) {
-    return await fetch(
-      `${import.meta.env.VITE_NEW_BASE_URL}/admin/messages/${id}/`,
-      {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token").slice(1, -1)}`,
         },
       }
     );

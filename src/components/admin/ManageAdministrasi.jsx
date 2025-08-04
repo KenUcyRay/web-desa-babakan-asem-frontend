@@ -12,7 +12,7 @@ export default function ManageSuratPengantar() {
   const perPage = 5;
 
   // Filter data berdasarkan status
-  const filteredData = data.filter((item) => 
+  const filteredData = data.filter((item) =>
     filterStatus === "Semua" ? true : item.status === filterStatus
   );
 
@@ -30,36 +30,39 @@ export default function ManageSuratPengantar() {
   const handleTerima = async (idx) => {
     const item = currentData[idx];
     const response = await AdministrasiApi.updatePengantar(item.id);
-
-    if (response?.ok) {
-      const updatedData = data.map(d => 
-        d.id === item.id ? { ...d, status: "diterima" } : d
-      );
-      setData(updatedData);
-      alertSuccess("Surat pengantar berhasil diterima");
-    } else {
-      alertError("Gagal menerima surat");
+    const responseBody = await response.json();
+    if (!response.ok) {
+      await Helper.errorResponseHandler(responseBody);
     }
+    const updatedData = data.map((d) =>
+      d.id === item.id ? { ...d, status: "diterima" } : d
+    );
+    setData(updatedData);
+    alertSuccess("Surat pengantar berhasil diterima");
   };
 
   // Fetch data surat pengantar
   const fetchData = async () => {
-    const response = await AdministrasiApi.getPengantar();
-    if (!response.ok) return alertError("Gagal mengambil data");
+    const response = await AdministrasiApi.getPengantar("?size=1000");
+    if (!response.ok) return;
 
     const responseData = await response.json();
-    setData(responseData.data.map(item => ({
-      id: item.id,
-      nama: item.name,
-      nik: item.nik,
-      jenis: Helper.formatText(item.type),
-      keterangan: item.keterangan,
-      created_at: item.createdAt,
-      status: item.is_pending ? "pending" : "diterima"
-    })));
+    setData(
+      responseData.data.map((item) => ({
+        id: item.id,
+        nama: item.name,
+        nik: item.nik,
+        jenis: Helper.formatText(item.type),
+        keterangan: item.keterangan,
+        created_at: item.createdAt,
+        status: item.is_pending ? "pending" : "diterima",
+      }))
+    );
   };
 
-  useEffect(() => { fetchData(); }, []);
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
     <div className="w-full">
@@ -100,7 +103,7 @@ export default function ManageSuratPengantar() {
           <tbody>
             {currentData.map((item, idx) => (
               <React.Fragment key={item.id}>
-                <tr 
+                <tr
                   className={`border-b hover:bg-green-50 cursor-pointer ${
                     idx % 2 === 0 ? "bg-white" : "bg-gray-50"
                   }`}
@@ -113,11 +116,13 @@ export default function ManageSuratPengantar() {
                     {new Date(item.created_at).toLocaleString("id-ID")}
                   </td>
                   <td className="p-4 text-center">
-                    <span className={`px-3 py-1 rounded-full text-xs ${
-                      item.status === "pending" 
-                        ? "bg-yellow-100 text-yellow-700" 
-                        : "bg-green-100 text-green-700"
-                    }`}>
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs ${
+                        item.status === "pending"
+                          ? "bg-yellow-100 text-yellow-700"
+                          : "bg-green-100 text-green-700"
+                      }`}
+                    >
                       {item.status === "pending" ? "⏳ Pending" : "✓ Diterima"}
                     </span>
                   </td>
@@ -140,8 +145,12 @@ export default function ManageSuratPengantar() {
                   <tr>
                     <td colSpan={6} className="p-4 bg-green-50">
                       <div className="grid gap-2 text-sm">
-                        <p><b>NIK:</b> {item.nik || "-"}</p>
-                        <p><b>Keterangan:</b> {item.keterangan || "-"}</p>
+                        <p>
+                          <b>NIK:</b> {item.nik || "-"}
+                        </p>
+                        <p>
+                          <b>Keterangan:</b> {item.keterangan || "-"}
+                        </p>
                       </div>
                     </td>
                   </tr>
@@ -166,22 +175,30 @@ export default function ManageSuratPengantar() {
           <div key={item.id} className="bg-white p-4 rounded-lg shadow border">
             <div className="flex justify-between">
               <h3 className="font-bold">{item.nama}</h3>
-              <span className={`px-2 py-1 text-xs rounded-full ${
-                item.status === "pending" 
-                  ? "bg-yellow-100 text-yellow-700" 
-                  : "bg-green-100 text-green-700"
-              }`}>
+              <span
+                className={`px-2 py-1 text-xs rounded-full ${
+                  item.status === "pending"
+                    ? "bg-yellow-100 text-yellow-700"
+                    : "bg-green-100 text-green-700"
+                }`}
+              >
                 {item.status === "pending" ? "⏳ Pending" : "✓ Diterima"}
               </span>
             </div>
-            <p className="text-sm mt-2"><b>NIK:</b> {item.nik || "-"}</p>
-            <p className="text-sm"><b>Jenis:</b> {item.jenis}</p>
+            <p className="text-sm mt-2">
+              <b>NIK:</b> {item.nik || "-"}
+            </p>
+            <p className="text-sm">
+              <b>Jenis:</b> {item.jenis}
+            </p>
             <p className="text-xs text-gray-500 mt-1">
               {new Date(item.created_at).toLocaleString("id-ID")}
             </p>
 
             {item.keterangan && (
-              <p className="text-sm mt-2"><b>Keterangan:</b> {item.keterangan}</p>
+              <p className="text-sm mt-2">
+                <b>Keterangan:</b> {item.keterangan}
+              </p>
             )}
 
             {item.status === "pending" && (
