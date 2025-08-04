@@ -8,7 +8,30 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-//fix i think
+//Rill Fix
+
+model User {
+  id           String   @id @default(uuid())
+  name         String   @db.VarChar(255)
+  phone_number String?  @db.VarChar(20)
+  email        String?  @db.VarChar(255)
+  password     String   @db.VarChar(255)
+  role         Role
+  reset_token  String?  @db.VarChar(500)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  @@map("users")
+}
+
+enum Role {
+  REGULAR // Regular user with basic access
+  ADMIN
+  PKK
+  KARANG_TARUNA
+  BPD
+  CONTRIBUTOR
+}
 
 model Message {
   id           String   @id @default(uuid())
@@ -22,6 +45,8 @@ model Message {
 
   @@map("messages")
 }
+
+//fix i think
 
 model Pengantar {
   id         String        @id @default(uuid())
@@ -236,31 +261,6 @@ enum TargetType {
   NEWS
   AGENDA
   PRODUCT
-}
-
-model User {
-  id                 String    @id @default(uuid())
-  name               String    @db.VarChar(255)
-  phone_number       String?   @db.VarChar(20)
-  email              String?   @db.VarChar(255)
-  password           String    @db.VarChar(255)
-  role               Role
-  reset_token        String?   @db.VarChar(500)
-  reset_token_expiry DateTime?
-  created_at         DateTime  @default(now())
-  updated_at         DateTime  @updatedAt
-
-  @@map("users")
-}
-
-enum Role {
-  REGULAR
-  ADMIN
-  PKK
-  BUMDES
-  KARANG_TARUNA
-  BPD
-  // CONTRIBUTOR
 }
 
 // yang atas migrasi dari microservice

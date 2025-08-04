@@ -13,45 +13,41 @@ import { publicRouter } from "@/router/public-router";
 import { adminRouter } from "@/router/admin-router";
 import { i18nMiddleware } from "@/middleware/i18n-middleware";
 import path from "node:path";
+import cookieParser from "cookie-parser";
 
 export const web = express();
 
-// Optional, boleh aktifkan helmet tapi longgarkan untuk gambar
 web.use(
   helmet({
     crossOriginResourcePolicy: { policy: "cross-origin" },
   })
 );
 
-// CORS global (boleh tetap ada)
 web.use(
   cors({
-    origin: "*", // frontend kamu
+    origin: "http://localhost:3000",
     credentials: true,
   })
 );
 
 web.use(i18nMiddleware);
 web.use(express.json());
-// web.use(limiter); // boleh aktifkan kalau perlu
+web.use(cookieParser());
 
-// ✅ CORS KHUSUS UNTUK GAMBAR
 web.use(
   "/api/public/images",
   cors({
-    origin: "*",
+    origin: "http://localhost:3000",
     methods: ["GET"],
   }),
   express.static(path.join(__dirname, "..", "..", "public", "images"))
 );
 
-// ✅ Cek di terminal kalau gambar diminta
 web.use("/api/public/images", (req, res, next) => {
   console.log(">> Mengirim gambar:", req.url);
   next();
 });
 
-// ROUTER
 web.use("/api", publicRouter);
 web.use("/api/private", privateRouter);
 web.use("/api/admin", adminRouter);

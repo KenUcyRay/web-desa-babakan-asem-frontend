@@ -53,38 +53,4 @@ export class CommentController {
       next(error);
     }
   }
-  static async deleteByTarget(
-    req: UserRequest,
-    res: Response,
-    next: NextFunction
-  ) {
-    try {
-      const { targetType } = req.query;
-
-      if (!targetType) {
-        return res.status(400).json({ message: "targetType is required" });
-      }
-      console.log(`Deleting comments for target ID: ${targetType}`);
-      const response = await CommentService.deleteByTarget(
-        req.params.targetId,
-        req.user!,
-        targetType as string
-      );
-      return res.status(200).json(response);
-    } catch (error) {
-      next(error);
-    }
-  }
-  static async deleteByUser(
-    req: UserRequest,
-    res: Response,
-    next: NextFunction
-  ) {
-    try {
-      const response = await CommentService.deleteByUser(req.user!);
-      return res.status(200).json(response);
-    } catch (error) {
-      next(error);
-    }
-  }
 }

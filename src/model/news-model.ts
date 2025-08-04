@@ -12,24 +12,30 @@ export interface NewsUpdateRequest {
   is_published?: boolean;
 }
 
-export interface NewsGetAllResponse {
-  total_page: number;
-  page: number;
-  limit: number;
-  news: News[];
+export interface QueryNewsRequest {
+  page?: number;
+  limit?: number;
+  is_published?: boolean;
 }
 
-export const toNewsGetAllResponse = (
-  total_page: number,
-  page: number,
-  limit: number,
-  news: News[]
-): NewsGetAllResponse => {
+export interface AllNewsResponse {
+  size: number;
+  total_page: number;
+  current_page: number;
+  data: News[];
+}
+
+export const toAllNewsResponse = (
+  size: number,
+  total: number,
+  currentPage: number,
+  data: News[]
+): AllNewsResponse => {
   return {
-    total_page: Math.ceil(total_page / limit),
-    page,
-    limit,
-    news,
+    size: size,
+    total_page: Math.floor(total / size),
+    current_page: currentPage,
+    data,
   };
 };
 

@@ -17,18 +17,22 @@ import { CommentController } from "@/controller/comment-controller";
 
 export const publicRouter = express.Router();
 
+// Users
 publicRouter.post("/users/register", UserController.register);
 publicRouter.post("/users/login", UserController.login);
 publicRouter.post("/users/forgot-password", UserController.forgotPassword);
 publicRouter.post("/users/verify-reset-token", UserController.verifyResetToken);
 publicRouter.post("/users/reset-password", UserController.resetPassword);
 
-publicRouter.get("/users/:userId", UserController.getUserById);
-// publicRouter.post("/forgot-password", UserController.forgotPassword);
-// publicRouter.get("/verify-reset-token", UserController.verifyResetToken);
-// publicRouter.patch("/reset-password", UserController.resetPassword);
+// Messages
+publicRouter.post("/messages", MessageController.create);
 
-// publicRouter.post("/messages", MessageController.createMessage);
+//administration
+publicRouter.post("/administrations", AdministrationController.pengantar);
+
+//News
+publicRouter.get("/news", NewsController.getAll);
+publicRouter.get("/news/:userId", NewsController.getById);
 
 // publicRouter.post("/administrations", AdministrationController.create);
 
@@ -47,22 +51,8 @@ publicRouter.get("/residents", ResidentController.getAll);
 
 publicRouter.get("/apb", ApbController.getAll);
 
-//messages
-publicRouter.post("/messages", MessageController.create);
-
-//administration
-publicRouter.post(
-  "/administrasi/pengantar",
-  AdministrationController.pengantar
-);
-
 //Galeri
 publicRouter.get("/galeri", GaleriController.getAll);
-
-//News
-publicRouter.get("/news", NewsController.getAll);
-publicRouter.get("/news/:userId", NewsController.getById);
-publicRouter.get("/news/all-type/:userId", NewsController.getAllTypeById);
 
 //Pkk
 publicRouter.get("/programs", PkkController.getAll);
@@ -80,7 +70,6 @@ publicRouter.get("/infografis/extra-idm", InfografisController.getExtraIdm);
 //Agenda
 publicRouter.get("/agenda/", AgendaController.getAll);
 publicRouter.get("/agenda/:agendaId", AgendaController.getById);
-publicRouter.get("/agenda/all-type/:agendaId", AgendaController.getAllTypeById);
 
 //Products
 publicRouter.get("/products", ProductController.getAll);

@@ -22,7 +22,37 @@ import { UserController } from "@/controller/user-controller";
 export const adminRouter = express.Router();
 
 adminRouter.use(authMiddleware);
-// adminRouter.use(roleMiddleware(Role.ADMIN));
+adminRouter.use(roleMiddleware(Role.ADMIN));
+
+// Users
+adminRouter.get("/users", UserController.getAllUser);
+adminRouter.post("/users", UserController.createUser);
+adminRouter.patch("/users/:id", UserController.updateRole);
+
+// Messages
+adminRouter.get("/messages", MessageController.getAll);
+adminRouter.patch("/messages/:id", MessageController.update);
+
+// Administration
+adminRouter.get("/administrations", AdministrationController.getPengantar);
+adminRouter.patch(
+  "/administrations/:id",
+  AdministrationController.updatePengantar
+);
+
+// News
+adminRouter.get("/news", NewsController.getOwn);
+adminRouter.post(
+  "/news",
+  upload.single("featured_image"),
+  NewsController.create
+);
+adminRouter.patch(
+  "/news/:newsId",
+  upload.single("featured_image"),
+  NewsController.update
+);
+adminRouter.delete("/news/:newsId", NewsController.delete);
 
 // adminRouter.use("/messages", messageAdminRouter);
 // adminRouter.use("/administrasi", adminRouter);
@@ -59,22 +89,6 @@ adminRouter.post("/apb", ApbController.create);
 adminRouter.patch("/apb/:id", ApbController.update);
 adminRouter.delete("/apb/:id", ApbController.delete);
 
-// Messages
-adminRouter.get("/messages", MessageController.getAll);
-adminRouter.patch("/messages/:messageId", MessageController.update);
-adminRouter.delete("/messages/:messageId", MessageController.delete);
-
-// Administration
-
-adminRouter.get(
-  "/administrasi/pengantar",
-  AdministrationController.getPengantar
-);
-adminRouter.patch(
-  "/administrasi/pengantar/:id",
-  AdministrationController.updatePengantar
-);
-
 //Galeri
 adminRouter.post("/galeri", upload.single("image"), GaleriController.create);
 adminRouter.put(
@@ -83,21 +97,6 @@ adminRouter.put(
   GaleriController.update
 );
 adminRouter.delete("/galeri/:galeriId", GaleriController.delete);
-
-// News
-adminRouter.get("/news/me", NewsController.getOwn);
-adminRouter.post(
-  "/news/create",
-  upload.single("featured_image"),
-  NewsController.create
-);
-adminRouter.patch(
-  "/news/update-by-news/:newsId",
-  upload.single("featured_image"),
-  NewsController.update
-);
-adminRouter.delete("/news/delete-by-news/:newsId", NewsController.delete);
-adminRouter.delete("/news/delete-by-admin", NewsController.deleteByAdmin);
 
 //Program PKK
 adminRouter.post(
@@ -166,7 +165,6 @@ adminRouter.delete(
   "/agenda/delete-by-agenda/:agendaId",
   AgendaController.delete
 );
-adminRouter.delete("/agenda/delete-by-admin", AgendaController.deleteByAdmin);
 
 // Products
 
@@ -196,13 +194,3 @@ adminRouter.delete(
   "/products/delete-by-product/:productId",
   ProductController.delete
 );
-adminRouter.delete(
-  "/products/delete-by-admin",
-  ProductController.deleteByAdmin
-);
-
-//User
-
-adminRouter.get("/users/user", UserController.getAllUser);
-adminRouter.post("/users", UserController.createUser);
-adminRouter.patch("/users/:userId", UserController.updateRole);

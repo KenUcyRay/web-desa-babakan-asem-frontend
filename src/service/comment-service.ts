@@ -4,7 +4,7 @@ import {
   CommentCreateRequest,
   CommentUpdateRequest,
 } from "@/model/comment-model";
-import { UserResponse } from "@/model/user-model";
+import { toUserResponse, UserResponse } from "@/model/user-model";
 import { Validation } from "@/validation/validation";
 import { CommentValidation } from "@/validation/comment-validation";
 import { TargetType } from "@prisma/client";
@@ -23,11 +23,11 @@ export class CommentService {
 
     const enrichedComments = await Promise.all(
       comments.map(async (comment) => {
-        const response = await axios.get(
-          `http://localhost:4000/api/users/${comment.user_id}`
-        );
+        const user = await prismaClient.user.findUnique({
+          where: { id: comment.user_id },
+        });
         return {
-          ...response.data,
+          ...toUserResponse(user!),
           ...comment,
         };
       })
@@ -41,14 +41,23 @@ export class CommentService {
     targetId: string,
     user: UserResponse
   ) {
-    console.log("Target ID:", targetId);
-
     Validation.validate(CommentValidation.create, request);
 
     if (request.target_type === TargetType.NEWS) {
-      await axios.get(`http://localhost:4000/api/news/${targetId}`);
+      const news = await prismaClient.news.findUnique({
+        where: { id: targetId },
+      });
+
+      if (!news) {
+        throw new ResponseError(404, "News not found");
+      }
     } else if (request.target_type === TargetType.AGENDA) {
-      await axios.get(`http://localhost:4000/api/agenda/${targetId}`);
+      const agenda = await prismaClient.agenda.findUnique({
+        where: { id: targetId },
+      });
+      if (!agenda) {
+        throw new ResponseError(404, "Agenda not found");
+      }
     }
     const comment = await prismaClient.comment.create({
       data: {
@@ -112,59 +121,5 @@ export class CommentService {
       403,
       "You are not authorized to delete this comment"
     );
-  }
-  static async deleteByTarget(
-    targetId: string,
-    user: UserResponse,
-    targetType: string
-  ) {
-    if (targetType === TargetType.NEWS) {
-      const news = await axios.get(
-        `http://localhost:4000/api/news/all-type/${targetId}`
-      );
-      if (news.data.news.userId !== user.id) {
-        throw new ResponseError(
-          403,
-          "You are not authorized to delete comments for this target"
-        );
-      }
-    } else if (targetType === TargetType.AGENDA) {
-      const agenda = await axios.get(
-        `http://localhost:4000/api/agenda/all-type/${targetId}`
-      );
-      if (agenda.data.agenda.userId !== user.id) {
-        throw new ResponseError(
-          403,
-          "You are not authorized to delete comments for this target"
-        );
-      }
-    } else if (targetType === TargetType.PRODUCT) {
-      const product = await axios.get(
-        `http://localhost:4000/api/products/${targetId}`
-      );
-      if (product.data.product.user_id !== user.id) {
-        throw new ResponseError(
-          403,
-          "You are not authorized to delete comments for this target"
-        );
-      }
-    } else {
-      throw new ResponseError(400, "Invalid target type");
-    }
-
-    await prismaClient.comment.deleteMany({
-      where: {
-        target_id: targetId,
-      },
-    });
-
-    return { message: "Comments deleted successfully" };
-  }
-  static async deleteByUser(user: UserResponse) {
-    await prismaClient.comment.deleteMany({
-      where: { user_id: user.id },
-    });
-
-    return { message: "Comments deleted successfully" };
   }
 }

@@ -27,3 +27,18 @@ Jangan lupa hapus comment untuk recaptcha
 
 //Bug
 ada bug saat tokennya basi gk bisa logout!!
+
+//Endpoint yang sudah beres
+- user
+  - register //jangan lupa hapus untuk recaptchanya nanti
+  - login //jangan lupa hapus untuk recaptchanya nanti
+  - logout
+  - delete
+  - profile
+  - update
+  - Get All User Done
+  - Create User
+  - Update Role
+- message 
+- administration
+- news

@@ -62,17 +62,16 @@ export class ProductService {
           product.ratings.length
         : 0;
 
-    const comments = await axios.get(
-      `http://localhost:4000/api/comments/${productId}`
-    );
-    // const user = await axios.get(
-    //   `http://localhost:3002/api/users/${product.user_id}`
-    // );
+    const comments = await prismaClient.comment.findMany({
+      where: { target_id: productId, target_type: "PRODUCT" },
+      orderBy: {
+        created_at: "desc",
+      },
+    });
     return {
-      // user_created: user.data.user,
       rating: averageRating,
       product: product,
-      comments: comments.data.comments,
+      comments: comments,
     };
   }
   static async getOwn(user: UserResponse, page: number, limit: number) {
@@ -214,14 +213,9 @@ export class ProductService {
       throw new ResponseError(403, "Forbidden");
     }
 
-    await axios.delete(
-      `http://localhost:4000/api/private/comments/delete-by-target/${productId}?targetType=PRODUCT`,
-      {
-        headers: {
-          Authorization: token,
-        },
-      }
-    );
+    await prismaClient.comment.deleteMany({
+      where: { target_id: productId, target_type: "PRODUCT" },
+    });
 
     const filePath = path.join(
       __dirname,
@@ -238,41 +232,5 @@ export class ProductService {
       }),
       await fs.unlink(filePath),
     ]);
-  }
-  static async deleteByAdmin(user: UserResponse, token: string) {
-    const products = await prismaClient.product.findMany({
-      where: { user_id: user.id },
-    });
-
-    await Promise.all(
-      products.map((product) => {
-        return axios.delete(
-          `http://localhost:4000/api/private/comments/delete-by-target/${product.id}?targetType=PRODUCT`,
-          {
-            headers: {
-              Authorization: token,
-            },
-          }
-        );
-      })
-    );
-
-    await prismaClient.product.deleteMany({
-      where: { user_id: user.id },
-    });
-
-    await Promise.all(
-      products.map((product) => {
-        const filePath = path.join(
-          __dirname,
-          "..",
-          "..",
-          "public",
-          "images",
-          product.featured_image
-        );
-        return fs.unlink(filePath);
-      })
-    );
   }
 }

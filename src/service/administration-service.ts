@@ -1,4 +1,8 @@
-import { PengantarCreateRequest } from "@/model/administration-model";
+import {
+  PengantarCreateRequest,
+  QueryAdministrationRequest,
+  toAllAdministrationResponse,
+} from "@/model/administration-model";
 import { prismaClient } from "../application/database";
 import { ResponseError } from "../error/response-error";
 import { Validation } from "@/validation/validation";
@@ -15,33 +19,40 @@ export class AdministrationService {
 
     const updatedPengantar = await prismaClient.pengantar.update({
       where: { id },
-      data: { is_pending: false }, // Example update, adjust as needed
+      data: { is_pending: false },
     });
 
-    return { pengantar: updatedPengantar };
+    return { data: updatedPengantar };
   }
 
-  static async getPengantar(
-    page: number,
-    limit: number,
-    isPending: boolean | null
-  ) {
+  static async getPengantar(query: QueryAdministrationRequest) {
+    const queryValidation = Validation.validate(
+      AdministrationValidation.query,
+      query
+    );
+
     const pengantar = await prismaClient.pengantar.findMany({
-      skip: (page - 1) * limit,
-      take: limit,
-      where: isPending !== null ? { is_pending: isPending } : {},
+      skip: (queryValidation.page! - 1) * queryValidation.size!,
+      take: queryValidation.size,
+      where:
+        queryValidation.isPending !== null
+          ? { is_pending: queryValidation.isPending }
+          : {},
     });
 
     const totalCount = await prismaClient.pengantar.count({
-      where: isPending !== null ? { is_pending: isPending } : {},
+      where:
+        queryValidation.isPending !== null
+          ? { is_pending: queryValidation.isPending }
+          : {},
     });
 
-    return {
-      total_page: Math.ceil(totalCount / limit),
-      page,
-      limit,
-      data: pengantar,
-    };
+    return toAllAdministrationResponse(
+      queryValidation.size!,
+      totalCount,
+      queryValidation.page!,
+      pengantar
+    );
   }
 
   static async pengantar(request: PengantarCreateRequest) {
@@ -50,6 +61,6 @@ export class AdministrationService {
     const pengantar = await prismaClient.pengantar.create({
       data: request,
     });
-    return { pengantar: pengantar };
+    return { data: pengantar };
   }
 }

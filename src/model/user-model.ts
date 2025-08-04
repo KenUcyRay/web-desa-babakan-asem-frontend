@@ -9,7 +9,6 @@ export interface RegisterUserRequest {
   remember_me: boolean;
   recaptcha_token: string;
 }
-
 export interface LoginUserRequest {
   email?: string;
   phone_number?: string;
@@ -17,7 +16,6 @@ export interface LoginUserRequest {
   remember_me: boolean;
   recaptcha_token: string;
 }
-
 export interface UpdateUserRequest {
   name?: string;
   phone_number?: string;
@@ -25,12 +23,15 @@ export interface UpdateUserRequest {
   password?: string;
   confirm_password?: string;
 }
-
-export interface UserCreateRequest {
+export interface CreateUserRequest {
   name: string;
-  email: string;
+  phone_number?: string;
+  email?: string;
   password: string;
   confirm_password: string;
+  role: Role;
+}
+export interface UpdateRoleUserRequest {
   role: Role;
 }
 
@@ -43,11 +44,10 @@ export interface UserResetPasswordRequest {
   confirm_password: string;
 }
 
-export interface UserAllResponse {
-  page: number;
-  limit: number;
-  total_page: number;
-  users: UserResponse[];
+export interface QueryUser {
+  page?: number;
+  size?: number;
+  role?: Role;
 }
 
 export interface UserResponse {
@@ -59,7 +59,12 @@ export interface UserResponse {
   created_at: Date;
   updated_at: Date;
 }
-
+export interface UserAllResponse {
+  size: number;
+  total_page: number;
+  current_page: number;
+  data: UserResponse[];
+}
 export const toUserResponse = (user: User): UserResponse => {
   return {
     id: user.id,
@@ -71,17 +76,16 @@ export const toUserResponse = (user: User): UserResponse => {
     updated_at: user.updated_at,
   };
 };
-
 export const toUserAllResponse = (
-  page: number,
-  limit: number,
+  size: number,
   total: number,
+  currentPage: number,
   users: User[]
 ): UserAllResponse => {
   return {
-    page: page,
-    limit: limit,
-    total_page: Math.ceil(total / limit),
-    users: users.map(toUserResponse),
+    size: size,
+    total_page: Math.floor(total / size),
+    current_page: currentPage,
+    data: users.map(toUserResponse),
   };
 };

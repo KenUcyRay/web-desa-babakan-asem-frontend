@@ -76,19 +76,4 @@ export class ProductController {
       next(error);
     }
   }
-  static async deleteByAdmin(
-    req: UserRequest,
-    res: Response,
-    next: NextFunction
-  ) {
-    try {
-      await ProductService.deleteByAdmin(
-        req.user!,
-        req.header("Authorization")!
-      );
-      res.status(204).json({});
-    } catch (error) {
-      next(error);
-    }
-  }
 }

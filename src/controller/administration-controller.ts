@@ -9,19 +9,7 @@ export class AdministrationController {
     next: NextFunction
   ) {
     try {
-      const page = parseInt(req.query.page as string) || 1;
-      const limit = parseInt(req.query.limit as string) || 10;
-      let isPending: boolean | null = null;
-      if (req.query.isPending == "true") {
-        isPending = true;
-      } else if (req.query.isPending == "false") {
-        isPending = false;
-      }
-      const response = await AdministrationService.getPengantar(
-        page,
-        limit,
-        isPending
-      );
+      const response = await AdministrationService.getPengantar(req.query);
       res.status(200).json(response);
     } catch (error) {
       next(error);

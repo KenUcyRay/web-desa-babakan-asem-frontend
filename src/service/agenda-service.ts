@@ -6,7 +6,7 @@ import {
   toAgendaGetAllResponse,
   toAgendaWithUserGetAllResponse,
 } from "../model/agenda-model";
-import { UserResponse } from "../model/user-model";
+import { toUserResponse, UserResponse } from "../model/user-model";
 import { AgendaValidation } from "../validation/agenda-validation";
 import { Validation } from "../validation/validation";
 import path from "node:path";
@@ -135,14 +135,9 @@ export class AgendaService {
       throw new ResponseError(403, "Forbidden");
     }
 
-    await axios.delete(
-      `http://localhost:4000/api/comments/delete-by-target/${agendaId}?targetType=AGENDA`,
-      {
-        headers: {
-          Authorization: token,
-        },
-      }
-    );
+    await prismaClient.comment.deleteMany({
+      where: { target_id: agendaId, target_type: "AGENDA" },
+    });
 
     const agendaDelete = await prismaClient.agenda.delete({
       where: { id: agendaId },
@@ -160,42 +155,6 @@ export class AgendaService {
     await fs.unlink(filePath);
 
     return agendaDelete;
-  }
-  static async deleteByAdmin(user: UserResponse, token: string) {
-    const agenda = await prismaClient.agenda.findMany({
-      where: { userId: user.id },
-    });
-
-    await Promise.all(
-      agenda.map((n) => {
-        return axios.delete(
-          `http://localhost:4000/api/comments/delete-by-target/${n.id}?targetType=AGENDA`,
-          {
-            headers: {
-              Authorization: token,
-            },
-          }
-        );
-      })
-    );
-
-    await prismaClient.agenda.deleteMany({
-      where: { userId: user.id },
-    });
-
-    await Promise.all(
-      agenda.map((n) => {
-        const filePath = path.join(
-          __dirname,
-          "..",
-          "..",
-          "public",
-          "images",
-          n.featured_image
-        );
-        return fs.unlink(filePath);
-      })
-    );
   }
 
   static async getAll(page: number, limit: number, type: AgendaType) {
@@ -218,11 +177,11 @@ export class AgendaService {
     });
     const agendaWithUser = await Promise.all(
       agenda.map(async (agenda) => {
-        const response = await axios.get(
-          `http://localhost:4000/api/users/${agenda.userId}`
-        );
+        const user = await prismaClient.user.findUnique({
+          where: { id: agenda.userId },
+        });
         return {
-          user_created: response.data.user,
+          user_created: toUserResponse(user!),
           agenda: agenda,
         };
       })
@@ -249,37 +208,20 @@ export class AgendaService {
       },
     });
 
-    const comments = await axios.get(
-      `http://localhost:4000/api/comments/${agendaId}`
-    );
-    const user = await axios.get(
-      `http://localhost:4000/api/users/${agenda.userId}`
-    );
-    return {
-      user_created: user.data.user,
-      agenda: agenda,
-      comments: comments.data.comments,
-    };
-  }
-  static async getAllTypeById(agendaId: string) {
-    const agenda = await prismaClient.agenda.findUnique({
-      where: { id: agendaId },
+    const comments = await prismaClient.comment.findMany({
+      where: { target_id: agendaId, target_type: "AGENDA" },
+      orderBy: {
+        created_at: "desc",
+      },
+    });
+    const user = await prismaClient.user.findUnique({
+      where: { id: agenda.userId },
     });
 
-    if (!agenda) {
-      throw new ResponseError(404, "News not found");
-    }
-
-    const comments = await axios.get(
-      `http://localhost:4000/api/comments/${agendaId}`
-    );
-    const user = await axios.get(
-      `http://localhost:3002/api/users/${agenda.userId}`
-    );
     return {
-      user_created: user.data.user,
+      user_created: toUserResponse(user!),
       agenda: agenda,
-      comments: comments.data.comments,
+      comments: comments,
     };
   }
 }

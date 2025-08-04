@@ -96,21 +96,6 @@ export class AgendaController {
       next(error);
     }
   }
-  static async deleteByAdmin(
-    req: UserRequest,
-    res: Response,
-    next: NextFunction
-  ) {
-    try {
-      await AgendaService.deleteByAdmin(
-        req.user!,
-        req.header("Authorization")!
-      );
-      res.status(204).json({});
-    } catch (error) {
-      next(error);
-    }
-  }
 
   static async getAll(req: Request, res: Response, next: NextFunction) {
     try {
@@ -143,14 +128,6 @@ export class AgendaController {
   static async getById(req: Request, res: Response, next: NextFunction) {
     try {
       const response = await AgendaService.getById(req.params.agendaId);
-      res.status(200).json(response);
-    } catch (error) {
-      next(error);
-    }
-  }
-  static async getAllTypeById(req: Request, res: Response, next: NextFunction) {
-    try {
-      const response = await AgendaService.getAllTypeById(req.params.agendaId);
       res.status(200).json(response);
     } catch (error) {
       next(error);

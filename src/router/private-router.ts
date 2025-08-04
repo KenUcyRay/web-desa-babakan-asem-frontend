@@ -1,4 +1,3 @@
-// import { userPrivateRouter } from "./private/user-private-router";
 import { CommentController } from "@/controller/comment-controller";
 import { RatingController } from "@/controller/rating-controller";
 import { UserController } from "@/controller/user-controller";
@@ -9,11 +8,12 @@ export const privateRouter = express.Router();
 
 privateRouter.use(authMiddleware);
 
-// privateRouter.use("/users", userPrivateRo  uter);
+// Users
+privateRouter.post("/users/logout", UserController.logout);
+privateRouter.get("/users", UserController.profile);
+privateRouter.patch("/users", UserController.update);
+privateRouter.delete("/users", UserController.delete);
 
-// userPrivateRouter.get("/", UserPrivateController.getProfile);
-// userPrivateRouter.patch("/", UserPrivateController.updateProfile);
-// userPrivateRouter.delete("/", UserPrivateController.deleteAccount);
 
 // Products
 privateRouter.get("/products/rating/:productId", RatingController.alreadyRated);
@@ -31,17 +31,3 @@ privateRouter.delete(
 privateRouter.post("/comments/create/:targetId", CommentController.create);
 privateRouter.patch("/comments/update/:commentId", CommentController.update);
 privateRouter.delete("/comments/delete/:commentId", CommentController.delete);
-
-privateRouter.delete(
-  "/comments/delete-by-target/:targetId",
-  CommentController.deleteByTarget
-);
-privateRouter.delete(
-  "/comments/delete-by-user",
-  CommentController.deleteByUser
-);
-
-// User Profile
-privateRouter.get("/users", UserController.getUser);
-privateRouter.patch("/users", UserController.update);
-privateRouter.delete("/users", UserController.delete);

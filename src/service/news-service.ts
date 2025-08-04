@@ -3,10 +3,10 @@ import { ResponseError } from "../error/response-error";
 import {
   NewsCreateRequest,
   NewsUpdateRequest,
-  toNewsGetAllResponse,
+  toAllNewsResponse,
   toNewsWithUserGetAllResponse,
 } from "../model/news-model";
-import { UserResponse } from "../model/user-model";
+import { toUserResponse, UserResponse } from "../model/user-model";
 import { NewsValidation } from "../validation/news-validation";
 import { Validation } from "../validation/validation";
 import path from "node:path";
@@ -37,14 +37,14 @@ export class NewsService {
         userId: user.id,
       },
     });
-    return toNewsGetAllResponse(totalMessages, page, limit, news);
+    return toAllNewsResponse(limit, totalMessages, page, news);
   }
   static async create(
     request: NewsCreateRequest,
     user: UserResponse,
     file?: Express.Multer.File
   ) {
-    Validation.validate(NewsValidation.create, request);
+    const validation = Validation.validate(NewsValidation.create, request);
 
     if (!file) {
       throw new ResponseError(400, "Featured image is required");
@@ -52,10 +52,10 @@ export class NewsService {
 
     const news = await prismaClient.news.create({
       data: {
-        ...request,
+        ...validation,
         userId: user.id,
         featured_image: file.filename,
-        ...(request.is_published === true && {
+        ...(validation.is_published === true && {
           published_at: new Date(),
         }),
       },
@@ -127,14 +127,12 @@ export class NewsService {
       throw new ResponseError(403, "Forbidden");
     }
 
-    await axios.delete(
-      `http://localhost:4000/api/private/comments/delete-by-target/${newsId}?targetType=NEWS`,
-      {
-        headers: {
-          Authorization: token,
-        },
-      }
-    );
+    await prismaClient.comment.deleteMany({
+      where: {
+        target_id: newsId,
+        target_type: "NEWS",
+      },
+    });
 
     await prismaClient.news.delete({
       where: { id: newsId },
@@ -150,42 +148,6 @@ export class NewsService {
     );
 
     await fs.unlink(filePath);
-  }
-  static async deleteByAdmin(user: UserResponse, token: string) {
-    const news = await prismaClient.news.findMany({
-      where: { userId: user.id },
-    });
-
-    await Promise.all(
-      news.map((n) => {
-        return axios.delete(
-          `http://localhost:4000/api/private/comments/delete-by-target/${n.id}?targetType=NEWS`,
-          {
-            headers: {
-              Authorization: token,
-            },
-          }
-        );
-      })
-    );
-
-    await prismaClient.news.deleteMany({
-      where: { userId: user.id },
-    });
-
-    await Promise.all(
-      news.map((n) => {
-        const filePath = path.join(
-          __dirname,
-          "..",
-          "..",
-          "public",
-          "images",
-          n.featured_image
-        );
-        return fs.unlink(filePath);
-      })
-    );
   }
 
   static async getAll(page: number, limit: number) {
@@ -206,18 +168,17 @@ export class NewsService {
     });
     const newsWithUser = await Promise.all(
       news.map(async (n) => {
-        const response = await axios.get(
-          `http://localhost:4000/api/users/${n.userId}`
-        );
+        const user = await prismaClient.user.findUnique({
+          where: { id: n.userId },
+        });
         return {
-          user_created: response.data.user,
+          user_created: toUserResponse(user!),
           news: n,
         };
       })
     );
     return toNewsWithUserGetAllResponse(totalAgenda, page, limit, newsWithUser);
   }
-
   static async getById(newsId: string) {
     const news = await prismaClient.news.findUnique({
       where: { id: newsId, is_published: true },
@@ -233,38 +194,18 @@ export class NewsService {
       },
     });
 
-    const comments = await axios.get(
-      `http://localhost:4000/api/comments/${newsId}`
-    );
-    const user = await axios.get(
-      `http://localhost:3002/api/users/${news.userId}`
-    );
-    return {
-      user_created: user.data.user,
-      news: news,
-      comments: comments.data.comments,
-    };
-  }
-
-  static async getAllTypeById(newsId: string) {
-    const news = await prismaClient.news.findUnique({
-      where: { id: newsId },
+    const comments = await prismaClient.comment.findMany({
+      where: { target_id: newsId, target_type: "NEWS" },
+      orderBy: { created_at: "desc" },
     });
 
-    if (!news) {
-      throw new ResponseError(404, "News not found");
-    }
-
-    const comments = await axios.get(
-      `http://localhost:4000/api/comments/${newsId}`
-    );
-    const user = await axios.get(
-      `http://localhost:3002/api/users/${news.userId}`
-    );
+    const user = await prismaClient.user.findUnique({
+      where: { id: news.userId },
+    });
     return {
-      user_created: user.data.user,
+      user_created: toUserResponse(user!),
       news: news,
-      comments: comments.data.comments,
+      comments: comments,
     };
   }
 }

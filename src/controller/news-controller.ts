@@ -34,11 +34,6 @@ export class NewsController {
   }
   static async create(req: UserRequest, res: Response, next: NextFunction) {
     try {
-      if (req.body.is_published === "false") {
-        req.body.is_published = false;
-      } else if (req.body.is_published === "true") {
-        req.body.is_published = true;
-      }
       const response = await NewsService.create(req.body, req.user!, req.file);
       res.status(201).json(response);
     } catch (error) {
@@ -75,18 +70,6 @@ export class NewsController {
       next(error);
     }
   }
-  static async deleteByAdmin(
-    req: UserRequest,
-    res: Response,
-    next: NextFunction
-  ) {
-    try {
-      await NewsService.deleteByAdmin(req.user!, req.header("Authorization")!);
-      res.status(204).json({});
-    } catch (error) {
-      next(error);
-    }
-  }
 
   static async getAll(req: Request, res: Response, next: NextFunction) {
     try {
@@ -101,14 +84,6 @@ export class NewsController {
   static async getById(req: Request, res: Response, next: NextFunction) {
     try {
       const response = await NewsService.getById(req.params.userId);
-      res.status(200).json(response);
-    } catch (error) {
-      next(error);
-    }
-  }
-  static async getAllTypeById(req: Request, res: Response, next: NextFunction) {
-    try {
-      const response = await NewsService.getAllTypeById(req.params.userId);
       res.status(200).json(response);
     } catch (error) {
       next(error);

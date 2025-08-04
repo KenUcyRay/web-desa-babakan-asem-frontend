@@ -2,6 +2,7 @@ import { prismaClient } from "../application/database";
 import { ResponseError } from "../error/response-error";
 import {
   CreateMessageRequest,
+  QueryMessageRequest,
   toAllMessageResponse,
 } from "@/model/message-model";
 import { MessageValidation } from "../validation/message-validation";
@@ -14,34 +15,41 @@ export class MessageService {
     const message = await prismaClient.message.create({
       data: request,
     });
-    return message;
+    return { data: message };
   }
-  static async getAll(
-    page: number,
-    limit: number,
-    isRead: boolean | undefined
-  ) {
+  static async getAll(query: QueryMessageRequest) {
+    const queryValidation = Validation.validate(MessageValidation.query, query);
+
     const messages = await prismaClient.message.findMany({
       where: {
-        ...(isRead !== undefined && { is_read: isRead }),
+        ...(queryValidation.isRead! !== undefined && {
+          is_read: queryValidation.isRead!,
+        }),
       },
-      skip: (page - 1) * limit,
-      take: limit,
+      skip: (queryValidation.page! - 1) * queryValidation.size!,
+      take: queryValidation.size!,
       orderBy: {
         created_at: "desc",
       },
     });
     const totalMessages = await prismaClient.message.count({
       where: {
-        ...(isRead !== undefined && { is_read: isRead }),
+        ...(queryValidation.isRead! !== undefined && {
+          is_read: queryValidation.isRead!,
+        }),
       },
     });
-    return toAllMessageResponse(totalMessages, page, limit, messages);
+    return toAllMessageResponse(
+      queryValidation.size!,
+      totalMessages,
+      queryValidation.page!,
+      messages
+    );
   }
-  static async update(messageId: string) {
+  static async update(id: string) {
     const message = await prismaClient.message.findUnique({
       where: {
-        id: messageId,
+        id: id,
       },
     });
 
@@ -51,29 +59,12 @@ export class MessageService {
 
     const messageUpdate = await prismaClient.message.update({
       where: {
-        id: messageId,
+        id: id,
       },
       data: {
         is_read: true,
       },
     });
-    return messageUpdate;
-  }
-  static async delete(messageId: string) {
-    const message = await prismaClient.message.findUnique({
-      where: {
-        id: messageId,
-      },
-    });
-
-    if (!message) {
-      throw new ResponseError(404, "Message not found");
-    }
-
-    await prismaClient.message.delete({
-      where: {
-        id: messageId,
-      },
-    });
+    return { data: messageUpdate };
   }
 }

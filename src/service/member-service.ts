@@ -1,3 +1,5 @@
+import fs from "fs/promises";
+import path from "path";
 import { Organization } from "@prisma/client";
 import { prismaClient } from "../application/database";
 import { ResponseError } from "../error/response-error";
@@ -92,7 +94,6 @@ export class MemberService {
     memberId: string,
     file?: Express.Multer.File
   ) {
-    console.log(request);
     const memberUpdateRequest = Validation.validate(
       MemberValidation.updateMember,
       request
@@ -108,9 +109,20 @@ export class MemberService {
 
     if (file) {
       memberUpdateRequest.profile_photo = file.filename;
+
+      const filePath = path.join(
+        __dirname,
+        "..",
+        "..",
+        "public",
+        "images",
+        existingMember.profile_photo
+      );
+
+      await fs.unlink(filePath);
+    } else {
+      memberUpdateRequest.profile_photo = undefined;
     }
-    console.log("Existing member found:", existingMember);
-    console.log("Updating member with ID:", memberUpdateRequest);
 
     const updatedMember = await prismaClient.member.update({
       where: { id: memberId },
@@ -131,5 +143,16 @@ export class MemberService {
     await prismaClient.member.delete({
       where: { id: memberId },
     });
+
+    const filePath = path.join(
+      __dirname,
+      "..",
+      "..",
+      "public",
+      "images",
+      existingMember.profile_photo
+    );
+
+    await fs.unlink(filePath);
   }
 }

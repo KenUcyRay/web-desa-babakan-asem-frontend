@@ -1,35 +1,33 @@
 import { Message } from "@prisma/client";
 export interface CreateMessageRequest {
   name: string;
-  email?: string;
-  phone_number?: string;
+  email: string;
   message: string;
 }
 
 export interface QueryMessageRequest {
   page?: number;
-  limit?: number;
-  is_read?: boolean;
-  search?: string;
+  size?: number;
+  isRead?: boolean;
 }
 
 export interface AllMessageResponse {
+  size: number;
   total_page: number;
-  page: number;
-  limit: number;
+  current_page: number;
   data: Message[];
 }
 
 export const toAllMessageResponse = (
-  total_page: number,
-  page: number,
-  limit: number,
+  size: number,
+  total: number,
+  currentPage: number,
   data: Message[]
 ): AllMessageResponse => {
   return {
-    total_page: Math.ceil(total_page / limit),
-    page,
-    limit,
+    size: size,
+    total_page: Math.floor(total / size),
+    current_page: currentPage,
     data,
   };
 };
