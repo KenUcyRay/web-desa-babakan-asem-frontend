@@ -81,14 +81,18 @@ export default function PkkSidebar({ isOpen, onClose }) {
       {/* LOGO + JUDUL */}
       <div className="flex items-center gap-3 px-4 py-5 border-b bg-gradient-to-r from-green-400 to-[#B6F500]">
         <div className="bg-white p-1 rounded-lg shadow-sm">
-          <img src={logo} alt="Logo Desa" className="w-9 h-9 object-contain" />
+          <img
+            src={logo}
+            alt={t("adminSidebar.logoAlt") || "Logo Desa"}
+            className="w-9 h-9 object-contain"
+          />
         </div>
         <div>
           <h1 className="font-bold text-white leading-tight text-base">
             {t("adminSidebar.title") || "Admin Panel Desa"}
           </h1>
           <p className="text-xs text-green-100">
-            {t("adminSidebar.subtitle") || "Babakan Asem"}
+            {t("adminSidebar.pkkPanel") || "PKK Panel"}
           </p>
         </div>
       </div>

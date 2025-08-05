@@ -11,12 +11,11 @@ import {
   FaTrash,
   FaCheck,
   FaTimesCircle,
+  FaTrophy,
 } from "react-icons/fa";
 
-// Helper untuk mengambil image url
 const getImageUrl = (filename) => {
   if (!filename) return "";
-  // Jika sudah full url, balikin langsung
   if (filename.startsWith("http")) return filename;
   return `${import.meta.env.VITE_NEW_BASE_URL}/public/images/${filename}`;
 };
@@ -31,16 +30,12 @@ export default function ManagePrestasi() {
 
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
-
-  // form state
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [featuredImage, setFeaturedImage] = useState(null);
-  const [isPublished, setIsPublished] = useState(true); // Default publikasi aktif
   const [date, setDate] = useState("");
   const [imageError, setImageError] = useState("");
 
-  // Fetch prestasi dari API
   const fetchPrestasi = async () => {
     setIsLoading(true);
     try {
@@ -53,18 +48,14 @@ export default function ManagePrestasi() {
         }
       );
       const json = await response.json();
-
-      // Set data
       setPrestasi(json.data || []);
-
-      // Set pagination info
       if (json.meta) {
         setTotalPages(Math.ceil(json.meta.total / itemsPerPage) || 1);
       } else {
         setTotalPages(Math.ceil((json.data || []).length / itemsPerPage) || 1);
       }
     } catch (err) {
-      alertError("Gagal mengambil data prestasi.");
+      alertError(t("managePrestasi.errors.fetchFailed"));
     } finally {
       setIsLoading(false);
     }
@@ -72,13 +63,12 @@ export default function ManagePrestasi() {
 
   useEffect(() => {
     fetchPrestasi();
-  }, []);
+  }, [currentPage]);
 
   const resetForm = () => {
     setTitle("");
     setContent("");
     setFeaturedImage(null);
-    setIsPublished(true); // Default publikasi aktif
     setEditingId(null);
     setDate("");
     setImageError("");
@@ -88,38 +78,25 @@ export default function ManagePrestasi() {
     e.preventDefault();
 
     if (!title || !content || !date) {
-      alertError("Title, Deskripsi, dan Tanggal wajib diisi!");
+      alertError(t("managePrestasi.errors.requiredFields"));
       return;
     }
 
-    const isEdit = Boolean(editingId);
-
-    // Validasi gambar wajib saat membuat baru, opsional saat edit
-    if (!isEdit && !featuredImage) {
-      setImageError("Gambar wajib diupload saat membuat prestasi baru!");
+    if (!editingId && !featuredImage) {
+      setImageError(t("managePrestasi.errors.imageRequired"));
       return;
-    } else {
-      setImageError("");
     }
 
     const formData = new FormData();
     formData.append("title", title);
     formData.append("description", content);
     formData.append("date", date);
-    formData.append(
-      "featured_image",
-      featuredImage ? featuredImage : undefined
-    );
+    if (featuredImage) formData.append("featured_image", featuredImage);
 
     try {
-      if (isEdit) {
+      if (editingId) {
         if (
-          !(await alertConfirm(
-            t(
-              "managePrestasi.confirmation.editPrestasi",
-              "Yakin ingin mengubah prestasi ini?"
-            )
-          ))
+          !(await alertConfirm(t("managePrestasi.confirmation.editPrestasi")))
         )
           return;
 
@@ -133,13 +110,7 @@ export default function ManagePrestasi() {
             credentials: "include",
           }
         );
-
-        await alertSuccess(
-          t(
-            "managePrestasi.success.updatePrestasi",
-            "Prestasi berhasil diperbarui!"
-          )
-        );
+        await alertSuccess(t("managePrestasi.success.updatePrestasi"));
       } else {
         await fetch(
           `${import.meta.env.VITE_NEW_BASE_URL}/admin/village-achievements`,
@@ -149,12 +120,7 @@ export default function ManagePrestasi() {
             credentials: "include",
           }
         );
-        await alertSuccess(
-          t(
-            "managePrestasi.success.addPrestasi",
-            "Prestasi berhasil ditambahkan!"
-          )
-        );
+        await alertSuccess(t("managePrestasi.success.addPrestasi"));
       }
       resetForm();
       setShowForm(false);
@@ -162,20 +128,15 @@ export default function ManagePrestasi() {
     } catch (error) {
       console.error("Error:", error);
       alertError(
-        isEdit ? "Gagal memperbarui prestasi." : "Gagal menambahkan prestasi."
+        editingId
+          ? t("managePrestasi.errors.updateFailed")
+          : t("managePrestasi.errors.addFailed")
       );
     }
   };
 
   const handleDelete = async (id) => {
-    if (
-      await alertConfirm(
-        t(
-          "managePrestasi.confirmation.deletePrestasi",
-          "Yakin ingin menghapus prestasi ini?"
-        )
-      )
-    ) {
+    if (await alertConfirm(t("managePrestasi.confirmation.deletePrestasi"))) {
       try {
         await fetch(
           `${
@@ -186,15 +147,10 @@ export default function ManagePrestasi() {
             credentials: "include",
           }
         );
-        await alertSuccess(
-          t(
-            "managePrestasi.success.deletePrestasi",
-            "Prestasi berhasil dihapus!"
-          )
-        );
+        await alertSuccess(t("managePrestasi.success.deletePrestasi"));
         fetchPrestasi();
       } catch {
-        alertError("Gagal menghapus prestasi.");
+        alertError(t("managePrestasi.errors.deleteFailed"));
       }
     }
   };
@@ -204,27 +160,32 @@ export default function ManagePrestasi() {
     if (!item) return;
     setTitle(item.title);
     setContent(item.description);
-    setIsPublished(item.is_published || false);
-    setDate(item.date ? item.date.split("T")[0] : ""); // Format YYYY-MM-DD
+    setDate(item.date ? item.date.split("T")[0] : "");
     setEditingId(id);
     setImageError("");
     setShowForm(true);
   };
 
   return (
-    <div className="font-[Poppins,sans-serif]">
+    <div className="font-[Poppins,sans-serif] bg-gray-50 min-h-screen p-4 md:p-6">
       {/* HEADER */}
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-green-700">
-          {t("managePrestasi.title", "Manajemen Prestasi")}
-        </h1>
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-8">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-800 flex items-center gap-3">
+            <FaTrophy className="text-yellow-500" />
+            {t("managePrestasi.title", "Manajemen Prestasi")}
+          </h1>
+          <p className="text-gray-600 mt-1">
+            {t("managePrestasi.description")}
+          </p>
+        </div>
         {!showForm && (
           <button
             onClick={() => {
               resetForm();
               setShowForm(true);
             }}
-            className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded shadow hover:bg-green-600 transition"
+            className="flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white px-5 py-2.5 rounded-lg shadow-md transition transform hover:-translate-y-0.5"
           >
             <FaPlus />
             {t("managePrestasi.buttons.addPrestasi", "Tambah Prestasi")}
@@ -232,97 +193,126 @@ export default function ManagePrestasi() {
         )}
       </div>
 
-      {/* FORM TAMBAH / EDIT */}
+      {/* FORM */}
       {showForm && (
         <form
           onSubmit={handleSubmit}
-          className="bg-white p-6 rounded-xl shadow-md mb-6 space-y-4 max-w-2xl border"
+          className="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-8 max-w-3xl mx-auto"
         >
-          <div>
-            <label className="block font-medium text-gray-700 mb-1">
-              {t("managePrestasi.form.prestasiTitle", "Judul Prestasi")}
-            </label>
-            <input
-              className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-green-300 outline-none"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Masukkan judul prestasi"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block font-medium text-gray-700 mb-1">
-              {t("managePrestasi.form.content", "Deskripsi")}
-            </label>
-            <textarea
-              className="w-full border rounded-lg p-3 h-32 resize-none focus:ring-2 focus:ring-green-300 outline-none"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder="Masukkan deskripsi prestasi"
-              required
-            ></textarea>
-          </div>
-
-          <div>
-            <label className="block font-medium text-gray-700 mb-1">
-              {t("managePrestasi.form.date", "Tanggal")}
-            </label>
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-green-300 outline-none"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block font-medium text-gray-700 mb-1">
-              {t("managePrestasi.form.uploadMainImage", "Gambar Utama")}
-              {!editingId && <span className="text-red-500 ml-1">*</span>}
-            </label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => {
-                setFeaturedImage(e.target.files[0]);
-                if (e.target.files[0]) setImageError("");
+          <div className="flex justify-between items-center mb-5">
+            <h2 className="text-xl font-semibold text-gray-800">
+              {editingId
+                ? t("managePrestasi.form.title.edit")
+                : t("managePrestasi.form.title.add")}
+            </h2>
+            <button
+              onClick={() => {
+                setShowForm(false);
+                resetForm();
               }}
-              className={`w-full border p-2 rounded ${
-                imageError ? "border-red-500" : ""
-              }`}
-            />
-            {imageError && (
-              <p className="text-red-500 text-sm mt-1">{imageError}</p>
-            )}
-            {(featuredImage ||
-              (editingId &&
-                prestasi.find((p) => p.id === editingId)?.featured_image)) && (
-              <img
-                src={
-                  featuredImage
-                    ? URL.createObjectURL(featuredImage)
-                    : getImageUrl(
-                        prestasi.find((p) => p.id === editingId)?.featured_image
-                      )
-                }
-                alt={t("managePrestasi.preview", "Pratinjau")}
-                className="mt-3 w-40 rounded-lg shadow-sm"
-              />
-            )}
+              className="text-gray-500 hover:text-gray-700 transition"
+            >
+              <FaTimes size={20} />
+            </button>
           </div>
 
-          {/* BUTTONS */}
-          <div className="flex gap-3">
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t("managePrestasi.form.fields.title")}
+                </label>
+                <input
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-yellow-500 focus:border-transparent outline-none transition"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder={t("managePrestasi.form.placeholders.title")}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t("managePrestasi.form.fields.content")}
+                </label>
+                <textarea
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl h-32 resize-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent outline-none transition"
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  placeholder={t("managePrestasi.form.placeholders.content")}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t("managePrestasi.form.fields.date")}
+                </label>
+                <input
+                  type="date"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-yellow-500 focus:border-transparent outline-none transition"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t("managePrestasi.form.fields.image")}
+                  {!editingId && (
+                    <span className="text-red-500 ml-1">
+                      {t("managePrestasi.form.fields.imageRequired")}
+                    </span>
+                  )}
+                </label>
+                <div className="border-2 border-dashed border-gray-300 rounded-xl p-4">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      setFeaturedImage(e.target.files[0]);
+                      if (e.target.files[0]) setImageError("");
+                    }}
+                    className={`w-full mb-3 ${
+                      imageError ? "border-red-500" : ""
+                    }`}
+                  />
+                  {imageError && (
+                    <p className="text-red-500 text-sm mt-1">{imageError}</p>
+                  )}
+                  {(featuredImage ||
+                    (editingId &&
+                      prestasi.find((p) => p.id === editingId)
+                        ?.featured_image)) && (
+                    <div className="mt-3 flex justify-center">
+                      <img
+                        src={
+                          featuredImage
+                            ? URL.createObjectURL(featuredImage)
+                            : getImageUrl(
+                                prestasi.find((p) => p.id === editingId)
+                                  ?.featured_image
+                              )
+                        }
+                        alt="Preview"
+                        className="max-w-full h-48 rounded-lg object-contain border"
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex gap-3 mt-8 pt-5 border-t border-gray-200">
             <button
               type="submit"
-              className="flex items-center gap-2 bg-green-500 text-white px-5 py-2 rounded-lg shadow hover:bg-green-600 transition"
+              className="flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white px-6 py-3 rounded-xl shadow-md transition transform hover:-translate-y-0.5"
             >
               <FaSave />
               {editingId
-                ? t("managePrestasi.buttons.updatePrestasi", "Simpan Perubahan")
-                : t("managePrestasi.buttons.savePrestasi", "Simpan Prestasi")}
+                ? t("managePrestasi.form.buttons.saveChanges")
+                : t("managePrestasi.form.buttons.savePrestasi")}
             </button>
             <button
               type="button"
@@ -330,9 +320,9 @@ export default function ManagePrestasi() {
                 resetForm();
                 setShowForm(false);
               }}
-              className="flex items-center gap-2 bg-gray-400 text-white px-4 py-2 rounded-lg hover:bg-gray-500 transition"
+              className="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 px-5 py-3 rounded-xl transition"
             >
-              <FaTimes /> {t("managePrestasi.buttons.cancel", "Batal")}
+              <FaTimes /> {t("managePrestasi.form.buttons.cancel")}
             </button>
           </div>
         </form>
@@ -340,75 +330,98 @@ export default function ManagePrestasi() {
 
       {/* LIST PRESTASI */}
       {isLoading ? (
-        <div className="text-center py-10">Memuat data...</div>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
+          <div className="animate-pulse flex flex-col items-center">
+            <div className="h-12 w-12 bg-gray-200 rounded-full mb-4"></div>
+            <div className="h-4 bg-gray-200 rounded w-1/3 mb-2"></div>
+            <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+          </div>
+        </div>
+      ) : prestasi.length === 0 ? (
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
+          <FaTrophy className="text-4xl text-gray-400 mx-auto mb-4" />
+          <h3 className="text-xl font-medium text-gray-700 mb-2">
+            {t("managePrestasi.emptyState.title")}
+          </h3>
+          <p className="text-gray-500 mb-4">
+            {showForm
+              ? t("managePrestasi.emptyState.description")
+              : t("managePrestasi.emptyState.descriptionAlt")}
+          </p>
+          {!showForm && (
+            <button
+              onClick={() => {
+                resetForm();
+                setShowForm(true);
+              }}
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white px-5 py-2.5 rounded-lg shadow-md transition"
+            >
+              <FaPlus /> {t("managePrestasi.emptyState.addButton")}
+            </button>
+          )}
+        </div>
       ) : (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {prestasi.length === 0 ? (
-            <div className="col-span-full text-center py-10 text-gray-500">
-              Belum ada data prestasi
-            </div>
-          ) : (
-            prestasi.map((item) => (
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {prestasi.map((item) => (
               <div
                 key={item.id}
-                className="bg-white rounded-xl shadow-md border hover:shadow-lg transition"
+                className="bg-white rounded-xl shadow-sm hover:shadow-md border border-gray-200 transition overflow-hidden"
               >
-                <img
-                  src={getImageUrl(item.featured_image)}
-                  alt={item.title}
-                  className="rounded-t-xl w-full h-40 object-cover"
-                  onError={(e) => {
-                    e.target.src =
-                      "https://via.placeholder.com/640x360?text=Tidak+Ada+Gambar";
-                  }}
-                />
-
-                <div className="p-4">
-                  <h2 className="text-lg font-semibold text-gray-800 line-clamp-2">
+                <div className="relative">
+                  <img
+                    src={getImageUrl(item.featured_image)}
+                    alt={item.title}
+                    className="w-full h-48 object-cover"
+                    onError={(e) => {
+                      e.target.src = `https://via.placeholder.com/640x360?text=${t(
+                        "managePrestasi.card.noImage"
+                      )}`;
+                    }}
+                  />
+                </div>
+                <div className="p-5">
+                  <h3 className="font-bold text-gray-800 line-clamp-2">
                     {item.title}
-                  </h2>
-                  <p className="text-gray-600 text-sm line-clamp-3 mt-1">
+                  </h3>
+                  <p className="text-gray-600 text-sm line-clamp-3 mt-2">
                     {Helper.truncateText
                       ? Helper.truncateText(item.description)
                       : item.description}
                   </p>
-
-                  <div className="flex justify-between items-center mt-3 text-xs text-gray-400">
+                  <div className="flex justify-between items-center mt-4 text-xs text-gray-500">
                     {Helper.formatTanggal
                       ? Helper.formatTanggal(item.created_at)
                       : item.created_at}
                   </div>
-
-                  <div className="flex gap-4 mt-4">
+                  <div className="flex gap-3 mt-5 pt-4 border-t border-gray-100">
                     <button
                       onClick={() => handleEdit(item.id)}
-                      className="flex items-center gap-1 text-blue-500 hover:text-blue-700 transition text-sm"
+                      className="flex items-center gap-1 text-blue-500 hover:text-blue-700 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition"
                     >
-                      <FaEdit /> {t("managePrestasi.buttons.edit", "Edit")}
+                      <FaEdit size={14} /> {t("managePrestasi.card.edit")}
                     </button>
                     <button
                       onClick={() => handleDelete(item.id)}
-                      className="flex items-center gap-1 text-red-500 hover:text-red-700 transition text-sm"
+                      className="flex items-center gap-1 text-red-500 hover:text-red-700 hover:bg-red-50 px-3 py-1.5 rounded-lg transition"
                     >
-                      <FaTrash /> {t("managePrestasi.buttons.delete", "Hapus")}
+                      <FaTrash size={14} /> {t("managePrestasi.card.delete")}
                     </button>
                   </div>
                 </div>
               </div>
-            ))
-          )}
-        </div>
-      )}
+            ))}
+          </div>
 
-      {/* PAGINATION */}
-      {prestasi.length > 0 && (
-        <div className="mt-6 flex justify-center">
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-          />
-        </div>
+          {/* PAGINATION */}
+          <div className="mt-8 flex justify-center">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
+          </div>
+        </>
       )}
     </div>
   );

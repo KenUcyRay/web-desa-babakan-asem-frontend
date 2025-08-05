@@ -18,7 +18,7 @@ const KarangTarunaLayout = () => {
   const checkAuth = async () => {
     const response = await UserApi.profile(i18n.language);
     const responseBody = await response.json();
-    if (!response.ok || responseBody.data.role !== "ADMIN") {
+    if (!response.ok || responseBody.data.role !== "KARANG_TARUNA") {
       navigate("/");
       return;
     }

@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { FaBars } from "react-icons/fa";
-
 import { useAuth } from "../../../contexts/AuthContext";
 import { UserApi } from "../../../libs/api/UserApi";
 import ContributorSidebar from "./ContributorSidebar";
@@ -19,7 +18,7 @@ const ContributorLayout = () => {
   const checkAuth = async () => {
     const response = await UserApi.profile(i18n.language);
     const responseBody = await response.json();
-    if (!response.ok || responseBody.data.role !== "ADMIN") {
+    if (!response.ok || responseBody.data.role !== "CONTRIBUTOR") {
       navigate("/");
       return;
     }

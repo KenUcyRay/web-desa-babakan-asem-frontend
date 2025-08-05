@@ -1,9 +1,17 @@
 import { useEffect, useState } from "react";
-import { FaPlus, FaTrash, FaSave, FaTimes } from "react-icons/fa";
+import {
+  FaPlus,
+  FaTrash,
+  FaSave,
+  FaTimes,
+  FaEdit,
+  FaCalendarAlt,
+} from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 import Pagination from "../ui/Pagination";
 import { ProgramApi } from "../../libs/api/ProgramApi";
 import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
+import { Helper } from "../../utils/Helper";
 
 export default function ManagePkk() {
   const { t, i18n } = useTranslation();
@@ -48,11 +56,7 @@ export default function ManagePkk() {
       const body = await response.json();
 
       if (!response.ok) {
-        alertError(
-          typeof body.error === "string"
-            ? body.error
-            : t("managePkk.error.saveChanges")
-        );
+        await Helper.errorResponseHandler(body);
         return;
       }
 
@@ -72,11 +76,7 @@ export default function ManagePkk() {
       const body = await response.json();
 
       if (!response.ok) {
-        alertError(
-          typeof body.error === "string"
-            ? body.error
-            : t("managePkk.error.saveProgram")
-        );
+        await Helper.errorResponseHandler(body);
         return;
       }
 
@@ -120,7 +120,7 @@ export default function ManagePkk() {
     const body = await response.json();
 
     if (!response.ok) {
-      await alertError(t("managePkk.error.fetchPrograms"));
+      await Helper.errorResponseHandler(body);
       return;
     }
 
@@ -134,17 +134,21 @@ export default function ManagePkk() {
   }, [currentPage, i18n.language]);
 
   return (
-    <div className="font-[Poppins,sans-serif]">
+    <div className="font-[Poppins,sans-serif] bg-gray-50 min-h-screen p-4 md:p-6">
       {/* HEADER */}
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-green-700">
-          {t("managePkk.title")}
-        </h1>
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-8">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold text-green-700 flex items-center gap-3">
+            <FaCalendarAlt className="text-emerald-600" />
+            {t("managePkk.title")}
+          </h1>
+          <p className="text-gray-600 mt-1">{t("managePkk.subtitle")}</p>
+        </div>
 
         {!showForm && (
           <button
             onClick={() => setShowForm(true)}
-            className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded shadow hover:bg-green-600 transition"
+            className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-5 py-2.5 rounded-lg shadow-md transition transform hover:-translate-y-0.5"
           >
             <FaPlus /> {t("managePkk.buttons.addProgram")}
           </button>
@@ -155,71 +159,96 @@ export default function ManagePkk() {
       {showForm && (
         <form
           onSubmit={handleSave}
-          className="bg-white p-6 rounded-xl shadow-md mb-6 space-y-4 max-w-2xl border"
+          className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8 mx-auto max-w-3xl"
         >
-          {/* Nama Program */}
-          <div>
-            <label className="block font-medium text-gray-700 mb-1">
-              {t("managePkk.form.programName")}
-            </label>
-            <input
-              type="text"
-              className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-green-300 outline-none"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder={t("managePkk.form.programNamePlaceholder")}
-              required
-            />
-          </div>
-
-          {/* Upload Gambar */}
-          <div>
-            <label className="block font-medium text-gray-700 mb-1">
-              {t("managePkk.form.uploadImage")}
-            </label>
-            <input
-              type="file"
-              accept="image/*"
-              className="w-full border rounded-lg p-2"
-              onChange={(e) => setImage(e.target.files[0])}
-            />
-            {(image ||
-              (editingId &&
-                programs.find((p) => p.id === editingId)?.featured_image)) && (
-              <img
-                src={
-                  image
-                    ? URL.createObjectURL(image)
-                    : `${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
-                        programs.find((p) => p.id === editingId)?.featured_image
-                      }`
-                }
-                alt="preview"
-                className="mt-3 w-full h-40 object-cover rounded-lg shadow-sm"
-              />
+          <h2 className="text-xl font-semibold text-gray-800 mb-6 flex items-center gap-3">
+            {editingId ? (
+              <>
+                <FaEdit className="text-emerald-500" />
+                {t("managePkk.form.editProgram")}
+              </>
+            ) : (
+              <>
+                <FaPlus className="text-emerald-500" />
+                {t("managePkk.form.addProgram")}
+              </>
             )}
-          </div>
+          </h2>
 
-          {/* Deskripsi */}
-          <div>
-            <label className="block font-medium text-gray-700 mb-1">
-              {t("managePkk.form.description")}
-            </label>
-            <textarea
-              rows={4}
-              className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-green-300 outline-none"
-              value={desc}
-              onChange={(e) => setDesc(e.target.value)}
-              placeholder={t("managePkk.form.descriptionPlaceholder")}
-              required
-            />
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Kolom Kiri */}
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t("managePkk.form.programName")}
+                </label>
+                <input
+                  type="text"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder={t("managePkk.form.programNamePlaceholder")}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t("managePkk.form.description")}
+                </label>
+                <textarea
+                  rows={6}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition"
+                  value={desc}
+                  onChange={(e) => setDesc(e.target.value)}
+                  placeholder={t("managePkk.form.descriptionPlaceholder")}
+                />
+              </div>
+            </div>
+
+            {/* Kolom Kanan */}
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t("managePkk.form.uploadImage")}
+                </label>
+                <div className="border-2 border-dashed border-gray-300 rounded-xl p-4">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="w-full mb-3"
+                    onChange={(e) => setImage(e.target.files[0])}
+                  />
+                  {(image ||
+                    (editingId &&
+                      programs.find((p) => p.id === editingId)
+                        ?.featured_image)) && (
+                    <div className="mt-3 flex justify-center">
+                      <img
+                        src={
+                          image
+                            ? URL.createObjectURL(image)
+                            : `${
+                                import.meta.env.VITE_NEW_BASE_URL
+                              }/public/images/${
+                                programs.find((p) => p.id === editingId)
+                                  ?.featured_image
+                              }`
+                        }
+                        alt="preview"
+                        className="max-w-full h-48 rounded-lg object-contain border"
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Tombol Simpan/Batal */}
-          <div className="flex gap-3">
+          <div className="flex gap-3 mt-8 pt-5 border-t border-gray-200">
             <button
               type="submit"
-              className="flex items-center gap-2 bg-green-500 text-white px-5 py-2 rounded-lg shadow hover:bg-green-600 transition"
+              className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-6 py-3 rounded-xl shadow-md transition transform hover:-translate-y-0.5"
             >
               <FaSave />{" "}
               {editingId
@@ -229,7 +258,7 @@ export default function ManagePkk() {
             <button
               type="button"
               onClick={resetForm}
-              className="flex items-center gap-2 bg-gray-400 text-white px-4 py-2 rounded-lg hover:bg-gray-500 transition"
+              className="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 px-5 py-3 rounded-xl transition"
             >
               <FaTimes /> {t("managePkk.buttons.cancel")}
             </button>
@@ -238,59 +267,80 @@ export default function ManagePkk() {
       )}
 
       {/* LIST PROGRAM */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {programs.length === 0 ? (
-          <p className="text-gray-500 italic">
-            {t("managePkk.empty.noPrograms")}
+      {programs.length === 0 ? (
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
+          <FaCalendarAlt className="text-4xl text-gray-400 mx-auto mb-4" />
+          <h3 className="text-xl font-medium text-gray-700 mb-2">
+            {t("managePkk.empty.title")}
+          </h3>
+          <p className="text-gray-500 mb-4">
+            {showForm
+              ? t("managePkk.empty.fillFormMessage")
+              : t("managePkk.empty.noPrograms")}
           </p>
-        ) : (
-          programs.map((program) => (
-            <div
-              key={program.id}
-              className="bg-white rounded-xl shadow-md border hover:shadow-lg transition overflow-hidden"
+          {!showForm && (
+            <button
+              onClick={() => setShowForm(true)}
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-5 py-2.5 rounded-lg shadow-md transition"
             >
-              <img
-                src={`${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
-                  program.featured_image
-                }`}
-                alt={program.title}
-                className="w-full h-48 object-cover"
-              />
-              <div className="p-4">
-                <h3 className="font-semibold text-lg text-gray-800 line-clamp-2">
-                  {program.title}
-                </h3>
-                <p className="text-gray-600 text-sm mt-2 line-clamp-3">
-                  {program.description}
-                </p>
-                <div className="flex justify-between mt-4 text-sm">
-                  <button
-                    onClick={() => handleEdit(program.id)}
-                    className="text-blue-500 hover:text-blue-700 transition"
-                  >
-                    ✏️ {t("managePkk.buttons.edit")}
-                  </button>
-                  <button
-                    onClick={() => handleDelete(program.id)}
-                    className="flex items-center gap-1 text-red-500 hover:text-red-700 transition"
-                  >
-                    <FaTrash /> {t("managePkk.buttons.delete")}
-                  </button>
+              <FaPlus /> {t("managePkk.buttons.addProgram")}
+            </button>
+          )}
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {programs.map((program) => (
+              <div
+                key={program.id}
+                className="bg-white rounded-xl shadow-sm hover:shadow-md border border-gray-200 transition overflow-hidden"
+              >
+                <div className="relative">
+                  <img
+                    src={`${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
+                      program.featured_image
+                    }`}
+                    alt={program.title}
+                    className="w-full h-48 object-cover"
+                  />
+                </div>
+                <div className="p-5">
+                  <h3 className="font-bold text-gray-800 line-clamp-2">
+                    {program.title}
+                  </h3>
+                  <p className="text-gray-600 text-sm mt-2 line-clamp-3">
+                    {program.description}
+                  </p>
+
+                  <div className="flex justify-between mt-5 pt-4 border-t border-gray-100">
+                    <button
+                      onClick={() => handleEdit(program.id)}
+                      className="flex items-center gap-1 text-blue-500 hover:text-blue-700 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition"
+                    >
+                      <FaEdit size={14} /> {t("managePkk.buttons.edit")}
+                    </button>
+                    <button
+                      onClick={() => handleDelete(program.id)}
+                      className="flex items-center gap-1 text-red-500 hover:text-red-700 hover:bg-red-50 px-3 py-1.5 rounded-lg transition"
+                    >
+                      <FaTrash size={14} /> {t("managePkk.buttons.delete")}
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))
-        )}
-      </div>
+            ))}
+          </div>
 
-      {/* PAGINATION */}
-      <div className="mt-6 flex justify-center">
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-        />
-      </div>
+          {/* PAGINATION */}
+          <div className="mt-8 flex justify-center">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 }

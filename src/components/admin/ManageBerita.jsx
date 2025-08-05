@@ -12,6 +12,9 @@ import {
   FaTrash,
   FaCheck,
   FaTimesCircle,
+  FaNewspaper,
+  FaImage,
+  FaCalendarAlt,
 } from "react-icons/fa";
 
 export default function ManageBerita() {
@@ -121,12 +124,20 @@ export default function ManageBerita() {
   };
 
   return (
-    <div className="font-[Poppins,sans-serif]">
+    <div className="font-[Poppins,sans-serif] max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* HEADER */}
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-green-700">
-          {t("manageNews.title")}
-        </h1>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+            <span className="bg-green-100 text-green-600 p-2 rounded-lg">
+              <FaNewspaper className="inline" />
+            </span>
+            {t("manageNews.title")}
+          </h1>
+          <p className="text-gray-500 text-sm mt-1">
+            {t("manageNews.subtitle")}
+          </p>
+        </div>
 
         {!showForm && (
           <button
@@ -134,7 +145,7 @@ export default function ManageBerita() {
               resetForm();
               setShowForm(true);
             }}
-            className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded shadow hover:bg-green-600 transition"
+            className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-lg shadow-md transition hover:shadow-lg"
           >
             <FaPlus /> {t("manageNews.buttons.addNews")}
           </button>
@@ -145,70 +156,112 @@ export default function ManageBerita() {
       {showForm && (
         <form
           onSubmit={handleSubmit}
-          className="bg-white p-6 rounded-xl shadow-md mb-6 space-y-4 max-w-2xl border"
+          className="bg-white shadow-xl rounded-xl p-6 mb-8 border border-gray-100 space-y-5 max-w-3xl mx-auto"
         >
-          <div>
-            <label className="block font-medium text-gray-700 mb-1">
-              {t("manageNews.form.newsTitle")}
+          <div className="flex justify-between items-center border-b pb-3">
+            <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
+              {editingId ? (
+                <>
+                  <FaEdit className="text-green-600" />
+                  <span>{t("manageNews.form.editTitle")}</span>
+                </>
+              ) : (
+                <>
+                  <FaPlus className="text-green-600" />
+                  <span>{t("manageNews.form.addTitle")}</span>
+                </>
+              )}
+            </h2>
+            <button
+              type="button"
+              onClick={() => {
+                resetForm();
+                setShowForm(false);
+              }}
+              className="text-gray-400 hover:text-gray-600"
+            >
+              <FaTimes size={20} />
+            </button>
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+              <FaNewspaper size={14} />
+              <span>{t("manageNews.form.newsTitle")}</span>
             </label>
             <input
-              className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-green-300 outline-none"
+              className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-green-200 focus:border-green-500 transition"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder={t("manageNews.form.titlePlaceholder")}
             />
           </div>
 
-          <div>
-            <label className="block font-medium text-gray-700 mb-1">
-              {t("manageNews.form.content")}
+          <div className="space-y-1">
+            <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+              <FaNewspaper size={14} />
+              <span>{t("manageNews.form.content")}</span>
             </label>
             <textarea
-              className="w-full border rounded-lg p-3 h-32 resize-none focus:ring-2 focus:ring-green-300 outline-none"
+              className="w-full border border-gray-300 rounded-lg px-4 py-2.5 h-32 focus:ring-2 focus:ring-green-200 focus:border-green-500 transition"
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder={t("manageNews.form.contentPlaceholder")}
             ></textarea>
           </div>
 
-          <div>
-            <label className="block font-medium text-gray-700 mb-1">
-              {t("manageNews.form.uploadMainImage")}
+          <div className="space-y-1">
+            <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+              <FaImage size={14} />
+              <span>{t("manageNews.form.uploadMainImage")}</span>
             </label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setFeaturedImage(e.target.files[0])}
-              className="w-full border p-2 rounded"
-            />
+            <div className="flex items-center gap-3">
+              <label className="flex flex-col items-center justify-center w-full border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition">
+                <div className="flex flex-col items-center justify-center pt-5 pb-6 px-4">
+                  <FaImage className="w-8 h-8 text-gray-400" />
+                  <p className="text-sm text-gray-500 text-center">
+                    {t("manageNews.form.uploadHint")}
+                  </p>
+                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setFeaturedImage(e.target.files[0])}
+                  className="hidden"
+                />
+              </label>
+            </div>
             {(featuredImage ||
               (editingId &&
-                news.find((b) => b.id === editingId)?.featuredImage)) && (
-              <img
-                src={
-                  featuredImage
-                    ? URL.createObjectURL(featuredImage)
-                    : news.find((b) => b.id === editingId)?.featuredImage
-                }
-                alt={t("manageNews.preview")}
-                className="mt-3 w-40 rounded-lg shadow-sm"
-              />
+                news.find((b) => b.id === editingId)?.featured_image)) && (
+              <div className="mt-2">
+                <img
+                  src={
+                    featuredImage
+                      ? URL.createObjectURL(featuredImage)
+                      : `${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
+                          news.find((b) => b.id === editingId)?.featured_image
+                        }`
+                  }
+                  alt={t("manageNews.preview")}
+                  className="w-full h-40 object-cover rounded-lg border"
+                />
+              </div>
             )}
           </div>
 
-          {/* STATUS */}
-          <div>
-            <label className="block font-medium text-gray-700 mb-2">
+          <div className="space-y-1">
+            <label className="block text-sm font-medium text-gray-700">
               {t("manageNews.form.publishStatus")}
             </label>
-            <div className="flex gap-3">
+            <div className="flex gap-2">
               <button
                 type="button"
                 onClick={() => setIsPublished(true)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${
+                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg border transition ${
                   isPublished
-                    ? "bg-green-500 text-white shadow"
-                    : "bg-gray-200 text-gray-600 hover:bg-gray-300"
+                    ? "bg-green-100 border-green-500 text-green-700"
+                    : "bg-gray-50 border-gray-300 text-gray-600 hover:bg-gray-100"
                 }`}
               >
                 <FaCheck /> {t("manageNews.status.yes")}
@@ -216,10 +269,10 @@ export default function ManageBerita() {
               <button
                 type="button"
                 onClick={() => setIsPublished(false)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${
+                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg border transition ${
                   !isPublished
-                    ? "bg-red-500 text-white shadow"
-                    : "bg-gray-200 text-gray-600 hover:bg-gray-300"
+                    ? "bg-red-100 border-red-500 text-red-700"
+                    : "bg-gray-50 border-gray-300 text-gray-600 hover:bg-gray-100"
                 }`}
               >
                 <FaTimes /> {t("manageNews.status.no")}
@@ -227,94 +280,134 @@ export default function ManageBerita() {
             </div>
           </div>
 
-          {/* BUTTONS */}
-          <div className="flex gap-3">
-            <button
-              type="submit"
-              className="flex items-center gap-2 bg-green-500 text-white px-5 py-2 rounded-lg shadow hover:bg-green-600 transition"
-            >
-              <FaSave />{" "}
-              {editingId
-                ? t("manageNews.buttons.updateNews")
-                : t("manageNews.buttons.saveNews")}
-            </button>
+          <div className="flex justify-end gap-3 pt-4 border-t">
             <button
               type="button"
               onClick={() => {
                 resetForm();
                 setShowForm(false);
               }}
-              className="flex items-center gap-2 bg-gray-400 text-white px-4 py-2 rounded-lg hover:bg-gray-500 transition"
+              className="px-5 py-2.5 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 transition"
             >
-              <FaTimes /> {t("manageNews.buttons.cancel")}
+              <FaTimes className="inline mr-2" />
+              {t("manageNews.buttons.cancel")}
+            </button>
+            <button
+              type="submit"
+              className="px-6 py-2.5 rounded-lg bg-green-600 hover:bg-green-700 text-white shadow-md transition flex items-center gap-2"
+            >
+              {editingId ? (
+                <>
+                  <FaSave /> {t("manageNews.buttons.updateNews")}
+                </>
+              ) : (
+                <>
+                  <FaPlus /> {t("manageNews.buttons.saveNews")}
+                </>
+              )}
             </button>
           </div>
         </form>
       )}
 
       {/* LIST BERITA */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {news.map((item) => (
-          <div
-            key={item.id}
-            className="bg-white rounded-xl shadow-md border hover:shadow-lg transition"
-          >
-            <img
-              src={`${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
-                item.featured_image
-              }`}
-              alt={item.title}
-              className="rounded-t-xl w-full h-40 object-cover"
-            />
-
-            <div className="p-4">
-              <h2 className="text-lg font-semibold text-gray-800 line-clamp-2">
-                {item.title}
-              </h2>
-              <p className="text-gray-600 text-sm line-clamp-3 mt-1">
-                {Helper.truncateText(item.content)}
-              </p>
-
-              <div className="flex justify-between items-center mt-3 text-xs text-gray-400">
-                <span>{Helper.formatTanggal(item.created_at)}</span>
-                {item.is_published ? (
-                  <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs flex items-center gap-1">
-                    <FaCheck /> {t("manageNews.status.published")}
-                  </span>
-                ) : (
-                  <span className="bg-red-100 text-red-600 px-2 py-0.5 rounded-full text-xs flex items-center gap-1">
-                    <FaTimesCircle /> {t("manageNews.status.unpublished")}
-                  </span>
-                )}
-              </div>
-
-              <div className="flex gap-4 mt-4">
-                <button
-                  onClick={() => handleEdit(item.id)}
-                  className="flex items-center gap-1 text-blue-500 hover:text-blue-700 transition text-sm"
-                >
-                  <FaEdit /> {t("manageNews.buttons.edit")}
-                </button>
-                <button
-                  onClick={() => handleDelete(item.id)}
-                  className="flex items-center gap-1 text-red-500 hover:text-red-700 transition text-sm"
-                >
-                  <FaTrash /> {t("manageNews.buttons.delete")}
-                </button>
-              </div>
+      {news.length === 0 ? (
+        <div className="bg-white rounded-xl shadow-sm p-8 text-center">
+          <div className="mx-auto max-w-md">
+            <FaNewspaper className="mx-auto h-12 w-12 text-gray-400" />
+            <h3 className="mt-2 text-lg font-medium text-gray-900">
+              {t("manageNews.emptyState.title")}
+            </h3>
+            <p className="mt-1 text-sm text-gray-500">
+              {t("manageNews.emptyState.description")}
+            </p>
+            <div className="mt-6">
+              <button
+                onClick={() => {
+                  resetForm();
+                  setShowForm(true);
+                }}
+                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+              >
+                <FaPlus className="-ml-1 mr-2 h-5 w-5" />
+                {t("manageNews.buttons.addNews")}
+              </button>
             </div>
           </div>
-        ))}
-      </div>
+        </div>
+      ) : (
+        <>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {news.map((item) => (
+              <div
+                key={item.id}
+                className="bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition transform hover:-translate-y-1 overflow-hidden"
+              >
+                <div className="relative h-48">
+                  <img
+                    src={`${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
+                      item.featured_image
+                    }`}
+                    alt={item.title}
+                    className="w-full h-full object-cover"
+                  />
+                  <span
+                    className={`absolute top-3 right-3 px-2 py-1 rounded-full text-xs font-medium ${
+                      item.is_published
+                        ? "bg-green-100 text-green-800"
+                        : "bg-yellow-100 text-yellow-800"
+                    }`}
+                  >
+                    {item.is_published
+                      ? t("manageNews.status.published")
+                      : t("manageNews.status.unpublished")}
+                  </span>
+                </div>
 
-      {/* PAGINATION */}
-      <div className="mt-6 flex justify-center">
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-        />
-      </div>
+                <div className="p-5">
+                  <h2 className="text-lg font-semibold text-gray-800 line-clamp-2">
+                    {item.title}
+                  </h2>
+                  <p className="text-gray-600 text-sm mt-1 line-clamp-3">
+                    {Helper.truncateText(item.content)}
+                  </p>
+
+                  <div className="flex items-center gap-2 mt-4 text-xs text-gray-500">
+                    <FaCalendarAlt size={12} />
+                    <span>{Helper.formatTanggal(item.created_at)}</span>
+                  </div>
+
+                  <div className="flex justify-between mt-6 pt-4 border-t">
+                    <button
+                      onClick={() => handleEdit(item.id)}
+                      className="flex items-center gap-1.5 text-sm font-medium text-blue-600 hover:text-blue-800 transition"
+                    >
+                      <FaEdit size={14} /> {t("manageNews.buttons.edit")}
+                    </button>
+                    <button
+                      onClick={() => handleDelete(item.id)}
+                      className="flex items-center gap-1.5 text-sm font-medium text-red-600 hover:text-red-800 transition"
+                    >
+                      <FaTrash size={14} /> {t("manageNews.buttons.delete")}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* PAGINATION */}
+          {totalPages > 1 && (
+            <div className="mt-8 flex justify-center">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+              />
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 }

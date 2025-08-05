@@ -5,7 +5,16 @@ import { CategoryApi } from "../../libs/api/CategoryApi";
 import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 import { Helper } from "../../utils/Helper";
 import Pagination from "../ui/Pagination";
-import { FaPlus, FaSave, FaTimes, FaEdit, FaTrash } from "react-icons/fa";
+import {
+  FaPlus,
+  FaSave,
+  FaTimes,
+  FaEdit,
+  FaTrash,
+  FaBox,
+  FaBoxes,
+  FaWhatsapp,
+} from "react-icons/fa";
 
 export default function ManageBumdes() {
   const { t, i18n } = useTranslation();
@@ -25,7 +34,7 @@ export default function ManageBumdes() {
   const [linkWhatsapp, setLinkWhatsapp] = useState("");
   const [featuredImage, setFeaturedImage] = useState(null);
 
-  // === STATE UNTUK FORM KATEGORI ===
+  // Category form state
   const [showCategoryForm, setShowCategoryForm] = useState(false);
   const [editingCategoryId, setEditingCategoryId] = useState(null);
   const [categoryName, setCategoryName] = useState("");
@@ -37,7 +46,7 @@ export default function ManageBumdes() {
       i18n.language
     );
     if (!response.ok) {
-      alertError("Gagal mengambil produk.");
+      alertError(t("manageBumdes.error.fetchProducts"));
       return;
     }
     const responseBody = await response.json();
@@ -49,7 +58,7 @@ export default function ManageBumdes() {
   const fetchCategories = async () => {
     const response = await CategoryApi.getCategories(i18n.language);
     if (!response.ok) {
-      alertError("Gagal mengambil kategori.");
+      alertError(t("manageBumdes.error.fetchCategories"));
       return;
     }
     const responseBody = await response.json();
@@ -89,7 +98,8 @@ export default function ManageBumdes() {
     };
 
     if (editingId) {
-      if (!(await alertConfirm("Yakin ingin mengedit produk ini?"))) return;
+      if (!(await alertConfirm(t("manageBumdes.confirmation.editProduct"))))
+        return;
       const response = await ProductApi.updateProduct(
         editingId,
         rawData,
@@ -100,7 +110,7 @@ export default function ManageBumdes() {
         alertError(Helper.parseError(body));
         return;
       }
-      await alertSuccess("Produk berhasil diperbarui!");
+      await alertSuccess(t("manageBumdes.success.productUpdated"));
       fetchProducts();
       resetForm();
       setShowForm(false);
@@ -110,10 +120,14 @@ export default function ManageBumdes() {
     const response = await ProductApi.createProduct(rawData, i18n.language);
     const responseBody = await response.json();
     if (!response.ok) {
-      Helper.errorResponseHandler(responseBody);
+      alertError(
+        typeof responseBody.error === "string"
+          ? responseBody.error
+          : t("manageBumdes.error.addProduct")
+      );
       return;
     }
-    await alertSuccess("Produk berhasil ditambahkan!");
+    await alertSuccess(t("manageBumdes.success.productAdded"));
     fetchProducts();
     resetForm();
     setShowForm(false);
@@ -132,25 +146,27 @@ export default function ManageBumdes() {
   };
 
   const handleDelete = async (id) => {
-    if (await alertConfirm("Yakin hapus produk ini?")) {
+    if (await alertConfirm(t("manageBumdes.confirmation.deleteProduct"))) {
       const response = await ProductApi.deleteProduct(id, i18n.language);
       if (!response.ok) {
         const body = await response.json();
-        alertError(`Gagal menghapus produk. ${body.error}`);
+        alertError(
+          t("manageBumdes.error.deleteProduct", { error: body.error })
+        );
         return;
       }
       setProducts(products.filter((p) => p.product.id !== id));
     }
   };
 
-  // === HANDLE TAMBAH / EDIT KATEGORI ===
   const handleSubmitCategory = async (e) => {
     e.preventDefault();
 
     const rawData = { name: categoryName };
 
     if (editingCategoryId) {
-      if (!(await alertConfirm("Yakin ingin mengedit kategori ini?"))) return;
+      if (!(await alertConfirm(t("manageBumdes.confirmation.editCategory"))))
+        return;
       const response = await CategoryApi.updateCategory(
         editingCategoryId,
         rawData,
@@ -161,7 +177,7 @@ export default function ManageBumdes() {
         alertError(body);
         return;
       }
-      await alertSuccess("Kategori berhasil diperbarui!");
+      await alertSuccess(t("manageBumdes.success.categoryUpdated"));
       fetchCategories();
       resetCategoryForm();
       setShowCategoryForm(false);
@@ -170,12 +186,16 @@ export default function ManageBumdes() {
 
     const response = await CategoryApi.addCategory(rawData, i18n.language);
     const body = await response.json();
-    if (response.ok) {
-      await alertSuccess("Kategori berhasil ditambahkan!");
-      fetchCategories();
-    } else {
-      alertError(body);
+    if (!response.ok) {
+      alertError(
+        typeof body.error === "string"
+          ? body.error
+          : t("manageBumdes.error.addCategory")
+      );
+      return;
     }
+    await alertSuccess(t("manageBumdes.success.categoryAdded"));
+    fetchCategories();
     resetCategoryForm();
     setShowCategoryForm(false);
   };
@@ -189,32 +209,37 @@ export default function ManageBumdes() {
   };
 
   const handleDeleteCategory = async (id) => {
-    if (await alertConfirm("Yakin hapus kategori ini?")) {
+    if (await alertConfirm(t("manageBumdes.confirmation.deleteCategory"))) {
       const response = await CategoryApi.deleteCategory(id, i18n.language);
       if (!response.ok) {
         const body = await response.json();
-        alertError(`Gagal menghapus kategori. ${body.error}`);
+        alertError(
+          t("manageBumdes.error.deleteCategory", { error: body.error })
+        );
         return;
       }
-      await alertSuccess("Kategori dihapus!");
+      await alertSuccess(t("manageBumdes.success.categoryDeleted"));
       fetchCategories();
     }
   };
 
   return (
-    <div className="font-[Poppins,sans-serif]">
+    <div className="font-[Poppins,sans-serif] bg-gray-50 min-h-screen p-4 md:p-6">
       {/* HEADER */}
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-green-700">
-          Kelola Produk BUMDes
+      <div className="mb-8">
+        <h1 className="text-2xl md:text-3xl font-bold text-green-700 flex items-center gap-3 mb-2">
+          <FaBoxes className="text-emerald-600" />
+          {t("manageBumdes.title")}
         </h1>
+        <p className="text-gray-600">{t("manageBumdes.subtitle")}</p>
       </div>
 
-      {/* === BAGIAN KATEGORI === */}
-      <div className="bg-white p-4 rounded-xl shadow-md border mb-6">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-green-600">
-            Kelola Kategori
+      {/* CATEGORY SECTION */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 mb-8">
+        <div className="flex justify-between items-center mb-5">
+          <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-3">
+            <FaBox className="text-emerald-500" />
+            {t("manageBumdes.category.title")}
           </h2>
           {!showCategoryForm && (
             <button
@@ -222,9 +247,9 @@ export default function ManageBumdes() {
                 resetCategoryForm();
                 setShowCategoryForm(true);
               }}
-              className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded shadow hover:bg-green-600 transition"
+              className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-4 py-2.5 rounded-lg shadow-md transition"
             >
-              <FaPlus /> Tambah Kategori
+              <FaPlus /> {t("manageBumdes.category.buttons.add")}
             </button>
           )}
         </div>
@@ -232,25 +257,28 @@ export default function ManageBumdes() {
         {showCategoryForm && (
           <form
             onSubmit={handleSubmitCategory}
-            className="bg-gray-50 p-4 rounded-lg border mb-4 space-y-3"
+            className="bg-gray-50 p-5 rounded-lg border border-gray-200 mb-6"
           >
-            <label className="block text-gray-700 font-medium">
-              Nama Kategori
-            </label>
-            <input
-              className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-green-300 outline-none"
-              value={categoryName}
-              onChange={(e) => setCategoryName(e.target.value)}
-              placeholder="Masukkan nama kategori"
-              required
-            />
-            <div className="flex gap-3 mt-3">
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {t("manageBumdes.category.form.name")}
+              </label>
+              <input
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition"
+                value={categoryName}
+                onChange={(e) => setCategoryName(e.target.value)}
+                placeholder={t("manageBumdes.category.form.placeholder")}
+              />
+            </div>
+            <div className="flex gap-3">
               <button
                 type="submit"
-                className="flex items-center gap-2 bg-green-500 text-white px-5 py-2 rounded-lg shadow hover:bg-green-600 transition"
+                className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-5 py-2.5 rounded-lg shadow-md transition"
               >
                 <FaSave />{" "}
-                {editingCategoryId ? "Update Kategori" : "Simpan Kategori"}
+                {editingCategoryId
+                  ? t("manageBumdes.category.buttons.update")
+                  : t("manageBumdes.category.buttons.save")}
               </button>
               <button
                 type="button"
@@ -258,174 +286,213 @@ export default function ManageBumdes() {
                   resetCategoryForm();
                   setShowCategoryForm(false);
                 }}
-                className="flex items-center gap-2 bg-gray-400 text-white px-4 py-2 rounded-lg hover:bg-gray-500 transition"
+                className="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2.5 rounded-lg transition"
               >
-                <FaTimes /> Batal
+                <FaTimes /> {t("manageBumdes.buttons.cancel")}
               </button>
             </div>
           </form>
         )}
 
-        {/* LIST KATEGORI */}
-        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3">
-          {categories.length === 0 && (
-            <p className="text-gray-500 text-sm italic">Belum ada kategori</p>
-          )}
-          {categories.map((cat) => (
-            <div
-              key={cat.id}
-              className="flex justify-between items-center bg-gray-100 p-3 rounded-lg"
-            >
-              <span className="font-medium">{cat.name}</span>
-              <div className="flex gap-2 text-sm">
-                <button
-                  onClick={() => handleEditCategory(cat.id)}
-                  className="flex items-center gap-1 text-blue-500 hover:text-blue-700"
-                >
-                  <FaEdit /> Edit
-                </button>
-                <button
-                  onClick={() => handleDeleteCategory(cat.id)}
-                  className="flex items-center gap-1 text-red-500 hover:text-red-700"
-                >
-                  <FaTrash /> Hapus
-                </button>
+        {categories.length === 0 ? (
+          <div className="bg-gray-50 rounded-lg p-8 text-center">
+            <FaBox className="text-4xl text-gray-400 mx-auto mb-3" />
+            <p className="text-gray-500">
+              {t("manageBumdes.category.empty.noCategories")}
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {categories.map((cat) => (
+              <div
+                key={cat.id}
+                className="flex justify-between items-center bg-gray-50 hover:bg-gray-100 p-4 rounded-lg border border-gray-200 transition"
+              >
+                <span className="font-medium text-gray-800">{cat.name}</span>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleEditCategory(cat.id)}
+                    className="p-2 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded-full transition"
+                    title="Edit"
+                  >
+                    <FaEdit size={14} />
+                  </button>
+                  <button
+                    onClick={() => handleDeleteCategory(cat.id)}
+                    className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full transition"
+                    title={t("manageBumdes.buttons.delete")}
+                  >
+                    <FaTrash size={14} />
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* === FORM TAMBAH / EDIT PRODUK === */}
-      {!showForm && (
-        <div className="flex justify-end mb-4">
+      {/* PRODUCT FORM */}
+      {!showForm ? (
+        <div className="flex justify-end mb-6">
           <button
             onClick={() => {
               resetForm();
               setShowForm(true);
             }}
-            className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded shadow hover:bg-green-600 transition"
+            className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-5 py-2.5 rounded-lg shadow-md transition"
           >
-            <FaPlus /> Tambah Produk
+            <FaPlus /> {t("manageBumdes.product.buttons.add")}
           </button>
         </div>
-      )}
-
-      {showForm && (
+      ) : (
         <form
           onSubmit={handleSubmit}
-          className="bg-white p-6 rounded-xl shadow-md mb-6 space-y-4 max-w-2xl border"
+          className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8"
         >
-          <div>
-            <label className="block font-medium text-gray-700 mb-1">
-              Nama Produk
-            </label>
-            <input
-              className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-green-300 outline-none"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Masukkan nama produk"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block font-medium text-gray-700 mb-1">
-              Deskripsi
-            </label>
-            <textarea
-              className="w-full border rounded-lg p-3 h-28 resize-none focus:ring-2 focus:ring-green-300 outline-none"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Tuliskan deskripsi produk..."
-              required
-            ></textarea>
-          </div>
-
-          <div className="grid sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block font-medium text-gray-700 mb-1">
-                Harga
-              </label>
-              <input
-                type="number"
-                className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-green-300 outline-none"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                placeholder="0"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block font-medium text-gray-700 mb-1">
-                Kategori
-              </label>
-              <select
-                className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-green-300 outline-none"
-                value={categoryId}
-                onChange={(e) => setCategoryId(e.target.value)}
-                required
-              >
-                <option value="">-- Pilih Kategori --</option>
-                {categories.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <div>
-            <label className="block font-medium text-gray-700 mb-1">
-              Link WhatsApp
-            </label>
-            <input
-              type="text"
-              className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-green-300 outline-none"
-              value={linkWhatsapp}
-              onChange={(e) => setLinkWhatsapp(e.target.value)}
-              placeholder="https://wa.me/62xxxx"
-            />
-          </div>
-
-          <div>
-            <label className="block font-medium text-gray-700 mb-1">
-              Upload Gambar Produk
-            </label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setFeaturedImage(e.target.files[0])}
-              className="w-full border p-2 rounded"
-            />
-            {(featuredImage ||
-              (editingId &&
-                products.find((p) => p.product.id === editingId)?.product
-                  ?.featured_image)) && (
-              <img
-                src={
-                  featuredImage
-                    ? URL.createObjectURL(featuredImage)
-                    : `${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
-                        products.find((p) => p.product.id === editingId)
-                          ?.product?.featured_image
-                      }`
-                }
-                alt="preview"
-                className="mt-3 w-40 rounded-lg shadow-sm"
-              />
+          <h2 className="text-xl font-semibold text-gray-800 mb-6 flex items-center gap-3">
+            {editingId ? (
+              <>
+                <FaEdit className="text-emerald-500" />
+                {t("manageBumdes.product.form.edit")}
+              </>
+            ) : (
+              <>
+                <FaPlus className="text-emerald-500" />
+                {t("manageBumdes.product.form.add")}
+              </>
             )}
+          </h2>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t("manageBumdes.product.form.name")}
+                </label>
+                <input
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder={t("manageBumdes.product.form.namePlaceholder")}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t("manageBumdes.product.form.description")}
+                </label>
+                <textarea
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl h-32 resize-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder={t(
+                    "manageBumdes.product.form.descriptionPlaceholder"
+                  )}
+                ></textarea>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t("manageBumdes.product.form.price")}
+                </label>
+                <div className="relative">
+                  <span className="absolute left-4 top-3 text-gray-500">
+                    Rp
+                  </span>
+                  <input
+                    type="number"
+                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition"
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    placeholder="0"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t("manageBumdes.product.form.category")}
+                </label>
+                <select
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition"
+                  value={categoryId}
+                  onChange={(e) => setCategoryId(e.target.value)}
+                >
+                  <option value="">
+                    {t("manageBumdes.product.form.selectCategory")}
+                  </option>
+                  {categories.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                  <FaWhatsapp className="text-green-500" />
+                  {t("manageBumdes.product.form.whatsappLink")}
+                </label>
+                <input
+                  type="text"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition"
+                  value={linkWhatsapp}
+                  onChange={(e) => setLinkWhatsapp(e.target.value)}
+                  placeholder={t(
+                    "manageBumdes.product.form.whatsappPlaceholder"
+                  )}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t("manageBumdes.product.form.image")}
+                </label>
+                <div className="border-2 border-dashed border-gray-300 rounded-xl p-4">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => setFeaturedImage(e.target.files[0])}
+                    className="w-full mb-3"
+                  />
+                  {(featuredImage ||
+                    (editingId &&
+                      products.find((p) => p.product.id === editingId)?.product
+                        ?.featured_image)) && (
+                    <div className="mt-3 flex justify-center">
+                      <img
+                        src={
+                          featuredImage
+                            ? URL.createObjectURL(featuredImage)
+                            : `${
+                                import.meta.env.VITE_NEW_BASE_URL
+                              }/public/images/${
+                                products.find((p) => p.product.id === editingId)
+                                  ?.product?.featured_image
+                              }`
+                        }
+                        alt="preview"
+                        className="max-w-full h-40 rounded-lg object-contain border"
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* BUTTONS */}
-          <div className="flex gap-3">
+          <div className="flex gap-3 mt-8 pt-5 border-t border-gray-200">
             <button
               type="submit"
-              className="flex items-center gap-2 bg-green-500 text-white px-5 py-2 rounded-lg shadow hover:bg-green-600 transition"
+              className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-6 py-3 rounded-xl shadow-md transition"
             >
-              <FaSave /> {editingId ? "Update Produk" : "Simpan Produk"}
+              <FaSave />{" "}
+              {editingId
+                ? t("manageBumdes.product.buttons.update")
+                : t("manageBumdes.product.buttons.save")}
             </button>
             <button
               type="button"
@@ -433,71 +500,113 @@ export default function ManageBumdes() {
                 resetForm();
                 setShowForm(false);
               }}
-              className="flex items-center gap-2 bg-gray-400 text-white px-4 py-2 rounded-lg hover:bg-gray-500 transition"
+              className="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 px-5 py-3 rounded-xl transition"
             >
-              <FaTimes /> Batal
+              <FaTimes /> {t("manageBumdes.buttons.cancel")}
             </button>
           </div>
         </form>
       )}
 
-      {/* LIST PRODUK */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {products.map((item) => (
-          <div
-            key={item.product.id}
-            className="bg-white rounded-xl shadow-md border hover:shadow-lg transition"
-          >
-            <img
-              src={`${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
-                item.product.featured_image
-              }`}
-              alt={item.product.title}
-              className="rounded-t-xl w-full h-40 object-cover"
-            />
+      {/* PRODUCT LIST */}
+      {products.length === 0 ? (
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
+          <FaBox className="text-4xl text-gray-400 mx-auto mb-4" />
+          <h3 className="text-xl font-medium text-gray-700 mb-2">
+            {t("manageBumdes.product.empty.title")}
+          </h3>
+          <p className="text-gray-500 mb-4">
+            {showForm
+              ? t("manageBumdes.product.empty.fillForm")
+              : t("manageBumdes.product.empty.description")}
+          </p>
+          {!showForm && (
+            <button
+              onClick={() => {
+                resetForm();
+                setShowForm(true);
+              }}
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-5 py-2.5 rounded-lg shadow-md transition"
+            >
+              <FaPlus /> {t("manageBumdes.product.buttons.add")}
+            </button>
+          )}
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {products.map((item) => (
+              <div
+                key={item.product.id}
+                className="bg-white rounded-xl shadow-sm hover:shadow-md border border-gray-200 transition overflow-hidden"
+              >
+                <div className="relative">
+                  <img
+                    src={`${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
+                      item.product.featured_image
+                    }`}
+                    alt={item.product.title}
+                    className="w-full h-48 object-cover"
+                  />
+                  <div className="absolute bottom-3 left-3 bg-white/90 px-3 py-1 rounded-full text-xs font-medium text-emerald-700">
+                    {categories.find((c) => c.id === item.product.category_id)
+                      ?.name || t("manageBumdes.product.noCategory")}
+                  </div>
+                </div>
+                <div className="p-5">
+                  <h3 className="font-bold text-gray-800 line-clamp-2">
+                    {item.product.title}
+                  </h3>
+                  <p className="text-emerald-600 font-bold mt-2">
+                    {Helper.formatRupiah(item.product.price)}
+                  </p>
+                  <p className="text-gray-600 text-sm line-clamp-2 mt-2">
+                    {item.product.description}
+                  </p>
 
-            <div className="p-4">
-              <h2 className="text-lg font-semibold text-gray-800 line-clamp-2">
-                {item.product.title}
-              </h2>
-              <p className="text-green-600 font-bold mt-1">
-                {Helper.formatRupiah(item.product.price)}
-              </p>
-              <p className="text-gray-600 text-sm line-clamp-3 mt-1">
-                {item.product.description}
-              </p>
-              <p className="text-xs text-gray-500 mt-1">
-                {categories.find((c) => c.id === item.product.category_id)
-                  ?.name || "Tanpa Kategori"}
-              </p>
-
-              <div className="flex gap-4 mt-4 text-sm">
-                <button
-                  onClick={() => handleEdit(item.product.id)}
-                  className="flex items-center gap-1 text-blue-500 hover:text-blue-700 transition"
-                >
-                  <FaEdit /> Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(item.product.id)}
-                  className="flex items-center gap-1 text-red-500 hover:text-red-700 transition"
-                >
-                  <FaTrash /> Hapus
-                </button>
+                  <div className="flex justify-between mt-5 pt-4 border-t border-gray-100">
+                    <div>
+                      <a
+                        href={item.product.link_whatsapp || "#"}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-2 text-green-500 hover:text-green-700 hover:bg-green-50 rounded-full transition inline-block"
+                        title="WhatsApp"
+                      >
+                        <FaWhatsapp size={16} />
+                      </a>
+                    </div>
+                    <div className="flex gap-1">
+                      <button
+                        onClick={() => handleEdit(item.product.id)}
+                        className="p-2 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded-full transition"
+                        title="Edit"
+                      >
+                        <FaEdit size={16} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(item.product.id)}
+                        className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full transition"
+                        title="Hapus"
+                      >
+                        <FaTrash size={16} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
+            ))}
           </div>
-        ))}
-      </div>
 
-      {/* PAGINATION */}
-      <div className="mt-6 flex justify-center">
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-        />
-      </div>
+          <div className="mt-8 flex justify-center">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 }

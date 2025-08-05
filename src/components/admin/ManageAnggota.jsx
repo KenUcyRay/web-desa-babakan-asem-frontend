@@ -1,22 +1,22 @@
 import { useEffect, useState } from "react";
-import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
+import { FaPlus, FaEdit, FaTrash, FaTimes, FaUserAlt } from "react-icons/fa";
 import { FiUsers } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
 import Pagination from "../ui/Pagination";
 import { MemberApi } from "../../libs/api/MemberApi";
 import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
+import { Helper } from "../../utils/Helper";
 
 export default function ManageAnggota() {
   const { t, i18n } = useTranslation();
   const [members, setMembers] = useState([]);
   const [kategori, setKategori] = useState("Semua");
   const kategoriList = [
-    "Semua",
-    "PKK",
-    "KARANG_TARUNA",
-    "DPD",
-    "PEMERINTAH",
-    "BPD",
+    { key: "Semua", label: t("manageAnggota.categories.all") },
+    { key: "PKK", label: t("manageAnggota.categories.pkk") },
+    { key: "KARANG TARUNA", label: t("manageAnggota.categories.karangTaruna") },
+    { key: "PEMERINTAH", label: t("manageAnggota.categories.pemerintah") },
+    { key: "BPD", label: t("manageAnggota.categories.bpd") },
   ];
 
   const [showModal, setShowModal] = useState(false);
@@ -36,8 +36,15 @@ export default function ManageAnggota() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
+  // Function to get translated organization name
+  const getOrganizationLabel = (orgType) => {
+    const key = `manageAnggota.organizationsCard.${orgType}`;
+    return t(key, orgType); // fallback to original if translation not found
+  };
+
   const fetchMembers = async () => {
     let kategoriValue = kategori === "Semua" ? "" : kategori;
+    kategoriValue === "KARANG TARUNA" && (kategoriValue = "KARANG_TARUNA");
     const response = await MemberApi.getAllMembers(
       kategoriValue,
       currentPage,
@@ -45,10 +52,17 @@ export default function ManageAnggota() {
       i18n.language
     );
     if (!response.ok) {
-      alertError("Gagal mengambil data anggota.");
+      alertError(t("manageAnggota.messages.fetchError"));
       return;
     }
     const body = await response.json();
+    body.members = body.members.map((a) => {
+      if (a.organization_type === "KARANG_TARUNA") {
+        a.organization_type = "Karang Taruna";
+        return a;
+      }
+      return a;
+    });
     setMembers(body.members);
     setTotalPages(body.total_page);
     setCurrentPage(body.page);
@@ -82,7 +96,10 @@ export default function ManageAnggota() {
       position: member.position,
       term_start: member.term_start,
       term_end: member.term_end,
-      organization_type: member.organization_type,
+      organization_type:
+        member.organization_type === "Karang Taruna"
+          ? "KARANG_TARUNA"
+          : member.organization_type,
       profile_photo: null,
       is_term: member.is_term,
       important_level: member.important_level,
@@ -91,52 +108,70 @@ export default function ManageAnggota() {
   };
 
   const handleDelete = async (id) => {
-    if (!(await alertConfirm("Yakin ingin menghapus anggota ini?"))) return;
+    if (!(await alertConfirm(t("manageAnggota.messages.deleteConfirm"))))
+      return;
     const response = await MemberApi.deleteMember(id, i18n.language);
     if (!response.ok) {
-      alertError("Gagal menghapus anggota.");
+      alertError(t("manageAnggota.messages.deleteError"));
       return;
     }
     setMembers((prev) => prev.filter((a) => a.id !== id));
-    await alertSuccess("Anggota berhasil dihapus.");
+    await alertSuccess(t("manageAnggota.messages.deleteSuccess"));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Format data sebelum dikirim ke API
+    const formattedData = {
+      ...formData,
+      // Pastikan organization_type dalam format yang benar
+      organization_type:
+        formData.organization_type === "Karang Taruna"
+          ? "KARANG_TARUNA"
+          : formData.organization_type,
+      // Konversi is_term ke boolean jika diperlukan
+      is_term: Boolean(formData.is_term),
+      // Konversi important_level ke number
+      important_level: Number(formData.important_level),
+      // Konversi tahun ke string
+      term_start: String(formData.term_start),
+      term_end: String(formData.term_end),
+    };
+
     const apiCall = editingId
-      ? MemberApi.updateMember(editingId, formData, i18n.language)
-      : MemberApi.createMember(formData, i18n.language);
+      ? MemberApi.updateMember(editingId, formattedData, i18n.language)
+      : MemberApi.createMember(formattedData, i18n.language);
 
     const response = await apiCall;
     if (!response.ok) {
-      alertError(
-        editingId ? "Gagal menyimpan perubahan." : "Gagal menambah anggota."
-      );
+      await Helper.errorResponseHandler(await response.json());
       return;
     }
 
     await alertSuccess(
-      editingId ? "Anggota diperbarui!" : "Anggota ditambahkan!"
+      editingId
+        ? t("manageAnggota.messages.updateSuccess")
+        : t("manageAnggota.messages.addSuccess")
     );
     setShowModal(false);
     fetchMembers();
   };
 
   return (
-    <div className="font-[Poppins,sans-serif]">
+    <div className="font-[Poppins,sans-serif] bg-gray-50 min-h-screen p-4 md:p-6">
       {/* HEADER */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-6">
         <div className="flex items-center gap-2 text-gray-800">
           <FiUsers className="text-3xl text-green-600" />
-          <h1 className="text-2xl font-bold">Struktur Organisasi</h1>
+          <h1 className="text-2xl font-bold">{t("manageAnggota.title")}</h1>
         </div>
 
         <button
           onClick={handleAdd}
-          className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow transition"
+          className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2 rounded-lg shadow-lg transition transform hover:-translate-y-0.5"
         >
-          <FaPlus /> Tambah Anggota
+          <FaPlus /> {t("manageAnggota.addMember")}
         </button>
       </div>
 
@@ -144,18 +179,18 @@ export default function ManageAnggota() {
       <div className="flex flex-wrap gap-2 mb-6">
         {kategoriList.map((k) => (
           <button
-            key={k}
+            key={k.key}
             onClick={() => {
-              setKategori(k);
+              setKategori(k.key);
               setCurrentPage(1);
             }}
             className={`px-4 py-2 rounded-full text-sm font-medium transition ${
-              kategori === k
-                ? "bg-green-500 text-white shadow"
+              kategori === k.key
+                ? "bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg"
                 : "bg-gray-100 hover:bg-green-50 text-gray-700"
             }`}
           >
-            {k}
+            {k.label}
           </button>
         ))}
       </div>
@@ -164,7 +199,7 @@ export default function ManageAnggota() {
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {members.length === 0 && (
           <p className="text-center text-gray-500 col-span-full">
-            Tidak ada anggota untuk kategori ini.
+            {t("manageAnggota.messages.noMembers")}
           </p>
         )}
 
@@ -193,7 +228,7 @@ export default function ManageAnggota() {
 
               <div className="flex flex-wrap gap-2 mt-3 text-xs">
                 <span className="px-2 py-1 rounded bg-green-100 text-green-700">
-                  {member.organization_type}
+                  {getOrganizationLabel(member.organization_type)}
                 </span>
                 <span className="px-2 py-1 rounded bg-blue-100 text-blue-700">
                   {member.term_start} - {member.term_end}
@@ -205,7 +240,9 @@ export default function ManageAnggota() {
                       : "bg-red-200 text-red-800"
                   }`}
                 >
-                  {member.is_term ? "Menjabat" : "Tidak Menjabat"}
+                  {member.is_term
+                    ? t("manageAnggota.status.activeCard")
+                    : t("manageAnggota.status.inactiveCard")}
                 </span>
               </div>
             </div>
@@ -215,13 +252,13 @@ export default function ManageAnggota() {
                 onClick={() => handleEdit(member.id)}
                 className="flex items-center gap-1 text-blue-600 hover:text-blue-800 transition"
               >
-                <FaEdit /> Edit
+                <FaEdit /> {t("manageAnggota.actions.edit")}
               </button>
               <button
                 onClick={() => handleDelete(member.id)}
                 className="flex items-center gap-1 text-red-600 hover:text-red-800 transition"
               >
-                <FaTrash /> Hapus
+                <FaTrash /> {t("manageAnggota.actions.delete")}
               </button>
             </div>
           </div>
@@ -241,78 +278,149 @@ export default function ManageAnggota() {
 
       {/* MODAL TAMBAH/EDIT */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-lg">
-            <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-gray-800">
-              {editingId ? <FaEdit /> : <FaPlus />}
-              {editingId ? "Edit Anggota" : "Tambah Anggota"}
-            </h2>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl overflow-hidden">
+            {/* Header Modal */}
+            <div className="bg-gradient-to-r from-green-600 to-emerald-600 p-5 flex justify-between items-center">
+              <h2 className="text-xl font-bold text-white flex items-center gap-3">
+                <FaUserAlt />
+                {editingId
+                  ? t("manageAnggota.editMember")
+                  : t("manageAnggota.addNewMember")}
+              </h2>
+              <button
+                onClick={() => setShowModal(false)}
+                className="text-white hover:text-gray-200 transition"
+              >
+                <FaTimes size={22} />
+              </button>
+            </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <input
-                type="text"
-                placeholder="Nama Lengkap"
-                value={formData.name}
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
-                className="w-full border rounded-lg p-2 focus:ring focus:ring-green-200"
-                required
-              />
+            <form
+              onSubmit={handleSubmit}
+              className="p-6 max-h-[80vh] overflow-y-auto"
+            >
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {t("manageAnggota.form.fullName")}
+                  </label>
+                  <input
+                    type="text"
+                    placeholder={t("manageAnggota.form.fullNamePlaceholder")}
+                    value={formData.name}
+                    onChange={(e) =>
+                      setFormData({ ...formData, name: e.target.value })
+                    }
+                    className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-200 focus:border-green-500"
+                  />
+                </div>
 
-              <input
-                type="text"
-                placeholder="Jabatan"
-                value={formData.position}
-                onChange={(e) =>
-                  setFormData({ ...formData, position: e.target.value })
-                }
-                className="w-full border rounded-lg p-2 focus:ring focus:ring-green-200"
-                required
-              />
-
-              <div className="flex gap-2">
-                <input
-                  type="number"
-                  placeholder="Mulai"
-                  value={formData.term_start}
-                  onChange={(e) =>
-                    setFormData({ ...formData, term_start: e.target.value })
-                  }
-                  className="w-1/2 border rounded-lg p-2"
-                  required
-                />
-                <input
-                  type="number"
-                  placeholder="Akhir"
-                  value={formData.term_end}
-                  onChange={(e) =>
-                    setFormData({ ...formData, term_end: e.target.value })
-                  }
-                  className="w-1/2 border rounded-lg p-2"
-                  required
-                />
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {t("manageAnggota.form.position")}
+                  </label>
+                  <input
+                    type="text"
+                    placeholder={t("manageAnggota.form.positionPlaceholder")}
+                    value={formData.position}
+                    onChange={(e) =>
+                      setFormData({ ...formData, position: e.target.value })
+                    }
+                    className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-200 focus:border-green-500"
+                  />
+                </div>
               </div>
 
-              <select
-                value={formData.organization_type}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    organization_type: e.target.value,
-                  })
-                }
-                className="w-full border rounded-lg p-2"
-              >
-                <option value="PEMERINTAH">Pemerintah</option>
-                <option value="PKK">PKK</option>
-                <option value="KARANG_TARUNA">Karang Taruna</option>
-                <option value="DPD">DPD</option>
-                <option value="BPD">BPD</option>
-              </select>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {t("manageAnggota.form.startYear")}
+                  </label>
+                  <input
+                    type="number"
+                    placeholder={t("manageAnggota.form.startYearPlaceholder")}
+                    value={formData.term_start}
+                    onChange={(e) =>
+                      setFormData({ ...formData, term_start: e.target.value })
+                    }
+                    className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-200 focus:border-green-500"
+                  />
+                </div>
 
-              <div>
-                <label className="text-sm font-medium">Foto Profil</label>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {t("manageAnggota.form.endYear")}
+                  </label>
+                  <input
+                    type="number"
+                    placeholder={t("manageAnggota.form.endYearPlaceholder")}
+                    value={formData.term_end}
+                    onChange={(e) =>
+                      setFormData({ ...formData, term_end: e.target.value })
+                    }
+                    className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-200 focus:border-green-500"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {t("manageAnggota.form.organization")}
+                  </label>
+                  <select
+                    value={formData.organization_type}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        organization_type: e.target.value,
+                      })
+                    }
+                    className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-200 focus:border-green-500"
+                  >
+                    <option value="PEMERINTAH">
+                      {t("manageAnggota.organizations.pemerintah")}
+                    </option>
+                    <option value="PKK">
+                      {t("manageAnggota.organizations.pkk")}
+                    </option>
+                    <option value="KARANG_TARUNA">
+                      {t("manageAnggota.organizations.karangTaruna")}
+                    </option>
+                    <option value="BPD">
+                      {t("manageAnggota.organizations.bpd")}
+                    </option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {t("manageAnggota.form.importantLevel")}
+                  </label>
+                  <input
+                    type="number"
+                    placeholder={t(
+                      "manageAnggota.form.importantLevelPlaceholder"
+                    )}
+                    value={formData.important_level}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        important_level: e.target.value,
+                      })
+                    }
+                    className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-200 focus:border-green-500"
+                    min={1}
+                    max={10}
+                  />
+                </div>
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t("manageAnggota.form.profilePhoto")}
+                </label>
                 <input
                   type="file"
                   accept="image/*"
@@ -322,48 +430,59 @@ export default function ManageAnggota() {
                       profile_photo: e.target.files[0],
                     })
                   }
-                  className="w-full border rounded-lg p-2"
-                  {...(editingId ? {} : { required: true })}
+                  className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-200 focus:border-green-500"
                 />
               </div>
 
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={formData.is_term}
-                  onChange={(e) =>
-                    setFormData({ ...formData, is_term: e.target.checked })
-                  }
-                />
-                <span>Masih menjabat?</span>
+              <div className="mb-5">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t("manageAnggota.form.statusPosition")}
+                </label>
+                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                  <div className="relative inline-block w-14 h-7">
+                    <input
+                      type="checkbox"
+                      checked={formData.is_term}
+                      onChange={(e) =>
+                        setFormData({ ...formData, is_term: e.target.checked })
+                      }
+                      className="opacity-0 w-0 h-0 peer"
+                      id="statusToggle"
+                    />
+                    <label
+                      htmlFor="statusToggle"
+                      className={`absolute cursor-pointer top-0 left-0 right-0 bottom-0 bg-gray-300 rounded-full transition duration-300
+                        before:content-[''] before:absolute before:w-5 before:h-5 before:left-1.5 before:bottom-1 before:bg-white before:rounded-full before:transition before:duration-300
+                        peer-checked:bg-green-500 peer-checked:before:translate-x-7`}
+                    ></label>
+                  </div>
+                  <span
+                    className={`font-medium ${
+                      formData.is_term ? "text-green-600" : "text-gray-600"
+                    }`}
+                  >
+                    {formData.is_term
+                      ? t("manageAnggota.status.active")
+                      : t("manageAnggota.status.inactive")}
+                  </span>
+                </div>
               </div>
 
-              <input
-                type="number"
-                placeholder="Tingkat Penting (1-10)"
-                value={formData.important_level}
-                onChange={(e) =>
-                  setFormData({ ...formData, important_level: e.target.value })
-                }
-                className="w-full border rounded-lg p-2"
-                required
-                min={1}
-                max={10}
-              />
-
-              <div className="flex justify-end gap-3 mt-4">
+              <div className="flex justify-end gap-3 mt-8 pt-5 border-t border-gray-200">
                 <button
                   type="button"
-                  className="px-4 py-2 rounded-lg bg-gray-300 hover:bg-gray-400"
+                  className="px-6 py-3 rounded-xl bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium transition shadow"
                   onClick={() => setShowModal(false)}
                 >
-                  Batal
+                  {t("manageAnggota.actions.cancel")}
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white"
+                  className="px-7 py-3 rounded-xl bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-medium shadow-lg transition transform hover:-translate-y-0.5"
                 >
-                  {editingId ? "Update" : "Tambah"}
+                  {editingId
+                    ? t("manageAnggota.actions.save")
+                    : t("manageAnggota.actions.add")}
                 </button>
               </div>
             </form>

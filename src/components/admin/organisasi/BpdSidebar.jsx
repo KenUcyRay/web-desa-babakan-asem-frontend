@@ -84,7 +84,7 @@ export default function BpdSidebar({ isOpen, onClose }) {
             {t("adminSidebar.title") || "Admin Panel Desa"}
           </h1>
           <p className="text-xs text-green-100">
-            {t("adminSidebar.subtitle") || "Babakan Asem"}
+            {t("bpdSidebar.subtitle") || "BPD Panel"}
           </p>
         </div>
       </div>

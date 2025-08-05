@@ -82,7 +82,12 @@ export default function DashboardBpd() {
 
   // ==================== FUNGSI STRUKTUR BPD ====================
   const fetchMembers = async () => {
-    const response = await MemberApi.getAllMembers("BPD", memberPage, 6, i18n.language);
+    const response = await MemberApi.getAllMembers(
+      "BPD",
+      memberPage,
+      6,
+      i18n.language
+    );
     if (!response.ok) {
       alertError("Gagal mengambil data anggota BPD.");
       return;
@@ -107,7 +112,11 @@ export default function DashboardBpd() {
         )
           return;
 
-        const response = await MemberApi.updateMember(editingMemberId, rawData, i18n.language);
+        const response = await MemberApi.updateMember(
+          editingMemberId,
+          rawData,
+          i18n.language
+        );
         if (!response.ok)
           throw new Error("Gagal menyimpan perubahan anggota BPD.");
 
@@ -157,7 +166,12 @@ export default function DashboardBpd() {
 
   // ==================== FUNGSI AGENDA BPD ====================
   const fetchAgendas = async () => {
-    const response = await AgendaApi.getOwnAgenda(agendaPage, 6, "BPD", i18n.language);
+    const response = await AgendaApi.getOwnAgenda(
+      agendaPage,
+      6,
+      "BPD",
+      i18n.language
+    );
     if (!response.ok) return alertError("Gagal mengambil agenda BPD.");
 
     const body = await response.json();
@@ -169,7 +183,13 @@ export default function DashboardBpd() {
   const handleAgendaSave = async (e) => {
     e.preventDefault();
     const rawData = {
-      ...agendaForm,
+      title: agendaForm.title,
+      content: agendaForm.content,
+      start_time: new Date(agendaForm.start_time).toISOString(),
+      end_time: new Date(agendaForm.end_time).toISOString(),
+      location: agendaForm.location,
+      featured_image: agendaForm.featured_image,
+      is_published: agendaForm.is_published,
       type: "BPD", // Hardcode untuk BPD
     };
 
@@ -180,9 +200,15 @@ export default function DashboardBpd() {
         )
           return;
 
-        const response = await AgendaApi.updateAgenda(editingAgendaId, rawData, i18n.language);
-        if (!response.ok)
-          throw new Error("Gagal menyimpan perubahan agenda BPD.");
+        const response = await AgendaApi.updateAgenda(
+          editingAgendaId,
+          rawData,
+          i18n.language
+        );
+        if (!response.ok) {
+          await Helper.errorResponseHandler(await response.json());
+          return;
+        }
 
         await alertSuccess("Agenda BPD berhasil diperbarui!");
       } else {
@@ -242,7 +268,7 @@ export default function DashboardBpd() {
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-indigo-700">
-          {t("dashboardBpd.title")}
+          {t("dashboardBpd.title") || "Dashboard BPD"}
         </h1>
       </div>
 
@@ -256,7 +282,8 @@ export default function DashboardBpd() {
               : "text-gray-500"
           }`}
         >
-          <FaUsers className="inline mr-2" /> Struktur BPD
+          <FaUsers className="inline mr-2" />{" "}
+          {t("dashboardBpd.tabs.structure") || "Struktur BPD"}
         </button>
         <button
           onClick={() => setActiveTab("agenda")}
@@ -266,7 +293,8 @@ export default function DashboardBpd() {
               : "text-gray-500"
           }`}
         >
-          <FaCalendarAlt className="inline mr-2" /> Agenda BPD
+          <FaCalendarAlt className="inline mr-2" />{" "}
+          {t("dashboardBpd.tabs.agenda") || "Agenda BPD"}
         </button>
       </div>
 
@@ -276,7 +304,7 @@ export default function DashboardBpd() {
           {/* Header */}
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-semibold text-gray-800">
-              Struktur Organisasi BPD
+              {t("dashboardBpd.structure.title") || "Struktur Organisasi BPD"}
             </h2>
             {!showMemberForm && (
               <button
@@ -286,7 +314,8 @@ export default function DashboardBpd() {
                 }}
                 className="flex items-center gap-2 bg-indigo-500 text-white px-4 py-2 rounded shadow hover:bg-indigo-600 transition"
               >
-                <FaPlus /> Tambah Anggota
+                <FaPlus />{" "}
+                {t("dashboardBpd.structure.addMember") || "Tambah Anggota"}
               </button>
             )}
           </div>
@@ -299,13 +328,14 @@ export default function DashboardBpd() {
             >
               <h3 className="text-lg font-semibold">
                 {editingMemberId
-                  ? "Edit Anggota BPD"
-                  : "Tambah Anggota BPD Baru"}
+                  ? t("dashboardBpd.structure.editMember") || "Edit Anggota BPD"
+                  : t("dashboardBpd.structure.addNewMember") ||
+                    "Tambah Anggota BPD Baru"}
               </h3>
 
               <div>
                 <label className="block font-medium text-gray-700 mb-1">
-                  Nama Lengkap
+                  {t("dashboardBpd.form.fullName") || "Nama Lengkap"}
                 </label>
                 <input
                   type="text"
@@ -314,14 +344,16 @@ export default function DashboardBpd() {
                   onChange={(e) =>
                     setMemberForm({ ...memberForm, name: e.target.value })
                   }
-                  placeholder="Nama lengkap anggota"
-                  required
+                  placeholder={
+                    t("dashboardBpd.form.fullNamePlaceholder") ||
+                    "Nama lengkap anggota"
+                  }
                 />
               </div>
 
               <div>
                 <label className="block font-medium text-gray-700 mb-1">
-                  Jabatan
+                  {t("dashboardBpd.form.position") || "Jabatan"}
                 </label>
                 <input
                   type="text"
@@ -330,15 +362,17 @@ export default function DashboardBpd() {
                   onChange={(e) =>
                     setMemberForm({ ...memberForm, position: e.target.value })
                   }
-                  placeholder="Jabatan dalam struktur"
-                  required
+                  placeholder={
+                    t("dashboardBpd.form.positionPlaceholder") ||
+                    "Jabatan dalam struktur"
+                  }
                 />
               </div>
 
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
                   <label className="block font-medium text-gray-700 mb-1">
-                    Masa Jabatan Mulai
+                    {t("dashboardBpd.form.termStart") || "Masa Jabatan Mulai"}
                   </label>
                   <input
                     type="number"
@@ -350,13 +384,15 @@ export default function DashboardBpd() {
                         term_start: e.target.value,
                       })
                     }
-                    placeholder="Tahun mulai"
-                    required
+                    placeholder={
+                      t("dashboardBpd.form.termStartPlaceholder") ||
+                      "Tahun mulai"
+                    }
                   />
                 </div>
                 <div>
                   <label className="block font-medium text-gray-700 mb-1">
-                    Masa Jabatan Berakhir
+                    {t("dashboardBpd.form.termEnd") || "Masa Jabatan Berakhir"}
                   </label>
                   <input
                     type="number"
@@ -365,15 +401,17 @@ export default function DashboardBpd() {
                     onChange={(e) =>
                       setMemberForm({ ...memberForm, term_end: e.target.value })
                     }
-                    placeholder="Tahun berakhir"
-                    required
+                    placeholder={
+                      t("dashboardBpd.form.termEndPlaceholder") ||
+                      "Tahun berakhir"
+                    }
                   />
                 </div>
               </div>
 
               <div>
                 <label className="block font-medium text-gray-700 mb-1">
-                  Foto Profil
+                  {t("dashboardBpd.form.profilePhoto") || "Foto Profil"}
                 </label>
                 <input
                   type="file"
@@ -385,7 +423,6 @@ export default function DashboardBpd() {
                       profile_photo: e.target.files[0],
                     })
                   }
-                  required={!editingMemberId}
                 />
               </div>
 
@@ -397,7 +434,9 @@ export default function DashboardBpd() {
                     setMemberForm({ ...memberForm, is_term: e.target.checked })
                   }
                 />
-                <span>Masih menjabat?</span>
+                <span>
+                  {t("dashboardBpd.form.stillServing") || "Masih menjabat?"}
+                </span>
               </div>
 
               <div className="flex gap-3">
@@ -405,14 +444,17 @@ export default function DashboardBpd() {
                   type="submit"
                   className="flex items-center gap-2 bg-indigo-500 text-white px-5 py-2 rounded-lg shadow hover:bg-indigo-600 transition"
                 >
-                  <FaSave /> {editingMemberId ? "Update" : "Simpan"}
+                  <FaSave />{" "}
+                  {editingMemberId
+                    ? t("dashboardBpd.form.update") || "Update"
+                    : t("dashboardBpd.form.save") || "Simpan"}
                 </button>
                 <button
                   type="button"
                   onClick={resetForms}
                   className="flex items-center gap-2 bg-gray-400 text-white px-4 py-2 rounded-lg hover:bg-gray-500 transition"
                 >
-                  <FaTimes /> Batal
+                  <FaTimes /> {t("dashboardBpd.form.cancel") || "Batal"}
                 </button>
               </div>
             </form>
@@ -422,7 +464,8 @@ export default function DashboardBpd() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {members.length === 0 ? (
               <p className="text-gray-500 italic">
-                Belum ada anggota struktur BPD
+                {t("dashboardBpd.structure.noMembers") ||
+                  "Belum ada anggota struktur BPD"}
               </p>
             ) : (
               members.map((member) => (
@@ -459,7 +502,10 @@ export default function DashboardBpd() {
                             : "bg-red-200 text-red-800"
                         }`}
                       >
-                        {member.is_term ? "Menjabat" : "Tidak Menjabat"}
+                        {member.is_term
+                          ? t("dashboardBpd.status.serving") || "Menjabat"
+                          : t("dashboardBpd.status.notServing") ||
+                            "Tidak Menjabat"}
                       </span>
                     </div>
                   </div>
@@ -469,13 +515,13 @@ export default function DashboardBpd() {
                       onClick={() => handleMemberEdit(member.id)}
                       className="flex items-center gap-1 text-indigo-600 hover:text-indigo-800 transition"
                     >
-                      <FaEdit /> Edit
+                      <FaEdit /> {t("dashboardBpd.buttons.edit") || "Edit"}
                     </button>
                     <button
                       onClick={() => handleMemberDelete(member.id)}
                       className="flex items-center gap-1 text-red-600 hover:text-red-800 transition"
                     >
-                      <FaTrash /> Hapus
+                      <FaTrash /> {t("dashboardBpd.buttons.delete") || "Hapus"}
                     </button>
                   </div>
                 </div>
@@ -500,7 +546,7 @@ export default function DashboardBpd() {
           {/* Header */}
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-semibold text-gray-800">
-              Agenda Kegiatan BPD
+              {t("dashboardBpd.agenda.title") || "Agenda Kegiatan BPD"}
             </h2>
             {!showAgendaForm && (
               <button
@@ -510,7 +556,8 @@ export default function DashboardBpd() {
                 }}
                 className="flex items-center gap-2 bg-indigo-500 text-white px-4 py-2 rounded shadow hover:bg-indigo-600 transition"
               >
-                <FaPlus /> Tambah Agenda
+                <FaPlus />{" "}
+                {t("dashboardBpd.agenda.addAgenda") || "Tambah Agenda"}
               </button>
             )}
           </div>
@@ -522,12 +569,15 @@ export default function DashboardBpd() {
               className="bg-white p-6 rounded-xl shadow-md mb-6 space-y-4 max-w-2xl border"
             >
               <h3 className="text-lg font-semibold">
-                {editingAgendaId ? "Edit Agenda BPD" : "Tambah Agenda BPD Baru"}
+                {editingAgendaId
+                  ? t("dashboardBpd.agenda.editAgenda") || "Edit Agenda BPD"
+                  : t("dashboardBpd.agenda.addNewAgenda") ||
+                    "Tambah Agenda BPD Baru"}
               </h3>
 
               <div>
                 <label className="block font-medium text-gray-700 mb-1">
-                  Judul Agenda
+                  {t("dashboardBpd.form.agendaTitle") || "Judul Agenda"}
                 </label>
                 <input
                   type="text"
@@ -536,8 +586,10 @@ export default function DashboardBpd() {
                   onChange={(e) =>
                     setAgendaForm({ ...agendaForm, title: e.target.value })
                   }
-                  placeholder="Contoh: Rapat Rutin BPD"
-                  required
+                  placeholder={
+                    t("dashboardBpd.form.agendaTitlePlaceholder") ||
+                    "Contoh: Rapat Rutin BPD"
+                  }
                 />
               </div>
 
@@ -553,7 +605,6 @@ export default function DashboardBpd() {
                     setAgendaForm({ ...agendaForm, content: e.target.value })
                   }
                   placeholder="Deskripsi lengkap agenda..."
-                  required
                 />
               </div>
 
@@ -572,7 +623,6 @@ export default function DashboardBpd() {
                         start_time: e.target.value,
                       })
                     }
-                    required
                   />
                 </div>
                 <div>
@@ -586,7 +636,6 @@ export default function DashboardBpd() {
                     onChange={(e) =>
                       setAgendaForm({ ...agendaForm, end_time: e.target.value })
                     }
-                    required
                   />
                 </div>
               </div>
@@ -603,7 +652,6 @@ export default function DashboardBpd() {
                     setAgendaForm({ ...agendaForm, location: e.target.value })
                   }
                   placeholder="Tempat/lokasi kegiatan"
-                  required
                 />
               </div>
 
@@ -660,7 +708,8 @@ export default function DashboardBpd() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {agendas.length === 0 ? (
               <p className="text-gray-500 italic">
-                Belum ada agenda BPD yang tersedia
+                {t("dashboardBpd.agenda.noAgendas") ||
+                  "Belum ada agenda BPD yang tersedia"}
               </p>
             ) : (
               agendas.map((agenda) => (
@@ -700,7 +749,9 @@ export default function DashboardBpd() {
                           : "bg-red-100 text-red-700"
                       }`}
                     >
-                      {agenda.is_published ? "Published" : "Unpublished"}
+                      {agenda.is_published
+                        ? t("dashboardBpd.status.published") || "Published"
+                        : t("dashboardBpd.status.unpublished") || "Unpublished"}
                     </span>
 
                     <div className="flex justify-between mt-4 border-t pt-3">
@@ -708,13 +759,14 @@ export default function DashboardBpd() {
                         onClick={() => handleAgendaEdit(agenda.id)}
                         className="flex items-center gap-1 text-indigo-500 hover:text-indigo-700 text-sm"
                       >
-                        <FaEdit /> Edit
+                        <FaEdit /> {t("dashboardBpd.buttons.edit") || "Edit"}
                       </button>
                       <button
                         onClick={() => handleAgendaDelete(agenda.id)}
                         className="flex items-center gap-1 text-red-500 hover:text-red-700 text-sm"
                       >
-                        <FaTrash /> Hapus
+                        <FaTrash />{" "}
+                        {t("dashboardBpd.buttons.delete") || "Hapus"}
                       </button>
                     </div>
                   </div>

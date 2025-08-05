@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import { FaTrash, FaEnvelopeOpen } from "react-icons/fa";
+import { FaEnvelopeOpen, FaEnvelope, FaFilter } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 import { MessageApi } from "../../libs/api/MessageApi";
-import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 import Pagination from "../ui/Pagination";
 
 export default function ManagePesan() {
@@ -51,62 +50,93 @@ export default function ManagePesan() {
   };
 
   return (
-    <div className="font-[Poppins,sans-serif]">
+    <div className="font-[Poppins,sans-serif] bg-gray-50 min-h-screen p-4 md:p-6">
       {/* - Header */}
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold text-gray-800">
-          {t("managePesan.title")}
-        </h1>
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
+            {t("managePesan.title")}
+          </h1>
+          <p className="text-gray-600 mt-1">
+            {t("managePesan.subtitle") ||
+              "Kelola pesan yang masuk dari pengunjung"}
+          </p>
+        </div>
       </div>
 
       {/* - FILTER BUTTONS */}
-      <div className="flex gap-2 mb-4">
-        {["all", "read", "unread"].map((f) => (
-          <button
-            key={f}
-            className={`px-4 py-2 rounded-lg text-sm transition ${
-              filter === f
-                ? "bg-green-500 text-white"
-                : "bg-gray-200 hover:bg-gray-300"
-            }`}
-            onClick={() => {
-              setFilter(f);
-              setPage(1);
-            }}
-          >
-            {t(`managePesan.filters.${f}`)}
-          </button>
-        ))}
+      <div className="bg-white rounded-xl shadow-sm p-4 mb-6">
+        <div className="flex items-center gap-2 mb-3">
+          <FaFilter className="text-gray-500" />
+          <h2 className="font-medium text-gray-700">
+            {t("managePesan.filterTitle") || "Filter Pesan"}
+          </h2>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {["all", "read", "unread"].map((f) => (
+            <button
+              key={f}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all flex items-center gap-2 ${
+                filter === f
+                  ? "bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow"
+                  : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+              }`}
+              onClick={() => {
+                setFilter(f);
+                setPage(1);
+              }}
+            >
+              {f === "read" && <FaEnvelopeOpen size={12} />}
+              {f === "unread" && <FaEnvelope size={12} />}
+              {t(`managePesan.filters.${f}`)}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* - LIST PESAN */}
       <div className="space-y-4">
         {messages.length === 0 ? (
-          <p className="text-gray-500 italic">
-            {t("managePesan.empty.noMessages")}
-          </p>
+          <div className="bg-white rounded-xl shadow-sm p-8 text-center">
+            <div className="flex justify-center mb-4">
+              <div className="bg-gray-100 p-5 rounded-full">
+                <FaEnvelope className="text-4xl text-gray-400" />
+              </div>
+            </div>
+            <h3 className="text-xl font-medium text-gray-700 mb-2">
+              {t("managePesan.empty.title") || "Belum Ada Pesan"}
+            </h3>
+            <p className="text-gray-500">{t("managePesan.empty.noMessages")}</p>
+          </div>
         ) : (
           messages.map((p) => (
             <div
               key={p.id}
-              className={`bg-white p-4 rounded-xl shadow flex justify-between items-start transition ${
-                p.is_read ? "opacity-80" : "border-l-4 border-blue-400"
+              className={`bg-white p-5 rounded-xl shadow-md hover:shadow-lg transition flex flex-col md:flex-row justify-between gap-4 ${
+                p.is_read ? "opacity-90" : "border-l-4 border-blue-500"
               }`}
             >
-              <div>
-                <h2 className="font-semibold text-gray-800">{p.name}</h2>
-                <p className="text-sm text-gray-500">{p.email}</p>
-                <p className="mt-2 text-gray-700">{p.message}</p>
+              <div className="flex-1">
+                <div className="flex flex-col md:flex-row md:items-center gap-2 mb-2">
+                  <h2 className="font-bold text-gray-800">{p.name}</h2>
+                  <span className="hidden md:block text-gray-400">•</span>
+                  <p className="text-sm text-gray-600">{p.email}</p>
+                </div>
+                <p className="text-gray-700 mt-2">{p.message}</p>
               </div>
-              <div className="flex flex-col gap-2 items-end">
+              <div className="flex flex-col items-end gap-2">
                 {!p.is_read && (
                   <button
                     onClick={() => handleMarkRead(p.id)}
-                    className="flex items-center gap-1 text-green-500 hover:text-green-700 text-sm"
+                    className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg text-sm font-medium transition"
                   >
-                    <FaEnvelopeOpen /> {t("managePesan.buttons.markRead")}
+                    <FaEnvelopeOpen size={14} />{" "}
+                    {t("managePesan.buttons.markRead")}
                   </button>
                 )}
+                <span className="text-xs text-gray-400">
+                  {new Date(p.created_at).toLocaleString()}
+                </span>
               </div>
             </div>
           ))
@@ -114,13 +144,15 @@ export default function ManagePesan() {
       </div>
 
       {/* - PAGINATION */}
-      <div className="mt-6 flex justify-center">
-        <Pagination
-          currentPage={page}
-          totalPages={totalPages}
-          onPageChange={setPage}
-        />
-      </div>
+      {messages.length > 0 && (
+        <div className="mt-8 flex justify-center">
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            onPageChange={setPage}
+          />
+        </div>
+      )}
     </div>
   );
 }

@@ -4,12 +4,14 @@ import resetImage from "../../assets/reset.png";
 import { alertError, alertSuccess } from "../../libs/alert";
 import { UserApi } from "../../libs/api/UserApi";
 import { useTranslation, Trans } from "react-i18next";
+import { useProfile } from "../../hook/useProfile";
 
 export default function ResetPassword() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
+  const { profile, isReady } = useProfile(); // Assuming useAuth provides profile and isReady
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -47,6 +49,12 @@ export default function ResetPassword() {
     verifyToken();
   }, [i18n.language]);
 
+  useEffect(() => {
+    if (isReady && profile !== null) {
+      navigate("/");
+    }
+  }, [isReady]);
+
   return (
     <div className="flex min-h-screen font-poppins">
       <div className="flex w-full md:w-1/2 items-center justify-center bg-gradient-to-b from-[#B6F500] to-[#FFFCE2] px-8 py-12">
@@ -72,7 +80,6 @@ export default function ResetPassword() {
                 className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-300 outline-none"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                required
               />
             </div>
 
@@ -86,7 +93,6 @@ export default function ResetPassword() {
                 className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-300 outline-none"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                required
               />
             </div>
 

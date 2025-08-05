@@ -79,33 +79,33 @@ export default function DashboardDesa() {
       icon: <FaNewspaper />,
       title: "Jumlah Berita",
       count: newsCount,
-      color: "from-blue-500 to-blue-600",
-      iconBg: "bg-blue-100",
-      iconColor: "text-blue-600",
+      color: "from-blue-400 to-blue-500",
+      iconBg: "bg-blue-50",
+      iconColor: "text-blue-500",
     },
     {
       icon: <FaCalendarAlt />,
       title: "Jumlah Agenda",
       count: agendaCount,
-      color: "from-green-500 to-green-600",
-      iconBg: "bg-green-100",
-      iconColor: "text-green-600",
+      color: "from-emerald-400 to-emerald-500",
+      iconBg: "bg-emerald-50",
+      iconColor: "text-emerald-500",
     },
     {
       icon: <FaTasks />,
       title: "Program Kerja",
       count: programCount,
-      color: "from-purple-500 to-purple-600",
-      iconBg: "bg-purple-100",
-      iconColor: "text-purple-600",
+      color: "from-violet-400 to-violet-500",
+      iconBg: "bg-violet-50",
+      iconColor: "text-violet-500",
     },
     {
       icon: <FaImage />,
       title: "Galeri Desa",
       count: galeriPreview.length,
-      color: "from-red-500 to-red-600",
-      iconBg: "bg-red-100",
-      iconColor: "text-red-600",
+      color: "from-rose-400 to-rose-500",
+      iconBg: "bg-rose-50",
+      iconColor: "text-rose-500",
     },
   ];
 
@@ -114,7 +114,7 @@ export default function DashboardDesa() {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 p-4 md:p-8">
         <div className="max-w-6xl mx-auto">
           <div className="animate-pulse">
-            <div className="h-8 bg-gray-300 rounded w-1/3 mb-8"></div>
+            <div className="h-8 bg-gray-200 rounded-full w-1/3 mb-8"></div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
               {[1, 2, 3, 4].map((i) => (
                 <div
@@ -136,7 +136,9 @@ export default function DashboardDesa() {
         {/* Header */}
         <div className="text-center mb-10">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
-            <span className="text-blue-600">🏠 Dashboard</span> Desa
+            <span className="text-gradient bg-gradient-to-r from-green-500 to-green-500 bg-clip-text text-transparent">
+              🏠 Dashboard Desa
+            </span>
           </h1>
           <p className="text-gray-600 max-w-2xl mx-auto text-lg">
             Pantau aktivitas dan konten desa Anda dalam satu tampilan yang
@@ -160,17 +162,17 @@ export default function DashboardDesa() {
         </div>
 
         {/* Welcome Card */}
-        <div className="bg-gradient-to-r  from-green-400 to-[#B6F500] rounded-xl shadow-lg p-8 mb-10 text-white">
+        <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-xl shadow-lg p-8 mb-10 text-black">
           <div className="flex flex-col md:flex-row items-center justify-between">
             <div className="mb-6 md:mb-0">
               <h2 className="text-2xl md:text-3xl font-bold mb-2">
                 Selamat Datang di Dashboard Desa! 👋
               </h2>
-              <p className="text-blue-100 text-lg">
+              <p className="text-black text-lg">
                 Kelola semua konten dan informasi desa Anda dengan mudah
               </p>
             </div>
-            <div className="bg-green-500 bg-opacity-20 backdrop-blur-sm rounded-lg p-6 text-center">
+            <div className="bg-white bg-opacity-20 backdrop-blur-sm rounded-lg p-6 text-center">
               <div className="text-3xl font-bold">
                 {new Date().toLocaleDateString("id-ID", { day: "numeric" })}
               </div>
@@ -189,13 +191,13 @@ export default function DashboardDesa() {
           <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-6 border-b">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-3">
-                <div className="bg-red-100 p-2 rounded-lg">
-                  <FaImage className="text-red-600 text-xl" />
+                <div className="bg-rose-50 p-2 rounded-lg">
+                  <FaImage className="text-rose-500 text-xl" />
                 </div>
                 Galeri Terbaru
               </h2>
               <button
-                className="flex items-center gap-2 bg-green-400 hover:bg-yellow-400 text-white px-4 py-2 rounded-lg transition-colors duration-300"
+                className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-500 hover:to-green-900 text-white px-4 py-2 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg"
                 onClick={() => navigate("/admin/manage-galery")}
               >
                 <FaEye />
@@ -223,7 +225,7 @@ export default function DashboardDesa() {
                   Mulai tambahkan foto-foto kegiatan desa Anda
                 </p>
                 <button
-                  className="bg-green-400 hover:bg-yellow-400 text-white px-6 py-2 rounded-lg transition-colors duration-300"
+                  className="bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-600 hover:to-teal-500 text-white px-6 py-2 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg"
                   onClick={() => navigate("/admin/manage-galery")}
                 >
                   Tambah Galeri
@@ -257,7 +259,7 @@ export default function DashboardDesa() {
 
 function StatCard({ icon, title, count, color, iconBg, iconColor }) {
   return (
-    <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+    <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100">
       <div className={`bg-gradient-to-r ${color} h-2`}></div>
       <div className="p-6">
         <div className="flex items-center justify-between mb-4">
@@ -280,19 +282,19 @@ function StatCard({ icon, title, count, color, iconBg, iconColor }) {
 
 function GalleryCard({ gallery }) {
   return (
-    <div className="group bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-      <div className="relative overflow-hidden">
+    <div className="group bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100">
+      <div className="relative overflow-hidden h-48">
         <img
           src={`${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
             gallery.image
           }`}
           alt={gallery.title}
-          className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />
-        <div className="absolute inset-0 bg-black opacity-20 group-hover:bg-opacity-10 transition-all duration-300"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
       </div>
       <div className="p-4">
-        <h4 className="font-semibold text-gray-800 group-hover:text-blue-600 transition-colors duration-300 line-clamp-2">
+        <h4 className="font-semibold text-gray-800 group-hover:text-blue-500 transition-colors duration-300 line-clamp-2">
           {gallery.title}
         </h4>
         <p className="text-sm text-gray-500 mt-1">

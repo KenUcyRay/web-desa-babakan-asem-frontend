@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import pana from "../../../assets/pana.png";
 import {
   FaMale,
@@ -41,11 +42,15 @@ import { Helper } from "../../../utils/Helper";
 
 // Custom Tooltip with values
 const CustomTooltip = ({ active, payload, label }) => {
+  const { t } = useTranslation();
+
   if (active && payload && payload.length) {
     return (
       <div className="bg-white p-3 rounded-lg shadow-lg border">
         <p className="font-semibold text-gray-800">{`${label}`}</p>
-        <p className="text-blue-600">{`Jumlah: ${payload[0].value} orang`}</p>
+        <p className="text-blue-600">{`${t("managePenduduk.tooltip.count")}: ${
+          payload[0].value
+        } ${t("managePenduduk.tooltip.people")}`}</p>
       </div>
     );
   }
@@ -84,6 +89,8 @@ const renderCustomizedLabel = ({
 };
 
 export default function ManagePenduduk() {
+  const { t } = useTranslation();
+
   // State untuk setiap tipe data
   const [genderData, setGenderData] = useState([]);
   const [kepalaKeluargaData, setKepalaKeluargaData] = useState([]);
@@ -164,7 +171,10 @@ export default function ManagePenduduk() {
     "#9370DB",
     "#20B2AA",
   ];
-  const tooltipFormatter = (value) => [`${value} orang`, "Jumlah"];
+  const tooltipFormatter = (value) => [
+    `${value} ${t("managePenduduk.tooltip.people")}`,
+    t("managePenduduk.tooltip.count"),
+  ];
   const allData = [
     ...genderData,
     ...kepalaKeluargaData,
@@ -253,7 +263,7 @@ export default function ManagePenduduk() {
   const handleSave = async () => {
     const jumlah = parseInt(jumlahBaru);
     if (isNaN(jumlah) || jumlah < 0) {
-      alertError("Jumlah harus angka positif!");
+      alertError(t("managePenduduk.validation.positiveNumber"));
       return;
     }
 
@@ -271,7 +281,7 @@ export default function ManagePenduduk() {
         }
       );
 
-      if (!response.ok) throw new Error("Failed to update data");
+      if (!response.ok) throw new Error(t("managePenduduk.error.updateFailed"));
 
       // ✅ Ambil response dari backend
       const result = await response.json();
@@ -317,10 +327,10 @@ export default function ManagePenduduk() {
       setEditingData(null);
       setJumlahBaru("");
       setUpdateTrigger((prev) => prev + 1);
-      alertSuccess("Data berhasil diperbarui!");
+      alertSuccess(t("managePenduduk.success.dataUpdated"));
     } catch (error) {
       console.error("Error updating data:", error);
-      alertError("Gagal mengupdate data penduduk!");
+      alertError(t("managePenduduk.error.updateFailed"));
     }
   };
 
@@ -365,8 +375,8 @@ export default function ManagePenduduk() {
       setDusunData(sortData(dusun, "DUSUN"));
     } catch (error) {
       console.error("Error fetching penduduk data:", error);
-      setError("Gagal mengambil data penduduk");
-      alertError("Gagal mengambil data penduduk");
+      setError(t("managePenduduk.error.fetchFailed"));
+      alertError(t("managePenduduk.error.fetchFailed"));
     } finally {
       setLoading(false);
     }
@@ -389,7 +399,8 @@ export default function ManagePenduduk() {
       <p className="text-lg font-bold text-gray-800">{item.value}</p>
       {item.updated_at && (
         <p className="mt-1 text-xs text-gray-400">
-          Diperbarui: {Helper.formatTanggal(item.updated_at)}
+          {t("managePenduduk.lastUpdated")}:{" "}
+          {Helper.formatTanggal(item.updated_at)}
         </p>
       )}
       <button
@@ -467,7 +478,7 @@ export default function ManagePenduduk() {
               <Area
                 type="monotone"
                 dataKey="value"
-                name="Jumlah Penduduk"
+                name={t("managePenduduk.chart.populationCount")}
                 stroke="#82ca9d"
                 fillOpacity={1}
                 fill="url(#colorAgeManage)"
@@ -482,7 +493,7 @@ export default function ManagePenduduk() {
               <Legend />
               <Bar
                 dataKey="jumlah"
-                name="Jumlah Penduduk"
+                name={t("managePenduduk.chart.populationCount")}
                 fill={color}
                 barSize={35}
                 radius={[6, 6, 0, 0]}
@@ -500,16 +511,15 @@ export default function ManagePenduduk() {
       <div className="grid md:grid-cols-2 gap-6 items-center mb-8">
         <div>
           <h2 className="text-3xl font-bold text-gray-800">
-            Kelola Infografis Penduduk
+            {t("managePenduduk.title")}
           </h2>
           <p className="text-gray-600 mt-2 text-justify">
-            Data demografi Desa Babakan, Anda bisa memperbarui jumlah kategori
-            penduduk sesuai kondisi terkini.
+            {t("managePenduduk.description")}
           </p>
         </div>
         <img
           src={pana}
-          alt="Ilustrasi Penduduk"
+          alt={t("managePenduduk.image.alt")}
           className="w-full max-w-md mx-auto drop-shadow-md"
         />
       </div>
@@ -518,7 +528,7 @@ export default function ManagePenduduk() {
       {loading && (
         <div className="flex justify-center items-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-          <p className="ml-4 text-gray-600">Memuat data penduduk...</p>
+          <p className="ml-4 text-gray-600">{t("managePenduduk.loading")}</p>
         </div>
       )}
 
@@ -530,7 +540,7 @@ export default function ManagePenduduk() {
             onClick={fetchPenduduk}
             className="mt-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
           >
-            Coba Lagi
+            {t("managePenduduk.buttons.tryAgain")}
           </button>
         </div>
       )}
@@ -543,7 +553,7 @@ export default function ManagePenduduk() {
           anakAnakData.length > 0) && (
           <div className="mb-12">
             <h3 className="text-2xl font-bold text-gray-800 mb-6">
-              Data Utama Penduduk
+              {t("managePenduduk.sections.mainData")}
             </h3>
             <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4 mb-8">
               {[...genderData, ...kepalaKeluargaData, ...anakAnakData].map(
@@ -559,11 +569,10 @@ export default function ManagePenduduk() {
             </div>
             <div>
               <h4 className="text-2xl font-bold text-gray-800 text-center mb-4">
-                Grafik Data Utama Penduduk
+                {t("managePenduduk.sections.mainDataChart")}
               </h4>
               <p className="text-center text-gray-600 mb-8">
-                Distribusi data utama penduduk berdasarkan gender, kepala
-                keluarga, dan anak-anak
+                {t("managePenduduk.sections.mainDataDescription")}
               </p>
               <ResponsiveContainer width="100%" height={350}>
                 <BarChart
@@ -580,7 +589,7 @@ export default function ManagePenduduk() {
                   <Legend />
                   <Bar
                     dataKey="jumlah"
-                    name="Jumlah Penduduk"
+                    name={t("managePenduduk.chart.populationCount")}
                     fill="#B6F500"
                     barSize={40}
                     radius={[6, 6, 0, 0]}
@@ -593,47 +602,55 @@ export default function ManagePenduduk() {
 
       {/* Sections menggunakan komponen DataSection */}
       <DataSection
-        title="Data Pekerjaan"
+        title={t("managePenduduk.sections.jobData")}
         data={pekerjaanData}
         color="#FF69B4"
       />
       <DataSection
-        title="Data Pendidikan"
+        title={t("managePenduduk.sections.educationData")}
         data={pendidikanData}
         color="#FFD700"
         gridCols="md:grid-cols-4"
       />
       <DataSection
-        title="Status Pernikahan"
+        title={t("managePenduduk.sections.maritalStatus")}
         data={pernikahanData}
         color="#87CEEB"
         chartType="pie"
       />
       <DataSection
-        title="Data Agama"
+        title={t("managePenduduk.sections.religionData")}
         data={agamaData}
         color="#32CD32"
         gridCols="md:grid-cols-4"
         chartType="pie"
       />
       <DataSection
-        title="Kelompok Usia"
+        title={t("managePenduduk.sections.ageGroup")}
         data={usiaData}
         color="#FF6347"
         chartType="area"
       />
-      <DataSection title="Pemilih" data={wajibPilihData} color="#9370DB" />
-      <DataSection title="Distribusi Dusun" data={dusunData} color="#20B2AA" />
+      <DataSection
+        title={t("managePenduduk.sections.voters")}
+        data={wajibPilihData}
+        color="#9370DB"
+      />
+      <DataSection
+        title={t("managePenduduk.sections.villageDistribution")}
+        data={dusunData}
+        color="#20B2AA"
+      />
 
       {/* Modal Edit */}
       {showForm && editingData && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg p-6 w-80">
             <h3 className="text-xl font-semibold mb-4">
-              Edit Jumlah - {editingData.key}
+              {t("managePenduduk.modal.editTitle")} - {editingData.key}
             </h3>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Jumlah Penduduk
+              {t("managePenduduk.modal.populationCount")}
             </label>
             <input
               type="number"
@@ -651,13 +668,13 @@ export default function ManagePenduduk() {
                 }}
                 className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
               >
-                Batal
+                {t("managePenduduk.modal.cancel")}
               </button>
               <button
                 onClick={handleSave}
                 className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
               >
-                Simpan
+                {t("managePenduduk.modal.save")}
               </button>
             </div>
           </div>

@@ -21,7 +21,7 @@ export default function ManageBansos() {
     const result = await response.json();
 
     if (!response.ok) {
-      alertError("Gagal mengambil data bansos");
+      alertError(t("manageBansos.errors.fetchFailed"));
       return;
     }
 
@@ -52,28 +52,30 @@ export default function ManageBansos() {
   };
 
   const handleDelete = async (id, name) => {
-    const confirm = await alertConfirm(`Yakin ingin menghapus "${name}"?`);
+    const confirm = await alertConfirm(
+      t("manageBansos.confirmations.deleteConfirm", { name })
+    );
     if (!confirm) return;
 
     const res = await InfografisApi.deleteBansos(id, i18n.language);
     if (res.ok) {
       setBansos((prev) => prev.filter((item) => item.id !== id));
-      alertSuccess("Data berhasil dihapus!");
+      alertSuccess(t("manageBansos.success.dataDeleted"));
     } else {
-      alertError("Gagal menghapus data.");
+      alertError(t("manageBansos.errors.deleteFailed"));
     }
   };
 
   const handleSave = async () => {
     const { nama, penerima, id } = formData;
     if (!nama.trim()) {
-      alertError("Nama bantuan harus diisi!");
+      alertError(t("manageBansos.validation.nameRequired"));
       return;
     }
 
     const amount = parseInt(penerima);
     if (isNaN(amount) || amount < 0) {
-      alertError("Jumlah penerima harus angka positif!");
+      alertError(t("manageBansos.validation.recipientNumber"));
       return;
     }
 
@@ -86,10 +88,10 @@ export default function ManageBansos() {
           item.id === id ? { ...item, name: nama.trim(), amount } : item
         );
         setBansos(updated);
-        alertSuccess("Data berhasil diperbarui!");
+        alertSuccess(t("manageBansos.success.dataUpdated"));
         setShowForm(false);
       } else {
-        alertError("Gagal memperbarui data.");
+        alertError(t("manageBansos.errors.updateFailed"));
       }
     } else {
       const res = await InfografisApi.createBansos(payload, i18n.language);
@@ -102,10 +104,10 @@ export default function ManageBansos() {
           created_at: json.bansos.created_at,
         };
         setBansos((prev) => [newItem, ...prev]);
-        alertSuccess("Data berhasil ditambahkan!");
+        alertSuccess(t("manageBansos.success.dataAdded"));
         setShowForm(false);
       } else {
-        alertError("Gagal menambahkan data.");
+        alertError(t("manageBansos.errors.addFailed"));
       }
     }
   };
@@ -120,14 +122,14 @@ export default function ManageBansos() {
       <div className="flex justify-between items-center mb-8">
         <div>
           <h2 className="text-3xl font-bold text-gray-800">
-            Kelola Bantuan Sosial
+            {t("manageBansos.title")}
           </h2>
-          <p className="mt-2 text-gray-600">
-            Manajemen data bantuan sosial di desa.
-          </p>
+          <p className="mt-2 text-gray-600">{t("manageBansos.description")}</p>
           {lastUpdated && (
             <p className="text-sm text-gray-500 mt-1">
-              Terakhir diperbarui: {Helper.formatTanggal(lastUpdated)}
+              {t("manageBansos.lastUpdated", {
+                date: Helper.formatTanggal(lastUpdated),
+              })}
             </p>
           )}
         </div>
@@ -135,7 +137,7 @@ export default function ManageBansos() {
           onClick={handleAdd}
           className="px-4 py-2 bg-green-500 text-white rounded shadow hover:bg-green-600 transition"
         >
-          + Tambah
+          {t("manageBansos.addButton")}
         </button>
       </div>
 
@@ -148,13 +150,17 @@ export default function ManageBansos() {
               className="bg-white p-6 rounded-xl shadow relative hover:shadow-lg hover:scale-[1.02] transition"
             >
               <p className="font-semibold text-gray-800">{item.name}</p>
-              <p className="text-sm text-gray-500">Jumlah Penerima</p>
+              <p className="text-sm text-gray-500">
+                {t("manageBansos.recipientCount")}
+              </p>
               <p className="mt-2 text-2xl font-bold text-[#B6F500]">
                 {item.amount}
               </p>
               {item.updated_at && (
                 <p className="text-xs text-gray-400 mt-2">
-                  Diperbarui: {Helper.formatTanggal(item.updated_at)}
+                  {t("manageBansos.updated", {
+                    date: Helper.formatTanggal(item.updated_at),
+                  })}
                 </p>
               )}
               <div className="absolute top-3 right-3 flex gap-3 opacity-0 hover:opacity-100 transition-opacity">
@@ -162,20 +168,20 @@ export default function ManageBansos() {
                   onClick={() => handleEdit(item)}
                   className="text-blue-600 hover:underline text-sm"
                 >
-                  Edit
+                  {t("manageBansos.edit")}
                 </button>
                 <button
                   onClick={() => handleDelete(item.id, item.name)}
                   className="text-red-600 hover:underline text-sm"
                 >
-                  Hapus
+                  {t("manageBansos.delete")}
                 </button>
               </div>
             </div>
           ))
         ) : (
           <p className="col-span-3 text-center text-gray-500">
-            Tidak ada data bansos.
+            {t("manageBansos.noData")}
           </p>
         )}
       </div>
@@ -185,10 +191,12 @@ export default function ManageBansos() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-xl shadow-lg w-80">
             <h3 className="text-xl font-semibold mb-4">
-              {isEditing ? "Edit Bantuan Sosial" : "Tambah Bantuan Sosial"}
+              {isEditing
+                ? t("manageBansos.modal.editTitle")
+                : t("manageBansos.modal.addTitle")}
             </h3>
             <label className="text-sm font-medium text-gray-700 mb-1 block">
-              Nama Bantuan
+              {t("manageBansos.modal.nameLabel")}
             </label>
             <input
               type="text"
@@ -197,11 +205,11 @@ export default function ManageBansos() {
                 setFormData((prev) => ({ ...prev, nama: e.target.value }))
               }
               className="w-full p-2 border rounded mb-4"
-              placeholder="Contoh: BLT Dana Desa"
+              placeholder={t("manageBansos.modal.namePlaceholder")}
             />
 
             <label className="text-sm font-medium text-gray-700 mb-1 block">
-              Jumlah Penerima
+              {t("manageBansos.modal.recipientLabel")}
             </label>
             <input
               type="number"
@@ -211,7 +219,7 @@ export default function ManageBansos() {
                 setFormData((prev) => ({ ...prev, penerima: e.target.value }))
               }
               className="w-full p-2 border rounded mb-4"
-              placeholder="Contoh: 150"
+              placeholder={t("manageBansos.modal.recipientPlaceholder")}
             />
 
             <div className="flex justify-end gap-2">
@@ -219,13 +227,13 @@ export default function ManageBansos() {
                 onClick={() => setShowForm(false)}
                 className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
               >
-                Batal
+                {t("manageBansos.modal.cancel")}
               </button>
               <button
                 onClick={handleSave}
                 className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
               >
-                Simpan
+                {t("manageBansos.modal.save")}
               </button>
             </div>
           </div>

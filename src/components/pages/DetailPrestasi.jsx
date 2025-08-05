@@ -214,7 +214,7 @@ export default function DetailPrestasi() {
               value={pesan}
               onChange={(e) => setPesan(e.target.value)}
               className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-300"
-              required
+              
             />
             <button
               type="submit"

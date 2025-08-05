@@ -178,7 +178,7 @@ export class UserApi {
   }
   static async updateRoleById(userId, role, language) {
     return await fetch(
-      `${import.meta.env.VITE_NEW_BASE_URL}/users/admin/${userId}`,
+      `${import.meta.env.VITE_NEW_BASE_URL}/admin/users/${userId}`,
       {
         method: "PATCH",
         credentials: "include",

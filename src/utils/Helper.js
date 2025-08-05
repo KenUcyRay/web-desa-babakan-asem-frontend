@@ -1,6 +1,18 @@
 import { alertError } from "../libs/alert";
 
 export class Helper {
+  static localToUTC(localDateTime) {
+    if (!localDateTime) return "";
+    return new Date(localDateTime).toISOString();
+  }
+
+  static utcToLocal(utcDateTime) {
+    if (!utcDateTime) return "";
+    const date = new Date(utcDateTime);
+    const tzOffset = date.getTimezoneOffset() * 60000; // offset dalam ms
+    const localISOTime = new Date(date - tzOffset).toISOString();
+    return localISOTime.slice(0, 16); // ambil "YYYY-MM-DDTHH:mm"
+  }
   static formatTanggal(isoString) {
     const date = new Date(isoString);
     const day = date.getDate();

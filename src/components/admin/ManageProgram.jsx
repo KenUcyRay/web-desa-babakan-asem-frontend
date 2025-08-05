@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 import {
   FaEdit,
@@ -26,7 +27,7 @@ const getStatusStyle = (status) => {
     case "SELESAI":
     case "COMPLETED":
       return { color: "text-green-700", bg: "bg-green-100", icon: <FaCheck /> };
-    case "DALAM_PENGERJAAN":
+    case "DALAM PENGERJAAN":
       return {
         color: "text-yellow-700",
         bg: "bg-yellow-100",
@@ -56,7 +57,7 @@ const mapStatusFromApi = (apiStatus) => {
     COMPLETED: "SELESAI",
     CANCELLED: "DIBATALKAN",
     PLANNED: "DIRENCANAKAN",
-    IN_PROGRESS: "DALAM_PENGERJAAN",
+    IN_PROGRESS: "DALAM PENGERJAAN",
   };
 
   return statusMap[apiStatus] || apiStatus;
@@ -68,13 +69,30 @@ const mapStatusToApi = (uiStatus) => {
     SELESAI: "COMPLETED",
     DIBATALKAN: "CANCELLED",
     DIRENCANAKAN: "PLANNED",
-    DALAM_PENGERJAAN: "IN_PROGRESS",
+    "DALAM PENGERJAAN": "IN_PROGRESS",
   };
 
   return statusMap[uiStatus] || uiStatus;
 };
 
+// Helper untuk mendapatkan status yang diterjemahkan
+const getTranslatedStatus = (status, t) => {
+  switch (status) {
+    case "DIRENCANAKAN":
+      return t("manageProgram.status.planned");
+    case "DALAM PENGERJAAN":
+      return t("manageProgram.status.inProgress");
+    case "SELESAI":
+      return t("manageProgram.status.completed");
+    case "DIBATALKAN":
+      return t("manageProgram.status.cancelled");
+    default:
+      return status;
+  }
+};
+
 const ManageProgram = () => {
+  const { t } = useTranslation();
   const [programKerja, setProgramKerja] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -118,7 +136,7 @@ const ManageProgram = () => {
     } catch (err) {
       console.error("Error fetching data:", err);
       setError(err.message);
-      alertError("Gagal memuat data program kerja");
+      alertError(t("manageProgram.errors.fetchFailed"));
     } finally {
       setLoading(false);
     }
@@ -163,7 +181,7 @@ const ManageProgram = () => {
 
   const handleDelete = async (id) => {
     const confirmed = await alertConfirm(
-      "Apakah anda yakin ingin menghapus program ini?"
+      t("manageProgram.confirmations.delete")
     );
     if (!confirmed) return;
 
@@ -183,17 +201,17 @@ const ManageProgram = () => {
       }
 
       setProgramKerja(programKerja.filter((p) => p.id !== id));
-      await alertSuccess("Program kerja berhasil dihapus");
+      await alertSuccess(t("manageProgram.success.deleted"));
     } catch (err) {
       console.error("Error deleting program:", err);
-      alertError("Gagal menghapus program kerja");
+      alertError(t("manageProgram.errors.deleteFailed"));
     }
   };
 
   const handleSubmit = async () => {
     // Validasi form
     if (!newProgram.nama || !newProgram.tanggal || !newProgram.budget) {
-      alertError("Semua field harus diisi");
+      alertError(t("manageProgram.errors.requiredFields"));
       return;
     }
 
@@ -249,211 +267,316 @@ const ManageProgram = () => {
       setShowForm(false);
       await alertSuccess(
         editingId
-          ? "Program berhasil diperbarui"
-          : "Program berhasil ditambahkan"
+          ? t("manageProgram.success.updated")
+          : t("manageProgram.success.added")
       );
     } catch (err) {
       console.error("Error saving program:", err);
       alertError(
-        editingId ? "Gagal memperbarui program" : "Gagal menambahkan program"
+        editingId
+          ? t("manageProgram.errors.updateFailed")
+          : t("manageProgram.errors.addFailed")
       );
     }
   };
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold text-center text-green-800 mb-6">
-        Program Kerja Desa
-      </h1>
-
-      <div className="flex justify-end mb-4">
-        <button
-          className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
-          onClick={() => {
-            resetForm();
-            setShowForm(true);
-          }}
-        >
-          <FaPlus /> Tambah Program
-        </button>
-      </div>
-
-      {showForm && (
-        <div
-          ref={formRef}
-          className="bg-white border border-gray-300 p-5 mb-6 rounded-md shadow"
-        >
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold">
-              {editingId ? "Edit Program Kerja" : "Form Program Kerja"}
-            </h2>
-            <button
-              onClick={() => {
-                setShowForm(false);
-                resetForm();
-              }}
-              className="text-red-600 hover:text-red-800"
-            >
-              <FaTimes />
-            </button>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Nama Program
-              </label>
-              <input
-                type="text"
-                placeholder="Nama Program"
-                className="p-2 border rounded w-full"
-                value={newProgram.nama}
-                onChange={(e) =>
-                  setNewProgram({ ...newProgram, nama: e.target.value })
-                }
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Tanggal Pelaksanaan
-              </label>
-              <input
-                type="date"
-                className="p-2 border rounded w-full"
-                value={newProgram.tanggal}
-                onChange={(e) =>
-                  setNewProgram({ ...newProgram, tanggal: e.target.value })
-                }
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-1">Budget</label>
-              <input
-                type="number"
-                placeholder="Budget"
-                className="p-2 border rounded w-full"
-                value={newProgram.budget}
-                onChange={(e) =>
-                  setNewProgram({ ...newProgram, budget: e.target.value })
-                }
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-1">Status</label>
-              <select
-                className="p-2 border rounded w-full"
-                value={newProgram.status}
-                onChange={(e) =>
-                  setNewProgram({ ...newProgram, status: e.target.value })
-                }
-              >
-                <option value="DIRENCANAKAN">Direncanakan</option>
-                <option value="DALAM_PENGERJAAN">Dalam Pengerjaan</option>
-                <option value="SELESAI">Selesai</option>
-                <option value="DIBATALKAN">Dibatalkan</option>
-              </select>
-            </div>
-
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium mb-1">
-                Justifikasi
-              </label>
-              <textarea
-                placeholder="Justifikasi / Keterangan Program"
-                className="p-2 border rounded w-full"
-                value={newProgram.justifikasi}
-                onChange={(e) =>
-                  setNewProgram({ ...newProgram, justifikasi: e.target.value })
-                }
-                rows={3}
-              />
-            </div>
+    <div className="bg-gray-50 min-h-screen p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-8">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-green-800 flex items-center gap-3">
+              <FaCalendarAlt className="text-emerald-600" />
+              {t("manageProgram.title")}
+            </h1>
+            <p className="text-gray-600 mt-1">
+              {t("manageProgram.description")}
+            </p>
           </div>
 
           <button
-            onClick={handleSubmit}
-            className="mt-4 flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+            className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-5 py-2.5 rounded-lg shadow-md transition transform hover:-translate-y-0.5"
+            onClick={() => {
+              resetForm();
+              setShowForm(true);
+            }}
           >
-            <FaSave /> {editingId ? "Update Program" : "Simpan Program"}
+            <FaPlus /> {t("manageProgram.addButton")}
           </button>
         </div>
-      )}
 
-      {loading ? (
-        <div className="text-center py-10 text-gray-500">Memuat data...</div>
-      ) : error ? (
-        <div className="text-center py-10 text-red-500">Error: {error}</div>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white rounded-md overflow-hidden">
-            <thead className="bg-green-600 text-white">
-              <tr>
-                <th className="px-4 py-2 text-left">No</th>
-                <th className="px-4 py-2 text-left">Program</th>
-                <th className="px-4 py-2 text-left">Tanggal Pelaksanaan</th>
-                <th className="px-4 py-2 text-left">Budget</th>
-                <th className="px-4 py-2 text-left">Status</th>
-                <th className="px-4 py-2 text-left">Aksi</th>
-              </tr>
-            </thead>
-            <tbody>
-              {programKerja.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={6}
-                    className="text-center py-4 text-gray-500 italic"
+        {/* Form */}
+        {showForm && (
+          <div
+            ref={formRef}
+            className="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-8"
+          >
+            <div className="flex justify-between items-center mb-5">
+              <h2 className="text-xl font-semibold text-gray-800">
+                {editingId
+                  ? t("manageProgram.form.title.edit")
+                  : t("manageProgram.form.title.add")}
+              </h2>
+              <button
+                onClick={() => {
+                  setShowForm(false);
+                  resetForm();
+                }}
+                className="text-gray-500 hover:text-gray-700 transition"
+              >
+                <FaTimes size={20} />
+              </button>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {t("manageProgram.form.fields.name")}
+                  </label>
+                  <input
+                    type="text"
+                    placeholder={t("manageProgram.form.placeholders.name")}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition"
+                    value={newProgram.nama}
+                    onChange={(e) =>
+                      setNewProgram({ ...newProgram, nama: e.target.value })
+                    }
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {t("manageProgram.form.fields.date")}
+                  </label>
+                  <input
+                    type="date"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition"
+                    value={newProgram.tanggal}
+                    onChange={(e) =>
+                      setNewProgram({ ...newProgram, tanggal: e.target.value })
+                    }
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {t("manageProgram.form.fields.budget")}
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-3 text-gray-500">
+                      Rp
+                    </span>
+                    <input
+                      type="number"
+                      placeholder={t("manageProgram.form.placeholders.budget")}
+                      className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition"
+                      value={newProgram.budget}
+                      onChange={(e) =>
+                        setNewProgram({ ...newProgram, budget: e.target.value })
+                      }
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {t("manageProgram.form.fields.status")}
+                  </label>
+                  <select
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition"
+                    value={newProgram.status}
+                    onChange={(e) =>
+                      setNewProgram({ ...newProgram, status: e.target.value })
+                    }
                   >
-                    Tidak ada program yang tersedia.
-                  </td>
-                </tr>
-              ) : (
-                programKerja.map((item, index) => {
-                  const style = getStatusStyle(item.status);
-                  return (
-                    <tr key={item.id} className="border-b hover:bg-gray-50">
-                      <td className="px-4 py-2">{index + 1}</td>
-                      <td className="px-4 py-2 font-medium">{item.nama}</td>
-                      <td className="px-4 py-2 flex items-center gap-1 text-green-600">
-                        <FaCalendarAlt />
-                        {new Date(item.tanggal).toLocaleDateString("id-ID")}
-                      </td>
-                      <td className="px-4 py-2">{formatRupiah(item.budget)}</td>
-                      <td className="px-4 py-2">
-                        <span
-                          className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${style.bg} ${style.color}`}
-                        >
-                          {style.icon} {item.status}
-                        </span>
-                      </td>
-                      <td className="px-4 py-2">
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => handleEdit(item.id)}
-                            className="text-blue-500 hover:text-blue-700"
-                            title="Edit"
+                    <option value="DIRENCANAKAN">
+                      {t("manageProgram.status.planned")}
+                    </option>
+                    <option value="DALAM PENGERJAAN">
+                      {t("manageProgram.status.inProgress")}
+                    </option>
+                    <option value="SELESAI">
+                      {t("manageProgram.status.completed")}
+                    </option>
+                    <option value="DIBATALKAN">
+                      {t("manageProgram.status.cancelled")}
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t("manageProgram.form.fields.justification")}
+                </label>
+                <textarea
+                  placeholder={t(
+                    "manageProgram.form.placeholders.justification"
+                  )}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition"
+                  value={newProgram.justifikasi}
+                  onChange={(e) =>
+                    setNewProgram({
+                      ...newProgram,
+                      justifikasi: e.target.value,
+                    })
+                  }
+                  rows={4}
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-3 mt-6 pt-5 border-t border-gray-200">
+              <button
+                onClick={handleSubmit}
+                className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-6 py-3 rounded-xl shadow-md transition transform hover:-translate-y-0.5"
+              >
+                <FaSave />{" "}
+                {editingId
+                  ? t("manageProgram.form.buttons.update")
+                  : t("manageProgram.form.buttons.save")}
+              </button>
+              <button
+                onClick={() => {
+                  setShowForm(false);
+                  resetForm();
+                }}
+                className="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 px-5 py-3 rounded-xl transition"
+              >
+                <FaTimes /> {t("manageProgram.form.buttons.cancel")}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Program List */}
+        {loading ? (
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
+            <div className="animate-pulse flex flex-col items-center">
+              <div className="h-12 w-12 bg-gray-200 rounded-full mb-4"></div>
+              <div className="h-4 bg-gray-200 rounded w-1/3 mb-2"></div>
+              <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+            </div>
+          </div>
+        ) : error ? (
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
+            <div className="text-red-500">
+              <FaTimesCircle className="text-4xl mx-auto mb-3" />
+              <h3 className="text-xl font-medium mb-2">
+                {t("manageProgram.error.title")}
+              </h3>
+              <p>{error}</p>
+            </div>
+          </div>
+        ) : programKerja.length === 0 ? (
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
+            <FaCalendarAlt className="text-4xl text-gray-400 mx-auto mb-4" />
+            <h3 className="text-xl font-medium text-gray-700 mb-2">
+              {t("manageProgram.emptyState.title")}
+            </h3>
+            <p className="text-gray-500 mb-4">
+              {showForm
+                ? t("manageProgram.emptyState.description")
+                : t("manageProgram.emptyState.descriptionAlt")}
+            </p>
+            {!showForm && (
+              <button
+                onClick={() => {
+                  resetForm();
+                  setShowForm(true);
+                }}
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-5 py-2.5 rounded-lg shadow-md transition"
+              >
+                <FaPlus /> {t("manageProgram.emptyState.addButton")}
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      {t("manageProgram.table.headers.no")}
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      {t("manageProgram.table.headers.program")}
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      {t("manageProgram.table.headers.date")}
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      {t("manageProgram.table.headers.budget")}
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      {t("manageProgram.table.headers.status")}
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      {t("manageProgram.table.headers.actions")}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {programKerja.map((item, index) => {
+                    const style = getStatusStyle(item.status);
+                    return (
+                      <tr key={item.id} className="hover:bg-gray-50 transition">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {index + 1}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm font-medium text-gray-900">
+                            {item.nama}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center gap-2 text-sm text-gray-500">
+                            <FaCalendarAlt className="text-emerald-500" />
+                            {new Date(item.tanggal).toLocaleDateString("id-ID")}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {formatRupiah(item.budget)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span
+                            className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium ${style.bg} ${style.color}`}
                           >
-                            <FaEdit />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(item.id)}
-                            className="text-red-500 hover:text-red-700"
-                            title="Hapus"
-                          >
-                            <FaTrash />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
-      )}
+                            {style.icon} {getTranslatedStatus(item.status, t)}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          <div className="flex gap-3">
+                            <button
+                              onClick={() => handleEdit(item.id)}
+                              className="text-blue-600 hover:text-blue-900 transition"
+                              title="Edit"
+                            >
+                              <FaEdit size={16} />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(item.id)}
+                              className="text-red-600 hover:text-red-900 transition"
+                              title="Hapus"
+                            >
+                              <FaTrash size={16} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

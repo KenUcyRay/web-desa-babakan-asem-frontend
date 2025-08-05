@@ -10,12 +10,14 @@ import {
   FaImage,
 } from "react-icons/fa";
 import { FiUsers, FiCalendar, FiMapPin } from "react-icons/fi";
+import { useTranslation } from "react-i18next";
 import Pagination from "../../ui/Pagination";
 import { MemberApi } from "../../../libs/api/MemberApi";
 import { AgendaApi } from "../../../libs/api/AgendaApi";
 import { alertConfirm, alertError, alertSuccess } from "../../../libs/alert";
 
 export default function DashboardKarangTaruna() {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState("struktur");
 
   return (
@@ -23,10 +25,11 @@ export default function DashboardKarangTaruna() {
       {/* Header Dashboard */}
       <div className="mb-6">
         <h1 className="text-2xl md:text-3xl font-bold text-blue-700">
-          Dashboard Karang Taruna
+          {t("dashboardKarangTaruna.title") || "Dashboard Karang Taruna"}
         </h1>
         <p className="text-gray-600">
-          Kelola struktur organisasi dan agenda Karang Taruna
+          {t("dashboardKarangTaruna.subtitle") ||
+            "Kelola struktur organisasi dan agenda Karang Taruna"}
         </p>
       </div>
 
@@ -40,7 +43,8 @@ export default function DashboardKarangTaruna() {
           }`}
           onClick={() => setActiveTab("struktur")}
         >
-          <FaUsers /> Struktur Organisasi
+          <FaUsers />{" "}
+          {t("dashboardKarangTaruna.tabs.structure") || "Struktur Organisasi"}
         </button>
         <button
           className={`flex items-center gap-2 px-4 py-3 font-medium text-sm rounded-t-lg ${
@@ -50,7 +54,8 @@ export default function DashboardKarangTaruna() {
           }`}
           onClick={() => setActiveTab("agenda")}
         >
-          <FaCalendarAlt /> Agenda Kegiatan
+          <FaCalendarAlt /> {t("dashboardKarangTaruna.tabs.agenda") || "Agenda"}{" "}
+          Kegiatan
         </button>
       </div>
 
@@ -62,6 +67,7 @@ export default function DashboardKarangTaruna() {
 
 // ======================== STRUKTUR SECTION ========================
 function StrukturSection() {
+  const { t } = useTranslation();
   const [members, setMembers] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -85,7 +91,10 @@ function StrukturSection() {
   const fetchMembers = async () => {
     const response = await MemberApi.getAllMembers(kategori, currentPage, 9);
     if (!response.ok) {
-      alertError("Gagal mengambil data anggota.");
+      alertError(
+        t("dashboardKarangTaruna.alerts.fetchMembersError") ||
+          "Gagal mengambil data anggota."
+      );
       return;
     }
     const body = await response.json();
@@ -131,14 +140,26 @@ function StrukturSection() {
   };
 
   const handleDelete = async (id) => {
-    if (!(await alertConfirm("Yakin ingin menghapus anggota ini?"))) return;
+    if (
+      !(await alertConfirm(
+        t("dashboardKarangTaruna.alerts.deleteConfirm") ||
+          "Yakin ingin menghapus anggota ini?"
+      ))
+    )
+      return;
     const response = await MemberApi.deleteMember(id);
     if (!response.ok) {
-      alertError("Gagal menghapus anggota.");
+      alertError(
+        t("dashboardKarangTaruna.alerts.deleteError") ||
+          "Gagal menghapus anggota."
+      );
       return;
     }
     setMembers((prev) => prev.filter((a) => a.id !== id));
-    await alertSuccess("Anggota berhasil dihapus.");
+    await alertSuccess(
+      t("dashboardKarangTaruna.alerts.deleteSuccess") ||
+        "Anggota berhasil dihapus."
+    );
   };
 
   const handleSubmit = async (e) => {
@@ -151,13 +172,20 @@ function StrukturSection() {
     const response = await apiCall;
     if (!response.ok) {
       alertError(
-        editingId ? "Gagal menyimpan perubahan." : "Gagal menambah anggota."
+        editingId
+          ? t("dashboardKarangTaruna.alerts.saveError") ||
+              "Gagal menyimpan perubahan."
+          : t("dashboardKarangTaruna.alerts.addError") ||
+              "Gagal menambah anggota."
       );
       return;
     }
 
     await alertSuccess(
-      editingId ? "Anggota diperbarui!" : "Anggota ditambahkan!"
+      editingId
+        ? t("dashboardKarangTaruna.alerts.updateSuccess") ||
+            "Anggota diperbarui!"
+        : t("dashboardKarangTaruna.alerts.addSuccess") || "Anggota ditambahkan!"
     );
     setShowModal(false);
     fetchMembers();
@@ -169,14 +197,18 @@ function StrukturSection() {
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-2 text-gray-800">
           <FiUsers className="text-2xl text-blue-600" />
-          <h2 className="text-xl font-bold">Struktur Karang Taruna</h2>
+          <h2 className="text-xl font-bold">
+            {t("dashboardKarangTaruna.structure.title") ||
+              "Struktur Karang Taruna"}
+          </h2>
         </div>
 
         <button
           onClick={handleAdd}
           className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow transition"
         >
-          <FaPlus /> Tambah Anggota
+          <FaPlus />{" "}
+          {t("dashboardKarangTaruna.structure.addMember") || "Tambah Anggota"}
         </button>
       </div>
 
@@ -188,16 +220,20 @@ function StrukturSection() {
               <FiUsers className="text-2xl text-gray-400" />
             </div>
             <h3 className="text-lg font-medium text-gray-700 mb-2">
-              Belum ada anggota
+              {t("dashboardKarangTaruna.structure.emptyTitle") ||
+                "Belum ada anggota"}
             </h3>
             <p className="text-gray-500 mb-4">
-              Tambahkan anggota untuk membentuk struktur organisasi
+              {t("dashboardKarangTaruna.structure.emptyDesc") ||
+                "Tambahkan anggota untuk membentuk struktur organisasi"}
             </p>
             <button
               onClick={handleAdd}
               className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg inline-flex items-center gap-2"
             >
-              <FaPlus /> Tambah Anggota
+              <FaPlus />{" "}
+              {t("dashboardKarangTaruna.structure.addMember") ||
+                "Tambah Anggota"}
             </button>
           </div>
         ) : (
@@ -298,7 +334,6 @@ function StrukturSection() {
                     setFormData({ ...formData, name: e.target.value })
                   }
                   className="w-full border rounded-lg p-3 focus:ring focus:ring-blue-200"
-                  required
                 />
               </div>
 
@@ -314,7 +349,6 @@ function StrukturSection() {
                     setFormData({ ...formData, position: e.target.value })
                   }
                   className="w-full border rounded-lg p-3 focus:ring focus:ring-blue-200"
-                  required
                 />
               </div>
 
@@ -331,7 +365,6 @@ function StrukturSection() {
                       setFormData({ ...formData, term_start: e.target.value })
                     }
                     className="w-full border rounded-lg p-3"
-                    required
                   />
                 </div>
                 <div>
@@ -346,7 +379,6 @@ function StrukturSection() {
                       setFormData({ ...formData, term_end: e.target.value })
                     }
                     className="w-full border rounded-lg p-3"
-                    required
                   />
                 </div>
               </div>
@@ -365,7 +397,6 @@ function StrukturSection() {
                     })
                   }
                   className="w-full border rounded-lg p-2"
-                  {...(editingId ? {} : { required: true })}
                 />
               </div>
 
@@ -408,6 +439,7 @@ function StrukturSection() {
 
 // ======================== AGENDA SECTION ========================
 function AgendaSection() {
+  const { t } = useTranslation();
   const [agenda, setAgenda] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -557,7 +589,6 @@ function AgendaSection() {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Contoh: Rapat Rutin"
-              required
             />
           </div>
 
@@ -568,7 +599,6 @@ function AgendaSection() {
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="Tuliskan deskripsi agenda..."
-              required
             />
           </div>
 
@@ -580,7 +610,6 @@ function AgendaSection() {
                 className="w-full border rounded-lg p-3 focus:ring focus:ring-blue-200"
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
-                required
               />
             </div>
             <div>
@@ -590,7 +619,6 @@ function AgendaSection() {
                 className="w-full border rounded-lg p-3 focus:ring focus:ring-blue-200"
                 value={endTime}
                 onChange={(e) => setEndTime(e.target.value)}
-                required
               />
             </div>
           </div>
@@ -602,7 +630,6 @@ function AgendaSection() {
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               placeholder="Contoh: Balai Desa"
-              required
             />
           </div>
 

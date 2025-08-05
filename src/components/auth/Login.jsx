@@ -10,6 +10,7 @@ import "aos/dist/aos.css";
 import { AnimatePresence, motion } from "framer-motion";
 import { Helper } from "../../utils/Helper";
 import { useTranslation } from "react-i18next";
+import { useProfile } from "../../hook/useProfile";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ export default function Login() {
   const [rememberMe, setRememberMe] = useState(false);
   const [reCaptchaToken, setReCaptchaToken] = useState("");
   const { profile, setProfile } = useAuth();
+  const { isReady } = useProfile();
 
   useEffect(() => {
     AOS.init({ duration: 700, once: true });
@@ -52,6 +54,9 @@ export default function Login() {
     const responseBody = await response.json();
     if (!response.ok) {
       await Helper.errorResponseHandler(responseBody);
+      if (responseBody.errors.name !== "ZodError") {
+        resetForm();
+      }
       return;
     }
     resetForm();
@@ -61,8 +66,10 @@ export default function Login() {
   };
 
   useEffect(() => {
-    if (profile) navigate("/");
-  }, []);
+    if (isReady && profile !== null) {
+      navigate("/");
+    }
+  }, [isReady]);
 
   return (
     <div className="flex min-h-screen font-poppins">

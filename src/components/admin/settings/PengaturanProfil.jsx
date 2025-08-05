@@ -10,6 +10,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { UserApi } from "../../../libs/api/UserApi";
 import { alertConfirm, alertError, alertSuccess } from "../../../libs/alert";
+import { Helper } from "../../../utils/Helper";
 
 export default function PengaturanProfil() {
   const { t, i18n } = useTranslation();
@@ -76,24 +77,35 @@ export default function PengaturanProfil() {
     setConfirmPassword("");
 
     if (!response.ok) {
-      let errorMessage = t(
-        "settingProfile.messages.errors.failedToSaveChanges"
-      );
-      if (responseBody.error && Array.isArray(responseBody.error)) {
-        errorMessage = responseBody.error
-          .map((err) =>
-            err.path?.length ? `${err.path[0]}: ${err.message}` : err.message
-          )
-          .join(", ");
-      } else if (typeof responseBody.error === "string") {
-        errorMessage = responseBody.error;
-      }
-      alertError(errorMessage);
+      await Helper.errorResponseHandler(responseBody);
       return;
     }
 
     setProfile(responseBody.user);
     alertSuccess(t("settingProfile.messages.success.changesSaved"));
+  };
+
+  const copyToClipboard = async (text) => {
+    if (navigator.clipboard && window.isSecureContext) {
+      try {
+        await navigator.clipboard.writeText(text);
+        alertSuccess(t("profile.copied"));
+      } catch (err) {
+        alertError(t("profile.copyFail"));
+      }
+    } else {
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      document.body.appendChild(textArea);
+      textArea.select();
+      try {
+        document.execCommand("copy");
+        alertSuccess(t("profile.copied"));
+      } catch (err) {
+        alertError(t("profile.copyFail"));
+      }
+      document.body.removeChild(textArea);
+    }
   };
 
   useEffect(() => {
@@ -147,12 +159,7 @@ export default function PengaturanProfil() {
                   </div>
                   <button
                     type="button"
-                    onClick={() => {
-                      navigator.clipboard.writeText(profile.id);
-                      alertSuccess(
-                        t("settingProfile.messages.success.idCopied")
-                      );
-                    }}
+                    onClick={() => copyToClipboard(profile.id)}
                     className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-6 py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                   >
                     {t("settingProfile.form.buttons.copy")}

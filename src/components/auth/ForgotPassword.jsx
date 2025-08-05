@@ -5,12 +5,13 @@ import { UserApi } from "../../libs/api/UserApi";
 import { alertError, alertSuccess } from "../../libs/alert";
 import { useAuth } from "../../contexts/AuthContext";
 import { useTranslation } from "react-i18next";
+import { useProfile } from "../../hook/useProfile";
 
 export default function ForgotPassword() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
-  const { isLoggedIn } = useAuth();
+  const { profile, isReady } = useProfile(); // Assuming useAuth provides profile and isReady
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -29,10 +30,10 @@ export default function ForgotPassword() {
   };
 
   useEffect(() => {
-    if (isLoggedIn) {
+    if (isReady && profile !== null) {
       navigate("/");
     }
-  }, []);
+  }, [isReady]);
 
   return (
     <div className="flex min-h-screen font-poppins">
@@ -57,7 +58,6 @@ export default function ForgotPassword() {
                 className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-300 outline-none"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                required
               />
             </div>
 

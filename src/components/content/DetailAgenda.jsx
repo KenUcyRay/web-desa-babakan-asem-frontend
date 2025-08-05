@@ -25,7 +25,7 @@ export default function DetailAgenda() {
   const handleKomentar = async (e) => {
     e.preventDefault();
     if (profile === null) {
-      await alertError(t("detailAgenda.loginRequired"));
+      await alertError(t("detailAgenda.login"));
       return;
     }
 
@@ -157,7 +157,6 @@ export default function DetailAgenda() {
               value={pesan}
               onChange={(e) => setPesan(e.target.value)}
               className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-300"
-              required
             />
             <button
               type="submit"

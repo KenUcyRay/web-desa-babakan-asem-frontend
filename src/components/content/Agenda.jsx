@@ -17,14 +17,7 @@ export default function Agenda() {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
 
-  const kategoriList = [
-    "Semua",
-    "REGULAR",
-    "PKK",
-    "KARANG_TARUNA",
-    "DPD",
-    "BPD",
-  ];
+  const kategoriList = ["Semua", "REGULAR", "PKK", "KARANG_TARUNA", "BPD"];
   const [selectedCategory, setSelectedCategory] = useState("Semua");
 
   const fetchAgenda = async (
@@ -42,6 +35,12 @@ export default function Agenda() {
     );
     if (response.status === 200) {
       const responseBody = await response.json();
+      responseBody.agenda.map((item) => {
+        if (item.agenda.type === "KARANG_TARUNA") {
+          item.agenda.type = "Karang Taruna";
+          return item;
+        }
+      });
       setTotalPages(responseBody.total_page);
       setCurrentPage(responseBody.page);
       setAgenda(responseBody.agenda);

@@ -10,6 +10,7 @@ import "aos/dist/aos.css";
 import { AnimatePresence, motion } from "framer-motion";
 import { Helper } from "../../utils/Helper";
 import { useTranslation } from "react-i18next";
+import { useProfile } from "../../hook/useProfile";
 
 export default function Register() {
   const { t, i18n } = useTranslation();
@@ -24,6 +25,7 @@ export default function Register() {
   const [rememberMe, setRememberMe] = useState(false);
   const [reCaptchaToken, setReCaptchaToken] = useState("");
   const { profile, setProfile } = useAuth();
+  const { isReady } = useProfile();
 
   useEffect(() => {
     AOS.init({ duration: 700, once: true });
@@ -47,6 +49,9 @@ export default function Register() {
     const responseBody = await response.json();
     if (!response.ok) {
       await Helper.errorResponseHandler(responseBody);
+      if (responseBody.errors.name !== "ZodError") {
+        resetForm();
+      }
       return;
     }
     setName("");
@@ -63,10 +68,10 @@ export default function Register() {
   };
 
   useEffect(() => {
-    if (profile) {
+    if (isReady && profile !== null) {
       navigate("/");
     }
-  }, []);
+  }, [isReady]);
 
   return (
     <div className="flex min-h-screen font-poppins">

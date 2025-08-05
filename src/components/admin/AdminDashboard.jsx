@@ -20,9 +20,12 @@ import {
   FaTrash,
   FaEye,
   FaUpload,
+  FaInfoCircle,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
 
 import { NewsApi } from "../../libs/api/NewsApi";
 import { AgendaApi } from "../../libs/api/AgendaApi";
@@ -34,21 +37,16 @@ import { GaleryApi } from "../../libs/api/GaleryApi";
 import { ProgramApi } from "../../libs/api/ProgramApi";
 import { MemberApi } from "../../libs/api/MemberApi";
 import { alertError } from "../../libs/alert";
-
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
 import { VillageWorkProgramApi } from "../../libs/api/VillageWorkProgramApi";
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
+
+  // State untuk GIS Map
+  const [geoData, setGeoData] = useState(null);
+  const [mapLoading, setMapLoading] = useState(true);
+  const [mapError, setMapError] = useState(null);
 
   const [newsCount, setNewsCount] = useState(0);
   const [agendaCount, setAgendaCount] = useState(0);
@@ -61,13 +59,10 @@ export default function AdminDashboard() {
   const [administrasiPreview, setAdministrasiPreview] = useState([]);
   const [galeriPreview, setGaleriPreview] = useState([]);
   const [pkkPreview, setPkkPreview] = useState([]);
-
-  // State untuk data real (bukan dummy)
   const [strukturPreview, setStrukturPreview] = useState([]);
   const [dokumenPreview, setDokumenPreview] = useState([]);
   const [programKerjaPreview, setProgramKerjaPreview] = useState([]);
 
-  // State untuk log aktivitas
   const [activityLog, setActivityLog] = useState([
     {
       id: 1,
@@ -75,7 +70,7 @@ export default function AdminDashboard() {
       module: "Berita",
       description: "Menambahkan berita baru 'Gotong Royong Desa'",
       user: "Admin Desa",
-      timestamp: new Date(Date.now() - 5 * 60000), // 5 menit lalu
+      timestamp: new Date(Date.now() - 5 * 60000),
       icon: FaNewspaper,
       color: "text-blue-500",
     },
@@ -85,7 +80,7 @@ export default function AdminDashboard() {
       module: "Program Kerja",
       description: "Memperbarui status program 'Perbaikan Jalan'",
       user: "Admin Desa",
-      timestamp: new Date(Date.now() - 15 * 60000), // 15 menit lalu
+      timestamp: new Date(Date.now() - 15 * 60000),
       icon: FaTasks,
       color: "text-yellow-500",
     },
@@ -95,7 +90,7 @@ export default function AdminDashboard() {
       module: "Galeri",
       description: "Mengunggah 3 foto kegiatan desa",
       user: "Admin Desa",
-      timestamp: new Date(Date.now() - 30 * 60000), // 30 menit lalu
+      timestamp: new Date(Date.now() - 30 * 60000),
       icon: FaImage,
       color: "text-green-500",
     },
@@ -105,7 +100,7 @@ export default function AdminDashboard() {
       module: "Pesan",
       description: "Membaca 5 pesan baru dari warga",
       user: "Admin Desa",
-      timestamp: new Date(Date.now() - 45 * 60000), // 45 menit lalu
+      timestamp: new Date(Date.now() - 45 * 60000),
       icon: FaComments,
       color: "text-purple-500",
     },
@@ -115,13 +110,27 @@ export default function AdminDashboard() {
       module: "BUMDes",
       description: "Menambahkan produk baru 'Keripik Singkong'",
       user: "Admin Desa",
-      timestamp: new Date(Date.now() - 60 * 60000), // 1 jam lalu
+      timestamp: new Date(Date.now() - 60 * 60000),
       icon: FaStore,
       color: "text-teal-500",
     },
   ]);
 
-  // - Fetch TOTAL data
+  // Fetch GeoJSON untuk peta
+  const fetchGeoData = async () => {
+    try {
+      setMapLoading(true);
+      const res = await fetch("/geojson/desa-babakan-asem.geojson");
+      if (!res.ok) throw new Error("Failed to load map data");
+      const data = await res.json();
+      setGeoData(data);
+      setMapLoading(false);
+    } catch (err) {
+      setMapError(err.message);
+      setMapLoading(false);
+    }
+  };
+
   const fetchNews = async () => {
     const res = await NewsApi.getOwnNews(i18n.language);
     if (!res.ok) return;
@@ -144,7 +153,7 @@ export default function AdminDashboard() {
   };
 
   const fetchUsers = async () => {
-    const res = await UserApi.getAllUsers(i18n.language);
+    const res = await UserApi.getAllUsers(1, 1000, i18n.language);
     if (!res.ok) return;
     const data = await res.json();
     setUserCount(data.data?.length || 0);
@@ -168,7 +177,6 @@ export default function AdminDashboard() {
     setGaleriCount(data.total || 0);
   };
 
-  // - Preview 3 item
   const fetchBumdesPreview = async () => {
     const res = await ProductApi.getOwnProducts(1, 3, i18n.language);
     if (!res.ok) return;
@@ -207,7 +215,11 @@ export default function AdminDashboard() {
     const res = await VillageWorkProgramApi.getVillageWorkPrograms(
       i18n.language
     );
-    if (!res.ok) return alertError("Gagal mengambil data program kerja");
+    if (!res.ok)
+      return alertError(
+        t("adminDashboard.errors.failedToGetWorkPrograms") ||
+          "Gagal mengambil data program kerja"
+      );
     const data = await res.json();
     setProgramKerjaPreview(data || []);
   };
@@ -219,12 +231,15 @@ export default function AdminDashboard() {
       3,
       i18n.language
     );
-    if (!res.ok) return alertError("Gagal mengambil data struktur desa");
+    if (!res.ok)
+      return alertError(
+        t("adminDashboard.errors.failedToGetVillageStructure") ||
+          "Gagal mengambil data struktur desa"
+      );
     const data = await res.json();
     setStrukturPreview(data.members || []);
   };
 
-  // Fungsi untuk format waktu relatif
   const formatRelativeTime = (timestamp) => {
     const now = new Date();
     const diff = now - timestamp;
@@ -232,13 +247,21 @@ export default function AdminDashboard() {
     const hours = Math.floor(diff / 3600000);
     const days = Math.floor(diff / 86400000);
 
-    if (minutes < 1) return "Baru saja";
-    if (minutes < 60) return `${minutes} menit lalu`;
-    if (hours < 24) return `${hours} jam lalu`;
-    return `${days} hari lalu`;
+    if (minutes < 1)
+      return t("adminDashboard.timeFormat.justNow") || "Baru saja";
+    if (minutes < 60)
+      return `${minutes} ${
+        t("adminDashboard.timeFormat.minutesAgo") || "menit lalu"
+      }`;
+    if (hours < 24)
+      return `${hours} ${
+        t("adminDashboard.timeFormat.hoursAgo") || "jam lalu"
+      }`;
+    return `${days} ${t("adminDashboard.timeFormat.daysAgo") || "hari lalu"}`;
   };
 
   useEffect(() => {
+    fetchGeoData();
     fetchNews();
     fetchAgenda();
     fetchMessages();
@@ -261,7 +284,8 @@ export default function AdminDashboard() {
             {t("adminDashboard.title")}
           </h1>
           <p className="text-gray-600 mt-1">
-            Ringkasan aktivitas dan statistik terbaru
+            {t("adminDashboard.subtitle") ||
+              "Ringkasan aktivitas dan statistik terbaru"}
           </p>
         </div>
         <div className="text-sm text-gray-500">
@@ -274,14 +298,127 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* - EMPAT KARTU UTAMA DI ATAS - DIKECILKAN */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      {/* PETA UTAMA */}
+      <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
+        <div className="bg-gradient-to-r from-green-400 to-[#B6F500] p-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+              <div className="bg-white bg-opacity-20 p-2 rounded-lg">
+                <FaMapMarkedAlt className="text-blue-700 text-xl" />
+              </div>
+              {t("adminDashboard.gisMapTitle") || "Peta Digital Desa"}
+            </h2>
+          </div>
+        </div>
+
+        <div className="p-6">
+          {mapLoading ? (
+            <div className="h-[500px] rounded-xl bg-gray-100 flex items-center justify-center">
+              <p>{t("adminDashboard.gisMapLoading") || "Memuat peta..."}</p>
+            </div>
+          ) : mapError ? (
+            <div className="h-[500px] rounded-xl bg-red-100 flex items-center justify-center text-red-600">
+              {t("adminDashboard.gisMapError") || "Error: "} {mapError}
+            </div>
+          ) : (
+            <div className="rounded-xl overflow-hidden shadow-md border-2 border-green-100">
+              <MapContainer
+                center={[-6.75, 108.05]}
+                zoom={15}
+                scrollWheelZoom={true}
+                className="w-full h-[500px]"
+              >
+                <TileLayer
+                  attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+                <GeoJSON
+                  data={geoData}
+                  style={{
+                    color: "#22c55e",
+                    weight: 3,
+                    fillColor: "#86efac",
+                    fillOpacity: 0.6,
+                  }}
+                  onEachFeature={(feature, layer) => {
+                    layer.on({
+                      click: () => {
+                        const name = feature.properties?.name || "Desa Babakan Asem";
+                        layer
+                          .bindPopup(
+                            `<div class="p-2"><b class="text-green-700">${name}</b></div>`
+                          )
+                          .openPopup();
+                      },
+                      mouseover: (e) => {
+                        const layer = e.target;
+                        layer.setStyle({
+                          weight: 4,
+                          color: "#16a34a",
+                          fillOpacity: 0.8,
+                        });
+                      },
+                      mouseout: (e) => {
+                        const layer = e.target;
+                        layer.setStyle({
+                          color: "#22c55e",
+                          weight: 3,
+                          fillColor: "#86efac",
+                          fillOpacity: 0.6,
+                        });
+                      },
+                    });
+                  }}
+                />
+              </MapContainer>
+            </div>
+          )}
+        </div>
+        
+        {/* LEGENDA PETA */}
+        <div className="px-6 pb-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="flex items-center gap-3 p-3 bg-white rounded-lg shadow-sm">
+              <div className="w-4 h-4 bg-green-400 border-2 border-green-600 rounded"></div>
+              <span className="text-sm">
+                {t("adminDashboard.gisLegend.villageArea") || "Wilayah Desa"}
+              </span>
+            </div>
+            <div className="flex items-center gap-3 p-3 bg-white rounded-lg shadow-sm">
+              <div className="w-4 h-4 bg-blue-400 rounded"></div>
+              <span className="text-sm">
+                {t("adminDashboard.gisLegend.river") || "Sungai/Irigasi"}
+              </span>
+            </div>
+            <div className="flex items-center gap-3 p-3 bg-white rounded-lg shadow-sm">
+              <div className="w-4 h-1 bg-gray-600"></div>
+              <span className="text-sm">
+                {t("adminDashboard.gisLegend.mainRoad") || "Jalan Utama"}
+              </span>
+            </div>
+            <div className="flex items-center gap-3 p-3 bg-white rounded-lg shadow-sm">
+              <div className="w-4 h-4 bg-yellow-400 rounded-full"></div>
+              <span className="text-sm">
+                {t("adminDashboard.gisLegend.publicFacilities") || "Fasilitas Umum"}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* GRID KARTU UTAMA - DIKURANGI MENJADI 3 */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         <SmallMainCard
           icon={
             <FaChartBar className="text-xl text-white bg-green-500 p-2 rounded-lg" />
           }
-          title="Dashboard Desa"
-          description="Statistik lengkap desa"
+          title={
+            t("adminDashboard.mainCards.dashboardVillage") || "Dashboard Desa"
+          }
+          description={
+            t("adminDashboard.mainCards.dashboardVillageDesc") ||
+            "Statistik lengkap desa"
+          }
           onClick={() => navigate("/admin/dashboard-desa")}
         />
 
@@ -289,8 +426,11 @@ export default function AdminDashboard() {
           icon={
             <FaDatabase className="text-xl text-white bg-blue-500 p-2 rounded-lg" />
           }
-          title="Data Master"
-          description="Kelola data dasar desa"
+          title={t("adminDashboard.mainCards.dataMaster") || "Data Master"}
+          description={
+            t("adminDashboard.mainCards.dataMasterDesc") ||
+            "Kelola data dasar desa"
+          }
           onClick={() => navigate("/admin/data-master")}
         />
 
@@ -298,8 +438,14 @@ export default function AdminDashboard() {
           icon={
             <FaFolderOpen className="text-xl text-white bg-purple-500 p-2 rounded-lg" />
           }
-          title="Repository Dokumen"
-          description="Arsip dokumen desa"
+          title={
+            t("adminDashboard.mainCards.documentRepository") ||
+            "Repository Dokumen"
+          }
+          description={
+            t("adminDashboard.mainCards.documentRepositoryDesc") ||
+            "Arsip dokumen desa"
+          }
           onClick={() =>
             window.open(
               "https://drive.google.com/drive/folders/1H6wPE94ywdVsbH3XF7z2UpJ23sKFajr_?usp=sharing",
@@ -307,24 +453,17 @@ export default function AdminDashboard() {
             )
           }
         />
-
-        <SmallMainCard
-          icon={
-            <FaMapMarkedAlt className="text-xl text-white bg-yellow-500 p-2 rounded-lg" />
-          }
-          title="GIS Desa"
-          description="Peta digital wilayah"
-          onClick={() => navigate("/admin/gis-desa")}
-        />
       </div>
 
-      {/* - GRID STATISTIK DETAIL */}
+      {/* GRID STATISTIK DETAIL */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <DetailStatCard
           icon={<FaComments className="text-2xl text-orange-500" />}
           title={t("adminDashboard.statistics.messages")}
           count={messageCount}
-          detail="Pesan masuk"
+          detail={
+            t("adminDashboard.statistics.messagesDetail") || "Pesan masuk"
+          }
           onClick={() => navigate("/admin/manage-pesan")}
           color="bg-yellow-200"
         />
@@ -333,31 +472,40 @@ export default function AdminDashboard() {
           icon={<FaUsers className="text-2xl text-purple-500" />}
           title={t("adminDashboard.statistics.users")}
           count={userCount}
-          detail="Pengguna terdaftar"
+          detail={
+            t("adminDashboard.statistics.usersDetail") || "Pengguna terdaftar"
+          }
           onClick={() => navigate("/admin/manage-user")}
           color="bg-purple-100"
         />
 
         <DetailStatCard
           icon={<FaSitemap className="text-2xl text-red-500" />}
-          title="Struktur Desa"
+          title={
+            t("adminDashboard.statistics.villageStructure") || "Struktur Desa"
+          }
           count={strukturPreview.length}
-          detail="Pengurus desa"
+          detail={
+            t("adminDashboard.statistics.villageStructureDetail") ||
+            "Pengurus desa"
+          }
           onClick={() => navigate("/admin/manage-anggota")}
           color="bg-red-100"
         />
 
         <DetailStatCard
           icon={<FaStore className="text-2xl text-teal-500" />}
-          title="BUMDes"
+          title={t("adminDashboard.statistics.bumdes") || "BUMDes"}
           count={bumdesPreview.length}
-          detail="Produk unggulan"
+          detail={
+            t("adminDashboard.statistics.bumdesDetail") || "Produk unggulan"
+          }
           onClick={() => navigate("/admin/manage-bumdes")}
           color="bg-teal-50"
         />
       </div>
 
-      {/* - BARIS KOTAK BESAR */}
+      {/* BARIS KOTAK BESAR */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         {/* Log Aktivitas */}
         <div className="lg:col-span-2">
@@ -372,35 +520,39 @@ export default function AdminDashboard() {
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
               <FaChartBar className="text-gray-500" />
-              Statistik Konten
+              {t("adminDashboard.contentStatistics.title") ||
+                "Statistik Konten"}
             </h3>
           </div>
 
           <div className="space-y-4">
             <StatItem
               icon={<FaNewspaper className="text-blue-500" />}
-              title="Berita"
+              title={t("adminDashboard.contentStatistics.news") || "Berita"}
               value={newsCount}
               onClick={() => navigate("/admin/manage-news")}
             />
 
             <StatItem
               icon={<FaCalendarAlt className="text-green-500" />}
-              title="Agenda"
+              title={t("adminDashboard.contentStatistics.agenda") || "Agenda"}
               value={agendaCount}
               onClick={() => navigate("/admin/manage-agenda")}
             />
 
             <StatItem
               icon={<FaImage className="text-purple-500" />}
-              title="Galeri"
+              title={t("adminDashboard.contentStatistics.gallery") || "Galeri"}
               value={galeriCount}
               onClick={() => navigate("/admin/manage-galery")}
             />
 
             <StatItem
               icon={<FaTasks className="text-yellow-500" />}
-              title="Program Kerja"
+              title={
+                t("adminDashboard.contentStatistics.workProgram") ||
+                "Program Kerja"
+              }
               value={programCount}
               onClick={() => navigate("/admin/manage-program")}
             />
@@ -408,10 +560,13 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* - PREVIEW SECTIONS DENGAN GRID BARU */}
+      {/* PREVIEW SECTIONS */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <PreviewSection
-          title="Struktur Desa"
+          title={
+            t("adminDashboard.preview.villageStructure.title") ||
+            "Struktur Desa"
+          }
           icon={<FaSitemap className="text-blue-500" />}
           data={strukturPreview.map((s) => ({
             title: s.name || s.nama,
@@ -419,11 +574,17 @@ export default function AdminDashboard() {
             rw: s.rw || "-",
           }))}
           onClick={() => navigate("/admin/manage-anggota")}
-          description="Pengurus dan struktur organisasi desa"
+          description={
+            t("adminDashboard.preview.villageStructure.description") ||
+            "Pengurus dan struktur organisasi desa"
+          }
         />
 
         <PreviewSection
-          title="Program Kerja Desa"
+          title={
+            t("adminDashboard.preview.workProgram.title") ||
+            "Program Kerja Desa"
+          }
           icon={<FaTasks className="text-green-500" />}
           data={programKerjaPreview.map((p) => ({
             title: p.title || p.judul || p.name,
@@ -432,20 +593,43 @@ export default function AdminDashboard() {
           }))}
           onClick={() => navigate("/admin/manage-program")}
           showStatus={true}
-          description="Program dan kegiatan desa"
+          description={
+            t("adminDashboard.preview.workProgram.description") ||
+            "Program dan kegiatan desa"
+          }
         />
 
         <PreviewSection
-          title="Data Penduduk"
+          title={
+            t("adminDashboard.preview.population.title") || "Data Penduduk"
+          }
           icon={<FaUserAlt className="text-purple-500" />}
           data={[
-            { title: "Jumlah KK", value: "120 KK" },
-            { title: "Penduduk Laki-laki", value: "320 Jiwa" },
-            { title: "Penduduk Perempuan", value: "340 Jiwa" },
+            {
+              title:
+                t("adminDashboard.preview.population.familyHeads") ||
+                "Jumlah KK",
+              value: "120 KK",
+            },
+            {
+              title:
+                t("adminDashboard.preview.population.malePopulation") ||
+                "Penduduk Laki-laki",
+              value: "320 Jiwa",
+            },
+            {
+              title:
+                t("adminDashboard.preview.population.femalePopulation") ||
+                "Penduduk Perempuan",
+              value: "340 Jiwa",
+            },
           ]}
           onClick={() => navigate("/admin/kelola-infografis/penduduk")}
           showValue={true}
-          description="Statistik kependudukan terbaru"
+          description={
+            t("adminDashboard.preview.population.description") ||
+            "Statistik kependudukan terbaru"
+          }
         />
 
         <PreviewSection
@@ -459,7 +643,10 @@ export default function AdminDashboard() {
             }`,
           }))}
           onClick={() => navigate("/admin/manage-bumdes")}
-          description="Produk unggulan BUMDes"
+          description={
+            t("adminDashboard.preview.bumdes.description") ||
+            "Produk unggulan BUMDes"
+          }
         />
 
         <PreviewSection
@@ -470,7 +657,10 @@ export default function AdminDashboard() {
             desc: a.type,
           }))}
           onClick={() => navigate("/admin/manage-administrasi")}
-          description="Layanan administrasi warga"
+          description={
+            t("adminDashboard.preview.administration.description") ||
+            "Layanan administrasi warga"
+          }
         />
 
         <PreviewSection
@@ -483,14 +673,17 @@ export default function AdminDashboard() {
             }`,
           }))}
           onClick={() => navigate("/admin/manage-galery")}
-          description="Galeri kegiatan desa"
+          description={
+            t("adminDashboard.preview.gallery.description") ||
+            "Galeri kegiatan desa"
+          }
         />
       </div>
     </div>
   );
 }
 
-// Komponen Baru: StatItem
+// Komponen StatItem
 function StatItem({ icon, title, value, onClick }) {
   return (
     <div
@@ -506,17 +699,19 @@ function StatItem({ icon, title, value, onClick }) {
   );
 }
 
-// Komponen Log Aktivitas (diperbarui)
+// Komponen ActivityLog
 function ActivityLog({ activities, formatTime }) {
+  const { t } = useTranslation();
+
   return (
     <div className="bg-white rounded-xl shadow-md p-5 h-full">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
           <FaClock className="text-gray-500" />
-          Log Aktivitas Terbaru
+          {t("adminDashboard.activityLog.title") || "Log Aktivitas Terbaru"}
         </h3>
         <button className="text-sm text-blue-600 hover:text-blue-800 font-medium">
-          Lihat Semua
+          {t("adminDashboard.activityLog.viewAll") || "Lihat Semua"}
         </button>
       </div>
 
@@ -565,7 +760,7 @@ function ActivityLog({ activities, formatTime }) {
   );
 }
 
-// - KARTU UTAMA KECIL (diperbarui)
+// Komponen SmallMainCard
 function SmallMainCard({ icon, title, description, onClick }) {
   return (
     <div
@@ -579,7 +774,7 @@ function SmallMainCard({ icon, title, description, onClick }) {
   );
 }
 
-// - KARTU STATISTIK DENGAN DETAIL (diperbarui)
+// Komponen DetailStatCard
 function DetailStatCard({ icon, title, count, detail, trend, onClick, color }) {
   return (
     <div
@@ -606,7 +801,7 @@ function DetailStatCard({ icon, title, count, detail, trend, onClick, color }) {
   );
 }
 
-// - PREVIEW SECTION LIST (diperbarui)
+// Komponen PreviewSection
 function PreviewSection({
   title,
   icon,
@@ -632,19 +827,23 @@ function PreviewSection({
           onClick={onClick}
           className="text-blue-600 font-medium hover:text-blue-800 flex items-center text-sm"
         >
-          Kelola <span className="ml-1">→</span>
+          {t("adminDashboard.preview.manage") || "Kelola"}{" "}
+          <span className="ml-1">→</span>
         </button>
       </div>
 
       <div className="mt-4 flex-grow">
         {data.length === 0 ? (
           <div className="text-center py-6">
-            <p className="text-gray-500 italic">Belum ada data</p>
+            <p className="text-gray-500 italic">
+              {t("adminDashboard.preview.noData")}
+            </p>
             <button
               onClick={onClick}
               className="mt-2 text-blue-600 hover:underline text-sm"
             >
-              Tambah data pertama
+              {t("adminDashboard.preview.addFirstData") ||
+                "Tambah data pertama"}
             </button>
           </div>
         ) : (
@@ -707,7 +906,8 @@ function PreviewSection({
                     rel="noreferrer"
                     className="text-blue-500 hover:underline text-sm whitespace-nowrap flex items-center"
                   >
-                    <FaEye className="mr-1" /> Lihat
+                    <FaEye className="mr-1" />{" "}
+                    {t("adminDashboard.preview.view") || "Lihat"}
                   </a>
                 )}
               </div>
@@ -721,7 +921,7 @@ function PreviewSection({
           onClick={onClick}
           className="mt-4 text-sm text-gray-600 hover:text-gray-800 w-full text-center"
         >
-          + {data.length - 3} lainnya
+          + {data.length - 3} {t("adminDashboard.preview.others") || "lainnya"}
         </button>
       )}
     </div>

@@ -16,7 +16,7 @@ export default function NavbarBottom() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [avatarMenuOpen, setAvatarMenuOpen] = useState(false);
 
-  const { isLoggedIn, role, setProfile, profile } = useAuth();
+  const { role, setProfile, profile } = useAuth();
 
   const isTentangActive = ["/profil", "/pemerintahan", "/potensi"].includes(
     location.pathname
@@ -55,6 +55,42 @@ export default function NavbarBottom() {
       return (
         <Link
           to="/admin"
+          className="bg-gradient-to-r from-green-400 to-[#B6F500] text-white px-4 py-2 rounded hover:opacity-90 transition"
+        >
+          {t("navbarTop.dashboardAdmin", { role: profile.role })}
+        </Link>
+      );
+    } else if (profile.role === "PKK") {
+      return (
+        <Link
+          to="/pkk/admin"
+          className="bg-gradient-to-r from-green-400 to-[#B6F500] text-white px-4 py-2 rounded hover:opacity-90 transition"
+        >
+          {t("navbarTop.dashboardAdmin", { role: profile.role })}
+        </Link>
+      );
+    } else if (profile.role === "CONTRIBUTOR") {
+      return (
+        <Link
+          to="/contributor"
+          className="bg-gradient-to-r from-green-400 to-[#B6F500] text-white px-4 py-2 rounded hover:opacity-90 transition"
+        >
+          {t("navbarTop.dashboardAdmin", { role: profile.role })}
+        </Link>
+      );
+    } else if (profile.role === "KARANG_TARUNA") {
+      return (
+        <Link
+          to="/karang-taruna/admin"
+          className="bg-gradient-to-r from-green-400 to-[#B6F500] text-white px-4 py-2 rounded hover:opacity-90 transition"
+        >
+          {t("navbarTop.dashboardAdmin", { role: "KARANG TARUNA" })}
+        </Link>
+      );
+    } else if (profile.role === "BPD") {
+      return (
+        <Link
+          to="/bpd/admin"
           className="bg-gradient-to-r from-green-400 to-[#B6F500] text-white px-4 py-2 rounded hover:opacity-90 transition"
         >
           {t("navbarTop.dashboardAdmin", { role: profile.role })}
@@ -106,18 +142,59 @@ export default function NavbarBottom() {
   };
 
   const buttomMobile = () => {
-    if (isLoggedIn) {
-      if (role !== "REGULAR") {
+    if (profile) {
+      if (profile.role === "ADMIN") {
         return (
           <NavLink
             to="/admin"
             onClick={() => setMobileOpen(false)}
             className="bg-gradient-to-r from-green-400 to-[#B6F500] text-white px-4 py-2 rounded text-center"
           >
-            {t("navbarTop.dashboardAdmin", { role: role })}
+            {t("navbarTop.dashboardAdmin", { role: profile.role })}
+          </NavLink>
+        );
+      } else if (profile.role === "PKK") {
+        return (
+          <NavLink
+            to="/pkk/admin"
+            onClick={() => setMobileOpen(false)}
+            className="bg-gradient-to-r from-green-400 to-[#B6F500] text-white px-4 py-2 rounded text-center"
+          >
+            {t("navbarTop.dashboardAdmin", { role: profile.role })}
+          </NavLink>
+        );
+      } else if (profile.role === "CONTRIBUTOR") {
+        return (
+          <NavLink
+            to="/contributor"
+            onClick={() => setMobileOpen(false)}
+            className="bg-gradient-to-r from-green-400 to-[#B6F500] text-white px-4 py-2 rounded text-center"
+          >
+            {t("navbarTop.dashboardAdmin", { role: profile.role })}
+          </NavLink>
+        );
+      } else if (profile.role === "KARANG_TARUNA") {
+        return (
+          <NavLink
+            to="/karang-taruna/admin"
+            onClick={() => setMobileOpen(false)}
+            className="bg-gradient-to-r from-green-400 to-[#B6F500] text-white px-4 py-2 rounded text-center"
+          >
+            {t("navbarTop.dashboardAdmin", { role: "KARANG TARUNA" })}
+          </NavLink>
+        );
+      } else if (profile.role === "BPD") {
+        return (
+          <NavLink
+            to="/bpd/admin"
+            onClick={() => setMobileOpen(false)}
+            className="bg-gradient-to-r from-green-400 to-[#B6F500] text-white px-4 py-2 rounded text-center"
+          >
+            {t("navbarTop.dashboardAdmin", { role: profile.role })}
           </NavLink>
         );
       }
+
       return (
         <div className="flex flex-col gap-2">
           <button
