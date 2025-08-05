@@ -111,7 +111,7 @@ export default function ManagePkk() {
     const body = await response.json();
 
     if (!response.ok) {
-      await alertError(t("managePkk.error.fetchPrograms"));
+      await Helper.errorResponseHandler(body);
       return;
     }
 
@@ -123,51 +123,47 @@ export default function ManagePkk() {
   const handleProgramSave = async (e) => {
     e.preventDefault();
 
-    if (!programTitle || !programDesc || (!programImage && !editingProgramId)) {
-      return alertError(t("managePkk.validation.completeAllData"));
-    }
-
     const rawData = {
       title: programTitle,
       description: programDesc,
       featured_image: programImage,
     };
 
-    try {
-      if (editingProgramId) {
-        if (!(await alertConfirm(t("managePkk.confirmation.saveChanges"))))
-          return;
+    if (editingProgramId) {
+      if (!(await alertConfirm(t("managePkk.confirmation.saveChanges"))))
+        return;
 
-        const response = await ProgramApi.updateProgram(
-          editingProgramId,
-          rawData,
-          i18n.language
-        );
-        const body = await response.json();
+      const response = await ProgramApi.updateProgram(
+        editingProgramId,
+        rawData,
+        i18n.language
+      );
+      const body = await response.json();
 
-        if (!response.ok)
-          throw new Error(body.error || t("managePkk.error.saveChanges"));
-
-        setPrograms((prev) =>
-          prev.map((p) => (p.id === editingProgramId ? body.program : p))
-        );
-        await alertSuccess(t("managePkk.success.programUpdated"));
-      } else {
-        const response = await ProgramApi.createProgram(rawData, i18n.language);
-        const body = await response.json();
-
-        if (!response.ok)
-          throw new Error(body.error || t("managePkk.error.saveProgram"));
-
-        setPrograms([body.program, ...programs]);
-        await alertSuccess(t("managePkk.success.programAdded"));
+      if (!response.ok) {
+        await Helper.errorResponseHandler(body);
+        return;
       }
 
-      resetForms();
-      fetchPrograms();
-    } catch (error) {
-      alertError(error.message);
+      setPrograms((prev) =>
+        prev.map((p) => (p.id === editingProgramId ? body.program : p))
+      );
+      await alertSuccess(t("managePkk.success.programUpdated"));
+    } else {
+      const response = await ProgramApi.createProgram(rawData, i18n.language);
+      const body = await response.json();
+
+      if (!response.ok) {
+        await Helper.errorResponseHandler(body);
+        return;
+      }
+
+      setPrograms([body.program, ...programs]);
+      await alertSuccess(t("managePkk.success.programAdded"));
     }
+
+    resetForms();
+    fetchPrograms();
   };
 
   const handleProgramEdit = (id) => {
@@ -186,7 +182,7 @@ export default function ManagePkk() {
 
     const response = await ProgramApi.deleteProgram(id, i18n.language);
     if (!response.ok) {
-      await alertError(t("managePkk.error.deleteProgram"));
+      await Helper.errorResponseHandler(await response.json());
       return;
     }
 
@@ -203,7 +199,7 @@ export default function ManagePkk() {
       i18n.language
     );
     if (!response.ok) {
-      alertError("Gagal mengambil data anggota PKK.");
+      await Helper.errorResponseHandler(await response.json());
       return;
     }
     const body = await response.json();
@@ -219,34 +215,33 @@ export default function ManagePkk() {
       organization_type: "PKK", // Hardcode untuk PKK
     };
 
-    try {
-      if (editingMemberId) {
-        if (
-          !(await alertConfirm("Yakin ingin menyimpan perubahan anggota PKK?"))
-        )
-          return;
+    if (editingMemberId) {
+      if (!(await alertConfirm("Yakin ingin menyimpan perubahan anggota PKK?")))
+        return;
 
-        const response = await MemberApi.updateMember(
-          editingMemberId,
-          rawData,
-          i18n.language
-        );
-        if (!response.ok)
-          throw new Error("Gagal menyimpan perubahan anggota PKK.");
-
-        await alertSuccess("Anggota PKK berhasil diperbarui!");
-      } else {
-        const response = await MemberApi.createMember(rawData, i18n.language);
-        if (!response.ok) throw new Error("Gagal menambahkan anggota PKK.");
-
-        await alertSuccess("Anggota PKK berhasil ditambahkan!");
+      const response = await MemberApi.updateMember(
+        editingMemberId,
+        rawData,
+        i18n.language
+      );
+      if (!response.ok) {
+        await Helper.errorResponseHandler(await response.json());
+        return;
       }
 
-      resetForms();
-      fetchMembers();
-    } catch (error) {
-      alertError(error.message);
+      await alertSuccess("Anggota PKK berhasil diperbarui!");
+    } else {
+      const response = await MemberApi.createMember(rawData, i18n.language);
+      if (!response.ok) {
+        await Helper.errorResponseHandler(await response.json());
+        return;
+      }
+
+      await alertSuccess("Anggota PKK berhasil ditambahkan!");
     }
+
+    resetForms();
+    fetchMembers();
   };
 
   const handleMemberEdit = (id) => {
@@ -270,7 +265,7 @@ export default function ManagePkk() {
 
     const response = await MemberApi.deleteMember(id, i18n.language);
     if (!response.ok) {
-      alertError("Gagal menghapus anggota PKK.");
+      await Helper.errorResponseHandler(await response.json());
       return;
     }
 
@@ -286,7 +281,10 @@ export default function ManagePkk() {
       "PKK",
       i18n.language
     );
-    if (!response.ok) return alertError("Gagal mengambil agenda PKK.");
+    if (!response.ok) {
+      await Helper.errorResponseHandler(await response.json());
+      return;
+    }
 
     const body = await response.json();
     setAgendas(body.agenda || []);
@@ -311,37 +309,32 @@ export default function ManagePkk() {
       type: "PKK", // Hardcode untuk PKK
     };
 
-    try {
-      if (editingAgendaId) {
-        if (
-          !(await alertConfirm("Yakin ingin menyimpan perubahan agenda PKK?"))
-        )
-          return;
+    if (editingAgendaId) {
+      if (!(await alertConfirm("Yakin ingin menyimpan perubahan agenda PKK?")))
+        return;
 
-        const response = await AgendaApi.updateAgenda(
-          editingAgendaId,
-          rawData,
-          i18n.language
-        );
-        if (!response.ok)
-          throw new Error("Gagal menyimpan perubahan agenda PKK.");
-
-        await alertSuccess("Agenda PKK berhasil diperbarui!");
-      } else {
-        const response = await AgendaApi.createAgenda(rawData, i18n.language);
-        if (!response.ok) {
-          await Helper.errorResponseHandler(await response.json());
-          return;
-        }
-
-        await alertSuccess("Agenda PKK berhasil ditambahkan!");
+      const response = await AgendaApi.updateAgenda(
+        editingAgendaId,
+        rawData,
+        i18n.language
+      );
+      if (!response.ok) {
+        await Helper.errorResponseHandler(await response.json());
+        return;
+      }
+      await alertSuccess("Agenda PKK berhasil diperbarui!");
+    } else {
+      const response = await AgendaApi.createAgenda(rawData, i18n.language);
+      if (!response.ok) {
+        await Helper.errorResponseHandler(await response.json());
+        return;
       }
 
-      resetForms();
-      fetchAgendas();
-    } catch (error) {
-      alertError(error.message);
+      await alertSuccess("Agenda PKK berhasil ditambahkan!");
     }
+
+    resetForms();
+    fetchAgendas();
   };
 
   const handleAgendaEdit = (id) => {
@@ -364,7 +357,10 @@ export default function ManagePkk() {
     if (!(await alertConfirm("Yakin ingin menghapus agenda PKK ini?"))) return;
 
     const response = await AgendaApi.deleteAgenda(id, i18n.language);
-    if (!response.ok) return alertError("Gagal menghapus agenda PKK.");
+    if (!response.ok) {
+      await Helper.errorResponseHandler(await response.json());
+      return;
+    }
 
     setAgendas((prev) => prev.filter((a) => a.id !== id));
     await alertSuccess("Agenda PKK berhasil dihapus.");
