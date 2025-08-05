@@ -36,6 +36,7 @@ export default function ManageBerita() {
     setIsLoading(true);
     const response = await NewsApi.getOwnNews(currentPage, 6, i18n.language);
     if (!response.ok) {
+      alertError(t("manageNews.error.fetchFailed"));
       setIsLoading(false);
       return;
     }
@@ -43,7 +44,6 @@ export default function ManageBerita() {
     setTotalPages(responseBody.total_page);
     setCurrentPage(responseBody.current_page);
     setNews(responseBody.data);
-    setIsLoading(false);
     setIsLoading(false);
   };
 
@@ -70,64 +70,57 @@ export default function ManageBerita() {
       featured_image: featuredImage,
     };
 
-    try {
-      if (editingId) {
-        if (!(await alertConfirm(t("manageNews.confirmation.editNews"))))
-          return;
-
-        const response = await NewsApi.updateNews(
-          editingId,
-          rawData,
-          i18n.language
-        );
-        const responseBody = await response.json();
-        if (!response.ok) {
-          throw new Error(
-            responseBody.message || t("manageNews.error.updateFailed")
-          );
-        }
-
-        await alertSuccess(t("manageNews.success.updateNews"));
-      } else {
-        const response = await NewsApi.createNews(rawData, i18n.language);
-        const responseBody = await response.json();
-        if (!response.ok) {
-          throw new Error(
-            responseBody.message || t("manageNews.error.createFailed")
-          );
-        }
-        await alertSuccess(t("manageNews.success.addNews"));
+    if (editingId) {
+      if (!(await alertConfirm(t("manageNews.confirmation.editNews")))) {
+        setIsLoading(false);
+        return;
       }
 
-      resetForm();
-      setShowForm(false);
-      fetchNews();
-    } catch (error) {
-      alertError(error.message);
-    } finally {
-      setIsLoading(false);
+      const response = await NewsApi.updateNews(
+        editingId,
+        rawData,
+        i18n.language
+      );
+      const responseBody = await response.json();
+      if (!response.ok) {
+        await Helper.errorResponseHandler(responseBody);
+        setIsLoading(false);
+        return;
+      }
+
+      await alertSuccess(t("manageNews.success.updateNews"));
+    } else {
+      const response = await NewsApi.createNews(rawData, i18n.language);
+      const responseBody = await response.json();
+      if (!response.ok) {
+        await Helper.errorResponseHandler(responseBody);
+        setIsLoading(false);
+        return;
+      }
+      await alertSuccess(t("manageNews.success.addNews"));
     }
+
+    resetForm();
+    setShowForm(false);
+    fetchNews();
+    setIsLoading(false);
   };
 
   const handleDelete = async (id) => {
     if (!(await alertConfirm(t("manageNews.confirmation.deleteNews")))) return;
 
     setIsLoading(true);
-    try {
-      const response = await NewsApi.deleteNews(id, i18n.language);
-      if (!response.ok) {
-        const responseBody = await response.json();
-        throw new Error(
-          responseBody.message || t("manageNews.error.deleteFailed")
-        );
-      }
-      setNews(news.filter((b) => b.id !== id));
-      await alertSuccess(t("manageNews.success.deleteNews"));
-    } catch (error) {
-      alertError(error.message);
-    } finally {
+    const response = await NewsApi.deleteNews(id, i18n.language);
+    if (!response.ok) {
+      const responseBody = await response.json();
+      await Helper.errorResponseHandler(responseBody);
       setIsLoading(false);
+
+      return;
     }
+    setNews(news.filter((b) => b.id !== id));
+    await alertSuccess(t("manageNews.success.deleteNews"));
+    setIsLoading(false);
   };
 
   const handleEdit = (id) => {
@@ -151,9 +144,7 @@ export default function ManageBerita() {
             <h1 className="text-2xl font-bold text-gray-800">
               {t("manageNews.title")}
             </h1>
-            <p className="text-gray-500 text-sm">
-              {t("manageNews.subtitle") || "Kelola berita dan informasi desa"}
-            </p>
+            <p className="text-gray-500 text-sm">{t("manageNews.subtitle")}</p>
           </div>
         </div>
 
@@ -179,12 +170,11 @@ export default function ManageBerita() {
           <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
             {editingId ? (
               <>
-                <FaEdit /> {t("manageNews.form.editTitle") || "Edit Berita"}
+                <FaEdit /> {t("manageNews.form.editTitle")}
               </>
             ) : (
               <>
-                <FaPlus />{" "}
-                {t("manageNews.form.addTitle") || "Tambah Berita Baru"}
+                <FaPlus /> {t("manageNews.form.addTitle")}
               </>
             )}
           </h2>
@@ -197,10 +187,7 @@ export default function ManageBerita() {
               className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-300 focus:border-indigo-300 outline-none transition"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder={
-                t("manageNews.form.newsTitlePlaceholder") ||
-                "Masukkan judul berita"
-              }
+              placeholder={t("manageNews.form.titlePlaceholder")}
             />
           </div>
 
@@ -220,12 +207,22 @@ export default function ManageBerita() {
             <label className="flex items-center gap-2 font-medium text-gray-700">
               <FaImage /> {t("manageNews.form.uploadMainImage")}
             </label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setFeaturedImage(e.target.files[0])}
-              className="w-full border border-gray-300 p-2 rounded-lg file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 transition"
-            />
+            <div className="flex items-center gap-3">
+              <label className="flex flex-col items-center justify-center w-full border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition">
+                <div className="flex flex-col items-center justify-center pt-5 pb-6 px-4">
+                  <FaImage className="w-8 h-8 text-gray-400" />
+                  <p className="text-sm text-gray-500 text-center">
+                    {t("manageNews.form.uploadHint")}
+                  </p>
+                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setFeaturedImage(e.target.files[0])}
+                  className="hidden"
+                />
+              </label>
+            </div>
             {(featuredImage ||
               (editingId &&
                 news.find((b) => b.id === editingId)?.featured_image)) && (
@@ -238,7 +235,7 @@ export default function ManageBerita() {
                           news.find((b) => b.id === editingId)?.featured_image
                         }`
                   }
-                  alt={t("manageNews.preview.altText") || "preview"}
+                  alt={t("manageNews.preview")}
                   className="max-w-full h-48 rounded-lg object-cover shadow-sm border border-gray-200"
                 />
               </div>
@@ -309,14 +306,27 @@ export default function ManageBerita() {
         </div>
       ) : news.length === 0 ? (
         <div className="bg-white rounded-xl shadow-sm p-8 text-center">
-          <FaNewspaper className="mx-auto text-4xl text-gray-300 mb-3" />
-          <h3 className="text-lg font-medium text-gray-500">
-            {t("manageNews.empty.noNews") || "Belum ada berita yang tersedia"}
-          </h3>
-          <p className="text-gray-400 mt-1">
-            {t("manageNews.empty.addFirst") ||
-              'Klik tombol "Tambah Berita" untuk membuat berita pertama'}
-          </p>
+          <div className="mx-auto max-w-md">
+            <FaNewspaper className="mx-auto h-12 w-12 text-gray-400" />
+            <h3 className="mt-2 text-lg font-medium text-gray-900">
+              {t("manageNews.emptyState.title")}
+            </h3>
+            <p className="mt-1 text-sm text-gray-500">
+              {t("manageNews.emptyState.description")}
+            </p>
+            <div className="mt-6">
+              <button
+                onClick={() => {
+                  resetForm();
+                  setShowForm(true);
+                }}
+                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                <FaPlus className="-ml-1 mr-2 h-5 w-5" />
+                {t("manageNews.buttons.addNews")}
+              </button>
+            </div>
+          </div>
         </div>
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -366,14 +376,14 @@ export default function ManageBerita() {
                     <button
                       onClick={() => handleEdit(item.id)}
                       className="text-indigo-600 hover:text-indigo-800 transition p-1"
-                      title={t("manageNews.buttons.edit") || "Edit"}
+                      title={t("manageNews.buttons.edit")}
                     >
                       <FaEdit size={16} />
                     </button>
                     <button
                       onClick={() => handleDelete(item.id)}
                       className="text-red-600 hover:text-red-800 transition p-1"
-                      title={t("manageNews.buttons.delete") || "Hapus"}
+                      title={t("manageNews.buttons.delete")}
                     >
                       <FaTrash size={16} />
                     </button>
