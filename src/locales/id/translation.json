@@ -1231,50 +1231,6 @@
       "promoteUserError": "Gagal mempromosikan user"
     }
   },
-  "managePkk": {
-    "title": "Kelola Program PKK",
-    "subtitle": "Kelola program dan kegiatan PKK",
-    "buttons": {
-      "addProgram": "Tambah Program",
-      "updateProgram": "Update Program",
-      "saveProgram": "Simpan Program",
-      "cancel": "Batal",
-      "edit": "Edit",
-      "delete": "Hapus"
-    },
-    "form": {
-      "addProgram": "Tambah Program Baru",
-      "editProgram": "Edit Program",
-      "programName": "Nama Program",
-      "programNamePlaceholder": "Masukkan nama program",
-      "uploadImage": "Upload Gambar",
-      "description": "Deskripsi",
-      "descriptionPlaceholder": "Tuliskan deskripsi program..."
-    },
-    "validation": {
-      "completeAllData": "Lengkapi semua data sebelum simpan!"
-    },
-    "confirmation": {
-      "saveChanges": "Yakin simpan perubahan ini?",
-      "deleteProgram": "Yakin hapus program ini?"
-    },
-    "success": {
-      "programUpdated": "Program berhasil diperbarui!",
-      "programAdded": "Program berhasil ditambahkan!",
-      "programDeleted": "Program berhasil dihapus!"
-    },
-    "error": {
-      "saveChanges": "Gagal menyimpan perubahan.",
-      "saveProgram": "Gagal menyimpan program.",
-      "deleteProgram": "Gagal menghapus program",
-      "fetchPrograms": "Gagal mengambil data program"
-    },
-    "empty": {
-      "title": "Belum Ada Program",
-      "noPrograms": "Belum ada program",
-      "fillFormMessage": "Silakan lengkapi form di atas untuk menambahkan program"
-    }
-  },
   "dashboardPkk": {
     "error": {
       "fetchMembers": "Gagal mengambil data anggota PKK.",
@@ -2235,6 +2191,19 @@
         "active": "Masih Menjabat",
         "inactive": "Tidak Menjabat"
       }
+    },
+    "alerts": {
+      "fetchError": "Gagal mengambil data anggota PKK.",
+      "updateError": "Gagal menyimpan perubahan anggota PKK.",
+      "updateSuccess": "Anggota PKK berhasil diperbarui!",
+      "addError": "Gagal menambahkan anggota PKK.",
+      "addSuccess": "Anggota PKK berhasil ditambahkan!",
+      "deleteError": "Gagal menghapus anggota PKK.",
+      "deleteSuccess": "Anggota PKK berhasil dihapus."
+    },
+    "confirmations": {
+      "saveChanges": "Yakin ingin menyimpan perubahan anggota PKK?",
+      "delete": "Yakin ingin menghapus anggota PKK ini?"
     }
   },
   "pkkAdminProgram": {
@@ -2266,6 +2235,82 @@
         "label": "Deskripsi Program",
         "placeholder": "Deskripsi lengkap program..."
       }
+    }
+  },
+  "pkkAdminAgenda": {
+    "title": "Agenda Kegiatan PKK",
+    "buttons": {
+      "add": "Tambah Agenda",
+      "edit": "Edit",
+      "delete": "Hapus",
+      "save": "Simpan",
+      "update": "Update",
+      "cancel": "Batal"
+    },
+    "empty": {
+      "noAgenda": "Belum ada agenda PKK yang tersedia"
+    },
+    "modal": {
+      "addTitle": "Tambah Agenda PKK Baru",
+      "editTitle": "Edit Agenda PKK"
+    },
+    "form": {
+      "title": {
+        "label": "Judul Agenda",
+        "placeholder": "Masukkan judul agenda"
+      },
+      "description": {
+        "label": "Deskripsi Agenda",
+        "placeholder": "Deskripsikan agenda secara lengkap"
+      },
+      "startTime": {
+        "label": "Waktu Mulai"
+      },
+      "endTime": {
+        "label": "Waktu Selesai"
+      },
+      "location": {
+        "label": "Lokasi",
+        "placeholder": "Masukkan lokasi agenda"
+      },
+      "image": {
+        "label": "Gambar Agenda",
+        "preview": "Pratinjau gambar"
+      },
+      "publishAgenda": "Publikasikan Agenda"
+    },
+    "status": {
+      "published": "Terpublikasi",
+      "draft": "Draft"
+    },
+    "alerts": {
+      "fetchError": "Gagal mengambil agenda PKK.",
+      "updateError": "Gagal menyimpan perubahan agenda PKK.",
+      "updateSuccess": "Agenda PKK berhasil diperbarui!",
+      "addSuccess": "Agenda PKK berhasil ditambahkan!",
+      "deleteError": "Gagal menghapus agenda PKK.",
+      "deleteSuccess": "Agenda PKK berhasil dihapus."
+    },
+    "confirmations": {
+      "saveChanges": "Yakin ingin menyimpan perubahan agenda PKK?",
+      "delete": "Yakin ingin menghapus agenda PKK ini?"
+    }
+  },
+  "managePkk": {
+    "title": "Manajemen PKK",
+    "tabs": {
+      "program": "Program PKK",
+      "structure": "Struktur PKK",
+      "agenda": "Agenda PKK"
+    },
+    "confirmation": {
+      "saveChanges": "Yakin ingin menyimpan perubahan?",
+      "deleteProgram": "Yakin ingin menghapus program ini?"
+    },
+    "success": {
+      "programUpdated": "Program berhasil diperbarui!",
+      "programAdded": "Program berhasil ditambahkan!",
+      "programDeleted": "Program berhasil dihapus!"
     }
   }
 }

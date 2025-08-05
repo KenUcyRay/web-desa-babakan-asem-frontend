@@ -1,0 +1,175 @@
+{
+  "managePkk": {
+    "title": "PKK Management",
+    "tabs": {
+      "program": "PKK Programs",
+      "structure": "PKK Structure",
+      "agenda": "PKK Agenda"
+    },
+    "confirmation": {
+      "saveChanges": "Are you sure you want to save changes?",
+      "deleteProgram": "Are you sure you want to delete this program?"
+    },
+    "success": {
+      "programUpdated": "Program updated successfully!",
+      "programAdded": "Program added successfully!",
+      "programDeleted": "Program deleted successfully!"
+    }
+  },
+  "pkkAdminProgram": {
+    "title": "PKK Village Programs",
+    "buttons": {
+      "add": "Add Program",
+      "edit": "Edit",
+      "delete": "Delete",
+      "save": "Save",
+      "update": "Update",
+      "cancel": "Cancel"
+    },
+    "empty": {
+      "noPrograms": "No PKK programs available yet"
+    },
+    "modal": {
+      "addTitle": "Add New PKK Program",
+      "editTitle": "Edit PKK Program"
+    },
+    "form": {
+      "programName": {
+        "label": "Program Name",
+        "placeholder": "Example: Skills Training"
+      },
+      "image": {
+        "label": "Program Image"
+      },
+      "description": {
+        "label": "Program Description",
+        "placeholder": "Full program description..."
+      }
+    }
+  },
+  "pkkAdminStructure": {
+    "title": "PKK Organization Structure",
+    "buttons": {
+      "add": "Add Member",
+      "edit": "Edit",
+      "delete": "Delete",
+      "save": "Save",
+      "update": "Update",
+      "cancel": "Cancel"
+    },
+    "empty": {
+      "noMembers": "No PKK members available yet"
+    },
+    "labels": {
+      "orgType": "PKK",
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "modal": {
+      "addTitle": "Add New PKK Member",
+      "editTitle": "Edit PKK Member"
+    },
+    "form": {
+      "name": {
+        "label": "Full Name",
+        "placeholder": "Enter full name"
+      },
+      "position": {
+        "label": "Position",
+        "placeholder": "Example: Chairman, Secretary, etc"
+      },
+      "termStart": {
+        "label": "Term Start",
+        "placeholder": "Start year"
+      },
+      "termEnd": {
+        "label": "Term End",
+        "placeholder": "End year"
+      },
+      "importance": {
+        "label": "Importance Level",
+        "placeholder": "Scale 1-10 (1: most important)"
+      },
+      "photo": {
+        "label": "Profile Photo"
+      },
+      "status": {
+        "label": "Position Status",
+        "active": "Currently Active",
+        "inactive": "Not Active"
+      }
+    },
+    "alerts": {
+      "fetchError": "Failed to fetch PKK members data.",
+      "updateError": "Failed to save member changes.",
+      "updateSuccess": "PKK member updated successfully!",
+      "addError": "Failed to add PKK member.",
+      "addSuccess": "PKK member added successfully!",
+      "deleteError": "Failed to delete PKK member.",
+      "deleteSuccess": "PKK member deleted successfully."
+    },
+    "confirmations": {
+      "saveChanges": "Are you sure you want to save changes to this member?",
+      "delete": "Are you sure you want to delete this member?"
+    }
+  },
+  "pkkAdminAgenda": {
+    "title": "PKK Activity Agenda",
+    "buttons": {
+      "add": "Add Agenda",
+      "edit": "Edit",
+      "delete": "Delete",
+      "save": "Save",
+      "update": "Update",
+      "cancel": "Cancel"
+    },
+    "empty": {
+      "noAgenda": "No PKK agenda available yet"
+    },
+    "modal": {
+      "addTitle": "Add New PKK Agenda",
+      "editTitle": "Edit PKK Agenda"
+    },
+    "form": {
+      "title": {
+        "label": "Agenda Title",
+        "placeholder": "Enter agenda title"
+      },
+      "description": {
+        "label": "Agenda Description",
+        "placeholder": "Describe the agenda in detail"
+      },
+      "startTime": {
+        "label": "Start Time"
+      },
+      "endTime": {
+        "label": "End Time"
+      },
+      "location": {
+        "label": "Location",
+        "placeholder": "Enter agenda location"
+      },
+      "image": {
+        "label": "Agenda Image",
+        "preview": "Image preview"
+      },
+      "publishAgenda": "Publish Agenda"
+    },
+    "status": {
+      "published": "Published",
+      "draft": "Draft"
+    },
+    "alerts": {
+      "fetchError": "Failed to fetch PKK agenda.",
+      "updateError": "Failed to save agenda changes.",
+      "updateSuccess": "PKK agenda updated successfully!",
+      "addSuccess": "PKK agenda added successfully!",
+      "deleteError": "Failed to delete PKK agenda.",
+      "deleteSuccess": "PKK agenda deleted successfully."
+    },
+    "confirmations": {
+      "saveChanges": "Are you sure you want to save changes to this agenda?",
+      "delete": "Are you sure you want to delete this agenda?"
+    }
+  }
+}

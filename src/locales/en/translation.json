@@ -1275,62 +1275,6 @@
       "fillFormMessage": "Please complete the form above to add a program"
     }
   },
-  "dashboardPkk": {
-    "error": {
-      "fetchMembers": "Failed to fetch PKK member data.",
-      "saveMemberChanges": "Failed to save PKK member changes.",
-      "addMember": "Failed to add PKK member.",
-      "deleteMember": "Failed to delete PKK member.",
-      "fetchAgendas": "Failed to fetch PKK agenda.",
-      "saveAgendaChanges": "Failed to save PKK agenda changes.",
-      "deleteAgenda": "Failed to delete PKK agenda."
-    },
-    "confirmation": {
-      "saveMemberChanges": "Are you sure you want to save PKK member changes?",
-      "deleteMember": "Are you sure you want to delete this PKK member?",
-      "saveAgendaChanges": "Are you sure you want to save PKK agenda changes?",
-      "deleteAgenda": "Are you sure you want to delete this PKK agenda?"
-    },
-    "success": {
-      "memberUpdated": "PKK member successfully updated!",
-      "memberAdded": "PKK member successfully added!",
-      "memberDeleted": "PKK member successfully deleted.",
-      "agendaUpdated": "PKK agenda successfully updated!",
-      "agendaAdded": "PKK agenda successfully added!",
-      "agendaDeleted": "PKK agenda successfully deleted."
-    },
-    "form": {
-      "editProgram": "Edit PKK Program",
-      "addProgram": "Add New PKK Program",
-      "editMember": "Edit PKK Member",
-      "addMember": "Add New PKK Member",
-      "editAgenda": "Edit PKK Agenda",
-      "addAgenda": "Add New PKK Agenda",
-      "programDescriptionPlaceholder": "Detailed program description...",
-      "fullName": "Full Name",
-      "fullNamePlaceholder": "Member full name",
-      "position": "Position",
-      "positionPlaceholder": "Position in organization",
-      "locationPlaceholder": "Event/activity location",
-      "startYearPlaceholder": "Start year",
-      "endYearPlaceholder": "End year",
-      "agendaDescriptionPlaceholder": "Detailed agenda description..."
-    },
-    "buttons": {
-      "update": "Update",
-      "save": "Save",
-      "edit": "Edit",
-      "delete": "Delete",
-      "addMember": "Add Member"
-    },
-    "status": {
-      "serving": "Currently Serving",
-      "notServing": "Not Serving"
-    },
-    "empty": {
-      "noMembers": "No PKK organization members yet"
-    }
-  },
   "managePesan": {
     "title": "📩 Manage Incoming Messages",
     "subtitle": "Manage incoming messages from visitors",
@@ -2235,6 +2179,19 @@
         "active": "Currently Active",
         "inactive": "Not Active"
       }
+    },
+    "alerts": {
+      "fetchError": "Failed to fetch PKK member data.",
+      "updateError": "Failed to save PKK member changes.",
+      "updateSuccess": "PKK member successfully updated!",
+      "addError": "Failed to add PKK member.",
+      "addSuccess": "PKK member successfully added!",
+      "deleteError": "Failed to delete PKK member.",
+      "deleteSuccess": "PKK member successfully deleted."
+    },
+    "confirmations": {
+      "saveChanges": "Are you sure you want to save PKK member changes?",
+      "delete": "Are you sure you want to delete this PKK member?"
     }
   },
   "pkkAdminProgram": {
@@ -2266,6 +2223,65 @@
         "label": "Program Description",
         "placeholder": "Full program description..."
       }
+    }
+  },
+  "pkkAdminAgenda": {
+    "title": "PKK Activities Agenda",
+    "buttons": {
+      "add": "Add Agenda",
+      "edit": "Edit",
+      "delete": "Delete",
+      "save": "Save",
+      "update": "Update",
+      "cancel": "Cancel"
+    },
+    "empty": {
+      "noAgenda": "No PKK agenda available yet"
+    },
+    "modal": {
+      "addTitle": "Add New PKK Agenda",
+      "editTitle": "Edit PKK Agenda"
+    },
+    "form": {
+      "title": {
+        "label": "Agenda Title",
+        "placeholder": "Enter agenda title"
+      },
+      "description": {
+        "label": "Agenda Description",
+        "placeholder": "Describe the agenda completely"
+      },
+      "startTime": {
+        "label": "Start Time"
+      },
+      "endTime": {
+        "label": "End Time"
+      },
+      "location": {
+        "label": "Location",
+        "placeholder": "Enter agenda location"
+      },
+      "image": {
+        "label": "Agenda Image",
+        "preview": "Image preview"
+      },
+      "publishAgenda": "Publish Agenda"
+    },
+    "status": {
+      "published": "Published",
+      "draft": "Draft"
+    },
+    "alerts": {
+      "fetchError": "Failed to fetch PKK agenda.",
+      "updateError": "Failed to save PKK agenda changes.",
+      "updateSuccess": "PKK agenda successfully updated!",
+      "addSuccess": "PKK agenda successfully added!",
+      "deleteError": "Failed to delete PKK agenda.",
+      "deleteSuccess": "PKK agenda successfully deleted."
+    },
+    "confirmations": {
+      "saveChanges": "Are you sure you want to save PKK agenda changes?",
+      "delete": "Are you sure you want to delete this PKK agenda?"
     }
   }
 }
