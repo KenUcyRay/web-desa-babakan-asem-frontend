@@ -52,4 +52,35 @@ export class MapApi {
       body: JSON.stringify(data),
     });
   }
+
+  static async getAll(language) {
+    return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/admin/maps`, {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "Accept-Language": language,
+      },
+    });
+  }
+
+  static async create(data, language) {
+    const formData = new FormData();
+  }
+
+  static async delete(id, language) {
+    return await fetch(
+      `${import.meta.env.VITE_NEW_BASE_URL}/admin/maps/${id}`,
+      {
+        method: "DELETE",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "Accept-Language": language,
+        },
+      }
+    );
+  }
 }

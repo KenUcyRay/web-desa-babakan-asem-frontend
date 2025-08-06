@@ -44,6 +44,7 @@ import { alertError } from "../../libs/alert";
 import { VillageWorkProgramApi } from "../../libs/api/VillageWorkProgramApi";
 import { LogActivityApi } from "../../libs/api/LogActivityApi";
 import { Helper } from "../../utils/Helper";
+import DialogMap from "../../DialogMap";
 
 // ==== ICON CUSTOM ====
 const createIcon = (iconUrl) =>
@@ -453,6 +454,16 @@ export default function AdminDashboard() {
     return Array.from(legendMap.values());
   }, [filteredData, iconError]);
 
+  // State for DialogMap modal
+  const [showDialogMap, setShowDialogMap] = useState(false);
+  // Handler for dialog submit (replace with actual API integration)
+  const handleDialogMapSubmit = async (payload) => {
+    // TODO: Integrate with MapApi.createMap or similar
+    // After successful submit, refresh map data and close dialog
+    await fetchMapData();
+    setShowDialogMap(false);
+  };
+
   return (
     <div className="w-full font-[Poppins,sans-serif] bg-gray-50 min-h-screen p-4 md:p-6">
       <div className="flex justify-between items-center mb-6">
@@ -488,161 +499,102 @@ export default function AdminDashboard() {
 
             {/* Filter Tahun - dari Tes.jsx */}
             <div className="flex items-center gap-4">
-              <label className="text-white font-medium text-md">
+              <label className="text-black font-medium text-md">
                 Pilih Tahun:
               </label>
               <select
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-                className="px-3 py-2 rounded-md border border-white/40 bg-white/20 
-               text-white text-sm backdrop-blur-sm focus:outline-none 
-               focus:ring-2 focus:ring-white/60 hover:bg-white/30 
-               transition-colors duration-200"
+                className="px-3 py-2 rounded-md border"
               >
                 {[2025, 2024].map((y) => (
-                  <option key={y} value={y} className="text-gray-900">
+                  <option key={y} value={y} className="text-black">
                     {y}
                   </option>
                 ))}
               </select>
-
-              {/* Status Indikator */}
-              {loading && (
-                <span className="text-white text-sm opacity-80">
-                  Memuat data...
-                </span>
-              )}
-              {error && <span className="text-red-200 text-sm">{error}</span>}
             </div>
           </div>
         </div>
 
-        <div className="p-6 relative">
-          {/* Loading states dari Tes.jsx */}
-          {loading && (
-            <div className="absolute top-0 left-0 right-0 bottom-0 bg-white bg-opacity-70 flex justify-center items-center z-50 rounded-xl">
-              <div className="bg-white p-5 rounded-lg shadow-lg flex items-center gap-3">
-                <img
-                  src={iconError ? fallbackIconUrl : defaultIconUrl}
-                  alt="Loading"
-                  className="h-8"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = fallbackIconUrl;
-                  }}
-                />
-                <span className="text-gray-700">Memuat data peta...</span>
-              </div>
-            </div>
-          )}
+        <div className={`p-6 relative ${showDialogMap ? "invisible" : ""}`}>
+          <div className="rounded-xl overflow-hidden  shadow-md border-2 border-green-100 relative">
+            <MapContainer
+              center={[-6.75, 108.05861]}
+              zoom={15}
+              scrollWheelZoom={true}
+              className={"w-full h-[500px]"}
+            >
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
 
-          {error && !loading && (
-            <div className="absolute top-0 left-0 right-0 bottom-0 bg-white bg-opacity-90 flex justify-center items-center z-50 rounded-xl">
-              <div className="bg-white p-5 rounded-lg shadow-lg text-center">
-                <p className="text-red-600 font-bold mb-4">{error}</p>
-                <button
-                  onClick={fetchMapData}
-                  className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-                >
-                  Coba Lagi
-                </button>
-              </div>
-            </div>
-          )}
-
-          {!loading && !error && filteredData.length === 0 && (
-            <div className="h-[500px] rounded-xl bg-gray-100 flex items-center justify-center">
-              <p className="text-gray-600">Tidak ada data peta yang tersedia</p>
-            </div>
-          )}
-
-          {mapLoading ? (
-            <div className="h-[500px] rounded-xl bg-gray-100 flex items-center justify-center">
-              <p>{t("adminDashboard.gisMapLoading") || "Memuat peta..."}</p>
-            </div>
-          ) : mapError ? (
-            <div className="h-[500px] rounded-xl bg-red-100 flex items-center justify-center text-red-600">
-              {t("adminDashboard.gisMapError") || "Error: "} {mapError}
-            </div>
-          ) : (
-            <div className="rounded-xl overflow-hidden shadow-md border-2 border-green-100 relative">
-              <MapContainer
-                center={[-6.75, 108.05861]}
-                zoom={15}
-                scrollWheelZoom={true}
-                className="w-full h-[500px]"
-              >
-                <TileLayer
-                  attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-
-                {/* Render POI dan Polygon dari API */}
-                {filteredData.map((item) =>
-                  item.type === "polygon" ? (
-                    (() => {
-                      const polygonIdx = polygonLegendData.findIndex(
-                        (p) => p.id === item.id
-                      );
-                      const color =
-                        polygonLegendData[polygonIdx]?.color || "#2563eb";
-                      return (
-                        <Polygon
-                          key={item.id}
-                          positions={item.coordinates}
-                          pathOptions={{
-                            color,
-                            weight: 2,
-                            dashArray: "4, 4",
-                            fillColor: "transparent",
-                            opacity: 0.9,
-                          }}
-                        >
-                          <Tooltip permanent={false} direction="center">
-                            {item.name}
-                          </Tooltip>
-                          <Popup>
-                            <div className="text-center">
-                              <strong className="text-base" style={{ color }}>
-                                {item.name}
-                              </strong>
-                              <p className="text-sm my-2">{item.description}</p>
-                              <p className="text-xs text-gray-600">
-                                Kecamatan: Congeang
-                              </p>
-                            </div>
-                          </Popup>
-                        </Polygon>
-                      );
-                    })()
-                  ) : (
-                    <Marker
-                      key={item.id}
-                      position={item.coordinates[0]}
-                      icon={createIcon(
-                        item.icon ||
-                          (iconError ? fallbackIconUrl : defaultIconUrl)
-                      )}
-                    >
-                      <Tooltip permanent={false}>{item.name}</Tooltip>
-                      <Popup>
-                        <div className="text-center">
-                          <strong className="text-base text-red-600">
-                            {item.name}
-                          </strong>
-                          <p className="text-sm my-2">{item.description}</p>
-                          <p className="text-xs text-gray-600">
-                            Koordinat: {item.coordinates[0][0].toFixed(6)},{" "}
-                            {item.coordinates[0][1].toFixed(6)}
-                          </p>
-                        </div>
-                      </Popup>
-                    </Marker>
-                  )
-                )}
-              </MapContainer>
-            </div>
-          )}
+              {/* Render POI dan Polygon dari API */}
+              {filteredData.map((item) =>
+                item.type === "polygon" ? (
+                  (() => {
+                    const polygonIdx = polygonLegendData.findIndex(
+                      (p) => p.id === item.id
+                    );
+                    const color =
+                      polygonLegendData[polygonIdx]?.color || "#2563eb";
+                    return (
+                      <Polygon
+                        key={item.id}
+                        positions={item.coordinates}
+                        pathOptions={{
+                          color,
+                          weight: 2,
+                          dashArray: "4, 4",
+                          fillColor: "transparent",
+                          opacity: 0.9,
+                        }}
+                      >
+                        <Tooltip permanent={false} direction="center">
+                          {item.name}
+                        </Tooltip>
+                        <Popup>
+                          <div className="text-center">
+                            <strong className="text-base" style={{ color }}>
+                              {item.name}
+                            </strong>
+                            <p className="text-sm my-2">{item.description}</p>
+                            <p className="text-xs text-gray-600">
+                              Kecamatan: Congeang
+                            </p>
+                          </div>
+                        </Popup>
+                      </Polygon>
+                    );
+                  })()
+                ) : (
+                  <Marker
+                    key={item.id}
+                    position={item.coordinates[0]}
+                    icon={createIcon(
+                      item.icon ||
+                        (iconError ? fallbackIconUrl : defaultIconUrl)
+                    )}
+                  >
+                    <Tooltip permanent={false}>{item.name}</Tooltip>
+                    <Popup>
+                      <div className="text-center">
+                        <strong className="text-base text-red-600">
+                          {item.name}
+                        </strong>
+                        <p className="text-sm my-2">{item.description}</p>
+                        <p className="text-xs text-gray-600">
+                          Koordinat: {item.coordinates[0][0].toFixed(6)},{" "}
+                          {item.coordinates[0][1].toFixed(6)}
+                        </p>
+                      </div>
+                    </Popup>
+                  </Marker>
+                )
+              )}
+            </MapContainer>
+          </div>
         </div>
 
         {/* LEGENDA PETA - Gabungan static dan dynamic */}
@@ -650,6 +602,12 @@ export default function AdminDashboard() {
           <div className="mb-4">
             <h3 className="text-lg font-semibold text-gray-800 mb-3">
               Legenda:
+              <button
+                className="ml-2 px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition text-sm font-medium"
+                onClick={() => setShowDialogMap(true)}
+              >
+                + Tambah Legenda
+              </button>
             </h3>
           </div>
 
@@ -1024,6 +982,22 @@ export default function AdminDashboard() {
           }
         />
       </div>
+
+      {/* DialogMap modal */}
+      {showDialogMap && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-white/70 via-gray-100/80 to-green-100/70 backdrop-blur-xl">
+          <div className="relative z-50">
+            <div className="rounded-2xl shadow-2xl border border-green-200 bg-white/80 backdrop-blur-lg p-0 w-[95vw] max-w-3xl">
+              <DialogMap
+                open={showDialogMap}
+                onClose={() => setShowDialogMap(false)}
+                onSubmit={handleDialogMapSubmit}
+                year={selectedYear}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
