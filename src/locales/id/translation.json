@@ -993,6 +993,7 @@
     }
   },
   "adminDashboard": {
+    "gisMapTitle" : "Peta Interaktif Desa",
     "title": "Dashboard Admin",
     "subtitle": "Ringkasan aktivitas dan statistik terbaru",
     "mainCards": {

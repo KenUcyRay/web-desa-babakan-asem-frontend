@@ -20,6 +20,7 @@ import {
   FaStar,
   FaTasks,
   FaMoneyCheckAlt,
+  FaMapMarkerAlt,
 } from "react-icons/fa";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 import { useEffect, useState } from "react";
@@ -123,6 +124,22 @@ export default function AdminSidebar({ isOpen, onClose }) {
       label: t("adminSidebar.menu.administration") || "Administrasi",
       icon: <FaClipboardList />,
     },
+    // {
+    //   to: "/admin/manage-region",
+    //   label:
+    //     i18n.language === "en"
+    //       ? "Manage Region (Area)"
+    //       : "Kelola Wilayah (Region)",
+    //   icon: <FaSitemap />,
+    // },
+    // {
+    //   to: "/admin/manage-poi",
+    //   label:
+    //     i18n.language === "en"
+    //       ? "Manage POI (Point of Interest)"
+    //       : "Kelola POI (Point of Interest)",
+    //   icon: <FaMapMarkerAlt />,
+    // },
   ];
 
   const manageOrganisasiSubmenu = [

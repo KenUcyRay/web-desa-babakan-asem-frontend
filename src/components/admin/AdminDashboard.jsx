@@ -15,12 +15,7 @@ import {
   FaChartBar,
   FaDatabase,
   FaClock,
-  FaPlus,
-  FaEdit,
-  FaTrash,
   FaEye,
-  FaUpload,
-  FaInfoCircle,
   FaUser,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
@@ -33,11 +28,9 @@ import {
   Marker,
   Popup,
   Tooltip,
-  GeoJSON,
 } from "react-leaflet";
 import L from "leaflet";
 import { MapApi } from "../../libs/api/MapApi"; // Pastikan path sesuai
-
 import { NewsApi } from "../../libs/api/NewsApi";
 import { AgendaApi } from "../../libs/api/AgendaApi";
 import { MessageApi } from "../../libs/api/MessageApi";
@@ -66,8 +59,6 @@ const createIcon = (iconUrl) =>
 const defaultIconUrl = "/assets/icons/logo-desa-babakan-asem.png";
 // Fallback jika logo utama gagal dimuat
 const fallbackIconUrl = "https://i.ibb.co/XZQQgFP/building.png";
-
-// Default icon dengan logo desa
 
 // Kamus icon berdasarkan kategori
 const categoryIcons = {
@@ -106,6 +97,13 @@ export default function AdminDashboard() {
   const [mapLoading, setMapLoading] = useState(true);
   const [mapError, setMapError] = useState(null);
 
+  // State dari Tes.jsx
+  const [selectedYear, setSelectedYear] = useState(2025);
+  const [mapData, setMapData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [iconError, setIconError] = useState(false);
+
   const [newsCount, setNewsCount] = useState(0);
   const [agendaCount, setAgendaCount] = useState(0);
   const [messageCount, setMessageCount] = useState(0);
@@ -121,58 +119,121 @@ export default function AdminDashboard() {
   const [dokumenPreview, setDokumenPreview] = useState([]);
   const [programKerjaPreview, setProgramKerjaPreview] = useState([]);
 
-  const [activityLog, setActivityLog] = useState([
-    // {
-    //   id: 1,
-    //   type: "create",
-    //   module: "Berita",
-    //   description: "Menambahkan berita baru 'Gotong Royong Desa'",
-    //   user: "Admin Desa",
-    //   timestamp: new Date(Date.now() - 5 * 60000),
-    //   icon: FaNewspaper,
-    //   color: "text-blue-500",
-    // },
-    // {
-    //   id: 2,
-    //   type: "edit",
-    //   module: "Program Kerja",
-    //   description: "Memperbarui status program 'Perbaikan Jalan'",
-    //   user: "Admin Desa",
-    //   timestamp: new Date(Date.now() - 15 * 60000),
-    //   icon: FaTasks,
-    //   color: "text-yellow-500",
-    // },
-    // {
-    //   id: 3,
-    //   type: "upload",
-    //   module: "Galeri",
-    //   description: "Mengunggah 3 foto kegiatan desa",
-    //   user: "Admin Desa",
-    //   timestamp: new Date(Date.now() - 30 * 60000),
-    //   icon: FaImage,
-    //   color: "text-green-500",
-    // },
-    // {
-    //   id: 4,
-    //   type: "view",
-    //   module: "Pesan",
-    //   description: "Membaca 5 pesan baru dari warga",
-    //   user: "Admin Desa",
-    //   timestamp: new Date(Date.now() - 45 * 60000),
-    //   icon: FaComments,
-    //   color: "text-purple-500",
-    // },
-    // {
-    //   id: 5,
-    //   type: "create",
-    //   module: "BUMDes",
-    //   description: "Menambahkan produk baru 'Keripik Singkong'",
-    //   user: "Admin Desa",
-    //   timestamp: new Date(Date.now() - 60 * 60000),
-    //   icon: FaStore,
-    //   color: "text-teal-500",
-    // },
-  ]);
+  const [activityLog, setActivityLog] = useState([]);
+
+  // Handle icon error dengan menggunakan fallback icon
+  useEffect(() => {
+    const img = new Image();
+    img.onerror = () => {
+      console.warn("Default icon failed to load, using fallback");
+      setIconError(true);
+    };
+    img.src = defaultIconUrl;
+  }, []);
+
+  // Fungsi untuk mengambil data peta dari API
+  const fetchMapData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Menggunakan language default 'id' atau bisa disesuaikan
+      const response = await MapApi.getMapData("id");
+
+      if (!response.ok) {
+        throw new Error("Gagal mengambil data peta");
+      }
+
+      const data = await response.json();
+
+      // Format data untuk peta
+      const formattedData = [];
+
+      // Menangani region/polygon
+      if (data.regions && Array.isArray(data.regions)) {
+        data.regions.forEach((region) => {
+          formattedData.push({
+            id: region.id,
+            name: region.name,
+            description: region.description || "Wilayah Desa",
+            type: "polygon",
+            category: region.type || "region", // Kategori untuk legenda
+            year: region.year || 2025,
+            // Pastikan koordinat dalam format yang benar
+            coordinates: region.coordinates,
+          });
+        });
+      }
+
+      // Menangani POI/marker
+      if (data.regions && Array.isArray(data.regions)) {
+        // POI yang ada di dalam region
+        data.regions.forEach((region) => {
+          if (region.pois && Array.isArray(region.pois)) {
+            region.pois.forEach((poi) => {
+              formattedData.push({
+                id: `poi-${poi.id}`,
+                name: poi.name,
+                description: poi.description || "Point of Interest",
+                type: "marker",
+                category: poi.type || "default", // Kategori untuk legenda
+                year: poi.year || 2025,
+                coordinates: [poi.coordinates[0]], // Format untuk marker
+                icon: getIconForCategory(poi.type, poi.icon),
+              });
+            });
+          }
+        });
+      }
+
+      // Menangani POI yang berdiri sendiri
+      if (data.additionalPois && Array.isArray(data.additionalPois)) {
+        data.additionalPois.forEach((poi) => {
+          formattedData.push({
+            id: `standalone-poi-${poi.id}`,
+            name: poi.name,
+            description: poi.description || "Point of Interest",
+            type: "marker",
+            category: poi.type || "default", // Kategori untuk legenda
+            year: poi.year || 2025,
+            coordinates: [poi.coordinates[0]], // Format untuk marker
+            icon: getIconForCategory(poi.type, poi.icon),
+          });
+        });
+      }
+
+      setMapData(formattedData);
+    } catch (error) {
+      console.error("Error fetching map data:", error);
+      setError("Gagal memuat data peta. Silakan coba lagi.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fungsi untuk mendapatkan icon berdasarkan kategori
+  function getIconForCategory(category, customIcon) {
+    if (customIcon) return customIcon;
+
+    if (category && categoryIcons[category]) {
+      return categoryIcons[category];
+    }
+
+    return iconError ? fallbackIconUrl : defaultIconUrl;
+  }
+
+  // Fungsi untuk mendapatkan label kategori marker
+  function markerCategoryLabel(category) {
+    const labelMap = {
+      office: "Kantor Desa",
+      mosque: "Masjid",
+      school: "Sekolah",
+      health: "Fasilitas Kesehatan",
+      market: "Pasar",
+      default: "Point of Interest",
+    };
+    return labelMap[category] || category;
+  }
 
   // Fetch GeoJSON untuk peta
   const fetchGeoData = async () => {
@@ -343,114 +404,8 @@ export default function AdminDashboard() {
     fetchProgramKerjaPreview();
     fetchStrukturPreview();
     fetchLog();
+    fetchMapData(); // Tambahkan fetch map data
   }, [i18n.language]);
-
-  const [selectedYear, setSelectedYear] = useState(2025);
-  const [mapData, setMapData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [iconError, setIconError] = useState(false);
-
-  // Handle icon error dengan menggunakan fallback icon
-  useEffect(() => {
-    const img = new Image();
-    img.onerror = () => {
-      console.warn("Default icon failed to load, using fallback");
-      setIconError(true);
-    };
-    img.src = defaultIconUrl;
-  }, []);
-
-  // Fungsi untuk mengambil data peta dari API
-  const fetchMapData = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      // Menggunakan language default 'id' atau bisa disesuaikan
-      const response = await MapApi.getMapData("id");
-
-      if (!response.ok) {
-        throw new Error("Gagal mengambil data peta");
-      }
-
-      const data = await response.json();
-
-      // Format data untuk peta
-      const formattedData = [];
-
-      // Menangani region/polygon
-      if (data.regions && Array.isArray(data.regions)) {
-        data.regions.forEach((region) => {
-          formattedData.push({
-            id: region.id,
-            name: region.name,
-            description: region.description || "Wilayah Desa",
-            type: "polygon",
-            category: region.type || "region", // Kategori untuk legenda
-            year: region.year || 2025,
-            // Pastikan koordinat dalam format yang benar
-            coordinates: region.coordinates,
-          });
-        });
-      }
-
-      // Menangani POI/marker
-      if (data.regions && Array.isArray(data.regions)) {
-        // POI yang ada di dalam region
-        data.regions.forEach((region) => {
-          if (region.pois && Array.isArray(region.pois)) {
-            region.pois.forEach((poi) => {
-              formattedData.push({
-                id: `poi-${poi.id}`,
-                name: poi.name,
-                description: poi.description || "Point of Interest",
-                type: "marker",
-                category: poi.type || "default", // Kategori untuk legenda
-                year: poi.year || 2025,
-                coordinates: [poi.coordinates[0]], // Format untuk marker
-                icon: getIconForCategory(poi.type, poi.icon),
-              });
-            });
-          }
-        });
-      }
-
-      // Menangani POI yang berdiri sendiri
-      if (data.additionalPois && Array.isArray(data.additionalPois)) {
-        data.additionalPois.forEach((poi) => {
-          formattedData.push({
-            id: `standalone-poi-${poi.id}`,
-            name: poi.name,
-            description: poi.description || "Point of Interest",
-            type: "marker",
-            category: poi.type || "default", // Kategori untuk legenda
-            year: poi.year || 2025,
-            coordinates: [poi.coordinates[0]], // Format untuk marker
-            icon: getIconForCategory(poi.type, poi.icon),
-          });
-        });
-      }
-
-      setMapData(formattedData);
-    } catch (error) {
-      console.error("Error fetching map data:", error);
-      setError("Gagal memuat data peta. Silakan coba lagi.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Fungsi untuk mendapatkan icon berdasarkan kategori
-  function getIconForCategory(category, customIcon) {
-    if (customIcon) return customIcon;
-
-    if (category && categoryIcons[category]) {
-      return categoryIcons[category];
-    }
-
-    return iconError ? fallbackIconUrl : defaultIconUrl;
-  }
 
   // Mengambil data saat komponen dimuat atau tahun berubah
   useEffect(() => {
@@ -498,19 +453,6 @@ export default function AdminDashboard() {
     return Array.from(legendMap.values());
   }, [filteredData, iconError]);
 
-  // Fungsi untuk mendapatkan label kategori marker
-  function markerCategoryLabel(category) {
-    const labelMap = {
-      office: "Kantor Desa",
-      mosque: "Masjid",
-      school: "Sekolah",
-      health: "Fasilitas Kesehatan",
-      market: "Pasar",
-      default: "Point of Interest",
-    };
-    return labelMap[category] || category;
-  }
-
   return (
     <div className="w-full font-[Poppins,sans-serif] bg-gray-50 min-h-screen p-4 md:p-6">
       <div className="flex justify-between items-center mb-6">
@@ -533,7 +475,7 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* PETA UTAMA */}
+      {/* PETA UTAMA - Dengan implementasi dari Tes.jsx */}
       <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
         <div className="bg-gradient-to-r from-green-400 to-[#B6F500] p-6">
           <div className="flex items-center justify-between">
@@ -543,10 +485,77 @@ export default function AdminDashboard() {
               </div>
               {t("adminDashboard.gisMapTitle") || "Peta Digital Desa"}
             </h2>
+
+            {/* Filter Tahun - dari Tes.jsx */}
+            <div className="flex items-center gap-4">
+              <label className="text-white font-medium text-md">
+                Pilih Tahun:
+              </label>
+              <select
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+                className="px-3 py-2 rounded-md border border-white/40 bg-white/20 
+               text-white text-sm backdrop-blur-sm focus:outline-none 
+               focus:ring-2 focus:ring-white/60 hover:bg-white/30 
+               transition-colors duration-200"
+              >
+                {[2025, 2024].map((y) => (
+                  <option key={y} value={y} className="text-gray-900">
+                    {y}
+                  </option>
+                ))}
+              </select>
+
+              {/* Status Indikator */}
+              {loading && (
+                <span className="text-white text-sm opacity-80">
+                  Memuat data...
+                </span>
+              )}
+              {error && <span className="text-red-200 text-sm">{error}</span>}
+            </div>
           </div>
         </div>
 
-        <div className="p-6">
+        <div className="p-6 relative">
+          {/* Loading states dari Tes.jsx */}
+          {loading && (
+            <div className="absolute top-0 left-0 right-0 bottom-0 bg-white bg-opacity-70 flex justify-center items-center z-50 rounded-xl">
+              <div className="bg-white p-5 rounded-lg shadow-lg flex items-center gap-3">
+                <img
+                  src={iconError ? fallbackIconUrl : defaultIconUrl}
+                  alt="Loading"
+                  className="h-8"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = fallbackIconUrl;
+                  }}
+                />
+                <span className="text-gray-700">Memuat data peta...</span>
+              </div>
+            </div>
+          )}
+
+          {error && !loading && (
+            <div className="absolute top-0 left-0 right-0 bottom-0 bg-white bg-opacity-90 flex justify-center items-center z-50 rounded-xl">
+              <div className="bg-white p-5 rounded-lg shadow-lg text-center">
+                <p className="text-red-600 font-bold mb-4">{error}</p>
+                <button
+                  onClick={fetchMapData}
+                  className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+                >
+                  Coba Lagi
+                </button>
+              </div>
+            </div>
+          )}
+
+          {!loading && !error && filteredData.length === 0 && (
+            <div className="h-[500px] rounded-xl bg-gray-100 flex items-center justify-center">
+              <p className="text-gray-600">Tidak ada data peta yang tersedia</p>
+            </div>
+          )}
+
           {mapLoading ? (
             <div className="h-[500px] rounded-xl bg-gray-100 flex items-center justify-center">
               <p>{t("adminDashboard.gisMapLoading") || "Memuat peta..."}</p>
@@ -556,9 +565,9 @@ export default function AdminDashboard() {
               {t("adminDashboard.gisMapError") || "Error: "} {mapError}
             </div>
           ) : (
-            <div className="rounded-xl overflow-hidden shadow-md border-2 border-green-100">
+            <div className="rounded-xl overflow-hidden shadow-md border-2 border-green-100 relative">
               <MapContainer
-                center={[-6.75, 108.05]}
+                center={[-6.75, 108.05861]}
                 zoom={15}
                 scrollWheelZoom={true}
                 className="w-full h-[500px]"
@@ -567,76 +576,178 @@ export default function AdminDashboard() {
                   attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
-                <GeoJSON
-                  data={geoData}
-                  style={{
-                    color: "#22c55e",
-                    weight: 3,
-                    fillColor: "#86efac",
-                    fillOpacity: 0.6,
-                  }}
-                  onEachFeature={(feature, layer) => {
-                    layer.on({
-                      click: () => {
-                        const name =
-                          feature.properties?.name || "Desa Babakan Asem";
-                        layer
-                          .bindPopup(
-                            `<div class="p-2"><b class="text-green-700">${name}</b></div>`
-                          )
-                          .openPopup();
-                      },
-                      mouseover: (e) => {
-                        const layer = e.target;
-                        layer.setStyle({
-                          weight: 4,
-                          color: "#16a34a",
-                          fillOpacity: 0.8,
-                        });
-                      },
-                      mouseout: (e) => {
-                        const layer = e.target;
-                        layer.setStyle({
-                          color: "#22c55e",
-                          weight: 3,
-                          fillColor: "#86efac",
-                          fillOpacity: 0.6,
-                        });
-                      },
-                    });
-                  }}
-                />
+
+                {/* Render POI dan Polygon dari API */}
+                {filteredData.map((item) =>
+                  item.type === "polygon" ? (
+                    (() => {
+                      const polygonIdx = polygonLegendData.findIndex(
+                        (p) => p.id === item.id
+                      );
+                      const color =
+                        polygonLegendData[polygonIdx]?.color || "#2563eb";
+                      return (
+                        <Polygon
+                          key={item.id}
+                          positions={item.coordinates}
+                          pathOptions={{
+                            color,
+                            weight: 2,
+                            dashArray: "4, 4",
+                            fillColor: "transparent",
+                            opacity: 0.9,
+                          }}
+                        >
+                          <Tooltip permanent={false} direction="center">
+                            {item.name}
+                          </Tooltip>
+                          <Popup>
+                            <div className="text-center">
+                              <strong className="text-base" style={{ color }}>
+                                {item.name}
+                              </strong>
+                              <p className="text-sm my-2">{item.description}</p>
+                              <p className="text-xs text-gray-600">
+                                Kecamatan: Congeang
+                              </p>
+                            </div>
+                          </Popup>
+                        </Polygon>
+                      );
+                    })()
+                  ) : (
+                    <Marker
+                      key={item.id}
+                      position={item.coordinates[0]}
+                      icon={createIcon(
+                        item.icon ||
+                          (iconError ? fallbackIconUrl : defaultIconUrl)
+                      )}
+                    >
+                      <Tooltip permanent={false}>{item.name}</Tooltip>
+                      <Popup>
+                        <div className="text-center">
+                          <strong className="text-base text-red-600">
+                            {item.name}
+                          </strong>
+                          <p className="text-sm my-2">{item.description}</p>
+                          <p className="text-xs text-gray-600">
+                            Koordinat: {item.coordinates[0][0].toFixed(6)},{" "}
+                            {item.coordinates[0][1].toFixed(6)}
+                          </p>
+                        </div>
+                      </Popup>
+                    </Marker>
+                  )
+                )}
               </MapContainer>
             </div>
           )}
         </div>
 
-        {/* LEGENDA PETA */}
+        {/* LEGENDA PETA - Gabungan static dan dynamic */}
         <div className="px-6 pb-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="flex items-center gap-3 p-3 bg-white rounded-lg shadow-sm">
-              <div className="w-4 h-4 bg-green-400 border-2 border-green-600 rounded"></div>
-              <span className="text-sm">
-                {t("adminDashboard.gisLegend.villageArea") || "Wilayah Desa"}
-              </span>
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold text-gray-800 mb-3">
+              Legenda:
+            </h3>
+          </div>
+
+          {/* Dynamic legend dari data API */}
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h4 className="font-medium text-gray-700 mb-3">
+              Points of Interest:
+            </h4>
+            <div className="flex flex-wrap gap-4 mb-4">
+              {/* Polygon legend */}
+              {polygonLegendData.map((poly) => (
+                <div
+                  key={`legend-poly-${poly.id}`}
+                  className="flex items-center gap-2"
+                >
+                  <div
+                    className="w-8 h-0 border-t-2 border-dashed"
+                    style={{ borderColor: poly.color }}
+                  ></div>
+                  <span className="text-sm text-gray-700">{poly.label}</span>
+                </div>
+              ))}
+
+              {/* Marker legend */}
+              {legendItems
+                .filter((item) => item.type === "marker")
+                .map((item, index) => (
+                  <div
+                    key={`legend-marker-${index}`}
+                    className="flex items-center gap-2"
+                  >
+                    <div
+                      className="w-5 h-5 bg-contain bg-no-repeat"
+                      style={{ backgroundImage: `url('${item.icon}')` }}
+                    ></div>
+                    <span className="text-sm text-gray-700">
+                      {item.label}
+                      {item.items &&
+                        item.items.length > 1 &&
+                        ` (${item.items.length})`}
+                    </span>
+                  </div>
+                ))}
+
+              {legendItems.length === 0 && polygonLegendData.length === 0 && (
+                <span className="text-sm text-gray-500 italic">
+                  Tidak ada item untuk ditampilkan
+                </span>
+              )}
             </div>
-            <div className="flex items-center gap-3 p-3 bg-white rounded-lg shadow-sm">
-              <div className="w-4 h-4 bg-blue-400 rounded"></div>
-              <span className="text-sm">
-                {t("adminDashboard.gisLegend.river") || "Sungai/Irigasi"}
-              </span>
-            </div>
-            <div className="flex items-center gap-3 p-3 bg-white rounded-lg shadow-sm">
-              <div className="w-4 h-1 bg-gray-600"></div>
-              <span className="text-sm">
-                {t("adminDashboard.gisLegend.mainRoad") || "Jalan Utama Desa"}
-              </span>
-            </div>
-            <div className="flex items-center gap-3 p-3 bg-white rounded-lg shadow-sm">
-              <div className="w-4 h-4 bg-yellow-400 rounded-full"></div>
-              <span className="text-sm">
-                {t("adminDashboard.gisLegend.publicFacilities") ||
-                  "Fasilitas Umum"}
+
+            {/* Detail POI */}
+            {legendItems
+              .filter(
+                (item) =>
+                  item.type === "marker" && item.items && item.items.length > 0
+              )
+              .map((category, idx) => (
+                <div key={`category-${idx}`} className="mt-3">
+                  <strong className="text-sm text-gray-600">
+                    {category.label}:
+                  </strong>
+                  <div className="flex flex-wrap gap-3 mt-2">
+                    {category.items.map((itemName, i) => {
+                      // Find the corresponding marker data for icon
+                      const markerData = filteredData.find(
+                        (d) =>
+                          d.type === "marker" &&
+                          d.name === itemName &&
+                          d.category === category.category
+                      );
+                      const iconUrl = markerData
+                        ? markerData.icon
+                        : iconError
+                        ? fallbackIconUrl
+                        : defaultIconUrl;
+                      return (
+                        <div
+                          key={`poi-icon-${i}`}
+                          className="flex items-center gap-2"
+                        >
+                          <div
+                            className="w-5 h-5 bg-contain bg-no-repeat"
+                            style={{ backgroundImage: `url('${iconUrl}')` }}
+                          ></div>
+                          <span className="text-sm text-gray-700">
+                            {itemName}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+
+            <div className="mt-4 text-right">
+              <span className="text-xs text-gray-500 italic">
+                Desa Babakan Asem, Kecamatan Congeang
               </span>
             </div>
           </div>

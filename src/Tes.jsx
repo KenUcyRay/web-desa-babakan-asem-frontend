@@ -192,7 +192,8 @@ export default function Tes() {
       .filter((item) => item.type === "marker")
       .forEach((marker) => {
         const category = marker.category || "default";
-        const icon = marker.icon || (iconError ? fallbackIconUrl : defaultIconUrl);
+        const icon =
+          marker.icon || (iconError ? fallbackIconUrl : defaultIconUrl);
         if (!legendMap.has(`marker-${category}`)) {
           legendMap.set(`marker-${category}`, {
             type: "marker",
@@ -223,56 +224,30 @@ export default function Tes() {
   }
 
   return (
-    <div>
+    <div className="min-h-screen flex flex-col bg-white">
       {/* Header dengan Logo */}
-      <div
-        style={{
-          padding: "10px 20px",
-          backgroundColor: "#ffffff",
-          borderBottom: "1px solid #dee2e6",
-          display: "flex",
-          alignItems: "center",
-        }}
-      >
+      <div className="flex items-center px-5 py-2 bg-white border-b border-gray-300">
         <img
           src={iconError ? fallbackIconUrl : defaultIconUrl}
           alt="Logo Desa Babakan Asem"
-          style={{
-            height: "40px",
-            marginRight: "15px",
-          }}
+          className="h-10 mr-4"
           onError={(e) => {
             e.target.onerror = null;
             e.target.src = fallbackIconUrl;
           }}
         />
-        <h1 style={{ margin: 0, fontSize: "18px", color: "#333" }}>
+        <h1 className="m-0 text-lg text-gray-800 font-bold">
           Peta Desa Babakan Asem
         </h1>
       </div>
 
       {/* Filter Tahun */}
-      <div
-        style={{
-          padding: "15px",
-          backgroundColor: "#f8f9fa",
-          borderBottom: "1px solid #dee2e6",
-        }}
-      >
-        <label
-          style={{ fontWeight: "bold", marginRight: "10px", fontSize: "14px" }}
-        >
-          Pilih Tahun:
-        </label>
+      <div className="px-5 py-3 bg-gray-100 border-b border-gray-300 flex items-center">
+        <label className="font-bold mr-3 text-sm">Pilih Tahun:</label>
         <select
           value={selectedYear}
           onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-          style={{
-            padding: "8px 12px",
-            borderRadius: "6px",
-            border: "1px solid #ced4da",
-            fontSize: "14px",
-          }}
+          className="px-3 py-2 rounded-md border border-gray-300 text-sm focus:outline-none focus:ring focus:border-blue-400"
         >
           {[2025].map((y) => (
             <option key={y} value={y}>
@@ -283,52 +258,20 @@ export default function Tes() {
 
         {/* Status Indikator */}
         {loading && (
-          <span style={{ marginLeft: "15px", color: "#666", fontSize: "14px" }}>
-            Memuat data...
-          </span>
+          <span className="ml-4 text-gray-500 text-sm">Memuat data...</span>
         )}
-        {error && (
-          <span
-            style={{ marginLeft: "15px", color: "#dc2626", fontSize: "14px" }}
-          >
-            {error}
-          </span>
-        )}
+        {error && <span className="ml-4 text-red-600 text-sm">{error}</span>}
       </div>
 
       {/* Map */}
-      <div style={{ position: "relative", height: "70vh", width: "100%" }}>
+      <div className="relative w-full" style={{ height: "70vh" }}>
         {loading && (
-          <div
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: "rgba(255,255,255,0.7)",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              zIndex: 1000,
-            }}
-          >
-            <div
-              style={{
-                padding: "20px",
-                backgroundColor: "white",
-                borderRadius: "8px",
-                boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
-              }}
-            >
+          <div className="absolute inset-0 bg-white/70 flex justify-center items-center z-50">
+            <div className="p-5 bg-white rounded-lg shadow-md flex items-center">
               <img
                 src={iconError ? fallbackIconUrl : defaultIconUrl}
                 alt="Loading"
-                style={{
-                  height: "30px",
-                  marginRight: "10px",
-                  verticalAlign: "middle",
-                }}
+                className="h-8 mr-2 align-middle"
                 onError={(e) => {
                   e.target.onerror = null;
                   e.target.src = fallbackIconUrl;
@@ -340,48 +283,12 @@ export default function Tes() {
         )}
 
         {error && !loading && (
-          <div
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: "rgba(255,255,255,0.9)",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              zIndex: 1000,
-            }}
-          >
-            <div
-              style={{
-                padding: "20px",
-                backgroundColor: "white",
-                borderRadius: "8px",
-                boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
-                textAlign: "center",
-              }}
-            >
-              <p
-                style={{
-                  color: "#dc2626",
-                  fontWeight: "bold",
-                  marginBottom: "10px",
-                }}
-              >
-                {error}
-              </p>
+          <div className="absolute inset-0 bg-white/90 flex justify-center items-center z-50">
+            <div className="p-5 bg-white rounded-lg shadow-md text-center">
+              <p className="text-red-600 font-bold mb-2">{error}</p>
               <button
                 onClick={fetchMapData}
-                style={{
-                  padding: "8px 16px",
-                  backgroundColor: "#3b82f6",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                }}
+                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
               >
                 Coba Lagi
               </button>
@@ -390,36 +297,16 @@ export default function Tes() {
         )}
 
         {!loading && !error && filteredData.length === 0 && (
-          <div
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: "rgba(255,255,255,0.9)",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              zIndex: 1000,
-            }}
-          >
-            <div
-              style={{
-                padding: "20px",
-                backgroundColor: "white",
-                borderRadius: "8px",
-                boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
-              }}
-            >
+          <div className="absolute inset-0 bg-white/90 flex justify-center items-center z-50">
+            <div className="p-5 bg-white rounded-lg shadow-md">
               Tidak ada data peta yang tersedia
             </div>
           </div>
         )}
 
         <MapContainer
-          center={[-6.767, 108.067]}
-          zoom={13}
+          center={[-6.75, 108.05861]}
+          zoom={17}
           style={{ height: "100%", width: "100%" }}
         >
           <TileLayer
@@ -430,7 +317,9 @@ export default function Tes() {
           {filteredData.map((item) =>
             item.type === "polygon" ? (
               (() => {
-                const polygonIdx = polygonLegendData.findIndex(p => p.id === item.id);
+                const polygonIdx = polygonLegendData.findIndex(
+                  (p) => p.id === item.id
+                );
                 const color = polygonLegendData[polygonIdx]?.color || "#2563eb";
                 return (
                   <Polygon
@@ -448,10 +337,14 @@ export default function Tes() {
                       {item.name}
                     </Tooltip>
                     <Popup>
-                      <div style={{ textAlign: "center" }}>
-                        <strong style={{ fontSize: "16px", color }}>{item.name}</strong>
-                        <p style={{ margin: "8px 0", fontSize: "14px" }}>{item.description}</p>
-                        <p style={{ margin: "5px 0", fontSize: "12px", color: "#666" }}>Kecamatan: Congeang</p>
+                      <div className="text-center">
+                        <strong className="text-base" style={{ color }}>
+                          {item.name}
+                        </strong>
+                        <p className="my-2 text-sm">{item.description}</p>
+                        <p className="my-1 text-xs text-gray-500">
+                          Kecamatan: Congeang
+                        </p>
                       </div>
                     </Popup>
                   </Polygon>
@@ -467,20 +360,12 @@ export default function Tes() {
               >
                 <Tooltip permanent={false}>{item.name}</Tooltip>
                 <Popup>
-                  <div style={{ textAlign: "center" }}>
-                    <strong style={{ fontSize: "16px", color: "#dc2626" }}>
+                  <div className="text-center">
+                    <strong className="text-base text-red-600">
                       {item.name}
                     </strong>
-                    <p style={{ margin: "8px 0", fontSize: "14px" }}>
-                      {item.description}
-                    </p>
-                    <p
-                      style={{
-                        margin: "5px 0",
-                        fontSize: "12px",
-                        color: "#666",
-                      }}
-                    >
+                    <p className="my-2 text-sm">{item.description}</p>
+                    <p className="my-1 text-xs text-gray-500">
                       Koordinat: {item.coordinates[0][0].toFixed(6)},{" "}
                       {item.coordinates[0][1].toFixed(6)}
                     </p>
@@ -493,107 +378,63 @@ export default function Tes() {
       </div>
 
       {/* Legenda di bawah peta - DINAMIS */}
-      <div
-        style={{
-          padding: "20px",
-          backgroundColor: "#f8f9fa",
-          borderTop: "1px solid #dee2e6",
-        }}
-      >
-        <div
-          style={{
-            maxWidth: "1200px",
-            margin: "0 auto",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              marginBottom: "15px",
-            }}
-          >
-            <strong
-              style={{ fontSize: "16px", color: "#333", marginRight: "20px" }}
-            >
-              Legenda:
-            </strong>
+      <div className="px-5 py-5 bg-gray-100 border-t border-gray-300">
+        <div className="max-w-screen-xl mx-auto">
+          <div className="flex items-center mb-4">
+            <strong className="text-base text-gray-800 mr-5">Legenda:</strong>
 
             {/* Menampilkan legenda secara dinamis */}
-            <div
-              style={{
-                display: "flex",
-                flexWrap: "wrap",
-                gap: "20px",
-                flex: 1,
-              }}
-            >
-              {/* Poligon legend: warna dan label sinkron dengan peta */}
+            <div className="flex flex-wrap gap-5 flex-1">
               {/* Poligon legend: warna dan label sinkron dengan peta */}
               {polygonLegendData.map((poly, idx) => (
                 <div
                   key={`legend-poly-${poly.id}`}
-                  style={{ display: "flex", alignItems: "center", gap: "8px" }}
+                  className="flex items-center gap-2"
                 >
                   <div
+                    className="flex items-center"
                     style={{
-                      display: "flex",
-                      alignItems: "center",
                       width: "40px",
                       height: "0px",
                       borderTop: `2px dotted ${poly.color}`,
                     }}
                   ></div>
-                  <span style={{ fontSize: "14px", color: "#333" }}>{poly.label}</span>
+                  <span className="text-sm text-gray-800">{poly.label}</span>
                 </div>
               ))}
               {/* Marker legend */}
-              {legendItems.filter(item => item.type === "marker").map((item, index) => (
-                <div
-                  key={`legend-marker-${index}`}
-                  style={{ display: "flex", alignItems: "center", gap: "8px" }}
-                >
+              {legendItems
+                .filter((item) => item.type === "marker")
+                .map((item, index) => (
                   <div
-                    style={{
-                      width: "20px",
-                      height: "20px",
-                      backgroundImage: `url('${item.icon}')`,
-                      backgroundSize: "contain",
-                      backgroundRepeat: "no-repeat",
-                    }}
-                    onError={(e) => {
-                      e.target.style.backgroundImage = `url('${fallbackIconUrl}')`;
-                    }}
-                  ></div>
-                  <span style={{ fontSize: "14px", color: "#333" }}>
-                    {item.label}
-                    {item.items && item.items.length > 1 && ` (${item.items.length})`}
-                  </span>
-                </div>
-              ))}
+                    key={`legend-marker-${index}`}
+                    className="flex items-center gap-2"
+                  >
+                    <div
+                      className="w-5 h-5 bg-contain bg-no-repeat"
+                      style={{ backgroundImage: `url('${item.icon}')` }}
+                      onError={(e) => {
+                        e.target.style.backgroundImage = `url('${fallbackIconUrl}')`;
+                      }}
+                    ></div>
+                    <span className="text-sm text-gray-800">
+                      {item.label}
+                      {item.items &&
+                        item.items.length > 1 &&
+                        ` (${item.items.length})`}
+                    </span>
+                  </div>
+                ))}
 
               {/* Jika tidak ada item legenda */}
               {legendItems.length === 0 && (
-                <span
-                  style={{
-                    fontSize: "14px",
-                    color: "#666",
-                    fontStyle: "italic",
-                  }}
-                >
+                <span className="text-sm text-gray-500 italic">
                   Tidak ada item untuk ditampilkan
                 </span>
               )}
             </div>
 
-            <div
-              style={{
-                marginLeft: "auto",
-                fontSize: "12px",
-                color: "#666",
-                fontStyle: "italic",
-              }}
-            >
+            <div className="ml-auto text-xs text-gray-500 italic">
               Desa Babakan Asem, Kecamatan Congeang
             </div>
           </div>
@@ -605,18 +446,11 @@ export default function Tes() {
                 item.type === "marker" && item.items && item.items.length > 0
             )
             .map((category, idx) => (
-              <div key={`category-${idx}`} style={{ marginTop: "10px" }}>
-                <strong style={{ fontSize: "13px", color: "#555" }}>
+              <div key={`category-${idx}`} className="mt-2">
+                <strong className="text-sm text-gray-700">
                   {category.label}:
                 </strong>
-                <div
-                  style={{
-                    display: "flex",
-                    flexWrap: "wrap",
-                    gap: "15px",
-                    marginTop: "5px",
-                  }}
-                >
+                <div className="flex flex-wrap gap-4 mt-1">
                   {category.items.map((itemName, i) => {
                     // Find the corresponding marker data for icon
                     const markerData = filteredData.find(
@@ -633,22 +467,13 @@ export default function Tes() {
                     return (
                       <div
                         key={`poi-icon-${i}`}
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "6px",
-                        }}
+                        className="flex items-center gap-1"
                       >
                         <div
-                          style={{
-                            width: "20px",
-                            height: "20px",
-                            backgroundImage: `url('${iconUrl}')`,
-                            backgroundSize: "contain",
-                            backgroundRepeat: "no-repeat",
-                          }}
+                          className="w-5 h-5 bg-contain bg-no-repeat"
+                          style={{ backgroundImage: `url('${iconUrl}')` }}
                         ></div>
-                        <span style={{ fontSize: "13px", color: "#333" }}>
+                        <span className="text-xs text-gray-800">
                           {itemName}
                         </span>
                       </div>
@@ -661,17 +486,12 @@ export default function Tes() {
       </div>
 
       {/* Footer dengan credit */}
-      <div
-        style={{
-          padding: "10px 20px",
-          backgroundColor: "#f1f1f1",
-          borderTop: "1px solid #dee2e6",
-          fontSize: "12px",
-          color: "#666",
-          textAlign: "center",
-        }}
-      >
-        <span>&copy; {new Date().getFullYear()} Desa Babakan Asem, Kecamatan Congeang.</span><br />
+      <div className="px-5 py-2 bg-gray-200 border-t border-gray-300 text-xs text-gray-500 text-center">
+        <span>
+          &copy; {new Date().getFullYear()} Desa Babakan Asem, Kecamatan
+          Congeang.
+        </span>
+        <br />
         <span>Seluruh hak cipta dilindungi.</span>
       </div>
     </div>
