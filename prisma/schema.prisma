@@ -10,6 +10,60 @@ datasource db {
 
 //Rill Fix
 
+model Region {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  type        String // "polygon", "multipolygon", etc.
+  year        Int
+  coordinates Json // Menyimpan array koordinat dalam format GeoJSON
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relasi dengan POI (Point of Interest)
+  pois POI[]
+}
+
+// Model untuk menyimpan Point of Interest (seperti kantor desa)
+model POI {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  type        String // "marker", "office", etc.
+  year        Int
+  latitude    Float
+  longitude   Float
+  icon        String?
+  regionId    Int?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relasi dengan Region
+  region Region? @relation(fields: [regionId], references: [id])
+}
+
+model ActivityLog {
+  id         String              @id @default(uuid())
+  user_id    String
+  action     String              @db.VarChar(255)
+  location   ActivityLogLocation
+  created_at DateTime            @default(now())
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("activity_logs")
+}
+
+enum ActivityLogLocation {
+  NEWS
+  AGENDA
+  GALLERY
+  MESSAGE
+  BUMDES
+  VILLAGEWORKPROGRAM
+  USER
+}
+
 model User {
   id           String   @id @default(uuid())
   name         String   @db.VarChar(255)
@@ -21,7 +75,8 @@ model User {
   created_at   DateTime @default(now())
   updated_at   DateTime @updatedAt
 
-  comments Comment[]
+  comments    Comment[]
+  ActivityLog ActivityLog[]
 
   @@map("users")
 }

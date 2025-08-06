@@ -10,7 +10,7 @@ i18next
     fallbackLng: "id",
     preload: ["en", "id"], // bahasa yang tersedia
     backend: {
-      loadPath: path.join(__dirname, "../locale/{{lng}}/translation.json"),
+      loadPath: path.join(__dirname, "../../locale/{{lng}}/translation.json"),
     },
     detection: {
       order: ["header", "query"],

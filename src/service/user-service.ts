@@ -21,7 +21,7 @@ import {
 import { generateToken } from "@/util/jwt";
 import { UserValidation } from "@/validation/user-validation";
 import { transporter } from "@/application/nodemailer";
-import { Role } from "@prisma/client";
+import { ActivityLogLocation, Role } from "@prisma/client";
 import { verifyRecaptcha } from "@/util/recaptcha";
 
 export class UserService {
@@ -299,7 +299,11 @@ export class UserService {
       users
     );
   }
-  static async createUser(t: TFunction, request: CreateUserRequest) {
+  static async createUser(
+    t: TFunction,
+    request: CreateUserRequest,
+    user: UserResponse
+  ) {
     Validation.validate(UserValidation.createUser, request);
 
     const findUserWithSameEmaiOrPhone = await prismaClient.user.count({
@@ -321,6 +325,14 @@ export class UserService {
         email: request.email,
         password: request.password,
         role: request.role,
+      },
+    });
+
+    await prismaClient.activityLog.create({
+      data: {
+        user_id: user.id,
+        action: `User ${userCreate.name} with role ${userCreate.role} created by ${user.name}`,
+        location: ActivityLogLocation.USER,
       },
     });
 

@@ -46,3 +46,10 @@ ada bug saat tokennya basi gk bisa logout!!
 Ada masalah untuk semua yang punya komentar
 
 -- Message done all meren
+
+
+// Tambahin tabel log
+  Apa yang dilakukan
+  Dimana Lakukannya
+  Siapa Lakukannya
+  Kapan Lakukannya

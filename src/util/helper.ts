@@ -1,4 +1,4 @@
-export class Helper {
+ export class Helper {
   static toTitleCase(str: string): string {
     return str
       .toLowerCase()

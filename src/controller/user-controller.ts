@@ -78,7 +78,7 @@ export class UserController {
     next: NextFunction
   ) {
     try {
-      const response = await UserService.createUser(req.t, req.body);
+      const response = await UserService.createUser(req.t, req.body, req.user!);
       res.status(201).json(response);
     } catch (error) {
       next(error);

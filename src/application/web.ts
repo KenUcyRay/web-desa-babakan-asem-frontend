@@ -28,7 +28,7 @@ export const web = express();
 // Pastikan cookieParser dipasang SEBELUM CORS dan middleware lain
 web.use(
   cors({
-    origin: ["http://192.168.100.219:3000"],
+    origin: ["http://192.168.1.6:3000"],
     credentials: true,
   })
 );

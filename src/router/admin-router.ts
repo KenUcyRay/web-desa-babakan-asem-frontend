@@ -18,11 +18,86 @@ import { AgendaController } from "@/controller/agenda-controller";
 import { CategoryController } from "@/controller/category-controller";
 import { ProductController } from "@/controller/product-controller";
 import { UserController } from "@/controller/user-controller";
+import { ActivityLogController } from "@/controller/activity-log-controller";
 
 export const adminRouter = express.Router();
 
 adminRouter.use(authMiddleware);
+
+// News Regular
+adminRouter.get("/news", NewsController.getOwn);
+adminRouter.post(
+  "/news",
+  upload.single("featured_image"),
+  NewsController.create
+);
+adminRouter.patch(
+  "/news/:newsId",
+  upload.single("featured_image"),
+  NewsController.update
+);
+adminRouter.delete("/news/:newsId", NewsController.delete);
+
+//Galeri PKk, BPD, Karang Taruna. Regular
+adminRouter.post("/galeri", upload.single("image"), GaleriController.create);
+adminRouter.put(
+  "/galeri/:galeriId",
+  upload.single("image"),
+  GaleriController.update
+);
+adminRouter.delete("/galeri/:galeriId", GaleriController.delete);
+
+//Program PKK Ke PKk
+adminRouter.post(
+  "/programs",
+  upload.single("featured_image"),
+  PkkController.create
+);
+adminRouter.patch(
+  "/programs/:programId",
+  upload.single("featured_image"),
+  PkkController.update
+);
+adminRouter.delete("/programs/:programId", PkkController.delete);
+
+// Organization PKK, BPD, Karang Taruna
+adminRouter.post(
+  "/organizations/members",
+  upload.single("profile_photo"),
+  MemberController.createMember
+);
+adminRouter.patch(
+  "/organizations/members/:memberId",
+  upload.single("profile_photo"),
+  MemberController.updateMember
+);
+adminRouter.delete(
+  "/organizations/members/:memberId",
+  MemberController.deleteMember
+);
+adminRouter.get("/organizations/members", MemberController.getAllMembers);
+
+// Agenda // PKK, BPD,  Karang Taruna, Regular
+adminRouter.get("/agenda/me", AgendaController.getOwn);
+adminRouter.post(
+  "/agenda/create",
+  upload.single("featured_image"),
+  AgendaController.create
+);
+adminRouter.patch(
+  "/agenda/update-by-agenda/:agendaId",
+  upload.single("featured_image"),
+  AgendaController.update
+);
+adminRouter.delete(
+  "/agenda/delete-by-agenda/:agendaId",
+  AgendaController.delete
+);
+
 adminRouter.use(roleMiddleware(Role.ADMIN));
+
+// Activity Log
+adminRouter.get("/activity-log", ActivityLogController.getAll);
 
 // Users
 adminRouter.get("/users", UserController.getAllUser);
@@ -39,23 +114,6 @@ adminRouter.patch(
   "/administrations/:id",
   AdministrationController.updatePengantar
 );
-
-// News
-adminRouter.get("/news", NewsController.getOwn);
-adminRouter.post(
-  "/news",
-  upload.single("featured_image"),
-  NewsController.create
-);
-adminRouter.patch(
-  "/news/:newsId",
-  upload.single("featured_image"),
-  NewsController.update
-);
-adminRouter.delete("/news/:newsId", NewsController.delete);
-
-// adminRouter.use("/messages", messageAdminRouter);
-// adminRouter.use("/administrasi", adminRouter);
 
 // Admin routes for village work programs
 adminRouter.post("/village-work-programs", VillageWorkProgramController.create);
@@ -89,46 +147,6 @@ adminRouter.post("/apb", ApbController.create);
 adminRouter.patch("/apb/:id", ApbController.update);
 adminRouter.delete("/apb/:id", ApbController.delete);
 
-//Galeri
-adminRouter.post("/galeri", upload.single("image"), GaleriController.create);
-adminRouter.put(
-  "/galeri/:galeriId",
-  upload.single("image"),
-  GaleriController.update
-);
-adminRouter.delete("/galeri/:galeriId", GaleriController.delete);
-
-//Program PKK
-adminRouter.post(
-  "/programs",
-  upload.single("featured_image"),
-  PkkController.create
-);
-adminRouter.patch(
-  "/programs/:programId",
-  upload.single("featured_image"),
-  PkkController.update
-);
-adminRouter.delete("/programs/:programId", PkkController.delete);
-
-// Organization
-adminRouter.post(
-  "/organizations/members",
-  upload.single("profile_photo"),
-  MemberController.createMember
-);
-adminRouter.patch(
-  "/organizations/members/:memberId",
-  upload.single("profile_photo"),
-  MemberController.updateMember
-);
-adminRouter.delete(
-  "/organizations/members/:memberId",
-  MemberController.deleteMember
-);
-
-adminRouter.get("/organizations/members", MemberController.getAllMembers);
-
 // Infografis
 adminRouter.post("/infografis/idm/", InfografisController.createIdm);
 adminRouter.patch("/infografis/idm/:idmId", InfografisController.updateIdm);
@@ -147,23 +165,6 @@ adminRouter.patch("/infografis/sdg/:sdgId", InfografisController.updateSdgs);
 adminRouter.patch(
   "/infografis/extra-idm/:id",
   InfografisController.updateExtraIdm
-);
-
-// Agenda
-adminRouter.get("/agenda/me", AgendaController.getOwn);
-adminRouter.post(
-  "/agenda/create",
-  upload.single("featured_image"),
-  AgendaController.create
-);
-adminRouter.patch(
-  "/agenda/update-by-agenda/:agendaId",
-  upload.single("featured_image"),
-  AgendaController.update
-);
-adminRouter.delete(
-  "/agenda/delete-by-agenda/:agendaId",
-  AgendaController.delete
 );
 
 // Products
