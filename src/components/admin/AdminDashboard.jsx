@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
   FaNewspaper,
   FaCalendarAlt,
@@ -21,11 +21,22 @@ import {
   FaEye,
   FaUpload,
   FaInfoCircle,
+  FaUser,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+import {
+  MapContainer,
+  TileLayer,
+  Polygon,
+  Marker,
+  Popup,
+  Tooltip,
+  GeoJSON,
+} from "react-leaflet";
+import L from "leaflet";
+import { MapApi } from "../../libs/api/MapApi"; // Pastikan path sesuai
 
 import { NewsApi } from "../../libs/api/NewsApi";
 import { AgendaApi } from "../../libs/api/AgendaApi";
@@ -38,6 +49,53 @@ import { ProgramApi } from "../../libs/api/ProgramApi";
 import { MemberApi } from "../../libs/api/MemberApi";
 import { alertError } from "../../libs/alert";
 import { VillageWorkProgramApi } from "../../libs/api/VillageWorkProgramApi";
+import { LogActivityApi } from "../../libs/api/LogActivityApi";
+import { Helper } from "../../utils/Helper";
+
+// ==== ICON CUSTOM ====
+const createIcon = (iconUrl) =>
+  L.icon({
+    iconUrl,
+    iconSize: [30, 30],
+    iconAnchor: [15, 30],
+    popupAnchor: [0, -30],
+  });
+
+// Logo/Icon Desa Babakan Asem untuk default marker
+// Ganti URL ini dengan URL logo resmi Desa Babakan Asem
+const defaultIconUrl = "/assets/icons/logo-desa-babakan-asem.png";
+// Fallback jika logo utama gagal dimuat
+const fallbackIconUrl = "https://i.ibb.co/XZQQgFP/building.png";
+
+// Default icon dengan logo desa
+
+// Kamus icon berdasarkan kategori
+const categoryIcons = {
+  office: "/assets/icons/office.png",
+  mosque: "/assets/icons/mosque.png",
+  school: "/assets/icons/school.png",
+  health: "/assets/icons/health.png",
+  market: "/assets/icons/market.png",
+  default: defaultIconUrl,
+};
+
+// Palet warna untuk polygon (tidak boleh sama)
+const polygonColors = [
+  "#dc2626", // merah
+  "#2563eb", // biru
+  "#059669", // hijau
+  "#f59e42", // oranye
+  "#a21caf", // ungu
+  "#eab308", // kuning
+  "#0ea5e9", // cyan
+  "#f43f5e", // pink
+];
+
+// Fungsi untuk mendapatkan warna unik berdasarkan kategori polygon
+// Assign colors by order of appearance for guaranteed uniqueness
+function getPolygonColorByIndex(index) {
+  return polygonColors[index % polygonColors.length];
+}
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
@@ -64,56 +122,56 @@ export default function AdminDashboard() {
   const [programKerjaPreview, setProgramKerjaPreview] = useState([]);
 
   const [activityLog, setActivityLog] = useState([
-    {
-      id: 1,
-      type: "create",
-      module: "Berita",
-      description: "Menambahkan berita baru 'Gotong Royong Desa'",
-      user: "Admin Desa",
-      timestamp: new Date(Date.now() - 5 * 60000),
-      icon: FaNewspaper,
-      color: "text-blue-500",
-    },
-    {
-      id: 2,
-      type: "edit",
-      module: "Program Kerja",
-      description: "Memperbarui status program 'Perbaikan Jalan'",
-      user: "Admin Desa",
-      timestamp: new Date(Date.now() - 15 * 60000),
-      icon: FaTasks,
-      color: "text-yellow-500",
-    },
-    {
-      id: 3,
-      type: "upload",
-      module: "Galeri",
-      description: "Mengunggah 3 foto kegiatan desa",
-      user: "Admin Desa",
-      timestamp: new Date(Date.now() - 30 * 60000),
-      icon: FaImage,
-      color: "text-green-500",
-    },
-    {
-      id: 4,
-      type: "view",
-      module: "Pesan",
-      description: "Membaca 5 pesan baru dari warga",
-      user: "Admin Desa",
-      timestamp: new Date(Date.now() - 45 * 60000),
-      icon: FaComments,
-      color: "text-purple-500",
-    },
-    {
-      id: 5,
-      type: "create",
-      module: "BUMDes",
-      description: "Menambahkan produk baru 'Keripik Singkong'",
-      user: "Admin Desa",
-      timestamp: new Date(Date.now() - 60 * 60000),
-      icon: FaStore,
-      color: "text-teal-500",
-    },
+    // {
+    //   id: 1,
+    //   type: "create",
+    //   module: "Berita",
+    //   description: "Menambahkan berita baru 'Gotong Royong Desa'",
+    //   user: "Admin Desa",
+    //   timestamp: new Date(Date.now() - 5 * 60000),
+    //   icon: FaNewspaper,
+    //   color: "text-blue-500",
+    // },
+    // {
+    //   id: 2,
+    //   type: "edit",
+    //   module: "Program Kerja",
+    //   description: "Memperbarui status program 'Perbaikan Jalan'",
+    //   user: "Admin Desa",
+    //   timestamp: new Date(Date.now() - 15 * 60000),
+    //   icon: FaTasks,
+    //   color: "text-yellow-500",
+    // },
+    // {
+    //   id: 3,
+    //   type: "upload",
+    //   module: "Galeri",
+    //   description: "Mengunggah 3 foto kegiatan desa",
+    //   user: "Admin Desa",
+    //   timestamp: new Date(Date.now() - 30 * 60000),
+    //   icon: FaImage,
+    //   color: "text-green-500",
+    // },
+    // {
+    //   id: 4,
+    //   type: "view",
+    //   module: "Pesan",
+    //   description: "Membaca 5 pesan baru dari warga",
+    //   user: "Admin Desa",
+    //   timestamp: new Date(Date.now() - 45 * 60000),
+    //   icon: FaComments,
+    //   color: "text-purple-500",
+    // },
+    // {
+    //   id: 5,
+    //   type: "create",
+    //   module: "BUMDes",
+    //   description: "Menambahkan produk baru 'Keripik Singkong'",
+    //   user: "Admin Desa",
+    //   timestamp: new Date(Date.now() - 60 * 60000),
+    //   icon: FaStore,
+    //   color: "text-teal-500",
+    // },
   ]);
 
   // Fetch GeoJSON untuk peta
@@ -260,6 +318,16 @@ export default function AdminDashboard() {
     return `${days} ${t("adminDashboard.timeFormat.daysAgo") || "hari lalu"}`;
   };
 
+  const fetchLog = async () => {
+    const res = await LogActivityApi.getAllActivities(
+      "?page=1&size=6",
+      i18n.language
+    );
+    if (!res.ok) return;
+    const data = await res.json();
+    setActivityLog(data.data || []);
+  };
+
   useEffect(() => {
     fetchGeoData();
     fetchNews();
@@ -274,7 +342,174 @@ export default function AdminDashboard() {
     fetchPkkPreview();
     fetchProgramKerjaPreview();
     fetchStrukturPreview();
+    fetchLog();
   }, [i18n.language]);
+
+  const [selectedYear, setSelectedYear] = useState(2025);
+  const [mapData, setMapData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [iconError, setIconError] = useState(false);
+
+  // Handle icon error dengan menggunakan fallback icon
+  useEffect(() => {
+    const img = new Image();
+    img.onerror = () => {
+      console.warn("Default icon failed to load, using fallback");
+      setIconError(true);
+    };
+    img.src = defaultIconUrl;
+  }, []);
+
+  // Fungsi untuk mengambil data peta dari API
+  const fetchMapData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Menggunakan language default 'id' atau bisa disesuaikan
+      const response = await MapApi.getMapData("id");
+
+      if (!response.ok) {
+        throw new Error("Gagal mengambil data peta");
+      }
+
+      const data = await response.json();
+
+      // Format data untuk peta
+      const formattedData = [];
+
+      // Menangani region/polygon
+      if (data.regions && Array.isArray(data.regions)) {
+        data.regions.forEach((region) => {
+          formattedData.push({
+            id: region.id,
+            name: region.name,
+            description: region.description || "Wilayah Desa",
+            type: "polygon",
+            category: region.type || "region", // Kategori untuk legenda
+            year: region.year || 2025,
+            // Pastikan koordinat dalam format yang benar
+            coordinates: region.coordinates,
+          });
+        });
+      }
+
+      // Menangani POI/marker
+      if (data.regions && Array.isArray(data.regions)) {
+        // POI yang ada di dalam region
+        data.regions.forEach((region) => {
+          if (region.pois && Array.isArray(region.pois)) {
+            region.pois.forEach((poi) => {
+              formattedData.push({
+                id: `poi-${poi.id}`,
+                name: poi.name,
+                description: poi.description || "Point of Interest",
+                type: "marker",
+                category: poi.type || "default", // Kategori untuk legenda
+                year: poi.year || 2025,
+                coordinates: [poi.coordinates[0]], // Format untuk marker
+                icon: getIconForCategory(poi.type, poi.icon),
+              });
+            });
+          }
+        });
+      }
+
+      // Menangani POI yang berdiri sendiri
+      if (data.additionalPois && Array.isArray(data.additionalPois)) {
+        data.additionalPois.forEach((poi) => {
+          formattedData.push({
+            id: `standalone-poi-${poi.id}`,
+            name: poi.name,
+            description: poi.description || "Point of Interest",
+            type: "marker",
+            category: poi.type || "default", // Kategori untuk legenda
+            year: poi.year || 2025,
+            coordinates: [poi.coordinates[0]], // Format untuk marker
+            icon: getIconForCategory(poi.type, poi.icon),
+          });
+        });
+      }
+
+      setMapData(formattedData);
+    } catch (error) {
+      console.error("Error fetching map data:", error);
+      setError("Gagal memuat data peta. Silakan coba lagi.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fungsi untuk mendapatkan icon berdasarkan kategori
+  function getIconForCategory(category, customIcon) {
+    if (customIcon) return customIcon;
+
+    if (category && categoryIcons[category]) {
+      return categoryIcons[category];
+    }
+
+    return iconError ? fallbackIconUrl : defaultIconUrl;
+  }
+
+  // Mengambil data saat komponen dimuat atau tahun berubah
+  useEffect(() => {
+    fetchMapData();
+  }, [selectedYear]); // Reload data saat tahun berubah
+
+  // Filter data berdasarkan tahun
+  const filteredData = mapData.filter((d) => d.year <= selectedYear);
+
+  // Buat array poligon legend yang sinkron dengan warna di peta
+  const polygonLegendData = useMemo(() => {
+    return filteredData
+      .filter((item) => item.type === "polygon")
+      .map((region, idx) => ({
+        id: region.id,
+        name: region.name,
+        color: getPolygonColorByIndex(idx),
+        label: `Batas ${region.name}`,
+      }));
+  }, [filteredData]);
+
+  // Buat legendItems untuk marker
+  const legendItems = useMemo(() => {
+    if (!filteredData.length) return [];
+    const legendMap = new Map();
+    filteredData
+      .filter((item) => item.type === "marker")
+      .forEach((marker) => {
+        const category = marker.category || "default";
+        const icon =
+          marker.icon || (iconError ? fallbackIconUrl : defaultIconUrl);
+        if (!legendMap.has(`marker-${category}`)) {
+          legendMap.set(`marker-${category}`, {
+            type: "marker",
+            category,
+            label: markerCategoryLabel(category),
+            icon,
+            items: [marker.name],
+          });
+        } else {
+          const entry = legendMap.get(`marker-${category}`);
+          if (!entry.items.includes(marker.name)) entry.items.push(marker.name);
+        }
+      });
+    return Array.from(legendMap.values());
+  }, [filteredData, iconError]);
+
+  // Fungsi untuk mendapatkan label kategori marker
+  function markerCategoryLabel(category) {
+    const labelMap = {
+      office: "Kantor Desa",
+      mosque: "Masjid",
+      school: "Sekolah",
+      health: "Fasilitas Kesehatan",
+      market: "Pasar",
+      default: "Point of Interest",
+    };
+    return labelMap[category] || category;
+  }
 
   return (
     <div className="w-full font-[Poppins,sans-serif] bg-gray-50 min-h-screen p-4 md:p-6">
@@ -343,7 +578,8 @@ export default function AdminDashboard() {
                   onEachFeature={(feature, layer) => {
                     layer.on({
                       click: () => {
-                        const name = feature.properties?.name || "Desa Babakan Asem";
+                        const name =
+                          feature.properties?.name || "Desa Babakan Asem";
                         layer
                           .bindPopup(
                             `<div class="p-2"><b class="text-green-700">${name}</b></div>`
@@ -374,7 +610,7 @@ export default function AdminDashboard() {
             </div>
           )}
         </div>
-        
+
         {/* LEGENDA PETA */}
         <div className="px-6 pb-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -393,13 +629,14 @@ export default function AdminDashboard() {
             <div className="flex items-center gap-3 p-3 bg-white rounded-lg shadow-sm">
               <div className="w-4 h-1 bg-gray-600"></div>
               <span className="text-sm">
-                {t("adminDashboard.gisLegend.mainRoad") || "Jalan Utama"}
+                {t("adminDashboard.gisLegend.mainRoad") || "Jalan Utama Desa"}
               </span>
             </div>
             <div className="flex items-center gap-3 p-3 bg-white rounded-lg shadow-sm">
               <div className="w-4 h-4 bg-yellow-400 rounded-full"></div>
               <span className="text-sm">
-                {t("adminDashboard.gisLegend.publicFacilities") || "Fasilitas Umum"}
+                {t("adminDashboard.gisLegend.publicFacilities") ||
+                  "Fasilitas Umum"}
               </span>
             </div>
           </div>
@@ -509,10 +746,7 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         {/* Log Aktivitas */}
         <div className="lg:col-span-2">
-          <ActivityLog
-            activities={activityLog}
-            formatTime={formatRelativeTime}
-          />
+          <ActivityLog activities={activityLog} />
         </div>
 
         {/* Statistik Tambahan */}
@@ -700,9 +934,8 @@ function StatItem({ icon, title, value, onClick }) {
 }
 
 // Komponen ActivityLog
-function ActivityLog({ activities, formatTime }) {
+function ActivityLog({ activities }) {
   const { t } = useTranslation();
-
   return (
     <div className="bg-white rounded-xl shadow-md p-5 h-full">
       <div className="flex items-center justify-between mb-4">
@@ -717,9 +950,9 @@ function ActivityLog({ activities, formatTime }) {
 
       <div className="space-y-4 max-h-[420px] overflow-y-auto pr-2">
         {activities.map((activity) => {
-          const IconComponent = activity.icon;
+          const IconComponent = FaUser;
           const actionColors = {
-            create: "bg-green-100 text-green-800",
+            USER: "bg-green-100 text-green-800",
             edit: "bg-yellow-100 text-yellow-800",
             upload: "bg-blue-100 text-blue-800",
             view: "bg-purple-100 text-purple-800",
@@ -733,24 +966,27 @@ function ActivityLog({ activities, formatTime }) {
             >
               <div
                 className={`p-2 rounded-lg ${
-                  actionColors[activity.type] || "bg-gray-100"
+                  actionColors[activity.location] || "bg-gray-100"
                 }`}
               >
                 <IconComponent className="text-sm" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-800 leading-tight">
-                  {activity.description}
+                  {activity.action}
                 </p>
                 <div className="flex items-center gap-2 mt-1">
                   <span className="text-xs px-2 py-1 bg-gray-100 rounded-md text-gray-600">
-                    {activity.module}
+                    {activity.location}
                   </span>
-                  <span className="text-xs text-gray-500">{activity.user}</span>
+                  <span className="text-xs text-gray-500">
+                    {activity.user.name}
+                  </span>
                 </div>
               </div>
+
               <div className="text-xs text-gray-400 whitespace-nowrap">
-                {formatTime(activity.timestamp)}
+                {Helper.formatISODate(activity.created_at)}
               </div>
             </div>
           );

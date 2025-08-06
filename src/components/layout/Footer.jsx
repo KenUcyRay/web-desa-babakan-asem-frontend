@@ -8,6 +8,7 @@ import {
   FaTiktok,
   FaPhone,
   FaEnvelope,
+  FaGooglePlay,
 } from "react-icons/fa";
 import foto1 from "../../assets/sponsor1.png";
 import foto2 from "../../assets/sponsor2.png";
@@ -82,6 +83,26 @@ export default function Footer() {
               </li>
             ))}
           </ul>
+
+          {/* Google Play Store Card */}
+          <div className="mt-6">
+            <a
+              href="#"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-3 bg-gradient-to-r from-[#B6F500] to-[#9AE500] text-black px-4 py-3 rounded-lg hover:from-[#A5E500] hover:to-[#8BD400] hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
+            >
+              <FaGooglePlay className="text-[20px]" />
+              <div className="text-left">
+                <p className="text-[11px] font-medium leading-tight">
+                  Tersedia di
+                </p>
+                <p className="text-[14px] font-bold leading-tight">
+                  Google Play
+                </p>
+              </div>
+            </a>
+          </div>
         </div>
       </div>
 

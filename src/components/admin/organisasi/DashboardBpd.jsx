@@ -14,6 +14,7 @@ import Pagination from "../../ui/Pagination";
 import { MemberApi } from "../../../libs/api/MemberApi";
 import { AgendaApi } from "../../../libs/api/AgendaApi";
 import { alertConfirm, alertError, alertSuccess } from "../../../libs/alert";
+import { Helper } from "../../../utils/Helper";
 
 export default function DashboardBpd() {
   const { t, i18n } = useTranslation();
@@ -89,7 +90,7 @@ export default function DashboardBpd() {
       i18n.language
     );
     if (!response.ok) {
-      alertError("Gagal mengambil data anggota BPD.");
+      await Helper.errorResponseHandler(await response.json());
       return;
     }
     const body = await response.json();
@@ -105,34 +106,35 @@ export default function DashboardBpd() {
       organization_type: "BPD", // Hardcode untuk BPD
     };
 
-    try {
-      if (editingMemberId) {
-        if (
-          !(await alertConfirm("Yakin ingin menyimpan perubahan anggota BPD?"))
-        )
-          return;
+    if (editingMemberId) {
+      if (
+        !(await alertConfirm(t("bpdAdminStructure.confirmations.saveChanges")))
+      )
+        return;
 
-        const response = await MemberApi.updateMember(
-          editingMemberId,
-          rawData,
-          i18n.language
-        );
-        if (!response.ok)
-          throw new Error("Gagal menyimpan perubahan anggota BPD.");
-
-        await alertSuccess("Anggota BPD berhasil diperbarui!");
-      } else {
-        const response = await MemberApi.createMember(rawData, i18n.language);
-        if (!response.ok) throw new Error("Gagal menambahkan anggota BPD.");
-
-        await alertSuccess("Anggota BPD berhasil ditambahkan!");
+      const response = await MemberApi.updateMember(
+        editingMemberId,
+        rawData,
+        i18n.language
+      );
+      if (!response.ok) {
+        await Helper.errorResponseHandler(await response.json());
+        return;
       }
 
-      resetForms();
-      fetchMembers();
-    } catch (error) {
-      alertError(error.message);
+      await alertSuccess(t("bpdAdminStructure.alerts.updateSuccess"));
+    } else {
+      const response = await MemberApi.createMember(rawData, i18n.language);
+      if (!response.ok) {
+        await Helper.errorResponseHandler(await response.json());
+        return;
+      }
+
+      await alertSuccess(t("bpdAdminStructure.alerts.addSuccess"));
     }
+
+    resetForms();
+    fetchMembers();
   };
 
   const handleMemberEdit = (id) => {
@@ -152,16 +154,17 @@ export default function DashboardBpd() {
   };
 
   const handleMemberDelete = async (id) => {
-    if (!(await alertConfirm("Yakin ingin menghapus anggota BPD ini?"))) return;
+    if (!(await alertConfirm(t("bpdAdminStructure.confirmations.delete"))))
+      return;
 
     const response = await MemberApi.deleteMember(id, i18n.language);
     if (!response.ok) {
-      alertError("Gagal menghapus anggota BPD.");
+      await Helper.errorResponseHandler(await response.json());
       return;
     }
 
     setMembers((prev) => prev.filter((m) => m.id !== id));
-    await alertSuccess("Anggota BPD berhasil dihapus.");
+    await alertSuccess(t("bpdAdminStructure.alerts.deleteSuccess"));
   };
 
   // ==================== FUNGSI AGENDA BPD ====================
@@ -172,7 +175,10 @@ export default function DashboardBpd() {
       "BPD",
       i18n.language
     );
-    if (!response.ok) return alertError("Gagal mengambil agenda BPD.");
+    if (!response.ok) {
+      await Helper.errorResponseHandler(await response.json());
+      return;
+    }
 
     const body = await response.json();
     setAgendas(body.agenda || []);
@@ -185,8 +191,12 @@ export default function DashboardBpd() {
     const rawData = {
       title: agendaForm.title,
       content: agendaForm.content,
-      start_time: new Date(agendaForm.start_time).toISOString(),
-      end_time: new Date(agendaForm.end_time).toISOString(),
+      start_time: agendaForm.start_time
+        ? new Date(agendaForm.start_time).toISOString()
+        : agendas.find((a) => a.id === editingAgendaId)?.start_time,
+      end_time: agendaForm.end_time
+        ? new Date(agendaForm.end_time).toISOString()
+        : agendas.find((a) => a.id === editingAgendaId)?.end_time,
       location: agendaForm.location,
       featured_image: agendaForm.featured_image,
       is_published: agendaForm.is_published,
@@ -196,7 +206,7 @@ export default function DashboardBpd() {
     try {
       if (editingAgendaId) {
         if (
-          !(await alertConfirm("Yakin ingin menyimpan perubahan agenda BPD?"))
+          !(await alertConfirm(t("bpdAdminAgenda.confirmations.saveChanges")))
         )
           return;
 
@@ -210,12 +220,12 @@ export default function DashboardBpd() {
           return;
         }
 
-        await alertSuccess("Agenda BPD berhasil diperbarui!");
+        await alertSuccess(t("bpdAdminAgenda.alerts.updateSuccess"));
       } else {
         const response = await AgendaApi.createAgenda(rawData, i18n.language);
         if (!response.ok) throw new Error("Gagal menambahkan agenda BPD.");
 
-        await alertSuccess("Agenda BPD berhasil ditambahkan!");
+        await alertSuccess(t("bpdAdminAgenda.alerts.addSuccess"));
       }
 
       resetForms();
@@ -242,13 +252,15 @@ export default function DashboardBpd() {
   };
 
   const handleAgendaDelete = async (id) => {
-    if (!(await alertConfirm("Yakin ingin menghapus agenda BPD ini?"))) return;
+    if (!(await alertConfirm(t("bpdAdminAgenda.confirmations.delete")))) return;
 
     const response = await AgendaApi.deleteAgenda(id, i18n.language);
-    if (!response.ok) return alertError("Gagal menghapus agenda BPD.");
+    if (!response.ok) {
+      await Helper.errorResponseHandler(await response.json());
+    }
 
     setAgendas((prev) => prev.filter((a) => a.id !== id));
-    await alertSuccess("Agenda BPD berhasil dihapus.");
+    await alertSuccess(t("bpdAdminAgenda.alerts.deleteSuccess"));
   };
 
   const formatDateTime = (dt) =>
@@ -267,8 +279,8 @@ export default function DashboardBpd() {
     <div className="font-[Poppins,sans-serif]">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-indigo-700">
-          {t("dashboardBpd.title") || "Dashboard BPD"}
+        <h1 className="text-2xl font-bold text-green-700">
+          {t("manageBpd.title") || "Dashboard BPD"}
         </h1>
       </div>
 
@@ -278,23 +290,23 @@ export default function DashboardBpd() {
           onClick={() => setActiveTab("structure")}
           className={`px-4 py-2 font-medium ${
             activeTab === "structure"
-              ? "text-indigo-600 border-b-2 border-indigo-600"
+              ? "text-green-600 border-b-2 border-green-600"
               : "text-gray-500"
           }`}
         >
           <FaUsers className="inline mr-2" />{" "}
-          {t("dashboardBpd.tabs.structure") || "Struktur BPD"}
+          {t("manageBpd.tabs.structure") || "Struktur BPD"}
         </button>
         <button
           onClick={() => setActiveTab("agenda")}
           className={`px-4 py-2 font-medium ${
             activeTab === "agenda"
-              ? "text-indigo-600 border-b-2 border-indigo-600"
+              ? "text-green-600 border-b-2 border-green-600"
               : "text-gray-500"
           }`}
         >
           <FaCalendarAlt className="inline mr-2" />{" "}
-          {t("dashboardBpd.tabs.agenda") || "Agenda BPD"}
+          {t("manageBpd.tabs.agenda") || "Agenda BPD"}
         </button>
       </div>
 
@@ -303,19 +315,22 @@ export default function DashboardBpd() {
         <>
           {/* Header */}
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-semibold text-gray-800">
-              {t("dashboardBpd.structure.title") || "Struktur Organisasi BPD"}
-            </h2>
+            <div className="flex items-center gap-2 text-gray-800">
+              <FaUsers className="text-2xl text-green-600" />
+              <h2 className="text-xl font-semibold">
+                {t("bpdAdminStructure.title") || "Struktur Organisasi BPD"}
+              </h2>
+            </div>
             {!showMemberForm && (
               <button
                 onClick={() => {
                   resetForms();
                   setShowMemberForm(true);
                 }}
-                className="flex items-center gap-2 bg-indigo-500 text-white px-4 py-2 rounded shadow hover:bg-indigo-600 transition"
+                className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2 rounded-lg shadow-lg transition transform hover:-translate-y-0.5"
               >
                 <FaPlus />{" "}
-                {t("dashboardBpd.structure.addMember") || "Tambah Anggota"}
+                {t("bpdAdminStructure.buttons.add") || "Tambah Anggota"}
               </button>
             )}
           </div>
@@ -326,26 +341,34 @@ export default function DashboardBpd() {
               onSubmit={handleMemberSave}
               className="bg-white p-6 rounded-xl shadow-md mb-6 space-y-4 max-w-2xl border"
             >
-              <h3 className="text-lg font-semibold">
-                {editingMemberId
-                  ? t("dashboardBpd.structure.editMember") || "Edit Anggota BPD"
-                  : t("dashboardBpd.structure.addNewMember") ||
-                    "Tambah Anggota BPD Baru"}
+              <h3 className="text-lg font-semibold flex items-center gap-2">
+                {editingMemberId ? (
+                  <>
+                    <FaEdit className="text-emerald-500" />
+                    {t("bpdAdminStructure.modal.editTitle") || "Edit Anggota BPD"}
+                  </>
+                ) : (
+                  <>
+                    <FaPlus className="text-emerald-500" />
+                    {t("bpdAdminStructure.modal.addTitle") ||
+                      "Tambah Anggota BPD Baru"}
+                  </>
+                )}
               </h3>
 
               <div>
                 <label className="block font-medium text-gray-700 mb-1">
-                  {t("dashboardBpd.form.fullName") || "Nama Lengkap"}
+                  {t("bpdAdminStructure.form.name.label") || "Nama Lengkap"}
                 </label>
                 <input
                   type="text"
-                  className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-indigo-300 outline-none"
+                  className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-green-300 outline-none"
                   value={memberForm.name}
                   onChange={(e) =>
                     setMemberForm({ ...memberForm, name: e.target.value })
                   }
                   placeholder={
-                    t("dashboardBpd.form.fullNamePlaceholder") ||
+                    t("bpdAdminStructure.form.name.placeholder") ||
                     "Nama lengkap anggota"
                   }
                 />
@@ -353,17 +376,17 @@ export default function DashboardBpd() {
 
               <div>
                 <label className="block font-medium text-gray-700 mb-1">
-                  {t("dashboardBpd.form.position") || "Jabatan"}
+                  {t("bpdAdminStructure.form.position.label") || "Jabatan"}
                 </label>
                 <input
                   type="text"
-                  className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-indigo-300 outline-none"
+                  className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-green-300 outline-none"
                   value={memberForm.position}
                   onChange={(e) =>
                     setMemberForm({ ...memberForm, position: e.target.value })
                   }
                   placeholder={
-                    t("dashboardBpd.form.positionPlaceholder") ||
+                    t("bpdAdminStructure.form.position.placeholder") ||
                     "Jabatan dalam struktur"
                   }
                 />
@@ -372,7 +395,8 @@ export default function DashboardBpd() {
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
                   <label className="block font-medium text-gray-700 mb-1">
-                    {t("dashboardBpd.form.termStart") || "Masa Jabatan Mulai"}
+                    {t("bpdAdminStructure.form.termStart.label") ||
+                      "Masa Jabatan Mulai"}
                   </label>
                   <input
                     type="number"
@@ -385,14 +409,15 @@ export default function DashboardBpd() {
                       })
                     }
                     placeholder={
-                      t("dashboardBpd.form.termStartPlaceholder") ||
+                      t("bpdAdminStructure.form.termStart.placeholder") ||
                       "Tahun mulai"
                     }
                   />
                 </div>
                 <div>
                   <label className="block font-medium text-gray-700 mb-1">
-                    {t("dashboardBpd.form.termEnd") || "Masa Jabatan Berakhir"}
+                    {t("bpdAdminStructure.form.termEnd.label") ||
+                      "Masa Jabatan Berakhir"}
                   </label>
                   <input
                     type="number"
@@ -402,7 +427,7 @@ export default function DashboardBpd() {
                       setMemberForm({ ...memberForm, term_end: e.target.value })
                     }
                     placeholder={
-                      t("dashboardBpd.form.termEndPlaceholder") ||
+                      t("bpdAdminStructure.form.termEnd.placeholder") ||
                       "Tahun berakhir"
                     }
                   />
@@ -411,7 +436,7 @@ export default function DashboardBpd() {
 
               <div>
                 <label className="block font-medium text-gray-700 mb-1">
-                  {t("dashboardBpd.form.profilePhoto") || "Foto Profil"}
+                  {t("bpdAdminStructure.form.photo.label") || "Foto Profil"}
                 </label>
                 <input
                   type="file"
@@ -435,26 +460,27 @@ export default function DashboardBpd() {
                   }
                 />
                 <span>
-                  {t("dashboardBpd.form.stillServing") || "Masih menjabat?"}
+                  {t("bpdAdminStructure.form.status.active") ||
+                    "Masih menjabat?"}
                 </span>
               </div>
 
               <div className="flex gap-3">
                 <button
                   type="submit"
-                  className="flex items-center gap-2 bg-indigo-500 text-white px-5 py-2 rounded-lg shadow hover:bg-indigo-600 transition"
+                  className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-5 py-2 rounded-lg shadow hover:shadow-lg transition"
                 >
                   <FaSave />{" "}
                   {editingMemberId
-                    ? t("dashboardBpd.form.update") || "Update"
-                    : t("dashboardBpd.form.save") || "Simpan"}
+                    ? t("bpdAdminStructure.buttons.update") || "Update"
+                    : t("bpdAdminStructure.buttons.save") || "Simpan"}
                 </button>
                 <button
                   type="button"
                   onClick={resetForms}
-                  className="flex items-center gap-2 bg-gray-400 text-white px-4 py-2 rounded-lg hover:bg-gray-500 transition"
+                  className="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition"
                 >
-                  <FaTimes /> {t("dashboardBpd.form.cancel") || "Batal"}
+                  <FaTimes /> {t("bpdAdminStructure.buttons.cancel") || "Batal"}
                 </button>
               </div>
             </form>
@@ -463,8 +489,8 @@ export default function DashboardBpd() {
           {/* List Anggota */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {members.length === 0 ? (
-              <p className="text-gray-500 italic">
-                {t("dashboardBpd.structure.noMembers") ||
+              <p className="text-center text-gray-500 col-span-full italic">
+                {t("bpdAdminStructure.empty.noMembers") ||
                   "Belum ada anggota struktur BPD"}
               </p>
             ) : (
@@ -492,7 +518,7 @@ export default function DashboardBpd() {
                     <p className="text-sm text-gray-600">{member.position}</p>
 
                     <div className="flex flex-wrap gap-2 mt-3 text-xs">
-                      <span className="px-2 py-1 rounded bg-indigo-100 text-indigo-700">
+                      <span className="px-2 py-1 rounded bg-green-100 text-green-700">
                         {member.term_start} - {member.term_end}
                       </span>
                       <span
@@ -503,8 +529,8 @@ export default function DashboardBpd() {
                         }`}
                       >
                         {member.is_term
-                          ? t("dashboardBpd.status.serving") || "Menjabat"
-                          : t("dashboardBpd.status.notServing") ||
+                          ? t("bpdAdminStructure.labels.active") || "Menjabat"
+                          : t("bpdAdminStructure.labels.inactive") ||
                             "Tidak Menjabat"}
                       </span>
                     </div>
@@ -513,15 +539,16 @@ export default function DashboardBpd() {
                   <div className="flex justify-between p-4 border-t text-sm">
                     <button
                       onClick={() => handleMemberEdit(member.id)}
-                      className="flex items-center gap-1 text-indigo-600 hover:text-indigo-800 transition"
+                      className="flex items-center gap-1 text-blue-600 hover:text-blue-800 transition"
                     >
-                      <FaEdit /> {t("dashboardBpd.buttons.edit") || "Edit"}
+                      <FaEdit /> {t("bpdAdminStructure.buttons.edit") || "Edit"}
                     </button>
                     <button
                       onClick={() => handleMemberDelete(member.id)}
                       className="flex items-center gap-1 text-red-600 hover:text-red-800 transition"
                     >
-                      <FaTrash /> {t("dashboardBpd.buttons.delete") || "Hapus"}
+                      <FaTrash />{" "}
+                      {t("bpdAdminStructure.buttons.delete") || "Hapus"}
                     </button>
                   </div>
                 </div>
@@ -545,229 +572,311 @@ export default function DashboardBpd() {
         <>
           {/* Header */}
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-semibold text-gray-800">
-              {t("dashboardBpd.agenda.title") || "Agenda Kegiatan BPD"}
-            </h2>
+            <div className="flex items-center gap-2 text-gray-800">
+              <FaCalendarAlt className="text-2xl text-green-600" />
+              <h2 className="text-xl font-semibold">
+                {t("bpdAdminAgenda.title") || "Agenda Kegiatan BPD"}
+              </h2>
+            </div>
             {!showAgendaForm && (
               <button
                 onClick={() => {
                   resetForms();
                   setShowAgendaForm(true);
                 }}
-                className="flex items-center gap-2 bg-indigo-500 text-white px-4 py-2 rounded shadow hover:bg-indigo-600 transition"
+                className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2 rounded-lg shadow-lg transition transform hover:-translate-y-0.5"
               >
-                <FaPlus />{" "}
-                {t("dashboardBpd.agenda.addAgenda") || "Tambah Agenda"}
+                <FaPlus /> {t("bpdAdminAgenda.buttons.add") || "Tambah Agenda"}
               </button>
             )}
           </div>
 
           {/* Form Agenda */}
           {showAgendaForm && (
-            <form
-              onSubmit={handleAgendaSave}
-              className="bg-white p-6 rounded-xl shadow-md mb-6 space-y-4 max-w-2xl border"
-            >
-              <h3 className="text-lg font-semibold">
-                {editingAgendaId
-                  ? t("dashboardBpd.agenda.editAgenda") || "Edit Agenda BPD"
-                  : t("dashboardBpd.agenda.addNewAgenda") ||
-                    "Tambah Agenda BPD Baru"}
+            <div className="bg-white p-6 rounded-xl shadow-md mb-6 border">
+              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                {editingAgendaId ? (
+                  <>
+                    <FaEdit className="text-emerald-500" />
+                    {t("bpdAdminAgenda.modal.editTitle") || "Edit Agenda BPD"}
+                  </>
+                ) : (
+                  <>
+                    <FaPlus className="text-emerald-500" />
+                    {t("bpdAdminAgenda.modal.addTitle") ||
+                      "Tambah Agenda BPD Baru"}
+                  </>
+                )}
               </h3>
 
-              <div>
-                <label className="block font-medium text-gray-700 mb-1">
-                  {t("dashboardBpd.form.agendaTitle") || "Judul Agenda"}
-                </label>
-                <input
-                  type="text"
-                  className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-indigo-300 outline-none"
-                  value={agendaForm.title}
-                  onChange={(e) =>
-                    setAgendaForm({ ...agendaForm, title: e.target.value })
-                  }
-                  placeholder={
-                    t("dashboardBpd.form.agendaTitlePlaceholder") ||
-                    "Contoh: Rapat Rutin BPD"
-                  }
-                />
-              </div>
-
-              <div>
-                <label className="block font-medium text-gray-700 mb-1">
-                  Deskripsi Agenda
-                </label>
-                <textarea
-                  rows={4}
-                  className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-indigo-300 outline-none"
-                  value={agendaForm.content}
-                  onChange={(e) =>
-                    setAgendaForm({ ...agendaForm, content: e.target.value })
-                  }
-                  placeholder="Deskripsi lengkap agenda..."
-                />
-              </div>
-
-              <div className="grid md:grid-cols-2 gap-4">
+              <form onSubmit={handleAgendaSave} className="space-y-4">
                 <div>
                   <label className="block font-medium text-gray-700 mb-1">
-                    Waktu Mulai
+                    {t("bpdAdminAgenda.form.title.label") || "Judul Agenda"}{" "}
+                    <span className="text-red-500">*</span>
                   </label>
                   <input
-                    type="datetime-local"
-                    className="w-full border rounded-lg p-3"
-                    value={agendaForm.start_time}
+                    type="text"
+                    className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-green-300 outline-none"
+                    value={agendaForm.title}
+                    onChange={(e) =>
+                      setAgendaForm({ ...agendaForm, title: e.target.value })
+                    }
+                    placeholder={
+                      t("bpdAdminAgenda.form.title.placeholder") ||
+                      "Contoh: Rapat Rutin BPD"
+                    }
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-medium text-gray-700 mb-1">
+                    {t("bpdAdminAgenda.form.description.label") ||
+                      "Deskripsi Agenda"}{" "}
+                    <span className="text-red-500">*</span>
+                  </label>
+                  <textarea
+                    rows={4}
+                    className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-green-300 outline-none"
+                    value={agendaForm.content}
+                    onChange={(e) =>
+                      setAgendaForm({ ...agendaForm, content: e.target.value })
+                    }
+                    placeholder={
+                      t("bpdAdminAgenda.form.description.placeholder") ||
+                      "Deskripsi lengkap agenda..."
+                    }
+                  />
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block font-medium text-gray-700 mb-1">
+                      {t("bpdAdminAgenda.form.startTime.label") || "Waktu Mulai"}{" "}
+                      <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="datetime-local"
+                      className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-green-300 outline-none"
+                      value={agendaForm.start_time}
+                      onChange={(e) =>
+                        setAgendaForm({
+                          ...agendaForm,
+                          start_time: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-medium text-gray-700 mb-1">
+                      {t("bpdAdminAgenda.form.endTime.label") || "Waktu Selesai"}{" "}
+                      <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="datetime-local"
+                      className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-green-300 outline-none"
+                      value={agendaForm.end_time}
+                      onChange={(e) =>
+                        setAgendaForm({
+                          ...agendaForm,
+                          end_time: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block font-medium text-gray-700 mb-1">
+                    {t("bpdAdminAgenda.form.location.label") || "Lokasi"}{" "}
+                    <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-green-300 outline-none"
+                    value={agendaForm.location}
+                    onChange={(e) =>
+                      setAgendaForm({ ...agendaForm, location: e.target.value })
+                    }
+                    placeholder={
+                      t("bpdAdminAgenda.form.location.placeholder") ||
+                      "Tempat/lokasi kegiatan"
+                    }
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-medium text-gray-700 mb-1">
+                    {t("bpdAdminAgenda.form.image.label") || "Gambar Agenda"}
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="w-full border rounded-lg p-2"
                     onChange={(e) =>
                       setAgendaForm({
                         ...agendaForm,
-                        start_time: e.target.value,
+                        featured_image: e.target.files[0],
                       })
                     }
                   />
+                  {(agendaForm.featured_image ||
+                    (editingAgendaId &&
+                      agendas.find((a) => a.id === editingAgendaId)
+                        ?.featured_image)) && (
+                    <div className="mt-3">
+                      <img
+                        src={
+                          agendaForm.featured_image
+                            ? URL.createObjectURL(agendaForm.featured_image)
+                            : `${
+                                import.meta.env.VITE_NEW_BASE_URL
+                              }/public/images/${
+                                agendas.find((a) => a.id === editingAgendaId)
+                                  ?.featured_image
+                              }`
+                        }
+                        alt={t("bpdAdminAgenda.form.image.preview") || "preview"}
+                        className="w-full h-40 object-cover rounded-lg shadow-sm"
+                      />
+                    </div>
+                  )}
                 </div>
-                <div>
-                  <label className="block font-medium text-gray-700 mb-1">
-                    Waktu Selesai
-                  </label>
+
+                <div className="flex items-center gap-2">
                   <input
-                    type="datetime-local"
-                    className="w-full border rounded-lg p-3"
-                    value={agendaForm.end_time}
+                    type="checkbox"
+                    id="is_published"
+                    checked={agendaForm.is_published}
                     onChange={(e) =>
-                      setAgendaForm({ ...agendaForm, end_time: e.target.value })
+                      setAgendaForm({
+                        ...agendaForm,
+                        is_published: e.target.checked,
+                      })
                     }
+                    className="w-4 h-4 text-green-600 rounded focus:ring-green-500"
                   />
+                  <label htmlFor="is_published" className="text-gray-700">
+                    {t("bpdAdminAgenda.form.publishAgenda") ||
+                      "Publikasikan agenda?"}
+                  </label>
                 </div>
-              </div>
 
-              <div>
-                <label className="block font-medium text-gray-700 mb-1">
-                  Lokasi
-                </label>
-                <input
-                  type="text"
-                  className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-indigo-300 outline-none"
-                  value={agendaForm.location}
-                  onChange={(e) =>
-                    setAgendaForm({ ...agendaForm, location: e.target.value })
-                  }
-                  placeholder="Tempat/lokasi kegiatan"
-                />
-              </div>
-
-              <div>
-                <label className="block font-medium text-gray-700 mb-1">
-                  Gambar Agenda
-                </label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="w-full border rounded-lg p-2"
-                  onChange={(e) =>
-                    setAgendaForm({
-                      ...agendaForm,
-                      featured_image: e.target.files[0],
-                    })
-                  }
-                />
-              </div>
-
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={agendaForm.is_published}
-                  onChange={(e) =>
-                    setAgendaForm({
-                      ...agendaForm,
-                      is_published: e.target.checked,
-                    })
-                  }
-                />
-                <span>Publikasikan agenda?</span>
-              </div>
-
-              <div className="flex gap-3">
-                <button
-                  type="submit"
-                  className="flex items-center gap-2 bg-indigo-500 text-white px-5 py-2 rounded-lg shadow hover:bg-indigo-600 transition"
-                >
-                  <FaSave /> {editingAgendaId ? "Update" : "Simpan"}
-                </button>
-                <button
-                  type="button"
-                  onClick={resetForms}
-                  className="flex items-center gap-2 bg-gray-400 text-white px-4 py-2 rounded-lg hover:bg-gray-500 transition"
-                >
-                  <FaTimes /> Batal
-                </button>
-              </div>
-            </form>
+                <div className="flex gap-3 pt-4">
+                  <button
+                    type="submit"
+                    className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-5 py-2 rounded-lg shadow hover:shadow-lg transition"
+                  >
+                    <FaSave />{" "}
+                    {editingAgendaId
+                      ? t("bpdAdminAgenda.buttons.update") || "Update"
+                      : t("bpdAdminAgenda.buttons.save") || "Simpan"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={resetForms}
+                    className="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition"
+                  >
+                    <FaTimes /> {t("bpdAdminAgenda.buttons.cancel") || "Batal"}
+                  </button>
+                </div>
+              </form>
+            </div>
           )}
 
           {/* List Agenda */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="space-y-4">
             {agendas.length === 0 ? (
-              <p className="text-gray-500 italic">
-                {t("dashboardBpd.agenda.noAgendas") ||
-                  "Belum ada agenda BPD yang tersedia"}
-              </p>
+              <div className="text-center py-12">
+                <p className="text-gray-500 italic text-lg">
+                  {t("bpdAdminAgenda.empty.noAgenda") ||
+                    "Belum ada agenda BPD yang tersedia"}
+                </p>
+              </div>
             ) : (
               agendas.map((agenda) => (
                 <div
                   key={agenda.id}
-                  className="bg-white rounded-xl shadow-md hover:shadow-lg transition transform hover:-translate-y-1"
+                  className="bg-white p-6 rounded-xl shadow-md border hover:shadow-lg transition"
                 >
-                  <img
-                    src={`${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
-                      agenda.featured_image
-                    }`}
-                    alt={agenda.title}
-                    className="rounded-t-xl w-full h-44 object-cover"
-                  />
-
-                  <div className="p-4">
-                    <h2 className="text-lg font-semibold text-gray-800">
-                      {agenda.title}
-                    </h2>
-                    <p className="text-gray-600 text-sm line-clamp-2">
-                      {agenda.content}
-                    </p>
-
-                    <div className="mt-3 text-sm text-gray-500 space-y-1">
-                      <div className="flex items-center gap-2">
-                        <FaCalendarAlt /> {formatDateTime(agenda.start_time)}
+                  <div className="flex flex-col lg:flex-row gap-6">
+                    {/* Image Section */}
+                    {agenda.featured_image && (
+                      <div className="lg:w-1/3">
+                        <img
+                          src={`${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
+                            agenda.featured_image
+                          }`}
+                          alt={agenda.title}
+                          className="w-full h-48 lg:h-40 object-cover rounded-lg"
+                          onError={(e) => {
+                            e.target.style.display = "none";
+                          }}
+                        />
                       </div>
-                      <div className="flex items-center gap-2">
-                        <FaMapMarkerAlt /> {agenda.location}
-                      </div>
-                    </div>
+                    )}
 
-                    <span
-                      className={`inline-block mt-3 px-3 py-1 rounded-full text-xs font-medium ${
-                        agenda.is_published
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-700"
+                    {/* Content Section */}
+                    <div
+                      className={`${
+                        agenda.featured_image ? "lg:w-2/3" : "w-full"
                       }`}
                     >
-                      {agenda.is_published
-                        ? t("dashboardBpd.status.published") || "Published"
-                        : t("dashboardBpd.status.unpublished") || "Unpublished"}
-                    </span>
+                      <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4">
+                        <div className="flex-1">
+                          <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                            {agenda.title}
+                          </h3>
+                          <p className="text-gray-600 mb-4 line-clamp-3">
+                            {agenda.content}
+                          </p>
 
-                    <div className="flex justify-between mt-4 border-t pt-3">
-                      <button
-                        onClick={() => handleAgendaEdit(agenda.id)}
-                        className="flex items-center gap-1 text-indigo-500 hover:text-indigo-700 text-sm"
-                      >
-                        <FaEdit /> {t("dashboardBpd.buttons.edit") || "Edit"}
-                      </button>
-                      <button
-                        onClick={() => handleAgendaDelete(agenda.id)}
-                        className="flex items-center gap-1 text-red-500 hover:text-red-700 text-sm"
-                      >
-                        <FaTrash />{" "}
-                        {t("dashboardBpd.buttons.delete") || "Hapus"}
-                      </button>
+                          <div className="space-y-2 text-sm text-gray-500">
+                            <div className="flex items-center gap-2">
+                              <FaCalendarAlt className="text-green-500" />
+                              <span>
+                                {formatDateTime(agenda.start_time)} -{" "}
+                                {formatDateTime(agenda.end_time)}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <FaMapMarkerAlt className="text-red-500" />
+                              <span>{agenda.location}</span>
+                            </div>
+                          </div>
+
+                          <div className="mt-3">
+                            <span
+                              className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
+                                agenda.is_published
+                                  ? "bg-green-100 text-green-700"
+                                  : "bg-red-100 text-red-700"
+                              }`}
+                            >
+                              {agenda.is_published
+                                ? t("bpdAdminAgenda.status.published") || "Published"
+                                : t("bpdAdminAgenda.status.draft") || "Unpublished"}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex gap-2 lg:flex-col">
+                          <button
+                            onClick={() => handleAgendaEdit(agenda.id)}
+                            className="flex items-center gap-1 px-3 py-2 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded transition text-sm"
+                          >
+                            <FaEdit /> {t("bpdAdminAgenda.buttons.edit") || "Edit"}
+                          </button>
+                          <button
+                            onClick={() => handleAgendaDelete(agenda.id)}
+                            className="flex items-center gap-1 px-3 py-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded transition text-sm"
+                          >
+                            <FaTrash />{" "}
+                            {t("bpdAdminAgenda.buttons.delete") || "Hapus"}
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -776,13 +885,15 @@ export default function DashboardBpd() {
           </div>
 
           {/* Pagination */}
-          <div className="mt-6 flex justify-center">
-            <Pagination
-              currentPage={agendaPage}
-              totalPages={agendaTotalPages}
-              onPageChange={setAgendaPage}
-            />
-          </div>
+          {agendaTotalPages > 1 && (
+            <div className="mt-6 flex justify-center">
+              <Pagination
+                currentPage={agendaPage}
+                totalPages={agendaTotalPages}
+                onPageChange={setAgendaPage}
+              />
+            </div>
+          )}
         </>
       )}
     </div>

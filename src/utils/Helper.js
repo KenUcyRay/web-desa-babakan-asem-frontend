@@ -119,4 +119,21 @@ export class Helper {
 
     await alertError(errorMessage);
   }
+
+  static formatISODate(isoString, locale = "id-ID") {
+    const date = new Date(isoString);
+
+    // Opsi format tanggal dan waktu
+    const options = {
+      year: "numeric",
+      month: "long", // "Agustus"
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      timeZoneName: "short", // Menambahkan zona waktu
+    };
+
+    return date.toLocaleString(locale, options);
+  }
 }

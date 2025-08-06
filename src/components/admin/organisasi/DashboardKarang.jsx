@@ -8,6 +8,7 @@ import {
   FaEdit,
   FaTrash,
   FaImage,
+  FaMapMarkerAlt,
 } from "react-icons/fa";
 import { FiUsers, FiCalendar, FiMapPin } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
@@ -15,829 +16,924 @@ import Pagination from "../../ui/Pagination";
 import { MemberApi } from "../../../libs/api/MemberApi";
 import { AgendaApi } from "../../../libs/api/AgendaApi";
 import { alertConfirm, alertError, alertSuccess } from "../../../libs/alert";
+import { Helper } from "../../../utils/Helper";
 
 export default function DashboardKarangTaruna() {
-  const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState("struktur");
+  const { t, i18n } = useTranslation();
+  const [activeTab, setActiveTab] = useState("structure");
 
-  return (
-    <div className="font-[Poppins,sans-serif]">
-      {/* Header Dashboard */}
-      <div className="mb-6">
-        <h1 className="text-2xl md:text-3xl font-bold text-blue-700">
-          {t("dashboardKarangTaruna.title") || "Dashboard Karang Taruna"}
-        </h1>
-        <p className="text-gray-600">
-          {t("dashboardKarangTaruna.subtitle") ||
-            "Kelola struktur organisasi dan agenda Karang Taruna"}
-        </p>
-      </div>
-
-      {/* Tab Navigation */}
-      <div className="flex border-b border-gray-200 mb-6">
-        <button
-          className={`flex items-center gap-2 px-4 py-3 font-medium text-sm rounded-t-lg ${
-            activeTab === "struktur"
-              ? "text-blue-600 border-b-2 border-blue-600"
-              : "text-gray-500 hover:text-gray-700"
-          }`}
-          onClick={() => setActiveTab("struktur")}
-        >
-          <FaUsers />{" "}
-          {t("dashboardKarangTaruna.tabs.structure") || "Struktur Organisasi"}
-        </button>
-        <button
-          className={`flex items-center gap-2 px-4 py-3 font-medium text-sm rounded-t-lg ${
-            activeTab === "agenda"
-              ? "text-blue-600 border-b-2 border-blue-600"
-              : "text-gray-500 hover:text-gray-700"
-          }`}
-          onClick={() => setActiveTab("agenda")}
-        >
-          <FaCalendarAlt /> {t("dashboardKarangTaruna.tabs.agenda") || "Agenda"}{" "}
-          Kegiatan
-        </button>
-      </div>
-
-      {/* Konten Tab */}
-      {activeTab === "struktur" ? <StrukturSection /> : <AgendaSection />}
-    </div>
-  );
-}
-
-// ======================== STRUKTUR SECTION ========================
-function StrukturSection() {
-  const { t } = useTranslation();
+  // State untuk Struktur Karang Taruna
   const [members, setMembers] = useState([]);
-  const [showModal, setShowModal] = useState(false);
-  const [editingId, setEditingId] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-
-  // Hanya untuk Karang Taruna
-  const kategori = "KARANG_TARUNA";
-
-  const [formData, setFormData] = useState({
+  const [memberPage, setMemberPage] = useState(1);
+  const [memberTotalPages, setMemberTotalPages] = useState(1);
+  const [showMemberForm, setShowMemberForm] = useState(false);
+  const [memberForm, setMemberForm] = useState({
     name: "",
     position: "",
     term_start: "",
     term_end: "",
-    organization_type: kategori,
     profile_photo: null,
     is_term: true,
-    important_level: 5,
+    important_level: 1,
   });
+  const [editingMemberId, setEditingMemberId] = useState(null);
 
-  const fetchMembers = async () => {
-    const response = await MemberApi.getAllMembers(kategori, currentPage, 9);
-    if (!response.ok) {
-      alertError(
-        t("dashboardKarangTaruna.alerts.fetchMembersError") ||
-          "Gagal mengambil data anggota."
-      );
-      return;
-    }
-    const body = await response.json();
-    setMembers(body.members || []);
-    setTotalPages(body.total_page || 1);
-    setCurrentPage(body.page || 1);
-  };
+  // State untuk Agenda Karang Taruna
+  const [agendas, setAgendas] = useState([]);
+  const [agendaPage, setAgendaPage] = useState(1);
+  const [agendaTotalPages, setAgendaTotalPages] = useState(1);
+  const [showAgendaForm, setShowAgendaForm] = useState(false);
+  const [agendaForm, setAgendaForm] = useState({
+    title: "",
+    content: "",
+    start_time: "",
+    end_time: "",
+    location: "",
+    featured_image: null,
+    is_published: false,
+  });
+  const [editingAgendaId, setEditingAgendaId] = useState(null);
 
-  useEffect(() => {
-    fetchMembers();
-  }, [currentPage]);
-
-  const handleAdd = () => {
-    setEditingId(null);
-    setFormData({
+  // Fungsi untuk reset semua form
+  const resetForms = () => {
+    // Reset Member Form
+    setMemberForm({
       name: "",
       position: "",
       term_start: "",
       term_end: "",
-      organization_type: kategori,
       profile_photo: null,
       is_term: true,
-      important_level: 5,
+      important_level: 1,
     });
-    setShowModal(true);
+    setEditingMemberId(null);
+    setShowMemberForm(false);
+
+    // Reset Agenda Form
+    setAgendaForm({
+      title: "",
+      content: "",
+      start_time: "",
+      end_time: "",
+      location: "",
+      featured_image: null,
+      is_published: false,
+    });
+    setEditingAgendaId(null);
+    setShowAgendaForm(false);
   };
 
-  const handleEdit = (id) => {
-    const member = members.find((a) => a.id === id);
+  // ==================== FUNGSI STRUKTUR KARANG TARUNA ====================
+  const fetchMembers = async () => {
+    const response = await MemberApi.getAllMembers(
+      "KARANG_TARUNA",
+      memberPage,
+      6,
+      i18n.language
+    );
+    if (!response.ok) {
+      await Helper.errorResponseHandler(await response.json());
+      return;
+    }
+    const body = await response.json();
+    setMembers(body.members);
+    setMemberTotalPages(body.total_page);
+    setMemberPage(body.page);
+  };
+
+  const handleMemberSave = async (e) => {
+    e.preventDefault();
+    const rawData = {
+      ...memberForm,
+      organization_type: "KARANG_TARUNA", // Hardcode untuk Karang Taruna
+    };
+
+    if (editingMemberId) {
+      if (
+        !(await alertConfirm(
+          t("karangTarunaAdminStructure.confirmations.saveChanges")
+        ))
+      )
+        return;
+
+      const response = await MemberApi.updateMember(
+        editingMemberId,
+        rawData,
+        i18n.language
+      );
+      if (!response.ok) {
+        await Helper.errorResponseHandler(await response.json());
+        return;
+      }
+
+      await alertSuccess(t("karangTarunaAdminStructure.alerts.updateSuccess"));
+    } else {
+      const response = await MemberApi.createMember(rawData, i18n.language);
+      if (!response.ok) {
+        await Helper.errorResponseHandler(await response.json());
+        return;
+      }
+
+      await alertSuccess(t("karangTarunaAdminStructure.alerts.addSuccess"));
+    }
+
+    resetForms();
+    fetchMembers();
+  };
+
+  const handleMemberEdit = (id) => {
+    const member = members.find((m) => m.id === id);
     if (!member) return;
-    setEditingId(id);
-    setFormData({
+    setEditingMemberId(id);
+    setMemberForm({
       name: member.name,
       position: member.position,
       term_start: member.term_start,
       term_end: member.term_end,
-      organization_type: member.organization_type,
       profile_photo: null,
       is_term: member.is_term,
       important_level: member.important_level,
     });
-    setShowModal(true);
+    setShowMemberForm(true);
   };
 
-  const handleDelete = async (id) => {
+  const handleMemberDelete = async (id) => {
     if (
       !(await alertConfirm(
-        t("dashboardKarangTaruna.alerts.deleteConfirm") ||
-          "Yakin ingin menghapus anggota ini?"
+        t("karangTarunaAdminStructure.confirmations.delete")
       ))
     )
       return;
-    const response = await MemberApi.deleteMember(id);
+
+    const response = await MemberApi.deleteMember(id, i18n.language);
     if (!response.ok) {
-      alertError(
-        t("dashboardKarangTaruna.alerts.deleteError") ||
-          "Gagal menghapus anggota."
-      );
+      await Helper.errorResponseHandler(await response.json());
       return;
     }
-    setMembers((prev) => prev.filter((a) => a.id !== id));
-    await alertSuccess(
-      t("dashboardKarangTaruna.alerts.deleteSuccess") ||
-        "Anggota berhasil dihapus."
-    );
+
+    setMembers((prev) => prev.filter((m) => m.id !== id));
+    await alertSuccess(t("karangTarunaAdminStructure.alerts.deleteSuccess"));
   };
 
-  const handleSubmit = async (e) => {
+  // ==================== FUNGSI AGENDA KARANG TARUNA ====================
+  const fetchAgendas = async () => {
+    const response = await AgendaApi.getOwnAgenda(
+      agendaPage,
+      6,
+      "KARANG_TARUNA",
+      i18n.language
+    );
+    if (!response.ok) {
+      await Helper.errorResponseHandler(await response.json());
+      return;
+    }
+
+    const body = await response.json();
+    setAgendas(body.agenda || []);
+    setAgendaPage(body.page || 1);
+    setAgendaTotalPages(body.total_page || 1);
+  };
+
+  const handleAgendaSave = async (e) => {
     e.preventDefault();
+    const rawData = {
+      title: agendaForm.title,
+      content: agendaForm.content,
+      start_time: agendaForm.start_time
+        ? new Date(agendaForm.start_time).toISOString()
+        : agendas.find((a) => a.id === editingAgendaId)?.start_time,
+      end_time: agendaForm.end_time
+        ? new Date(agendaForm.end_time).toISOString()
+        : agendas.find((a) => a.id === editingAgendaId)?.end_time,
+      location: agendaForm.location,
+      featured_image: agendaForm.featured_image,
+      is_published: agendaForm.is_published,
+      type: "KARANG_TARUNA", // Hardcode untuk Karang Taruna
+    };
 
-    const apiCall = editingId
-      ? MemberApi.updateMember(editingId, formData)
-      : MemberApi.createMember(formData);
+    if (editingAgendaId) {
+      if (
+        !(await alertConfirm(
+          t("karangTarunaAdminAgenda.confirmations.saveChanges")
+        ))
+      )
+        return;
 
-    const response = await apiCall;
-    if (!response.ok) {
-      alertError(
-        editingId
-          ? t("dashboardKarangTaruna.alerts.saveError") ||
-              "Gagal menyimpan perubahan."
-          : t("dashboardKarangTaruna.alerts.addError") ||
-              "Gagal menambah anggota."
+      const response = await AgendaApi.updateAgenda(
+        editingAgendaId,
+        rawData,
+        i18n.language
       );
-      return;
+      if (!response.ok) {
+        await Helper.errorResponseHandler(await response.json());
+        return;
+      }
+
+      await alertSuccess(t("karangTarunaAdminAgenda.alerts.updateSuccess"));
+    } else {
+      const response = await AgendaApi.createAgenda(rawData, i18n.language);
+      if (!response.ok) {
+        await Helper.errorResponseHandler(await response.json());
+        return;
+      }
+
+      await alertSuccess(t("karangTarunaAdminAgenda.alerts.addSuccess"));
     }
 
-    await alertSuccess(
-      editingId
-        ? t("dashboardKarangTaruna.alerts.updateSuccess") ||
-            "Anggota diperbarui!"
-        : t("dashboardKarangTaruna.alerts.addSuccess") || "Anggota ditambahkan!"
-    );
-    setShowModal(false);
-    fetchMembers();
+    resetForms();
+    fetchAgendas();
   };
+
+  const handleAgendaEdit = (id) => {
+    const agenda = agendas.find((a) => a.id === id);
+    if (!agenda) return;
+    setEditingAgendaId(id);
+    setAgendaForm({
+      title: agenda.title,
+      content: agenda.content,
+      start_time: agenda.start_time,
+      end_time: agenda.end_time,
+      location: agenda.location,
+      featured_image: null,
+      is_published: agenda.is_published,
+    });
+    setShowAgendaForm(true);
+  };
+
+  const handleAgendaDelete = async (id) => {
+    if (
+      !(await alertConfirm(t("karangTarunaAdminAgenda.confirmations.delete")))
+    )
+      return;
+
+    const response = await AgendaApi.deleteAgenda(id, i18n.language);
+    if (!response.ok) {
+      await Helper.errorResponseHandler(await response.json());
+    }
+
+    setAgendas((prev) => prev.filter((a) => a.id !== id));
+    await alertSuccess(t("karangTarunaAdminAgenda.alerts.deleteSuccess"));
+  };
+
+  const formatDateTime = (dt) =>
+    new Date(dt).toLocaleString("id-ID", {
+      dateStyle: "long",
+      timeStyle: "short",
+    });
+
+  // Fetch data saat tab berubah atau halaman berubah
+  useEffect(() => {
+    if (activeTab === "structure") fetchMembers();
+    if (activeTab === "agenda") fetchAgendas();
+  }, [activeTab, memberPage, agendaPage, i18n.language]);
 
   return (
-    <div>
-      {/* Header Struktur */}
+    <div className="font-[Poppins,sans-serif]">
+      {/* Header */}
       <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center gap-2 text-gray-800">
-          <FiUsers className="text-2xl text-blue-600" />
-          <h2 className="text-xl font-bold">
-            {t("dashboardKarangTaruna.structure.title") ||
-              "Struktur Karang Taruna"}
-          </h2>
-        </div>
+        <h1 className="text-2xl font-bold text-green-700">
+          {t("manageKarangTaruna.title") || "Dashboard Karang Taruna"}
+        </h1>
+      </div>
 
+      {/* Tab Navigation */}
+      <div className="flex border-b mb-6">
         <button
-          onClick={handleAdd}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow transition"
+          onClick={() => setActiveTab("structure")}
+          className={`px-4 py-2 font-medium ${
+            activeTab === "structure"
+              ? "text-green-600 border-b-2 border-green-600"
+              : "text-gray-500"
+          }`}
         >
-          <FaPlus />{" "}
-          {t("dashboardKarangTaruna.structure.addMember") || "Tambah Anggota"}
+          <FaUsers className="inline mr-2" />{" "}
+          {t("manageKarangTaruna.tabs.structure") || "Struktur Karang Taruna"}
+        </button>
+        <button
+          onClick={() => setActiveTab("agenda")}
+          className={`px-4 py-2 font-medium ${
+            activeTab === "agenda"
+              ? "text-green-600 border-b-2 border-green-600"
+              : "text-gray-500"
+          }`}
+        >
+          <FaCalendarAlt className="inline mr-2" />{" "}
+          {t("manageKarangTaruna.tabs.agenda") || "Agenda Karang Taruna"}
         </button>
       </div>
 
-      {/* Grid Anggota */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {members.length === 0 ? (
-          <div className="col-span-full text-center py-12 bg-gray-50 rounded-xl border border-dashed">
-            <div className="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-              <FiUsers className="text-2xl text-gray-400" />
+      {/* Struktur Karang Taruna Section */}
+      {activeTab === "structure" && (
+        <>
+          {/* Header */}
+          <div className="flex justify-between items-center mb-6">
+            <div className="flex items-center gap-2 text-gray-800">
+              <FaUsers className="text-2xl text-green-600" />
+              <h2 className="text-xl font-semibold">
+                {t("karangTarunaAdminStructure.title") ||
+                  "Struktur Organisasi Karang Taruna"}
+              </h2>
             </div>
-            <h3 className="text-lg font-medium text-gray-700 mb-2">
-              {t("dashboardKarangTaruna.structure.emptyTitle") ||
-                "Belum ada anggota"}
-            </h3>
-            <p className="text-gray-500 mb-4">
-              {t("dashboardKarangTaruna.structure.emptyDesc") ||
-                "Tambahkan anggota untuk membentuk struktur organisasi"}
-            </p>
-            <button
-              onClick={handleAdd}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg inline-flex items-center gap-2"
-            >
-              <FaPlus />{" "}
-              {t("dashboardKarangTaruna.structure.addMember") ||
-                "Tambah Anggota"}
-            </button>
+            {!showMemberForm && (
+              <button
+                onClick={() => {
+                  resetForms();
+                  setShowMemberForm(true);
+                }}
+                className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2 rounded-lg shadow-lg transition transform hover:-translate-y-0.5"
+              >
+                <FaPlus />{" "}
+                {t("karangTarunaAdminStructure.buttons.add") ||
+                  "Tambah Anggota"}
+              </button>
+            )}
           </div>
-        ) : (
-          members.map((member) => (
-            <div
-              key={member.id}
-              className="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden border border-gray-100"
+
+          {/* Form Anggota */}
+          {showMemberForm && (
+            <form
+              onSubmit={handleMemberSave}
+              className="bg-white p-6 rounded-xl shadow-md mb-6 space-y-4 max-w-2xl border"
             >
-              {member.profile_photo ? (
-                <img
-                  src={
-                    member.profile_photo.startsWith("http")
-                      ? member.profile_photo
-                      : `${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
-                          member.profile_photo
-                        }`
-                  }
-                  alt={member.name}
-                  className="w-full h-48 object-cover"
-                />
-              ) : (
-                <div className="w-full h-48 bg-gray-100 flex items-center justify-center">
-                  <FiUsers className="text-4xl text-gray-400" />
-                </div>
-              )}
+              <h3 className="text-lg font-semibold flex items-center gap-2">
+                {editingMemberId ? (
+                  <>
+                    <FaEdit className="text-emerald-500" />
+                    {t("karangTarunaAdminStructure.modal.editTitle") ||
+                      "Edit Anggota Karang Taruna"}
+                  </>
+                ) : (
+                  <>
+                    <FaPlus className="text-emerald-500" />
+                    {t("karangTarunaAdminStructure.modal.addTitle") ||
+                      "Tambah Anggota Karang Taruna Baru"}
+                  </>
+                )}
+              </h3>
 
-              <div className="p-4">
-                <h2 className="text-lg font-semibold text-gray-800">
-                  {member.name}
-                </h2>
-                <p className="text-sm text-gray-600">{member.position}</p>
-
-                <div className="flex flex-wrap gap-2 mt-3 text-xs">
-                  <span className="px-2 py-1 rounded bg-blue-100 text-blue-700">
-                    {member.term_start} - {member.term_end}
-                  </span>
-                  <span
-                    className={`px-2 py-1 rounded ${
-                      member.is_term
-                        ? "bg-green-200 text-green-800"
-                        : "bg-red-200 text-red-800"
-                    }`}
-                  >
-                    {member.is_term ? "Menjabat" : "Tidak Menjabat"}
-                  </span>
-                </div>
-              </div>
-
-              <div className="flex justify-between p-4 border-t text-sm">
-                <button
-                  onClick={() => handleEdit(member.id)}
-                  className="flex items-center gap-1 text-blue-600 hover:text-blue-800 transition"
-                >
-                  <FaEdit /> Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(member.id)}
-                  className="flex items-center gap-1 text-red-600 hover:text-red-800 transition"
-                >
-                  <FaTrash /> Hapus
-                </button>
-              </div>
-            </div>
-          ))
-        )}
-      </div>
-
-      {/* Pagination */}
-      {members.length > 0 && totalPages > 1 && (
-        <div className="mt-6 flex justify-center">
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-          />
-        </div>
-      )}
-
-      {/* Modal Tambah/Edit */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-lg">
-            <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-gray-800">
-              {editingId ? <FaEdit /> : <FaPlus />}
-              {editingId ? "Edit Anggota" : "Tambah Anggota"}
-            </h2>
-
-            <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-1">
-                  Nama Lengkap
+                <label className="block font-medium text-gray-700 mb-1">
+                  {t("karangTarunaAdminStructure.form.name.label") ||
+                    "Nama Lengkap"}
                 </label>
                 <input
                   type="text"
-                  placeholder="Nama Lengkap"
-                  value={formData.name}
+                  className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-green-300 outline-none"
+                  value={memberForm.name}
                   onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
+                    setMemberForm({ ...memberForm, name: e.target.value })
                   }
-                  className="w-full border rounded-lg p-3 focus:ring focus:ring-blue-200"
+                  placeholder={
+                    t("karangTarunaAdminStructure.form.name.placeholder") ||
+                    "Nama lengkap anggota"
+                  }
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-1">
-                  Jabatan
+                <label className="block font-medium text-gray-700 mb-1">
+                  {t("karangTarunaAdminStructure.form.position.label") ||
+                    "Jabatan"}
                 </label>
                 <input
                   type="text"
-                  placeholder="Jabatan"
-                  value={formData.position}
+                  className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-green-300 outline-none"
+                  value={memberForm.position}
                   onChange={(e) =>
-                    setFormData({ ...formData, position: e.target.value })
+                    setMemberForm({ ...memberForm, position: e.target.value })
                   }
-                  className="w-full border rounded-lg p-3 focus:ring focus:ring-blue-200"
+                  placeholder={
+                    t("karangTarunaAdminStructure.form.position.placeholder") ||
+                    "Jabatan dalam struktur"
+                  }
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1">
-                    Mulai Jabatan
+                  <label className="block font-medium text-gray-700 mb-1">
+                    {t("karangTarunaAdminStructure.form.termStart.label") ||
+                      "Masa Jabatan Mulai"}
                   </label>
                   <input
                     type="number"
-                    placeholder="Tahun mulai"
-                    value={formData.term_start}
-                    onChange={(e) =>
-                      setFormData({ ...formData, term_start: e.target.value })
-                    }
                     className="w-full border rounded-lg p-3"
+                    value={memberForm.term_start}
+                    onChange={(e) =>
+                      setMemberForm({
+                        ...memberForm,
+                        term_start: e.target.value,
+                      })
+                    }
+                    placeholder={
+                      t(
+                        "karangTarunaAdminStructure.form.termStart.placeholder"
+                      ) || "Tahun mulai"
+                    }
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">
-                    Akhir Jabatan
+                  <label className="block font-medium text-gray-700 mb-1">
+                    {t("karangTarunaAdminStructure.form.termEnd.label") ||
+                      "Masa Jabatan Berakhir"}
                   </label>
                   <input
                     type="number"
-                    placeholder="Tahun akhir"
-                    value={formData.term_end}
-                    onChange={(e) =>
-                      setFormData({ ...formData, term_end: e.target.value })
-                    }
                     className="w-full border rounded-lg p-3"
+                    value={memberForm.term_end}
+                    onChange={(e) =>
+                      setMemberForm({ ...memberForm, term_end: e.target.value })
+                    }
+                    placeholder={
+                      t(
+                        "karangTarunaAdminStructure.form.termEnd.placeholder"
+                      ) || "Tahun berakhir"
+                    }
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-1">
-                  Foto Profil
+                <label className="block font-medium text-gray-700 mb-1">
+                  {t("karangTarunaAdminStructure.form.photo.label") ||
+                    "Foto Profil"}
                 </label>
                 <input
                   type="file"
                   accept="image/*"
+                  className="w-full border rounded-lg p-2"
                   onChange={(e) =>
-                    setFormData({
-                      ...formData,
+                    setMemberForm({
+                      ...memberForm,
                       profile_photo: e.target.files[0],
                     })
                   }
-                  className="w-full border rounded-lg p-2"
                 />
               </div>
 
-              <div className="flex items-center gap-3">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="h-4 w-4 text-blue-600"
-                    checked={formData.is_term}
-                    onChange={(e) =>
-                      setFormData({ ...formData, is_term: e.target.checked })
-                    }
-                  />
-                  <span className="text-sm">Masih menjabat?</span>
-                </label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={memberForm.is_term}
+                  onChange={(e) =>
+                    setMemberForm({ ...memberForm, is_term: e.target.checked })
+                  }
+                />
+                <span>
+                  {t("karangTarunaAdminStructure.form.status.active") ||
+                    "Masih menjabat?"}
+                </span>
               </div>
 
-              <div className="flex justify-end gap-3 mt-6">
-                <button
-                  type="button"
-                  className="px-4 py-2 rounded-lg bg-gray-300 hover:bg-gray-400 transition"
-                  onClick={() => setShowModal(false)}
-                >
-                  Batal
-                </button>
+              <div className="flex gap-3">
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition"
+                  className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-5 py-2 rounded-lg shadow hover:shadow-lg transition"
                 >
-                  {editingId ? "Update" : "Tambah"}
+                  <FaSave />{" "}
+                  {editingMemberId
+                    ? t("karangTarunaAdminStructure.buttons.update") || "Update"
+                    : t("karangTarunaAdminStructure.buttons.save") || "Simpan"}
+                </button>
+                <button
+                  type="button"
+                  onClick={resetForms}
+                  className="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition"
+                >
+                  <FaTimes />{" "}
+                  {t("karangTarunaAdminStructure.buttons.cancel") || "Batal"}
                 </button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
+          )}
 
-// ======================== AGENDA SECTION ========================
-function AgendaSection() {
-  const { t } = useTranslation();
-  const [agenda, setAgenda] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [showForm, setShowForm] = useState(false);
-  const [editingId, setEditingId] = useState(null);
-
-  // Hanya untuk Karang Taruna
-  const kategori = "KARANG_TARUNA";
-
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [startTime, setStartTime] = useState("");
-  const [endTime, setEndTime] = useState("");
-  const [location, setLocation] = useState("");
-  const [featuredImage, setFeaturedImage] = useState(null);
-  const [isPublished, setIsPublished] = useState(true);
-
-  const resetForm = () => {
-    setTitle("");
-    setContent("");
-    setStartTime("");
-    setEndTime("");
-    setLocation("");
-    setFeaturedImage(null);
-    setIsPublished(true);
-    setEditingId(null);
-    setShowForm(false);
-  };
-
-  const handleDelete = async (id) => {
-    if (!(await alertConfirm("Yakin ingin menghapus agenda ini?"))) return;
-    const response = await AgendaApi.deleteAgenda(id);
-    if (!response.ok) return alertError("Gagal menghapus agenda.");
-    setAgenda(agenda.filter((a) => a.id !== id));
-  };
-
-  const handleEdit = (id) => {
-    const item = agenda.find((a) => a.id === id);
-    if (!item) return;
-    setTitle(item.title);
-    setContent(item.content);
-    setStartTime(item.start_time.split(".")[0]); // Format datetime-local
-    setEndTime(item.end_time.split(".")[0]); // Format datetime-local
-    setLocation(item.location);
-    setFeaturedImage(null);
-    setIsPublished(item.is_published);
-    setEditingId(id);
-    setShowForm(true);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const rawData = {
-      title,
-      content,
-      start_time: new Date(startTime).toISOString(),
-      end_time: new Date(endTime).toISOString(),
-      location,
-      featured_image: featuredImage,
-      is_published: isPublished,
-      type: kategori,
-    };
-
-    if (editingId) {
-      if (!(await alertConfirm("Yakin ingin mengedit agenda ini?"))) return;
-
-      const response = await AgendaApi.updateAgenda(editingId, rawData);
-      if (!response.ok) return alertError("Gagal update agenda.");
-      await alertSuccess("Agenda berhasil diperbarui!");
-      resetForm();
-      fetchAgenda();
-      return;
-    }
-
-    const response = await AgendaApi.createAgenda(rawData);
-    const resBody = await response.json();
-    if (!response.ok)
-      return alertError(resBody.error || "Gagal menambah agenda.");
-    await alertSuccess("Agenda berhasil ditambahkan!");
-    setAgenda((prev) => [...prev, resBody.agenda]);
-    resetForm();
-  };
-
-  const formatDateTime = (dt) => {
-    const date = new Date(dt);
-    return date.toLocaleDateString("id-ID", {
-      weekday: "long",
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
-  const fetchAgenda = async () => {
-    const response = await AgendaApi.getOwnAgenda(currentPage, 6, kategori);
-    if (!response.ok) return alertError("Gagal ambil agenda.");
-    const resBody = await response.json();
-
-    setAgenda(resBody.agenda || []);
-    setCurrentPage(resBody.page || 1);
-    setTotalPages(resBody.total_page || 1);
-  };
-
-  useEffect(() => {
-    fetchAgenda();
-  }, [currentPage]);
-
-  return (
-    <div>
-      {/* Header Agenda */}
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center gap-3">
-          <h2 className="text-xl font-bold">Agenda Karang Taruna</h2>
-        </div>
-
-        {!showForm && (
-          <button
-            onClick={() => {
-              setEditingId(null);
-              setShowForm(true);
-            }}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-xl shadow-md transition"
-          >
-            <FaPlus className="text-lg" /> Tambah Agenda
-          </button>
-        )}
-      </div>
-
-      {/* Form Agenda */}
-      {showForm && (
-        <form
-          onSubmit={handleSubmit}
-          className="bg-white shadow-lg rounded-xl p-6 mb-8 border border-gray-200 space-y-4"
-        >
-          <h2 className="text-xl font-semibold text-gray-700 mb-2">
-            {editingId ? "✏️ Edit Agenda" : "📝 Tambah Agenda Baru"}
-          </h2>
-
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              Judul Agenda
-            </label>
-            <input
-              className="w-full border rounded-lg p-3 focus:ring focus:ring-blue-200"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Contoh: Rapat Rutin"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1">Deskripsi</label>
-            <textarea
-              className="w-full border rounded-lg p-3 h-24 focus:ring focus:ring-blue-200"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder="Tuliskan deskripsi agenda..."
-            />
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Mulai</label>
-              <input
-                type="datetime-local"
-                className="w-full border rounded-lg p-3 focus:ring focus:ring-blue-200"
-                value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Selesai</label>
-              <input
-                type="datetime-local"
-                className="w-full border rounded-lg p-3 focus:ring focus:ring-blue-200"
-                value={endTime}
-                onChange={(e) => setEndTime(e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1">Lokasi</label>
-            <input
-              className="w-full border rounded-lg p-3 focus:ring focus:ring-blue-200"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              placeholder="Contoh: Balai Desa"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              Gambar Utama
-            </label>
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:bg-gray-50 transition">
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => setFeaturedImage(e.target.files[0])}
-                className="hidden"
-                id="agenda-image"
-              />
-              <label htmlFor="agenda-image" className="cursor-pointer">
-                {featuredImage ? (
-                  <div className="flex flex-col items-center">
-                    <img
-                      src={URL.createObjectURL(featuredImage)}
-                      alt="preview"
-                      className="w-48 h-32 object-cover rounded-lg mb-2"
-                    />
-                    <span className="text-blue-600 text-sm">Ganti gambar</span>
-                  </div>
-                ) : editingId &&
-                  agenda.find((a) => a.id === editingId)?.featured_image ? (
-                  <div className="flex flex-col items-center">
-                    <img
-                      src={`${
-                        import.meta.env.VITE_NEW_BASE_URL
-                      }/public/images/${
-                        agenda.find((a) => a.id === editingId).featured_image
-                      }`}
-                      alt="preview"
-                      className="w-48 h-32 object-cover rounded-lg mb-2"
-                    />
-                    <span className="text-blue-600 text-sm">Ganti gambar</span>
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center">
-                    <FaImage className="text-4xl text-gray-400 mb-2" />
-                    <p className="text-gray-500">Klik untuk upload gambar</p>
-                    <p className="text-gray-400 text-xs mt-1">
-                      Format: JPG, PNG (max 2MB)
-                    </p>
-                  </div>
-                )}
-              </label>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <span className="font-medium text-gray-700">Publikasikan?</span>
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => setIsPublished(true)}
-                className={`px-4 py-2 rounded-lg ${
-                  isPublished
-                    ? "bg-green-500 text-white"
-                    : "bg-gray-200 text-gray-600"
-                }`}
-              >
-                Ya
-              </button>
-              <button
-                type="button"
-                onClick={() => setIsPublished(false)}
-                className={`px-4 py-2 rounded-lg ${
-                  !isPublished
-                    ? "bg-red-500 text-white"
-                    : "bg-gray-200 text-gray-600"
-                }`}
-              >
-                Tidak
-              </button>
-            </div>
-          </div>
-
-          <div className="flex gap-3 pt-4">
-            <button
-              type="submit"
-              className="px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white shadow-md transition flex items-center gap-2"
-            >
-              <FaSave /> {editingId ? "Update Agenda" : "Simpan Agenda"}
-            </button>
-            <button
-              type="button"
-              onClick={resetForm}
-              className="px-5 py-3 rounded-lg bg-gray-400 hover:bg-gray-500 text-white transition flex items-center gap-2"
-            >
-              <FaTimes /> Batal
-            </button>
-          </div>
-        </form>
-      )}
-
-      {/* List Agenda */}
-      {agenda.length === 0 && !showForm ? (
-        <div className="bg-gray-50 rounded-xl border border-dashed p-8 text-center">
-          <div className="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-            <FiCalendar className="text-2xl text-gray-400" />
-          </div>
-          <h3 className="text-lg font-medium text-gray-700 mb-2">
-            Belum ada agenda
-          </h3>
-          <p className="text-gray-500 mb-4">
-            Tambahkan agenda untuk kegiatan Karang Taruna
-          </p>
-          <button
-            onClick={() => setShowForm(true)}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg inline-flex items-center gap-2"
-          >
-            <FaPlus /> Tambah Agenda
-          </button>
-        </div>
-      ) : (
-        <>
+          {/* List Anggota */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {agenda.map((a) => (
-              <div
-                key={a.id}
-                className="bg-white rounded-xl shadow-md hover:shadow-lg transition transform hover:-translate-y-1 border border-gray-100"
-              >
-                {a.featured_image ? (
+            {members.length === 0 ? (
+              <p className="text-center text-gray-500 col-span-full italic">
+                {t("karangTarunaAdminStructure.empty.noMembers") ||
+                  "Belum ada anggota struktur Karang Taruna"}
+              </p>
+            ) : (
+              members.map((member) => (
+                <div
+                  key={member.id}
+                  className="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden"
+                >
                   <img
-                    src={`${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
-                      a.featured_image
-                    }`}
-                    alt={a.title}
-                    className="rounded-t-xl w-full h-48 object-cover"
+                    src={
+                      member.profile_photo.startsWith("http")
+                        ? member.profile_photo
+                        : `${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
+                            member.profile_photo
+                          }`
+                    }
+                    alt={member.name}
+                    className="w-full h-48 object-cover"
                   />
-                ) : (
-                  <div className="bg-gray-100 w-full h-48 flex items-center justify-center">
-                    <FiCalendar className="text-4xl text-gray-400" />
-                  </div>
-                )}
 
-                <div className="p-4">
-                  <h2 className="text-lg font-semibold text-gray-800">
-                    {a.title}
-                  </h2>
-                  <p className="text-gray-600 text-sm line-clamp-2 mt-1">
-                    {a.content}
-                  </p>
+                  <div className="p-4">
+                    <h2 className="text-lg font-semibold text-gray-800">
+                      {member.name}
+                    </h2>
+                    <p className="text-sm text-gray-600">{member.position}</p>
 
-                  <div className="mt-4 text-sm text-gray-500 space-y-2">
-                    <div className="flex items-start gap-2">
-                      <FiCalendar className="mt-1 flex-shrink-0" />
-                      <div>
-                        <div className="font-medium">Mulai:</div>
-                        <div>{formatDateTime(a.start_time)}</div>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <FiCalendar className="mt-1 flex-shrink-0" />
-                      <div>
-                        <div className="font-medium">Selesai:</div>
-                        <div>{formatDateTime(a.end_time)}</div>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <FiMapPin className="mt-1 flex-shrink-0" />
-                      <div>
-                        <div className="font-medium">Lokasi:</div>
-                        <div>{a.location}</div>
-                      </div>
+                    <div className="flex flex-wrap gap-2 mt-3 text-xs">
+                      <span className="px-2 py-1 rounded bg-blue-100 text-blue-700">
+                        {member.term_start} - {member.term_end}
+                      </span>
+                      <span
+                        className={`px-2 py-1 rounded ${
+                          member.is_term
+                            ? "bg-green-200 text-green-800"
+                            : "bg-red-200 text-red-800"
+                        }`}
+                      >
+                        {member.is_term
+                          ? t("karangTarunaAdminStructure.labels.active") ||
+                            "Menjabat"
+                          : t("karangTarunaAdminStructure.labels.inactive") ||
+                            "Tidak Menjabat"}
+                      </span>
                     </div>
                   </div>
 
-                  <div className="flex justify-between mt-4 pt-3 border-t">
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        a.is_published
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-700"
-                      }`}
+                  <div className="flex justify-between p-4 border-t text-sm">
+                    <button
+                      onClick={() => handleMemberEdit(member.id)}
+                      className="flex items-center gap-1 text-blue-600 hover:text-blue-800 transition"
                     >
-                      {a.is_published ? "Published" : "Draft"}
-                    </span>
-                    <div className="flex gap-3">
-                      <button
-                        onClick={() => handleEdit(a.id)}
-                        className="text-blue-500 hover:text-blue-700 text-sm"
-                      >
-                        <FaEdit />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(a.id)}
-                        className="text-red-500 hover:text-red-700 text-sm"
-                      >
-                        <FaTrash />
-                      </button>
-                    </div>
+                      <FaEdit />{" "}
+                      {t("karangTarunaAdminStructure.buttons.edit") || "Edit"}
+                    </button>
+                    <button
+                      onClick={() => handleMemberDelete(member.id)}
+                      className="flex items-center gap-1 text-red-600 hover:text-red-800 transition"
+                    >
+                      <FaTrash />{" "}
+                      {t("karangTarunaAdminStructure.buttons.delete") ||
+                        "Hapus"}
+                    </button>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
 
           {/* Pagination */}
-          {agenda.length > 0 && totalPages > 1 && (
-            <div className="mt-8 flex justify-center">
+          <div className="mt-6 flex justify-center">
+            <Pagination
+              currentPage={memberPage}
+              totalPages={memberTotalPages}
+              onPageChange={setMemberPage}
+            />
+          </div>
+        </>
+      )}
+
+      {/* Agenda Karang Taruna Section */}
+      {activeTab === "agenda" && (
+        <>
+          {/* Header */}
+          <div className="flex justify-between items-center mb-6">
+            <div className="flex items-center gap-2 text-gray-800">
+              <FaCalendarAlt className="text-2xl text-green-600" />
+              <h2 className="text-xl font-semibold">
+                {t("karangTarunaAdminAgenda.title") ||
+                  "Agenda Kegiatan Karang Taruna"}
+              </h2>
+            </div>
+            {!showAgendaForm && (
+              <button
+                onClick={() => {
+                  resetForms();
+                  setShowAgendaForm(true);
+                }}
+                className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2 rounded-lg shadow-lg transition transform hover:-translate-y-0.5"
+              >
+                <FaPlus />{" "}
+                {t("karangTarunaAdminAgenda.buttons.add") || "Tambah Agenda"}
+              </button>
+            )}
+          </div>
+
+          {/* Form Agenda */}
+          {showAgendaForm && (
+            <div className="bg-white p-6 rounded-xl shadow-md mb-6 border">
+              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                {editingAgendaId ? (
+                  <>
+                    <FaEdit className="text-emerald-500" />
+                    {t("karangTarunaAdminAgenda.modal.editTitle") ||
+                      "Edit Agenda Karang Taruna"}
+                  </>
+                ) : (
+                  <>
+                    <FaPlus className="text-emerald-500" />
+                    {t("karangTarunaAdminAgenda.modal.addTitle") ||
+                      "Tambah Agenda Karang Taruna Baru"}
+                  </>
+                )}
+              </h3>
+
+              <form onSubmit={handleAgendaSave} className="space-y-4">
+                <div>
+                  <label className="block font-medium text-gray-700 mb-1">
+                    {t("karangTarunaAdminAgenda.form.title.label") ||
+                      "Judul Agenda"}{" "}
+                    <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-green-300 outline-none"
+                    value={agendaForm.title}
+                    onChange={(e) =>
+                      setAgendaForm({ ...agendaForm, title: e.target.value })
+                    }
+                    placeholder={
+                      t("karangTarunaAdminAgenda.form.title.placeholder") ||
+                      "Contoh: Rapat Rutin Karang Taruna"
+                    }
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-medium text-gray-700 mb-1">
+                    {t("karangTarunaAdminAgenda.form.description.label") ||
+                      "Deskripsi Agenda"}{" "}
+                    <span className="text-red-500">*</span>
+                  </label>
+                  <textarea
+                    rows={4}
+                    className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-green-300 outline-none"
+                    value={agendaForm.content}
+                    onChange={(e) =>
+                      setAgendaForm({ ...agendaForm, content: e.target.value })
+                    }
+                    placeholder={
+                      t(
+                        "karangTarunaAdminAgenda.form.description.placeholder"
+                      ) || "Deskripsi lengkap agenda..."
+                    }
+                  />
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block font-medium text-gray-700 mb-1">
+                      {t("karangTarunaAdminAgenda.form.startTime.label") ||
+                        "Waktu Mulai"}{" "}
+                      <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="datetime-local"
+                      className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-green-300 outline-none"
+                      value={agendaForm.start_time}
+                      onChange={(e) =>
+                        setAgendaForm({
+                          ...agendaForm,
+                          start_time: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-medium text-gray-700 mb-1">
+                      {t("karangTarunaAdminAgenda.form.endTime.label") ||
+                        "Waktu Selesai"}{" "}
+                      <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="datetime-local"
+                      className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-green-300 outline-none"
+                      value={agendaForm.end_time}
+                      onChange={(e) =>
+                        setAgendaForm({
+                          ...agendaForm,
+                          end_time: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block font-medium text-gray-700 mb-1">
+                    {t("karangTarunaAdminAgenda.form.location.label") ||
+                      "Lokasi"}{" "}
+                    <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-green-300 outline-none"
+                    value={agendaForm.location}
+                    onChange={(e) =>
+                      setAgendaForm({ ...agendaForm, location: e.target.value })
+                    }
+                    placeholder={
+                      t("karangTarunaAdminAgenda.form.location.placeholder") ||
+                      "Tempat/lokasi kegiatan"
+                    }
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-medium text-gray-700 mb-1">
+                    {t("karangTarunaAdminAgenda.form.image.label") ||
+                      "Gambar Agenda"}
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="w-full border rounded-lg p-2"
+                    onChange={(e) =>
+                      setAgendaForm({
+                        ...agendaForm,
+                        featured_image: e.target.files[0],
+                      })
+                    }
+                  />
+                  {(agendaForm.featured_image ||
+                    (editingAgendaId &&
+                      agendas.find((a) => a.id === editingAgendaId)
+                        ?.featured_image)) && (
+                    <div className="mt-3">
+                      <img
+                        src={
+                          agendaForm.featured_image
+                            ? URL.createObjectURL(agendaForm.featured_image)
+                            : `${
+                                import.meta.env.VITE_NEW_BASE_URL
+                              }/public/images/${
+                                agendas.find((a) => a.id === editingAgendaId)
+                                  ?.featured_image
+                              }`
+                        }
+                        alt={
+                          t("karangTarunaAdminAgenda.form.image.preview") ||
+                          "preview"
+                        }
+                        className="w-full h-40 object-cover rounded-lg shadow-sm"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="is_published"
+                    checked={agendaForm.is_published}
+                    onChange={(e) =>
+                      setAgendaForm({
+                        ...agendaForm,
+                        is_published: e.target.checked,
+                      })
+                    }
+                    className="w-4 h-4 text-green-600 rounded focus:ring-green-500"
+                  />
+                  <label htmlFor="is_published" className="text-gray-700">
+                    {t("karangTarunaAdminAgenda.form.publishAgenda") ||
+                      "Publikasikan agenda?"}
+                  </label>
+                </div>
+
+                <div className="flex gap-3 pt-4">
+                  <button
+                    type="submit"
+                    className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-5 py-2 rounded-lg shadow hover:shadow-lg transition"
+                  >
+                    <FaSave />{" "}
+                    {editingAgendaId
+                      ? t("karangTarunaAdminAgenda.buttons.update") || "Update"
+                      : t("karangTarunaAdminAgenda.buttons.save") || "Simpan"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={resetForms}
+                    className="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition"
+                  >
+                    <FaTimes />{" "}
+                    {t("karangTarunaAdminAgenda.buttons.cancel") || "Batal"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
+
+          {/* List Agenda */}
+          <div className="space-y-4">
+            {agendas.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-gray-500 italic text-lg">
+                  {t("karangTarunaAdminAgenda.empty.noAgenda") ||
+                    "Belum ada agenda Karang Taruna yang tersedia"}
+                </p>
+              </div>
+            ) : (
+              agendas.map((agenda) => (
+                <div
+                  key={agenda.id}
+                  className="bg-white p-6 rounded-xl shadow-md border hover:shadow-lg transition"
+                >
+                  <div className="flex flex-col lg:flex-row gap-6">
+                    {/* Image Section */}
+                    {agenda.featured_image && (
+                      <div className="lg:w-1/3">
+                        <img
+                          src={`${
+                            import.meta.env.VITE_NEW_BASE_URL
+                          }/public/images/${agenda.featured_image}`}
+                          alt={agenda.title}
+                          className="w-full h-48 lg:h-40 object-cover rounded-lg"
+                          onError={(e) => {
+                            e.target.style.display = "none";
+                          }}
+                        />
+                      </div>
+                    )}
+
+                    {/* Content Section */}
+                    <div
+                      className={`${
+                        agenda.featured_image ? "lg:w-2/3" : "w-full"
+                      }`}
+                    >
+                      <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4">
+                        <div className="flex-1">
+                          <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                            {agenda.title}
+                          </h3>
+                          <p className="text-gray-600 mb-4 line-clamp-3">
+                            {agenda.content}
+                          </p>
+
+                          <div className="space-y-2 text-sm text-gray-500">
+                            <div className="flex items-center gap-2">
+                              <FaCalendarAlt className="text-green-500" />
+                              <span>
+                                {formatDateTime(agenda.start_time)} -{" "}
+                                {formatDateTime(agenda.end_time)}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <FaMapMarkerAlt className="text-red-500" />
+                              <span>{agenda.location}</span>
+                            </div>
+                          </div>
+
+                          <div className="mt-3">
+                            <span
+                              className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
+                                agenda.is_published
+                                  ? "bg-green-100 text-green-700"
+                                  : "bg-red-100 text-red-700"
+                              }`}
+                            >
+                              {agenda.is_published
+                                ? t(
+                                    "karangTarunaAdminAgenda.status.published"
+                                  ) || "Published"
+                                : t("karangTarunaAdminAgenda.status.draft") ||
+                                  "Unpublished"}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex gap-2 lg:flex-col">
+                          <button
+                            onClick={() => handleAgendaEdit(agenda.id)}
+                            className="flex items-center gap-1 px-3 py-2 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded transition text-sm"
+                          >
+                            <FaEdit />{" "}
+                            {t("karangTarunaAdminAgenda.buttons.edit") ||
+                              "Edit"}
+                          </button>
+                          <button
+                            onClick={() => handleAgendaDelete(agenda.id)}
+                            className="flex items-center gap-1 px-3 py-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded transition text-sm"
+                          >
+                            <FaTrash />{" "}
+                            {t("karangTarunaAdminAgenda.buttons.delete") ||
+                              "Hapus"}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          {/* Pagination */}
+          {agendaTotalPages > 1 && (
+            <div className="mt-6 flex justify-center">
               <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={setCurrentPage}
+                currentPage={agendaPage}
+                totalPages={agendaTotalPages}
+                onPageChange={setAgendaPage}
               />
             </div>
           )}

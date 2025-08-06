@@ -1720,6 +1720,151 @@
       "delete": "Delete"
     }
   },
+  "bpdAdminStructure": {
+    "title": "BPD Organization Structure",
+    "buttons": {
+      "add": "Add Member",
+      "edit": "Edit",
+      "delete": "Delete",
+      "save": "Save",
+      "update": "Update",
+      "cancel": "Cancel"
+    },
+    "empty": {
+      "noMembers": "No BPD structure members yet"
+    },
+    "labels": {
+      "orgType": "BPD",
+      "active": "Currently Serving",
+      "inactive": "Not Serving"
+    },
+    "modal": {
+      "addTitle": "Add New BPD Member",
+      "editTitle": "Edit BPD Member"
+    },
+    "form": {
+      "name": {
+        "label": "Full Name",
+        "placeholder": "Enter full name"
+      },
+      "position": {
+        "label": "Position",
+        "placeholder": "Example: Chairman, Secretary, etc"
+      },
+      "termStart": {
+        "label": "Term Start",
+        "placeholder": "Start year"
+      },
+      "termEnd": {
+        "label": "Term End",
+        "placeholder": "End year"
+      },
+      "importance": {
+        "label": "Importance Level",
+        "placeholder": "Scale 1-10 (1: most important)"
+      },
+      "photo": {
+        "label": "Profile Photo"
+      },
+      "status": {
+        "label": "Position Status",
+        "active": "Currently Serving",
+        "inactive": "Not Serving"
+      }
+    },
+    "alerts": {
+      "fetchError": "Failed to fetch BPD member data.",
+      "updateError": "Failed to save BPD member changes.",
+      "updateSuccess": "BPD member successfully updated!",
+      "addError": "Failed to add BPD member.",
+      "addSuccess": "BPD member successfully added!",
+      "deleteError": "Failed to delete BPD member.",
+      "deleteSuccess": "BPD member successfully deleted."
+    },
+    "confirmations": {
+      "saveChanges": "Are you sure you want to save BPD member changes?",
+      "delete": "Are you sure you want to delete this BPD member?"
+    }
+  },
+  "bpdAdminAgenda": {
+    "title": "BPD Activities Agenda",
+    "buttons": {
+      "add": "Add Agenda",
+      "edit": "Edit",
+      "delete": "Delete",
+      "save": "Save",
+      "update": "Update",
+      "cancel": "Cancel"
+    },
+    "empty": {
+      "noAgenda": "No BPD agenda available yet"
+    },
+    "modal": {
+      "addTitle": "Add New BPD Agenda",
+      "editTitle": "Edit BPD Agenda"
+    },
+    "form": {
+      "title": {
+        "label": "Agenda Title",
+        "placeholder": "Enter agenda title"
+      },
+      "description": {
+        "label": "Agenda Description",
+        "placeholder": "Describe the agenda completely"
+      },
+      "startTime": {
+        "label": "Start Time"
+      },
+      "endTime": {
+        "label": "End Time"
+      },
+      "location": {
+        "label": "Location",
+        "placeholder": "Enter agenda location"
+      },
+      "image": {
+        "label": "Agenda Image",
+        "preview": "Image preview"
+      },
+      "publishAgenda": "Publish Agenda"
+    },
+    "status": {
+      "published": "Published",
+      "draft": "Draft"
+    },
+    "alerts": {
+      "fetchError": "Failed to fetch BPD agenda.",
+      "updateError": "Failed to save BPD agenda changes.",
+      "updateSuccess": "BPD agenda successfully updated!",
+      "addSuccess": "BPD agenda successfully added!",
+      "deleteError": "Failed to delete BPD agenda.",
+      "deleteSuccess": "BPD agenda successfully deleted."
+    },
+    "confirmations": {
+      "saveChanges": "Are you sure you want to save BPD agenda changes?",
+      "delete": "Are you sure you want to delete this BPD agenda?"
+    }
+  },
+  "manageBpd": {
+    "title": "BPD Management",
+    "tabs": {
+      "structure": "BPD Structure",
+      "agenda": "BPD Agenda"
+    },
+    "confirmation": {
+      "saveChanges": "Are you sure you want to save these changes?",
+      "deleteAgenda": "Are you sure you want to delete this agenda?",
+      "deleteMember": "Are you sure you want to delete this member?"
+    },
+    "success": {
+      "memberUpdated": "Member successfully updated!",
+      "memberAdded": "Member successfully added!",
+      "memberDeleted": "Member successfully deleted!",
+      "agendaUpdated": "Agenda successfully updated!",
+      "agendaAdded": "Agenda successfully added!",
+      "agendaDeleted": "Agenda successfully deleted!"
+    }
+  },
   "manageAgenda": {
     "title": "Agenda Management",
     "subtitle": "Manage all village agenda easily",
@@ -2282,6 +2427,123 @@
     "confirmations": {
       "saveChanges": "Are you sure you want to save PKK agenda changes?",
       "delete": "Are you sure you want to delete this PKK agenda?"
+    }
+  },
+  "manageKarangTaruna": {
+    "title": "Karang Taruna Dashboard",
+    "tabs": {
+      "structure": "Karang Taruna Structure",
+      "agenda": "Karang Taruna Agenda"
+    }
+  },
+  "karangTarunaAdminStructure": {
+    "title": "Karang Taruna Structure",
+    "buttons": {
+      "add": "Add Member",
+      "edit": "Edit",
+      "delete": "Delete",
+      "save": "Save",
+      "update": "Update",
+      "cancel": "Cancel"
+    },
+    "empty": {
+      "noMembers": "No youth organization members yet"
+    },
+    "labels": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "modal": {
+      "addTitle": "Add New Karang Taruna Member",
+      "editTitle": "Edit Karang Taruna Member"
+    },
+    "form": {
+      "name": {
+        "label": "Full Name",
+        "placeholder": "Member full name"
+      },
+      "position": {
+        "label": "Position",
+        "placeholder": "Position in structure"
+      },
+      "termStart": {
+        "label": "Term Start",
+        "placeholder": "Start year"
+      },
+      "termEnd": {
+        "label": "Term End",
+        "placeholder": "End year"
+      },
+      "photo": {
+        "label": "Profile Photo"
+      },
+      "status": {
+        "active": "Still serving?"
+      }
+    },
+    "alerts": {
+      "updateSuccess": "Youth organization member successfully updated!",
+      "addSuccess": "Youth organization member successfully added!",
+      "deleteSuccess": "Youth organization member successfully deleted!"
+    },
+    "confirmations": {
+      "saveChanges": "Are you sure you want to save changes to youth organization member?",
+      "delete": "Are you sure you want to delete this youth organization member?"
+    }
+  },
+  "karangTarunaAdminAgenda": {
+    "title": "Karang Taruna Activities Agenda",
+    "buttons": {
+      "add": "Add Agenda",
+      "edit": "Edit",
+      "delete": "Delete",
+      "save": "Save",
+      "update": "Update",
+      "cancel": "Cancel"
+    },
+    "empty": {
+      "noAgenda": "No youth organization agenda available yet"
+    },
+    "modal": {
+      "addTitle": "Add New Karang Taruna Agenda",
+      "editTitle": "Edit Karang Taruna Agenda"
+    },
+    "form": {
+      "title": {
+        "label": "Agenda Title",
+        "placeholder": "Example: Karang Taruna Regular Meeting"
+      },
+      "description": {
+        "label": "Agenda Description",
+        "placeholder": "Complete agenda description..."
+      },
+      "startTime": {
+        "label": "Start Time"
+      },
+      "endTime": {
+        "label": "End Time"
+      },
+      "location": {
+        "label": "Location",
+        "placeholder": "Activity location"
+      },
+      "image": {
+        "label": "Agenda Image"
+      },
+      "publishAgenda": "Publish agenda?"
+    },
+    "status": {
+      "published": "Published",
+      "draft": "Unpublished"
+    },
+    "alerts": {
+      "updateSuccess": "Youth organization agenda successfully updated!",
+      "addSuccess": "Youth organization agenda successfully added!",
+      "deleteSuccess": "Youth organization agenda successfully deleted!"
+    },
+    "confirmations": {
+      "saveChanges": "Are you sure you want to save changes to youth organization agenda?",
+      "delete": "Are you sure you want to delete this youth organization agenda?"
     }
   }
 }

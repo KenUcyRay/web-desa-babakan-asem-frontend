@@ -102,6 +102,8 @@ import ManageIDM from "./components/admin/KelolaInfografis/ManageIDM";
 import ManageSDGs from "./components/admin/KelolaInfografis/ManageSDGs";
 import ManageBansos from "./components/admin/KelolaInfografis/ManageBansos";
 
+import Tes from "./Tes.jsx"; // Import Tes component
+
 // ✅ Layout Umum (Navbar + Footer aktif + Floating Menu)
 function LayoutUmum() {
   return (
@@ -156,6 +158,8 @@ function LayoutUmum() {
             <Route path="bansos" element={<Bansos />} />
             <Route path="sdgs" element={<SDGs />} />
           </Route>
+
+          <Route path="/waita" element={<Tes />} />
 
           {/* - Form Administrasi */}
           <Route path="/surat-pengantar" element={<SuratPengantar />} />

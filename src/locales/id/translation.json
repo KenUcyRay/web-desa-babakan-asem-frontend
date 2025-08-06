@@ -1732,6 +1732,151 @@
       "delete": "Hapus"
     }
   },
+  "bpdAdminStructure": {
+    "title": "Struktur Organisasi BPD",
+    "buttons": {
+      "add": "Tambah Anggota",
+      "edit": "Edit",
+      "delete": "Hapus",
+      "save": "Simpan",
+      "update": "Update",
+      "cancel": "Batal"
+    },
+    "empty": {
+      "noMembers": "Belum ada anggota struktur BPD"
+    },
+    "labels": {
+      "orgType": "BPD",
+      "active": "Menjabat",
+      "inactive": "Tidak Menjabat"
+    },
+    "modal": {
+      "addTitle": "Tambah Anggota BPD Baru",
+      "editTitle": "Edit Anggota BPD"
+    },
+    "form": {
+      "name": {
+        "label": "Nama Lengkap",
+        "placeholder": "Masukkan nama lengkap"
+      },
+      "position": {
+        "label": "Jabatan",
+        "placeholder": "Contoh: Ketua, Sekretaris, dll"
+      },
+      "termStart": {
+        "label": "Masa Jabatan Mulai",
+        "placeholder": "Tahun mulai"
+      },
+      "termEnd": {
+        "label": "Masa Jabatan Berakhir",
+        "placeholder": "Tahun berakhir"
+      },
+      "importance": {
+        "label": "Tingkat Kepentingan",
+        "placeholder": "Skala 1-10 (1: paling penting)"
+      },
+      "photo": {
+        "label": "Foto Profil"
+      },
+      "status": {
+        "label": "Status Jabatan",
+        "active": "Masih Menjabat",
+        "inactive": "Tidak Menjabat"
+      }
+    },
+    "alerts": {
+      "fetchError": "Gagal mengambil data anggota BPD.",
+      "updateError": "Gagal menyimpan perubahan anggota BPD.",
+      "updateSuccess": "Anggota BPD berhasil diperbarui!",
+      "addError": "Gagal menambahkan anggota BPD.",
+      "addSuccess": "Anggota BPD berhasil ditambahkan!",
+      "deleteError": "Gagal menghapus anggota BPD.",
+      "deleteSuccess": "Anggota BPD berhasil dihapus."
+    },
+    "confirmations": {
+      "saveChanges": "Yakin ingin menyimpan perubahan anggota BPD?",
+      "delete": "Yakin ingin menghapus anggota BPD ini?"
+    }
+  },
+  "bpdAdminAgenda": {
+    "title": "Agenda Kegiatan BPD",
+    "buttons": {
+      "add": "Tambah Agenda",
+      "edit": "Edit",
+      "delete": "Hapus",
+      "save": "Simpan",
+      "update": "Update",
+      "cancel": "Batal"
+    },
+    "empty": {
+      "noAgenda": "Belum ada agenda BPD yang tersedia"
+    },
+    "modal": {
+      "addTitle": "Tambah Agenda BPD Baru",
+      "editTitle": "Edit Agenda BPD"
+    },
+    "form": {
+      "title": {
+        "label": "Judul Agenda",
+        "placeholder": "Masukkan judul agenda"
+      },
+      "description": {
+        "label": "Deskripsi Agenda",
+        "placeholder": "Deskripsikan agenda secara lengkap"
+      },
+      "startTime": {
+        "label": "Waktu Mulai"
+      },
+      "endTime": {
+        "label": "Waktu Selesai"
+      },
+      "location": {
+        "label": "Lokasi",
+        "placeholder": "Masukkan lokasi agenda"
+      },
+      "image": {
+        "label": "Gambar Agenda",
+        "preview": "Pratinjau gambar"
+      },
+      "publishAgenda": "Publikasikan Agenda"
+    },
+    "status": {
+      "published": "Terpublikasi",
+      "draft": "Draft"
+    },
+    "alerts": {
+      "fetchError": "Gagal mengambil agenda BPD.",
+      "updateError": "Gagal menyimpan perubahan agenda BPD.",
+      "updateSuccess": "Agenda BPD berhasil diperbarui!",
+      "addSuccess": "Agenda BPD berhasil ditambahkan!",
+      "deleteError": "Gagal menghapus agenda BPD.",
+      "deleteSuccess": "Agenda BPD berhasil dihapus."
+    },
+    "confirmations": {
+      "saveChanges": "Yakin ingin menyimpan perubahan agenda BPD?",
+      "delete": "Yakin ingin menghapus agenda BPD ini?"
+    }
+  },
+  "manageBpd": {
+    "title": "Manajemen BPD",
+    "tabs": {
+      "structure": "Struktur BPD",
+      "agenda": "Agenda BPD"
+    },
+    "confirmation": {
+      "saveChanges": "Yakin ingin menyimpan perubahan?",
+      "deleteAgenda": "Yakin ingin menghapus agenda ini?",
+      "deleteMember": "Yakin ingin menghapus anggota ini?"
+    },
+    "success": {
+      "memberUpdated": "Anggota berhasil diperbarui!",
+      "memberAdded": "Anggota berhasil ditambahkan!",
+      "memberDeleted": "Anggota berhasil dihapus!",
+      "agendaUpdated": "Agenda berhasil diperbarui!",
+      "agendaAdded": "Agenda berhasil ditambahkan!",
+      "agendaDeleted": "Agenda berhasil dihapus!"
+    }
+  },
   "manageAgenda": {
     "title": "Manajemen Agenda",
     "subtitle": "Kelola semua agenda desa dengan mudah",
@@ -2311,6 +2456,123 @@
       "programUpdated": "Program berhasil diperbarui!",
       "programAdded": "Program berhasil ditambahkan!",
       "programDeleted": "Program berhasil dihapus!"
+    }
+  },
+  "manageKarangTaruna": {
+    "title": "Dashboard Karang Taruna",
+    "tabs": {
+      "structure": "Struktur Karang Taruna",
+      "agenda": "Agenda Karang Taruna"
+    }
+  },
+  "karangTarunaAdminStructure": {
+    "title": "Struktur Organisasi Karang Taruna",
+    "buttons": {
+      "add": "Tambah Anggota",
+      "edit": "Edit",
+      "delete": "Hapus",
+      "save": "Simpan",
+      "update": "Update",
+      "cancel": "Batal"
+    },
+    "empty": {
+      "noMembers": "Belum ada anggota struktur Karang Taruna"
+    },
+    "labels": {
+      "active": "Menjabat",
+      "inactive": "Tidak Menjabat"
+    },
+    "modal": {
+      "addTitle": "Tambah Anggota Karang Taruna Baru",
+      "editTitle": "Edit Anggota Karang Taruna"
+    },
+    "form": {
+      "name": {
+        "label": "Nama Lengkap",
+        "placeholder": "Nama lengkap anggota"
+      },
+      "position": {
+        "label": "Jabatan",
+        "placeholder": "Jabatan dalam struktur"
+      },
+      "termStart": {
+        "label": "Masa Jabatan Mulai",
+        "placeholder": "Tahun mulai"
+      },
+      "termEnd": {
+        "label": "Masa Jabatan Berakhir",
+        "placeholder": "Tahun berakhir"
+      },
+      "photo": {
+        "label": "Foto Profil"
+      },
+      "status": {
+        "active": "Masih menjabat?"
+      }
+    },
+    "alerts": {
+      "updateSuccess": "Anggota Karang Taruna berhasil diperbarui!",
+      "addSuccess": "Anggota Karang Taruna berhasil ditambahkan!",
+      "deleteSuccess": "Anggota Karang Taruna berhasil dihapus!"
+    },
+    "confirmations": {
+      "saveChanges": "Yakin ingin menyimpan perubahan anggota Karang Taruna?",
+      "delete": "Yakin ingin menghapus anggota Karang Taruna ini?"
+    }
+  },
+  "karangTarunaAdminAgenda": {
+    "title": "Agenda Kegiatan Karang Taruna",
+    "buttons": {
+      "add": "Tambah Agenda",
+      "edit": "Edit",
+      "delete": "Hapus",
+      "save": "Simpan",
+      "update": "Update",
+      "cancel": "Batal"
+    },
+    "empty": {
+      "noAgenda": "Belum ada agenda Karang Taruna yang tersedia"
+    },
+    "modal": {
+      "addTitle": "Tambah Agenda Karang Taruna Baru",
+      "editTitle": "Edit Agenda Karang Taruna"
+    },
+    "form": {
+      "title": {
+        "label": "Judul Agenda",
+        "placeholder": "Contoh: Rapat Rutin Karang Taruna"
+      },
+      "description": {
+        "label": "Deskripsi Agenda",
+        "placeholder": "Deskripsi lengkap agenda..."
+      },
+      "startTime": {
+        "label": "Waktu Mulai"
+      },
+      "endTime": {
+        "label": "Waktu Selesai"
+      },
+      "location": {
+        "label": "Lokasi",
+        "placeholder": "Tempat/lokasi kegiatan"
+      },
+      "image": {
+        "label": "Gambar Agenda"
+      },
+      "publishAgenda": "Publikasikan agenda?"
+    },
+    "status": {
+      "published": "Published",
+      "draft": "Unpublished"
+    },
+    "alerts": {
+      "updateSuccess": "Agenda Karang Taruna berhasil diperbarui!",
+      "addSuccess": "Agenda Karang Taruna berhasil ditambahkan!",
+      "deleteSuccess": "Agenda Karang Taruna berhasil dihapus!"
+    },
+    "confirmations": {
+      "saveChanges": "Yakin ingin menyimpan perubahan agenda Karang Taruna?",
+      "delete": "Yakin ingin menghapus agenda Karang Taruna ini?"
     }
   }
 }
