@@ -6,6 +6,8 @@ import fs from "node:fs/promises";
 import { PkkCreateRequest, PkkUpdateRequest } from "../model/pkk-model";
 import { PkkValidation } from "../validation/pkk-validation";
 import { TFunction } from "i18next";
+import { UserResponse } from "@/model/user-model";
+import { Role } from "@prisma/client";
 
 export class PkkService {
   static async getAll(page: number = 1, limit: number = 10) {
@@ -28,9 +30,16 @@ export class PkkService {
   static async create(
     t: TFunction,
     request: PkkCreateRequest,
+    user: UserResponse,
     file?: Express.Multer.File
   ) {
     Validation.validate(PkkValidation.create, request);
+
+    if (user.role !== Role.PKK) {
+      if (user.role !== Role.ADMIN) {
+        throw new ResponseError(403, t("pkk.pkk_only_program"));
+      }
+    }
 
     if (!file) {
       throw new ResponseError(400, t("pkk.featured_image_required"));
@@ -49,9 +58,16 @@ export class PkkService {
     t: TFunction,
     request: PkkUpdateRequest,
     programId: string,
+    user: UserResponse,
     file?: Express.Multer.File
   ) {
     Validation.validate(PkkValidation.update, request);
+
+    if (user.role !== Role.PKK) {
+      if (user.role !== Role.ADMIN) {
+        throw new ResponseError(403, t("pkk.pkk_only_program"));
+      }
+    }
 
     const program = await prismaClient.program.findUnique({
       where: { id: programId },

@@ -10,6 +10,25 @@ datasource db {
 
 //Rill Fix
 
+model SiteContent {
+  id         String          @id @default(uuid())
+  key        String          @unique @db.VarChar(255)
+  value_id   String          @db.Text
+  value_en   String          @db.Text
+  type       SiteContentType
+  created_at DateTime        @default(now())
+  updated_at DateTime        @updatedAt
+
+  @@map("site_contents")
+}
+
+enum SiteContentType {
+  TEXT
+  LINK
+  IMAGE
+  VIDEO
+}
+
 model Map {
   id          String   @id @default(uuid())
   type        MapType

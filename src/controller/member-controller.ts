@@ -77,6 +77,7 @@ export class MemberController {
       const response = await MemberService.createMember(
         req.t,
         req.body,
+        req.user!,
         req.file
       );
       res.status(201).json(response);
@@ -95,6 +96,7 @@ export class MemberController {
         req.t,
         req.body,
         req.params.memberId,
+        req.user!,
         req.file
       );
       res.status(200).json(response);

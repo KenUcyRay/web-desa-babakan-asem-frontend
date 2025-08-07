@@ -12,8 +12,7 @@ import { AgendaValidation } from "../validation/agenda-validation";
 import { Validation } from "../validation/validation";
 import path from "node:path";
 import fs from "node:fs/promises";
-import axios from "axios";
-import { AgendaType } from "@prisma/client";
+import { AgendaType, Role } from "@prisma/client";
 
 export class AgendaService {
   static async getOwn(
@@ -52,6 +51,20 @@ export class AgendaService {
   ) {
     Validation.validate(AgendaValidation.create, request);
 
+    if (user.role === Role.PKK && request.type !== AgendaType.PKK) {
+      throw new ResponseError(403, t("agenda.pkk_only_agenda"));
+    } else if (
+      user.role === Role.KARANG_TARUNA &&
+      request.type !== AgendaType.KARANG_TARUNA
+    ) {
+      throw new ResponseError(403, t("agenda.kt_only_agenda"));
+    } else if (user.role === Role.BPD && request.type !== AgendaType.BPD) {
+      throw new ResponseError(403, t("agenda.bpd_only_agenda"));
+    } else if (user.role === Role.ADMIN) {
+    } else {
+      throw new ResponseError(403, t("agenda.admin_only_agenda"));
+    }
+
     if (!file) {
       throw new ResponseError(400, t("agenda.featured_image_required"));
     }
@@ -77,6 +90,20 @@ export class AgendaService {
     file?: Express.Multer.File
   ) {
     Validation.validate(AgendaValidation.update, request);
+
+    if (user.role === Role.PKK && request.type !== AgendaType.PKK) {
+      throw new ResponseError(403, t("agenda.pkk_only_agenda"));
+    } else if (
+      user.role === Role.KARANG_TARUNA &&
+      request.type !== AgendaType.KARANG_TARUNA
+    ) {
+      throw new ResponseError(403, t("agenda.kt_only_agenda"));
+    } else if (user.role === Role.BPD && request.type !== AgendaType.BPD) {
+      throw new ResponseError(403, t("agenda.bpd_only_agenda"));
+    } else if (user.role === Role.ADMIN) {
+    } else {
+      throw new ResponseError(403, t("agenda.admin_only_agenda"));
+    }
 
     const agenda = await prismaClient.agenda.findUnique({
       where: { id: agendaId },

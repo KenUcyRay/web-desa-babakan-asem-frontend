@@ -25,7 +25,7 @@ export const adminRouter = express.Router();
 
 adminRouter.use(authMiddleware);
 
-// News Regular
+// News Regular dan Admin
 adminRouter.get("/news", NewsController.getOwn);
 adminRouter.post(
   "/news",
@@ -38,15 +38,6 @@ adminRouter.patch(
   NewsController.update
 );
 adminRouter.delete("/news/:newsId", NewsController.delete);
-
-//Galeri PKk, BPD, Karang Taruna. Regular
-adminRouter.post("/galeri", upload.single("image"), GaleriController.create);
-adminRouter.put(
-  "/galeri/:galeriId",
-  upload.single("image"),
-  GaleriController.update
-);
-adminRouter.delete("/galeri/:galeriId", GaleriController.delete);
 
 //Program PKK Ke PKk
 adminRouter.post(
@@ -78,7 +69,7 @@ adminRouter.delete(
 );
 adminRouter.get("/organizations/members", MemberController.getAllMembers);
 
-// Agenda // PKK, BPD,  Karang Taruna, Regular
+// Agenda // PKK, BPD,  Karang Taruna
 adminRouter.get("/agenda/me", AgendaController.getOwn);
 adminRouter.post(
   "/agenda/create",
@@ -96,6 +87,15 @@ adminRouter.delete(
 );
 
 adminRouter.use(roleMiddleware(Role.ADMIN));
+
+// Galeri
+adminRouter.post("/galeri", upload.single("image"), GaleriController.create);
+adminRouter.put(
+  "/galeri/:galeriId",
+  upload.single("image"),
+  GaleriController.update
+);
+adminRouter.delete("/galeri/:galeriId", GaleriController.delete);
 
 //Map
 adminRouter.post("/maps", upload.single("icon"), MapController.create);

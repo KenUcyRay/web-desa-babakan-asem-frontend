@@ -12,19 +12,35 @@
     "phone_already_registered": "Phone number already registered",
     "already_has_role": "User already has this role",
     "passwords_not_match": "Passwords do not match",
-    "invalid_or_expired_token": "Invalid or expired token"
+    "invalid_or_expired_token": "Invalid or expired token",
+    "register_success": "User registered successfully",
+    "login_success": "Login successful",
+    "logout_success": "Logout successful",
+    "profile_retrieved": "Profile retrieved successfully"
   },
   "agenda": {
     "not_found": "Agenda not found",
-    "featured_image_required": "Featured image is required"
+    "featured_image_required": "Featured image is required",
+    "pkk_only_agenda": "Only PKK members can create PKK agenda",
+    "kt_only_agenda": "Only Karang Taruna members can create Karang Taruna agenda",
+    "bpd_only_agenda": "Only BPD members can create BPD agenda"
   },
   "news": {
     "not_found": "News not found",
-    "featured_image_required": "Featured image is required"
+    "featured_image_required": "Featured image is required",
+    "contributor_only_create": "Only contributors can create news"
   },
   "common": {
     "forbidden": "Forbidden",
-    "image_required": "Image is required"
+    "image_required": "Image is required",
+    "created_successfully": "Created successfully",
+    "updated_successfully": "Updated successfully",
+    "deleted_successfully": "Deleted successfully",
+    "validation_error": "Validation error occurred",
+    "internal_server_error": "Internal server error",
+    "not_found": "Resource not found",
+    "unauthorized": "Unauthorized access",
+    "bad_request": "Bad request"
   },
   "comment": {
     "not_found": "Comment not found",
@@ -37,7 +53,10 @@
   },
   "member": {
     "not_found": "Member not found",
-    "profile_photo_required": "Profile photo is required"
+    "profile_photo_required": "Profile photo is required",
+    "pkk_only_member": "Only PKK members can manage PKK members",
+    "kt_only_member": "Only Karang Taruna members can manage Karang Taruna members",
+    "bpd_only_member": "Only BPD members can manage BPD members"
   },
   "galeri": {
     "not_found": "Gallery not found"
@@ -50,7 +69,8 @@
   },
   "pkk": {
     "featured_image_required": "Featured image is required",
-    "program_not_found": "Program not found"
+    "program_not_found": "Program not found",
+    "pkk_only_program": "Only PKK members can create PKK programs"
   },
   "apb": {
     "not_found": "APB not found"
@@ -165,5 +185,10 @@
     "tahun": "Year",
     "justification": "Justification",
     "budget_amount": "Budget Amount"
+  },
+  "test": {
+    "welcome": "Welcome to the bilingual API",
+    "translation_test_success": "Translation test completed successfully",
+    "keys_listed_successfully": "Translation keys listed successfully"
   }
 }

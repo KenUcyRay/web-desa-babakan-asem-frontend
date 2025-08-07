@@ -3,6 +3,8 @@ import Backend from "i18next-fs-backend";
 import middleware from "i18next-http-middleware";
 import path from "path";
 
+
+
 i18next
   .use(Backend)
   .use(middleware.LanguageDetector)

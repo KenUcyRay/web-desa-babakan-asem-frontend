@@ -12,19 +12,35 @@
     "phone_already_registered": "Nomor telepon sudah terdaftar",
     "already_has_role": "Pengguna sudah memiliki peran ini",
     "passwords_not_match": "Kata sandi tidak cocok",
-    "invalid_or_expired_token": "Token tidak valid atau sudah kedaluwarsa"
+    "invalid_or_expired_token": "Token tidak valid atau sudah kedaluwarsa",
+    "register_success": "Pengguna berhasil didaftarkan",
+    "login_success": "Login berhasil",
+    "logout_success": "Logout berhasil",
+    "profile_retrieved": "Profil berhasil diambil"
   },
   "agenda": {
     "not_found": "Agenda tidak ditemukan",
-    "featured_image_required": "Gambar unggulan diperlukan"
+    "featured_image_required": "Gambar unggulan diperlukan",
+    "pkk_only_agenda": "Hanya anggota PKK yang dapat membuat agenda PKK",
+    "kt_only_agenda": "Hanya anggota Karang Taruna yang dapat membuat agenda Karang Taruna",
+    "bpd_only_agenda": "Hanya anggota BPD yang dapat membuat agenda BPD"
   },
   "news": {
     "not_found": "Berita tidak ditemukan",
-    "featured_image_required": "Gambar unggulan diperlukan"
+    "featured_image_required": "Gambar unggulan diperlukan",
+    "contributor_only_create": "Hanya kontributor yang dapat membuat berita"
   },
   "common": {
     "forbidden": "Akses ditolak",
-    "image_required": "Gambar diperlukan"
+    "image_required": "Gambar diperlukan",
+    "created_successfully": "Berhasil dibuat",
+    "updated_successfully": "Berhasil diperbarui",
+    "deleted_successfully": "Berhasil dihapus",
+    "validation_error": "Terjadi kesalahan validasi",
+    "internal_server_error": "Kesalahan server internal",
+    "not_found": "Sumber daya tidak ditemukan",
+    "unauthorized": "Akses tidak diizinkan",
+    "bad_request": "Permintaan tidak valid"
   },
   "comment": {
     "not_found": "Komentar tidak ditemukan",
@@ -37,7 +53,10 @@
   },
   "member": {
     "not_found": "Anggota tidak ditemukan",
-    "profile_photo_required": "Foto profil diperlukan"
+    "profile_photo_required": "Foto profil diperlukan",
+    "pkk_only_member": "Hanya anggota PKK yang dapat mengelola anggota PKK",
+    "kt_only_member": "Hanya anggota Karang Taruna yang dapat mengelola anggota Karang Taruna",
+    "bpd_only_member": "Hanya anggota BPD yang dapat mengelola anggota BPD"
   },
   "galeri": {
     "not_found": "Galeri tidak ditemukan"
@@ -50,7 +69,8 @@
   },
   "pkk": {
     "featured_image_required": "Gambar unggulan diperlukan",
-    "program_not_found": "Program tidak ditemukan"
+    "program_not_found": "Program tidak ditemukan",
+    "pkk_only_program": "Hanya anggota PKK yang dapat membuat program PKK"
   },
   "apb": {
     "not_found": "APB tidak ditemukan"
@@ -165,5 +185,10 @@
     "tahun": "Tahun",
     "justification": "Justifikasi",
     "budget_amount": "Jumlah Anggaran"
+  },
+  "test": {
+    "welcome": "Selamat datang di API bilingual",
+    "translation_test_success": "Tes terjemahan berhasil diselesaikan",
+    "keys_listed_successfully": "Kunci terjemahan berhasil didaftarkan"
   }
 }

@@ -12,6 +12,7 @@ import { NewsValidation } from "../validation/news-validation";
 import { Validation } from "../validation/validation";
 import path from "node:path";
 import fs from "node:fs/promises";
+import { Role } from "@prisma/client";
 
 export class NewsService {
   static async getOwn(
@@ -47,6 +48,12 @@ export class NewsService {
   ) {
     const validation = Validation.validate(NewsValidation.create, request);
 
+    if (user.role !== Role.CONTRIBUTOR) {
+      if (user.role !== Role.ADMIN) {
+        throw new ResponseError(403, t("news.contributor_only_create"));
+      }
+    }
+
     if (!file) {
       throw new ResponseError(400, t("news.featured_image_required"));
     }
@@ -72,6 +79,12 @@ export class NewsService {
     file?: Express.Multer.File
   ) {
     Validation.validate(NewsValidation.update, request);
+
+    if (user.role !== Role.CONTRIBUTOR) {
+      if (user.role !== Role.ADMIN) {
+        throw new ResponseError(403, t("news.contributor_only_create"));
+      }
+    }
 
     const news = await prismaClient.news.findUnique({
       where: { id: newsId },

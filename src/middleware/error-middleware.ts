@@ -11,7 +11,7 @@ export const errorMiddleware = (
   next: NextFunction
 ) => {
   if (error instanceof ZodError) {
-    // Format untuk frontend yang sudah ada
+    // Format untuk frontend yang sudah ada dengan support bilingual
     const frontendFormat = {
       name: "ZodError",
       issues: error.issues.map((issue) => {
@@ -50,21 +50,25 @@ export const errorMiddleware = (
     };
 
     res.status(400).json({
+      success: false,
+      message: req.t("common.validation_error"),
       errors: frontendFormat,
     });
   } else if (error instanceof ResponseError) {
     res.status(error.status).json({
-      errors: error.message,
+      success: false,
+      message: error.message, // Sudah diterjemahkan di service
     });
   } else if (error instanceof AxiosError) {
     res.status(error.response?.status || 500).json({
-      errors:
-        error.response?.data.error ||
-        "An error occurred while processing your request.",
+      success: false,
+      message:
+        error.response?.data.error || req.t("common.internal_server_error"),
     });
   } else {
     res.status(500).json({
-      errors: error.message,
+      success: false,
+      message: req.t("common.internal_server_error"),
     });
   }
 };

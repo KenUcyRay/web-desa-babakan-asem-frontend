@@ -21,7 +21,12 @@ export class PkkController {
     next: NextFunction
   ) {
     try {
-      const response = await PkkService.create(req.t, req.body, req.file);
+      const response = await PkkService.create(
+        req.t,
+        req.body,
+        req.user!,
+        req.file
+      );
       res.status(201).json(response);
     } catch (error) {
       next(error);
@@ -37,6 +42,7 @@ export class PkkController {
         req.t,
         req.body,
         req.params.programId,
+        req.user!,
         req.file
       );
       res.status(200).json(response);

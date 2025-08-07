@@ -35,6 +35,7 @@ web.use(
 web.use(cookieParser());
 web.use(express.json());
 
+// Middleware untuk validasi bahasa dan i18n
 web.use(i18nMiddleware);
 
 // Static files dengan CORS yang lebih permissive
