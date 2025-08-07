@@ -10,36 +10,23 @@ datasource db {
 
 //Rill Fix
 
-model Region {
-  id          Int      @id @default(autoincrement())
+model Map {
+  id          String   @id @default(uuid())
+  type        MapType
   name        String
-  description String?
-  type        String // "polygon", "multipolygon", etc.
+  description String
   year        Int
-  coordinates Json // Menyimpan array koordinat dalam format GeoJSON
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  coordinates Json
+  icon        String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
 
-  // Relasi dengan POI (Point of Interest)
-  pois POI[]
+  @@map("maps")
 }
 
-// Model untuk menyimpan Point of Interest (seperti kantor desa)
-model POI {
-  id          Int      @id @default(autoincrement())
-  name        String
-  description String?
-  type        String // "marker", "office", etc.
-  year        Int
-  latitude    Float
-  longitude   Float
-  icon        String?
-  regionId    Int?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Relasi dengan Region
-  region Region? @relation(fields: [regionId], references: [id])
+enum MapType {
+  POLYGON
+  MARKER
 }
 
 model ActivityLog {

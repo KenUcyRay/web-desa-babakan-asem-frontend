@@ -19,6 +19,7 @@ import { CategoryController } from "@/controller/category-controller";
 import { ProductController } from "@/controller/product-controller";
 import { UserController } from "@/controller/user-controller";
 import { ActivityLogController } from "@/controller/activity-log-controller";
+import { MapController } from "@/controller/map-controller";
 
 export const adminRouter = express.Router();
 
@@ -95,6 +96,11 @@ adminRouter.delete(
 );
 
 adminRouter.use(roleMiddleware(Role.ADMIN));
+
+//Map
+adminRouter.post("/maps", upload.single("icon"), MapController.create);
+adminRouter.get("/maps", MapController.getAll);
+adminRouter.delete("/maps/:id", MapController.delete);
 
 // Activity Log
 adminRouter.get("/activity-log", ActivityLogController.getAll);
