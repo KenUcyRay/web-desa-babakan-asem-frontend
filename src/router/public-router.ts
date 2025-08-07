@@ -14,8 +14,12 @@ import { InfografisController } from "@/controller/infografis-controller";
 import { AgendaController } from "@/controller/agenda-controller";
 import { ProductController } from "@/controller/product-controller";
 import { CommentController } from "@/controller/comment-controller";
+import { SiteContentController } from "@/controller/site-content-controller";
 
 export const publicRouter = express.Router();
+
+// Site Content
+publicRouter.get("/site-contents/:key", SiteContentController.getByKey);
 
 // Users
 publicRouter.post("/users/register", UserController.register);

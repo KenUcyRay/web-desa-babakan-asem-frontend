@@ -20,6 +20,7 @@ import { ProductController } from "@/controller/product-controller";
 import { UserController } from "@/controller/user-controller";
 import { ActivityLogController } from "@/controller/activity-log-controller";
 import { MapController } from "@/controller/map-controller";
+import { SiteContentController } from "@/controller/site-content-controller";
 
 export const adminRouter = express.Router();
 
@@ -87,6 +88,20 @@ adminRouter.delete(
 );
 
 adminRouter.use(roleMiddleware(Role.ADMIN));
+
+// Site Content
+adminRouter.post(
+  "/site-contents",
+  upload.single("file"),
+  SiteContentController.create
+);
+adminRouter.get("/site-contents", SiteContentController.getAll);
+adminRouter.patch(
+  "/site-contents/:id",
+  upload.single("file"),
+  SiteContentController.update
+);
+adminRouter.delete("/site-contents/:id", SiteContentController.delete);
 
 // Galeri
 adminRouter.post("/galeri", upload.single("image"), GaleriController.create);

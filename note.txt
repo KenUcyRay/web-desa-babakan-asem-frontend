@@ -53,3 +53,5 @@ Ada masalah untuk semua yang punya komentar
   Dimana Lakukannya
   Siapa Lakukannya
   Kapan Lakukannya
+
+  // untuk yang site content harusnya sebaiknya ada category supaya gk minta data mulu
