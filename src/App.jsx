@@ -101,8 +101,6 @@ import ManagePenduduk from "./components/admin/KelolaInfografis/ManagePenduduk";
 import ManageIDM from "./components/admin/KelolaInfografis/ManageIDM";
 import ManageSDGs from "./components/admin/KelolaInfografis/ManageSDGs";
 import ManageBansos from "./components/admin/KelolaInfografis/ManageBansos";
-import ManagePOI from "./components/admin/ManagePOI";
-import ManageRegion from "./components/admin/ManageRegion";
 
 // ✅ Layout Umum (Navbar + Footer aktif + Floating Menu)
 function LayoutUmum() {
@@ -196,8 +194,6 @@ function LayoutAdmin() {
         <Route path="gis-desa" element={<GisDesa />} />
         <Route path="manage-program" element={<ManageProgram />} />
         <Route path="manage-apb" element={<ManageApb />} />
-        <Route path="manage-poi" element={<ManagePOI />} />
-        <Route path="manage-region" element={<ManageRegion />} />
 
         {/* - Kelola Infografis */}
         <Route path="kelola-infografis/penduduk" element={<ManagePenduduk />} />

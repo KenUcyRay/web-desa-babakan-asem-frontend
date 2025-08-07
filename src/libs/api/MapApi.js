@@ -27,7 +27,6 @@ export class MapApi {
   }
 
   static async createRegion(data, language) {
-    console.log("Creating region with data:", data);
     return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/admin/region`, {
       method: "POST",
       credentials: "include",
@@ -67,6 +66,23 @@ export class MapApi {
 
   static async create(data, language) {
     const formData = new FormData();
+    formData.append("type", data.type);
+    formData.append("name", data.name);
+    formData.append("description", data.description);
+    formData.append("year", data.year);
+    formData.append("coordinates", data.coordinates);
+    if (data.icon) {
+      formData.append("icon", data.icon);
+    }
+    return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/admin/maps`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        Accept: "application/json",
+        "Accept-Language": language,
+      },
+      body: formData,
+    });
   }
 
   static async delete(id, language) {

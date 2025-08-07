@@ -20,7 +20,6 @@ import {
   FaStar,
   FaTasks,
   FaMoneyCheckAlt,
-  FaMapMarkerAlt,
 } from "react-icons/fa";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 import { useEffect, useState } from "react";
@@ -494,7 +493,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
       {/* - Sidebar versi mobile */}
       {isVisible && (
         <div
-          className={`fixed top-0 left-0 h-screen w-64 bg-white shadow-lg flex flex-col border-r z-50 md:hidden sidebar-mobile ${
+          className={`fixed top-0 left-0 h-screen w-64 bg-white shadow-lg flex flex-col border-r z-50 md:hidden sidebar-mobile  ${
             isOpen ? "open" : "close"
           }`}
         >

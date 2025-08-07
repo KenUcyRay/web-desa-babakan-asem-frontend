@@ -17,6 +17,8 @@ import {
   FaClock,
   FaEye,
   FaUser,
+  FaTrash,
+  FaDrawPolygon,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -38,13 +40,13 @@ import { UserApi } from "../../libs/api/UserApi";
 import { ProductApi } from "../../libs/api/ProductApi";
 import { AdministrasiApi } from "../../libs/api/AdministrasiApi";
 import { GaleryApi } from "../../libs/api/GaleryApi";
-import { ProgramApi } from "../../libs/api/ProgramApi";
 import { MemberApi } from "../../libs/api/MemberApi";
 import { alertError } from "../../libs/alert";
 import { VillageWorkProgramApi } from "../../libs/api/VillageWorkProgramApi";
 import { LogActivityApi } from "../../libs/api/LogActivityApi";
 import { Helper } from "../../utils/Helper";
 import DialogMap from "../../DialogMap";
+import { alertConfirm, alertSuccess } from "../../libs/alert";
 
 // ==== ICON CUSTOM ====
 const createIcon = (iconUrl) =>
@@ -54,22 +56,6 @@ const createIcon = (iconUrl) =>
     iconAnchor: [15, 30],
     popupAnchor: [0, -30],
   });
-
-// Logo/Icon Desa Babakan Asem untuk default marker
-// Ganti URL ini dengan URL logo resmi Desa Babakan Asem
-const defaultIconUrl = "/assets/icons/logo-desa-babakan-asem.png";
-// Fallback jika logo utama gagal dimuat
-const fallbackIconUrl = "https://i.ibb.co/XZQQgFP/building.png";
-
-// Kamus icon berdasarkan kategori
-const categoryIcons = {
-  office: "/assets/icons/office.png",
-  mosque: "/assets/icons/mosque.png",
-  school: "/assets/icons/school.png",
-  health: "/assets/icons/health.png",
-  market: "/assets/icons/market.png",
-  default: defaultIconUrl,
-};
 
 // Palet warna untuk polygon (tidak boleh sama)
 const polygonColors = [
@@ -83,7 +69,6 @@ const polygonColors = [
   "#f43f5e", // pink
 ];
 
-// Fungsi untuk mendapatkan warna unik berdasarkan kategori polygon
 // Assign colors by order of appearance for guaranteed uniqueness
 function getPolygonColorByIndex(index) {
   return polygonColors[index % polygonColors.length];
@@ -93,161 +78,75 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
 
-  // State untuk GIS Map
-  const [geoData, setGeoData] = useState(null);
-  const [mapLoading, setMapLoading] = useState(true);
-  const [mapError, setMapError] = useState(null);
-
   // State dari Tes.jsx
+  const [showDialogMap, setShowDialogMap] = useState(false);
   const [selectedYear, setSelectedYear] = useState(2025);
   const [mapData, setMapData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [iconError, setIconError] = useState(false);
-
   const [newsCount, setNewsCount] = useState(0);
   const [agendaCount, setAgendaCount] = useState(0);
   const [messageCount, setMessageCount] = useState(0);
   const [userCount, setUserCount] = useState(0);
   const [programCount, setProgramCount] = useState(0);
   const [galeriCount, setGaleriCount] = useState(0);
-
   const [bumdesPreview, setBumdesPreview] = useState([]);
   const [administrasiPreview, setAdministrasiPreview] = useState([]);
   const [galeriPreview, setGaleriPreview] = useState([]);
-  const [pkkPreview, setPkkPreview] = useState([]);
   const [strukturPreview, setStrukturPreview] = useState([]);
-  const [dokumenPreview, setDokumenPreview] = useState([]);
   const [programKerjaPreview, setProgramKerjaPreview] = useState([]);
-
   const [activityLog, setActivityLog] = useState([]);
 
-  // Handle icon error dengan menggunakan fallback icon
-  useEffect(() => {
-    const img = new Image();
-    img.onerror = () => {
-      console.warn("Default icon failed to load, using fallback");
-      setIconError(true);
-    };
-    img.src = defaultIconUrl;
-  }, []);
-
-  // Fungsi untuk mengambil data peta dari API
+  // In the fetchMapData function, update the polygon coordinate processing:
   const fetchMapData = async () => {
     try {
-      setLoading(true);
-      setError(null);
-
-      // Menggunakan language default 'id' atau bisa disesuaikan
-      const response = await MapApi.getMapData("id");
+      const response = await MapApi.getAll(i18n.language);
 
       if (!response.ok) {
         throw new Error("Gagal mengambil data peta");
       }
 
-      const data = await response.json();
-
-      // Format data untuk peta
+      const responseData = await response.json();
       const formattedData = [];
 
-      // Menangani region/polygon
-      if (data.regions && Array.isArray(data.regions)) {
-        data.regions.forEach((region) => {
-          formattedData.push({
-            id: region.id,
-            name: region.name,
-            description: region.description || "Wilayah Desa",
-            type: "polygon",
-            category: region.type || "region", // Kategori untuk legenda
-            year: region.year || 2025,
-            // Pastikan koordinat dalam format yang benar
-            coordinates: region.coordinates,
-          });
-        });
-      }
-
-      // Menangani POI/marker
-      if (data.regions && Array.isArray(data.regions)) {
-        // POI yang ada di dalam region
-        data.regions.forEach((region) => {
-          if (region.pois && Array.isArray(region.pois)) {
-            region.pois.forEach((poi) => {
-              formattedData.push({
-                id: `poi-${poi.id}`,
-                name: poi.name,
-                description: poi.description || "Point of Interest",
-                type: "marker",
-                category: poi.type || "default", // Kategori untuk legenda
-                year: poi.year || 2025,
-                coordinates: [poi.coordinates[0]], // Format untuk marker
-                icon: getIconForCategory(poi.type, poi.icon),
-              });
+      if (responseData.data && Array.isArray(responseData.data)) {
+        responseData.data.forEach((item) => {
+          if (item.type === "POLYGON") {
+            // Process polygon data - IMPORTANT: Swap coordinates for Leaflet
+            formattedData.push({
+              id: item.id,
+              name: item.name,
+              description: item.description || "Wilayah Desa",
+              type: "polygon",
+              year: item.year || 2025,
+              // Transform coordinates: Leaflet expects [lat, lng] pairs
+              coordinates: item.coordinates.map((coord) => [
+                coord[1],
+                coord[0],
+              ]),
+            });
+          } else if (item.type === "MARKER") {
+            // Process marker data - coordinates format correction
+            formattedData.push({
+              id: item.id,
+              name: item.name,
+              description: item.description || "Point of Interest",
+              type: "marker",
+              year: item.year || 2025,
+              // For marker: Leaflet expects [lat, lng] position
+              coordinates: [[item.coordinates[0], item.coordinates[1]]],
+              icon: item.icon
+                ? `${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
+                    item.icon
+                  }`
+                : null,
             });
           }
-        });
-      }
-
-      // Menangani POI yang berdiri sendiri
-      if (data.additionalPois && Array.isArray(data.additionalPois)) {
-        data.additionalPois.forEach((poi) => {
-          formattedData.push({
-            id: `standalone-poi-${poi.id}`,
-            name: poi.name,
-            description: poi.description || "Point of Interest",
-            type: "marker",
-            category: poi.type || "default", // Kategori untuk legenda
-            year: poi.year || 2025,
-            coordinates: [poi.coordinates[0]], // Format untuk marker
-            icon: getIconForCategory(poi.type, poi.icon),
-          });
         });
       }
 
       setMapData(formattedData);
     } catch (error) {
       console.error("Error fetching map data:", error);
-      setError("Gagal memuat data peta. Silakan coba lagi.");
     } finally {
-      setLoading(false);
-    }
-  };
-
-  // Fungsi untuk mendapatkan icon berdasarkan kategori
-  function getIconForCategory(category, customIcon) {
-    if (customIcon) return customIcon;
-
-    if (category && categoryIcons[category]) {
-      return categoryIcons[category];
-    }
-
-    return iconError ? fallbackIconUrl : defaultIconUrl;
-  }
-
-  // Fungsi untuk mendapatkan label kategori marker
-  function markerCategoryLabel(category) {
-    const labelMap = {
-      office: "Kantor Desa",
-      mosque: "Masjid",
-      school: "Sekolah",
-      health: "Fasilitas Kesehatan",
-      market: "Pasar",
-      default: "Point of Interest",
-    };
-    return labelMap[category] || category;
-  }
-
-  // Fetch GeoJSON untuk peta
-  const fetchGeoData = async () => {
-    try {
-      setMapLoading(true);
-      const res = await fetch("/geojson/desa-babakan-asem.geojson");
-      if (!res.ok) throw new Error("Failed to load map data");
-      const data = await res.json();
-      setGeoData(data);
-      setMapLoading(false);
-    } catch (err) {
-      setMapError(err.message);
-      setMapLoading(false);
     }
   };
 
@@ -323,14 +222,6 @@ export default function AdminDashboard() {
     setGaleriPreview(data.galeri || []);
   };
 
-  const fetchPkkPreview = async () => {
-    const res = await ProgramApi.getPrograms(1, 3, i18n.language);
-    if (!res.ok)
-      return alertError(t("adminDashboard.errors.failedToGetPkkPrograms"));
-    const data = await res.json();
-    setPkkPreview(data.programs || []);
-  };
-
   const fetchProgramKerjaPreview = async () => {
     const res = await VillageWorkProgramApi.getVillageWorkPrograms(
       i18n.language
@@ -360,25 +251,25 @@ export default function AdminDashboard() {
     setStrukturPreview(data.members || []);
   };
 
-  const formatRelativeTime = (timestamp) => {
-    const now = new Date();
-    const diff = now - timestamp;
-    const minutes = Math.floor(diff / 60000);
-    const hours = Math.floor(diff / 3600000);
-    const days = Math.floor(diff / 86400000);
+  // const formatRelativeTime = (timestamp) => {
+  //   const now = new Date();
+  //   const diff = now - timestamp;
+  //   const minutes = Math.floor(diff / 60000);
+  //   const hours = Math.floor(diff / 3600000);
+  //   const days = Math.floor(diff / 86400000);
 
-    if (minutes < 1)
-      return t("adminDashboard.timeFormat.justNow") || "Baru saja";
-    if (minutes < 60)
-      return `${minutes} ${
-        t("adminDashboard.timeFormat.minutesAgo") || "menit lalu"
-      }`;
-    if (hours < 24)
-      return `${hours} ${
-        t("adminDashboard.timeFormat.hoursAgo") || "jam lalu"
-      }`;
-    return `${days} ${t("adminDashboard.timeFormat.daysAgo") || "hari lalu"}`;
-  };
+  //   if (minutes < 1)
+  //     return t("adminDashboard.timeFormat.justNow") || "Baru saja";
+  //   if (minutes < 60)
+  //     return `${minutes} ${
+  //       t("adminDashboard.timeFormat.minutesAgo") || "menit lalu"
+  //     }`;
+  //   if (hours < 24)
+  //     return `${hours} ${
+  //       t("adminDashboard.timeFormat.hoursAgo") || "jam lalu"
+  //     }`;
+  //   return `${days} ${t("adminDashboard.timeFormat.daysAgo") || "hari lalu"}`;
+  // };
 
   const fetchLog = async () => {
     const res = await LogActivityApi.getAllActivities(
@@ -391,7 +282,6 @@ export default function AdminDashboard() {
   };
 
   useEffect(() => {
-    fetchGeoData();
     fetchNews();
     fetchAgenda();
     fetchMessages();
@@ -401,7 +291,6 @@ export default function AdminDashboard() {
     fetchBumdesPreview();
     fetchAdministrasiPreview();
     fetchGaleriPreview();
-    fetchPkkPreview();
     fetchProgramKerjaPreview();
     fetchStrukturPreview();
     fetchLog();
@@ -428,44 +317,62 @@ export default function AdminDashboard() {
       }));
   }, [filteredData]);
 
-  // Buat legendItems untuk marker
-  const legendItems = useMemo(() => {
-    if (!filteredData.length) return [];
-    const legendMap = new Map();
-    filteredData
-      .filter((item) => item.type === "marker")
-      .forEach((marker) => {
-        const category = marker.category || "default";
-        const icon =
-          marker.icon || (iconError ? fallbackIconUrl : defaultIconUrl);
-        if (!legendMap.has(`marker-${category}`)) {
-          legendMap.set(`marker-${category}`, {
-            type: "marker",
-            category,
-            label: markerCategoryLabel(category),
-            icon,
-            items: [marker.name],
-          });
-        } else {
-          const entry = legendMap.get(`marker-${category}`);
-          if (!entry.items.includes(marker.name)) entry.items.push(marker.name);
-        }
-      });
-    return Array.from(legendMap.values());
-  }, [filteredData, iconError]);
+  // After fetching map data, extract unique years and keep them sorted
+  const uniqueYears = useMemo(() => {
+    if (!mapData.length) return [new Date().getFullYear()]; // Default to current year if no data
+
+    // Extract unique years from mapData and sort in descending order
+    const years = [...new Set(mapData.map((item) => item.year))];
+    return years.sort((a, b) => b - a); // Sort years in descending order
+  }, [mapData]);
+
+  // Update selectedYear state when years change
+  useEffect(() => {
+    if (uniqueYears.length > 0 && !uniqueYears.includes(selectedYear)) {
+      setSelectedYear(uniqueYears[0]); // Set to the latest year
+    }
+  }, [uniqueYears, selectedYear]);
 
   // State for DialogMap modal
-  const [showDialogMap, setShowDialogMap] = useState(false);
-  // Handler for dialog submit (replace with actual API integration)
   const handleDialogMapSubmit = async (payload) => {
-    // TODO: Integrate with MapApi.createMap or similar
-    // After successful submit, refresh map data and close dialog
+    const response = await MapApi.create(payload, i18n.language);
+    if (!response.ok) {
+      Helper.errorResponseHandler(await response.json());
+      return;
+    }
     await fetchMapData();
     setShowDialogMap(false);
   };
 
+  const handleDeleteMapItem = async (id, name, type) => {
+    const confirmed = await alertConfirm(
+      `Hapus data peta?`,
+      `Anda yakin ingin menghapus ${
+        type === "polygon" ? "wilayah" : "titik"
+      } "${name}"? Tindakan ini tidak dapat dibatalkan.`
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    const response = await MapApi.delete(id, i18n.language);
+
+    if (!response.ok) {
+      return alertError("Gagal menghapus data peta. Silakan coba lagi.");
+    }
+
+    // Refresh map data after successful deletion
+    await fetchMapData();
+    alertSuccess(
+      `Berhasil menghapus ${
+        type === "polygon" ? "wilayah" : "titik"
+      } "${name}".`
+    );
+  };
+
   return (
-    <div className="w-full font-[Poppins,sans-serif] bg-gray-50 min-h-screen p-4 md:p-6">
+    <div className="w-full font-[Poppins,sans-serif] bg-gray-50 min-h-screen p-4 md:p-6 overflow-x-hidden">
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
@@ -488,28 +395,28 @@ export default function AdminDashboard() {
 
       {/* PETA UTAMA - Dengan implementasi dari Tes.jsx */}
       <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
-        <div className="bg-gradient-to-r from-green-400 to-[#B6F500] p-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+        <div className="bg-gradient-to-r from-green-400 to-[#B6F500] p-4 md:p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <h2 className="text-xl md:text-2xl font-bold text-white flex items-center gap-3">
               <div className="bg-white bg-opacity-20 p-2 rounded-lg">
                 <FaMapMarkedAlt className="text-blue-700 text-xl" />
               </div>
               {t("adminDashboard.gisMapTitle") || "Peta Digital Desa"}
             </h2>
 
-            {/* Filter Tahun - dari Tes.jsx */}
-            <div className="flex items-center gap-4">
-              <label className="text-black font-medium text-md">
+            {/* Filter Tahun - Dynamic based on available years */}
+            <div className="flex items-center gap-2 md:gap-4">
+              <label className="text-black font-medium text-sm md:text-md">
                 Pilih Tahun:
               </label>
               <select
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-                className="px-3 py-2 rounded-md border"
+                className="px-2 py-1 md:px-3 md:py-2 rounded-md border text-sm"
               >
-                {[2025, 2024].map((y) => (
-                  <option key={y} value={y} className="text-black">
-                    {y}
+                {uniqueYears.map((year) => (
+                  <option key={year} value={year} className="text-black">
+                    {year}
                   </option>
                 ))}
               </select>
@@ -517,13 +424,15 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <div className={`p-6 relative ${showDialogMap ? "invisible" : ""}`}>
+        <div
+          className={`p-6 relative ${showDialogMap ? "invisible" : "visible"} `}
+        >
           <div className="rounded-xl overflow-hidden  shadow-md border-2 border-green-100 relative">
             <MapContainer
               center={[-6.75, 108.05861]}
               zoom={15}
               scrollWheelZoom={true}
-              className={"w-full h-[500px]"}
+              className={"w-full h-[500px] z-0"}
             >
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
@@ -572,10 +481,7 @@ export default function AdminDashboard() {
                   <Marker
                     key={item.id}
                     position={item.coordinates[0]}
-                    icon={createIcon(
-                      item.icon ||
-                        (iconError ? fallbackIconUrl : defaultIconUrl)
-                    )}
+                    icon={createIcon(item.icon)}
                   >
                     <Tooltip permanent={false}>{item.name}</Tooltip>
                     <Popup>
@@ -597,123 +503,146 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* LEGENDA PETA - Gabungan static dan dynamic */}
-        <div className="px-6 pb-6">
-          <div className="mb-4">
-            <h3 className="text-lg font-semibold text-gray-800 mb-3">
-              Legenda:
-              <button
-                className="ml-2 px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition text-sm font-medium"
-                onClick={() => setShowDialogMap(true)}
-              >
-                + Tambah Legenda
-              </button>
+        {/* LEGENDA PETA - Enhanced Card Style */}
+        <div className="px-3 md:px-6 pb-6 md:pb-8">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 md:mb-6">
+            <h3 className="text-xl md:text-2xl font-bold text-gray-800 flex items-center gap-2">
+              <FaMapMarkedAlt className="text-green-600" />
+              Legenda Peta
             </h3>
+            <button
+              className="px-4 py-2 md:px-6 md:py-3 bg-gradient-to-r from-green-600 to-green-500 text-white rounded-xl hover:from-green-700 hover:to-green-600 transition text-sm md:text-lg font-bold flex items-center gap-2 shadow-lg border-2 border-green-700 w-full sm:w-auto"
+              onClick={() => setShowDialogMap(true)}
+            >
+              <span className="text-xl md:text-2xl leading-none">+</span>
+              <span>Tambah Legenda</span>
+            </button>
           </div>
 
-          {/* Dynamic legend dari data API */}
-          <div className="bg-gray-50 rounded-lg p-4">
-            <h4 className="font-medium text-gray-700 mb-3">
-              Points of Interest:
-            </h4>
-            <div className="flex flex-wrap gap-4 mb-4">
-              {/* Polygon legend */}
-              {polygonLegendData.map((poly) => (
-                <div
-                  key={`legend-poly-${poly.id}`}
-                  className="flex items-center gap-2"
-                >
-                  <div
-                    className="w-8 h-0 border-t-2 border-dashed"
-                    style={{ borderColor: poly.color }}
-                  ></div>
-                  <span className="text-sm text-gray-700">{poly.label}</span>
-                </div>
-              ))}
-
-              {/* Marker legend */}
-              {legendItems
-                .filter((item) => item.type === "marker")
-                .map((item, index) => (
-                  <div
-                    key={`legend-marker-${index}`}
-                    className="flex items-center gap-2"
-                  >
+          {/* Dynamic legend cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+            {/* Polygon Legend Card - Enhanced */}
+            {polygonLegendData.length > 0 && (
+              <div className="bg-white rounded-xl shadow-lg border-2 border-green-100 p-6 hover:shadow-xl transition-all duration-300">
+                <h4 className="font-semibold text-xl text-gray-800 mb-4 flex items-center border-b border-green-100 pb-3">
+                  <div className="w-8 h-8 mr-2 border-2 border-dashed rounded-md border-blue-500 flex items-center justify-center">
+                    <FaDrawPolygon className="text-blue-500" />
+                  </div>
+                  Wilayah & Batas
+                </h4>
+                <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2">
+                  {polygonLegendData.map((poly) => (
                     <div
-                      className="w-5 h-5 bg-contain bg-no-repeat"
-                      style={{ backgroundImage: `url('${item.icon}')` }}
-                    ></div>
-                    <span className="text-sm text-gray-700">
-                      {item.label}
-                      {item.items &&
-                        item.items.length > 1 &&
-                        ` (${item.items.length})`}
-                    </span>
+                      key={`legend-poly-${poly.id}`}
+                      className="flex items-center justify-between pl-3 pr-2 py-3 hover:bg-gray-50 rounded-lg group transition-colors border border-gray-100"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div
+                          className="w-12 h-0 border-t-3 border-dashed"
+                          style={{
+                            borderColor: poly.color,
+                            borderWidth: "2px",
+                          }}
+                        ></div>
+                        <span className="text-base text-gray-700 font-medium">
+                          {poly.label}
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        className="text-gray-400 hover:text-red-500 p-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={() =>
+                          handleDeleteMapItem(poly.id, poly.name, "polygon")
+                        }
+                        title="Hapus"
+                      >
+                        <FaTrash size={16} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Individual Markers Cards - Each marker gets its own card */}
+            <div className="grid grid-cols-1 gap-4">
+              {filteredData
+                .filter((item) => item.type === "marker")
+                .map((marker, index) => (
+                  <div
+                    key={`marker-card-${marker.id || index}`}
+                    className="bg-white rounded-xl shadow-md border border-blue-100 p-4 hover:shadow-lg transition-all duration-300"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div
+                        className="w-12 h-12 bg-contain bg-center bg-no-repeat rounded-md border border-gray-200 flex-shrink-0"
+                        style={{
+                          backgroundImage: `url('${marker.icon}')`,
+                          backgroundSize: "contain",
+                        }}
+                      ></div>
+
+                      <div className="flex-1 min-w-0">
+                        <h5 className="font-medium text-gray-800 mb-1 text-base">
+                          {marker.name}
+                        </h5>
+                        <p className="text-xs text-gray-500 line-clamp-2">
+                          {marker.description}
+                        </p>
+                        <div className="mt-1 flex items-center gap-1 text-xs text-gray-400">
+                          <span>Koordinat:</span>
+                          <code className="bg-gray-50 px-1 py-0.5 rounded">
+                            {marker.coordinates[0][0].toFixed(4)},{" "}
+                            {marker.coordinates[0][1].toFixed(4)}
+                          </code>
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        className="text-gray-400 hover:text-red-500 p-2 transition-colors"
+                        onClick={() =>
+                          handleDeleteMapItem(marker.id, marker.name, "marker")
+                        }
+                        title="Hapus"
+                      >
+                        <FaTrash size={14} />
+                      </button>
+                    </div>
                   </div>
                 ))}
-
-              {legendItems.length === 0 && polygonLegendData.length === 0 && (
-                <span className="text-sm text-gray-500 italic">
-                  Tidak ada item untuk ditampilkan
-                </span>
-              )}
             </div>
 
-            {/* Detail POI */}
-            {legendItems
-              .filter(
-                (item) =>
-                  item.type === "marker" && item.items && item.items.length > 0
-              )
-              .map((category, idx) => (
-                <div key={`category-${idx}`} className="mt-3">
-                  <strong className="text-sm text-gray-600">
-                    {category.label}:
-                  </strong>
-                  <div className="flex flex-wrap gap-3 mt-2">
-                    {category.items.map((itemName, i) => {
-                      // Find the corresponding marker data for icon
-                      const markerData = filteredData.find(
-                        (d) =>
-                          d.type === "marker" &&
-                          d.name === itemName &&
-                          d.category === category.category
-                      );
-                      const iconUrl = markerData
-                        ? markerData.icon
-                        : iconError
-                        ? fallbackIconUrl
-                        : defaultIconUrl;
-                      return (
-                        <div
-                          key={`poi-icon-${i}`}
-                          className="flex items-center gap-2"
-                        >
-                          <div
-                            className="w-5 h-5 bg-contain bg-no-repeat"
-                            style={{ backgroundImage: `url('${iconUrl}')` }}
-                          ></div>
-                          <span className="text-sm text-gray-700">
-                            {itemName}
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </div>
+            {/* No data state - Enhanced */}
+            {filteredData.length === 0 && (
+              <div className="bg-white rounded-xl shadow-lg border-2 border-dashed border-gray-200 p-8 col-span-full flex flex-col items-center justify-center">
+                <div className="text-gray-400 mb-3">
+                  <FaMapMarkedAlt size={48} />
                 </div>
-              ))}
+                <span className="text-lg text-gray-600 text-center mb-4">
+                  Belum ada data legenda untuk ditampilkan
+                </span>
+                <button
+                  className="px-5 py-3 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 font-medium flex items-center gap-2"
+                  onClick={() => setShowDialogMap(true)}
+                >
+                  <span className="text-xl">+</span> Tambah Item Legenda
+                </button>
+              </div>
+            )}
+          </div>
 
-            <div className="mt-4 text-right">
-              <span className="text-xs text-gray-500 italic">
-                Desa Babakan Asem, Kecamatan Congeang
-              </span>
-            </div>
+          {/* Footer attribution - Enhanced */}
+          <div className="mt-6 text-right">
+            <span className="text-sm text-gray-500 italic">
+              Desa Babakan Asem, Kecamatan Congeang
+            </span>
           </div>
         </div>
       </div>
 
       {/* GRID KARTU UTAMA - DIKURANGI MENJADI 3 */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 mb-6">
         <SmallMainCard
           icon={
             <FaChartBar className="text-xl text-white bg-green-500 p-2 rounded-lg" />
@@ -762,7 +691,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* GRID STATISTIK DETAIL */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8">
         <DetailStatCard
           icon={<FaComments className="text-2xl text-orange-500" />}
           title={t("adminDashboard.statistics.messages")}
@@ -812,7 +741,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* BARIS KOTAK BESAR */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
         {/* Log Aktivitas */}
         <div className="lg:col-span-2">
           <ActivityLog activities={activityLog} />
@@ -864,7 +793,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* PREVIEW SECTIONS */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
         <PreviewSection
           title={
             t("adminDashboard.preview.villageStructure.title") ||
