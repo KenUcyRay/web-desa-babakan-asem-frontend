@@ -7,7 +7,7 @@ import { UserApi } from "../../libs/api/UserApi";
 import { Helper } from "../../utils/Helper";
 
 export default function ManageUser() {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const [users, setUsers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -73,10 +73,6 @@ export default function ManageUser() {
       ))
     )
       return;
-
-    if (form.confirm_password !== form.password) {
-      return alertError(t("manageUser.alerts.passwordMismatch"));
-    }
 
     const response = await UserApi.createAdmin(form);
     const resBody = await response.json();
@@ -206,7 +202,7 @@ export default function ManageUser() {
       {/* - Header + Tombol */}
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3 mb-6">
         <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-          <FaUserShield className="text-green-500" /> {t("manageUser.title")}
+          <FaUserShield className="text-green-500" /> Kelola Pengguna
         </h1>
 
         <div className="flex flex-wrap gap-2">
@@ -317,13 +313,13 @@ export default function ManageUser() {
               onClick={() => setShowAddForm(false)}
               className="px-5 py-2.5 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium transition-colors"
             >
-              {t("manageUser.buttons.cancel")}
+              Batal
             </button>
             <button
               type="submit"
               className="px-5 py-2.5 rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-medium shadow-md transition-all"
             >
-              {t("manageUser.buttons.save")}
+              Simpan
             </button>
           </div>
         </form>
@@ -382,7 +378,7 @@ export default function ManageUser() {
               }}
               className="px-5 py-2.5 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium transition-colors"
             >
-              {t("manageUser.buttons.cancel")}
+              Batal
             </button>
             <button
               type="submit"
@@ -474,7 +470,7 @@ export default function ManageUser() {
             {users.length === 0 && (
               <tr>
                 <td colSpan="5" className="text-center p-8 text-gray-500">
-                  {t("manageUser.table.empty")}
+                  Belum ada pengguna yang ditambahkan.
                 </td>
               </tr>
             )}
@@ -552,7 +548,7 @@ export default function ManageUser() {
         ))}
         {users.length === 0 && (
           <p className="text-center text-gray-500 py-8">
-            {t("manageUser.table.empty")}
+            Belum ada pengguna yang ditambahkan.
           </p>
         )}
       </div>

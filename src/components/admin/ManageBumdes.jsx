@@ -17,7 +17,7 @@ import {
 } from "react-icons/fa";
 
 export default function ManageBumdes() {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
 
@@ -45,10 +45,8 @@ export default function ManageBumdes() {
       6,
       i18n.language
     );
-    if (!response.ok) {
-      alertError(t("manageBumdes.error.fetchProducts"));
-      return;
-    }
+    if (!response.ok) return;
+
     const responseBody = await response.json();
     setTotalPages(responseBody.total_page);
     setCurrentPage(responseBody.page);
@@ -57,10 +55,8 @@ export default function ManageBumdes() {
 
   const fetchCategories = async () => {
     const response = await CategoryApi.getCategories(i18n.language);
-    if (!response.ok) {
-      alertError(t("manageBumdes.error.fetchCategories"));
-      return;
-    }
+    if (!response.ok) return;
+
     const responseBody = await response.json();
     setCategories(responseBody.categories);
   };
@@ -98,8 +94,7 @@ export default function ManageBumdes() {
     };
 
     if (editingId) {
-      if (!(await alertConfirm(t("manageBumdes.confirmation.editProduct"))))
-        return;
+      if (!(await alertConfirm("Yakin ingin mengupdate produk ini?"))) return;
       const response = await ProductApi.updateProduct(
         editingId,
         rawData,
@@ -110,7 +105,7 @@ export default function ManageBumdes() {
         alertError(Helper.parseError(body));
         return;
       }
-      await alertSuccess(t("manageBumdes.success.productUpdated"));
+      await alertSuccess("Produk berhasil diupdate");
       fetchProducts();
       resetForm();
       setShowForm(false);
@@ -120,14 +115,10 @@ export default function ManageBumdes() {
     const response = await ProductApi.createProduct(rawData, i18n.language);
     const responseBody = await response.json();
     if (!response.ok) {
-      alertError(
-        typeof responseBody.error === "string"
-          ? responseBody.error
-          : t("manageBumdes.error.addProduct")
-      );
+      await Helper.errorResponseHandler(responseBody);
       return;
     }
-    await alertSuccess(t("manageBumdes.success.productAdded"));
+    await alertSuccess("Produk berhasil ditambahkan");
     fetchProducts();
     resetForm();
     setShowForm(false);
@@ -146,13 +137,11 @@ export default function ManageBumdes() {
   };
 
   const handleDelete = async (id) => {
-    if (await alertConfirm(t("manageBumdes.confirmation.deleteProduct"))) {
+    if (await alertConfirm("Yakin ingin menghapus produk ini?")) {
       const response = await ProductApi.deleteProduct(id, i18n.language);
       if (!response.ok) {
         const body = await response.json();
-        alertError(
-          t("manageBumdes.error.deleteProduct", { error: body.error })
-        );
+        await Helper.errorResponseHandler(body);
         return;
       }
       setProducts(products.filter((p) => p.product.id !== id));
@@ -165,8 +154,7 @@ export default function ManageBumdes() {
     const rawData = { name: categoryName };
 
     if (editingCategoryId) {
-      if (!(await alertConfirm(t("manageBumdes.confirmation.editCategory"))))
-        return;
+      if (!(await alertConfirm("Yakin ingin mengupdate kategori ini?"))) return;
       const response = await CategoryApi.updateCategory(
         editingCategoryId,
         rawData,
@@ -177,7 +165,7 @@ export default function ManageBumdes() {
         alertError(body);
         return;
       }
-      await alertSuccess(t("manageBumdes.success.categoryUpdated"));
+      await alertSuccess("Kategori berhasil diperbarui");
       fetchCategories();
       resetCategoryForm();
       setShowCategoryForm(false);
@@ -187,14 +175,10 @@ export default function ManageBumdes() {
     const response = await CategoryApi.addCategory(rawData, i18n.language);
     const body = await response.json();
     if (!response.ok) {
-      alertError(
-        typeof body.error === "string"
-          ? body.error
-          : t("manageBumdes.error.addCategory")
-      );
+      await Helper.errorResponseHandler(body);
       return;
     }
-    await alertSuccess(t("manageBumdes.success.categoryAdded"));
+    await alertSuccess("Kategori berhasil ditambahkan");
     fetchCategories();
     resetCategoryForm();
     setShowCategoryForm(false);
@@ -209,16 +193,13 @@ export default function ManageBumdes() {
   };
 
   const handleDeleteCategory = async (id) => {
-    if (await alertConfirm(t("manageBumdes.confirmation.deleteCategory"))) {
+    if (await alertConfirm("Yakin ingin menghapus kategori ini?")) {
       const response = await CategoryApi.deleteCategory(id, i18n.language);
       if (!response.ok) {
-        const body = await response.json();
-        alertError(
-          t("manageBumdes.error.deleteCategory", { error: body.error })
-        );
+        await Helper.errorResponseHandler(await response.json());
         return;
       }
-      await alertSuccess(t("manageBumdes.success.categoryDeleted"));
+      await alertSuccess("Kategori berhasil dihapus");
       fetchCategories();
     }
   };
@@ -229,9 +210,9 @@ export default function ManageBumdes() {
       <div className="mb-8">
         <h1 className="text-2xl md:text-3xl font-bold text-green-700 flex items-center gap-3 mb-2">
           <FaBoxes className="text-emerald-600" />
-          {t("manageBumdes.title")}
+          Kelola BUMDes
         </h1>
-        <p className="text-gray-600">{t("manageBumdes.subtitle")}</p>
+        <p className="text-gray-600">Kelola produk dan kategori BUMDes</p>
       </div>
 
       {/* CATEGORY SECTION */}
@@ -239,7 +220,7 @@ export default function ManageBumdes() {
         <div className="flex justify-between items-center mb-5">
           <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-3">
             <FaBox className="text-emerald-500" />
-            {t("manageBumdes.category.title")}
+            Kelola kategori produk
           </h2>
           {!showCategoryForm && (
             <button
@@ -249,7 +230,7 @@ export default function ManageBumdes() {
               }}
               className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-4 py-2.5 rounded-lg shadow-md transition"
             >
-              <FaPlus /> {t("manageBumdes.category.buttons.add")}
+              <FaPlus /> Tambah kategori
             </button>
           )}
         </div>
@@ -261,13 +242,13 @@ export default function ManageBumdes() {
           >
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                {t("manageBumdes.category.form.name")}
+                Nama kategori
               </label>
               <input
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition"
                 value={categoryName}
                 onChange={(e) => setCategoryName(e.target.value)}
-                placeholder={t("manageBumdes.category.form.placeholder")}
+                placeholder="Contoh: Makanan, Minuman, Kerajinan"
               />
             </div>
             <div className="flex gap-3">
@@ -276,9 +257,7 @@ export default function ManageBumdes() {
                 className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-5 py-2.5 rounded-lg shadow-md transition"
               >
                 <FaSave />{" "}
-                {editingCategoryId
-                  ? t("manageBumdes.category.buttons.update")
-                  : t("manageBumdes.category.buttons.save")}
+                {editingCategoryId ? "Update Kategori" : "Simpan Kategori"}
               </button>
               <button
                 type="button"
@@ -288,7 +267,7 @@ export default function ManageBumdes() {
                 }}
                 className="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2.5 rounded-lg transition"
               >
-                <FaTimes /> {t("manageBumdes.buttons.cancel")}
+                <FaTimes /> Batal
               </button>
             </div>
           </form>
@@ -298,7 +277,7 @@ export default function ManageBumdes() {
           <div className="bg-gray-50 rounded-lg p-8 text-center">
             <FaBox className="text-4xl text-gray-400 mx-auto mb-3" />
             <p className="text-gray-500">
-              {t("manageBumdes.category.empty.noCategories")}
+              Belum ada kategori produk. Silakan tambahkan kategori
             </p>
           </div>
         ) : (
@@ -320,7 +299,7 @@ export default function ManageBumdes() {
                   <button
                     onClick={() => handleDeleteCategory(cat.id)}
                     className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full transition"
-                    title={t("manageBumdes.buttons.delete")}
+                    title="Hapus"
                   >
                     <FaTrash size={14} />
                   </button>
@@ -341,7 +320,7 @@ export default function ManageBumdes() {
             }}
             className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-5 py-2.5 rounded-lg shadow-md transition"
           >
-            <FaPlus /> {t("manageBumdes.product.buttons.add")}
+            <FaPlus /> Tambah produk
           </button>
         </div>
       ) : (
@@ -353,12 +332,12 @@ export default function ManageBumdes() {
             {editingId ? (
               <>
                 <FaEdit className="text-emerald-500" />
-                {t("manageBumdes.product.form.edit")}
+                Edit produk
               </>
             ) : (
               <>
                 <FaPlus className="text-emerald-500" />
-                {t("manageBumdes.product.form.add")}
+                Tambah produk baru
               </>
             )}
           </h2>
@@ -367,33 +346,31 @@ export default function ManageBumdes() {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {t("manageBumdes.product.form.name")}
+                  Nama produk
                 </label>
                 <input
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder={t("manageBumdes.product.form.namePlaceholder")}
+                  placeholder="Contoh: Keripik Singkong, Minuman Herbal, Sabun Herbal"
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {t("manageBumdes.product.form.description")}
+                  Deskripsi produk
                 </label>
                 <textarea
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl h-32 resize-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder={t(
-                    "manageBumdes.product.form.descriptionPlaceholder"
-                  )}
+                  placeholder="Deskripsikan produk secara detail..."
                 ></textarea>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {t("manageBumdes.product.form.price")}
+                  Harga produk (dalam Rupiah)
                 </label>
                 <div className="relative">
                   <span className="absolute left-4 top-3 text-gray-500">
@@ -413,16 +390,14 @@ export default function ManageBumdes() {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {t("manageBumdes.product.form.category")}
+                  Kategori produk
                 </label>
                 <select
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition"
                   value={categoryId}
                   onChange={(e) => setCategoryId(e.target.value)}
                 >
-                  <option value="">
-                    {t("manageBumdes.product.form.selectCategory")}
-                  </option>
+                  <option value="">-- Pilih Kategori --</option>
                   {categories.map((c) => (
                     <option key={c.id} value={c.id}>
                       {c.name}
@@ -434,22 +409,20 @@ export default function ManageBumdes() {
               <div>
                 <label className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
                   <FaWhatsapp className="text-green-500" />
-                  {t("manageBumdes.product.form.whatsappLink")}
+                  Link WhatsApp
                 </label>
                 <input
                   type="text"
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition"
                   value={linkWhatsapp}
                   onChange={(e) => setLinkWhatsapp(e.target.value)}
-                  placeholder={t(
-                    "manageBumdes.product.form.whatsappPlaceholder"
-                  )}
+                  placeholder="Contoh: https://wa.me/6281234567890"
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {t("manageBumdes.product.form.image")}
+                  Gambar produk
                 </label>
                 <div className="border-2 border-dashed border-gray-300 rounded-xl p-4">
                   <input
@@ -489,10 +462,7 @@ export default function ManageBumdes() {
               type="submit"
               className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-6 py-3 rounded-xl shadow-md transition"
             >
-              <FaSave />{" "}
-              {editingId
-                ? t("manageBumdes.product.buttons.update")
-                : t("manageBumdes.product.buttons.save")}
+              <FaSave /> {editingId ? "Update Produk" : "Simpan Produk"}
             </button>
             <button
               type="button"
@@ -502,7 +472,7 @@ export default function ManageBumdes() {
               }}
               className="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 px-5 py-3 rounded-xl transition"
             >
-              <FaTimes /> {t("manageBumdes.buttons.cancel")}
+              <FaTimes /> Batal
             </button>
           </div>
         </form>
@@ -513,12 +483,12 @@ export default function ManageBumdes() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
           <FaBox className="text-4xl text-gray-400 mx-auto mb-4" />
           <h3 className="text-xl font-medium text-gray-700 mb-2">
-            {t("manageBumdes.product.empty.title")}
+            Belum ada produk
           </h3>
           <p className="text-gray-500 mb-4">
             {showForm
-              ? t("manageBumdes.product.empty.fillForm")
-              : t("manageBumdes.product.empty.description")}
+              ? "Silahkan lengkapi form di atas untuk menambahkan produk baru."
+              : "Klik tombol 'Tambah produk' untuk mulai menambahkan."}
           </p>
           {!showForm && (
             <button
@@ -528,7 +498,7 @@ export default function ManageBumdes() {
               }}
               className="inline-flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-5 py-2.5 rounded-lg shadow-md transition"
             >
-              <FaPlus /> {t("manageBumdes.product.buttons.add")}
+              <FaPlus /> Tambah produk
             </button>
           )}
         </div>
@@ -550,7 +520,7 @@ export default function ManageBumdes() {
                   />
                   <div className="absolute bottom-3 left-3 bg-white/90 px-3 py-1 rounded-full text-xs font-medium text-emerald-700">
                     {categories.find((c) => c.id === item.product.category_id)
-                      ?.name || t("manageBumdes.product.noCategory")}
+                      ?.name || "Tanpa kategori"}
                   </div>
                 </div>
                 <div className="p-5">

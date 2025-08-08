@@ -20,26 +20,26 @@ import Pagination from "../ui/Pagination";
 import { Helper } from "../../utils/Helper";
 
 export default function ManageAgenda() {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const kategoriList = ["Semua", "REGULAR", "PKK", "KARANG_TARUNA", "BPD"];
 
   const kategoriLabel = {
-    Semua: t("manageAgenda.categories.all"),
-    REGULAR: t("manageAgenda.categories.regular"),
-    PKK: t("manageAgenda.categories.pkk"),
-    KARANG_TARUNA: t("manageAgenda.categories.karangTaruna"),
-    BPD: t("manageAgenda.categories.bpd"),
+    Semua: "Semua",
+    REGULAR: "Regular",
+    PKK: "PKK",
+    KARANG_TARUNA: "Karang Taruna",
+    BPD: "BPD",
   };
 
   const type = [
-    { id: 1, name: t("manageAgenda.types.regular"), value: "REGULAR" },
-    { id: 2, name: t("manageAgenda.types.pkk"), value: "PKK" },
+    { id: 1, name: "Regular", value: "REGULAR" },
+    { id: 2, name: "PKK", value: "PKK" },
     {
       id: 3,
-      name: t("manageAgenda.types.karangTaruna"),
+      name: "Karang Taruna",
       value: "KARANG_TARUNA",
     },
-    { id: 4, name: t("manageAgenda.types.bpd"), value: "BPD" },
+    { id: 4, name: "BPD", value: "BPD" },
   ];
 
   const [agenda, setAgenda] = useState([]);
@@ -72,25 +72,19 @@ export default function ManageAgenda() {
   };
 
   const handleDelete = async (id) => {
-    try {
-      const confirm = await alertConfirm(
-        t("manageAgenda.confirmation.deleteAgenda")
-      );
+    const confirm = await alertConfirm("Yakin ingin menghapus agenda ini?");
 
-      if (!confirm) return;
+    if (!confirm) return;
 
-      const response = await AgendaApi.deleteAgenda(id, i18n.language);
+    const response = await AgendaApi.deleteAgenda(id, i18n.language);
 
-      if (!response.ok) {
-        alertError(t("manageAgenda.error.deleteAgenda"));
-        return;
-      }
-
-      await alertSuccess(t("manageAgenda.success.agendaDeleted"));
-      setAgenda(agenda.filter((a) => a.id !== id));
-    } catch (error) {
-      alertError(t("manageAgenda.error.general", { error: error.message }));
+    if (!response.ok) {
+      Helper.errorResponseHandler(await response.json());
+      return;
     }
+
+    await alertSuccess("Agenda berhasil dihapus!");
+    setAgenda(agenda.filter((a) => a.id !== id));
   };
 
   const handleEdit = (id) => {
@@ -127,8 +121,7 @@ export default function ManageAgenda() {
     };
 
     if (editingId) {
-      if (!(await alertConfirm(t("manageAgenda.confirmation.editAgenda"))))
-        return;
+      if (!(await alertConfirm("Yakin ingin mengubah agenda ini?"))) return;
 
       const response = await AgendaApi.updateAgenda(
         editingId,
@@ -138,15 +131,11 @@ export default function ManageAgenda() {
       const resBody = await response.json();
 
       if (!response.ok) {
-        alertError(
-          typeof resBody.error === "string"
-            ? resBody.error
-            : t("manageAgenda.error.updateAgenda")
-        );
+        Helper.errorResponseHandler(resBody);
         return;
       }
 
-      await alertSuccess(t("manageAgenda.success.agendaUpdated"));
+      await alertSuccess("Agenda berhasil diperbarui!");
       resetForm();
       fetchAgenda();
       return;
@@ -157,15 +146,11 @@ export default function ManageAgenda() {
     const resBody = await response.json();
 
     if (!response.ok) {
-      alertError(
-        typeof resBody.error === "string"
-          ? resBody.error
-          : t("manageAgenda.error.createAgenda")
-      );
+      Helper.errorResponseHandler(resBody);
       return;
     }
 
-    await alertSuccess(t("manageAgenda.success.agendaAdded"));
+    await alertSuccess("Agenda berhasil ditambahkan!");
     await fetchAgenda();
     resetForm();
   };
@@ -177,27 +162,20 @@ export default function ManageAgenda() {
     });
 
   const fetchAgenda = async () => {
-    try {
-      const response = await AgendaApi.getOwnAgenda(
-        currentPage,
-        6,
-        kategori,
-        i18n.language
-      );
-      if (!response.ok) {
-        alertError(t("manageAgenda.error.fetchAgenda"));
-        return;
-      }
-      const resBody = await response.json();
+    const response = await AgendaApi.getOwnAgenda(
+      currentPage,
+      6,
+      kategori,
+      i18n.language
+    );
+    if (!response.ok) return;
+    const resBody = await response.json();
 
-      let data = resBody.agenda || [];
+    let data = resBody.agenda || [];
 
-      setAgenda(data);
-      setCurrentPage(resBody.page || 1);
-      setTotalPages(resBody.total_page || 1);
-    } catch (error) {
-      alertError(t("manageAgenda.error.fetchData"));
-    }
+    setAgenda(data);
+    setCurrentPage(resBody.page || 1);
+    setTotalPages(resBody.total_page || 1);
   };
 
   useEffect(() => {
@@ -213,9 +191,9 @@ export default function ManageAgenda() {
             <span className="bg-blue-100 text-blue-600 p-2 rounded-lg">
               <FiCalendar className="inline" />
             </span>
-            {t("manageAgenda.title")}
+            Kelola Agenda
           </h1>
-          <p className="text-gray-500 mt-1">{t("manageAgenda.subtitle")}</p>
+          <p className="text-gray-500 mt-1">Kelola semua agenda dengan mudah</p>
         </div>
 
         {!showForm && (
@@ -227,7 +205,7 @@ export default function ManageAgenda() {
             className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-lg shadow-md transition hover:shadow-lg"
           >
             <FiPlus className="text-lg" />
-            <span>{t("manageAgenda.buttons.addAgenda")}</span>
+            Tambah Agenda Baru
           </button>
         )}
       </div>
@@ -272,12 +250,12 @@ export default function ManageAgenda() {
               {editingId ? (
                 <>
                   <FiEdit2 className="text-blue-500" />
-                  <span>{t("manageAgenda.form.editAgenda")}</span>
+                  Edit agenda
                 </>
               ) : (
                 <>
                   <FiPlus className="text-blue-500" />
-                  <span>{t("manageAgenda.form.addAgenda")}</span>
+                  <span>Tambah agenda baru</span>
                 </>
               )}
             </h2>
@@ -295,39 +273,39 @@ export default function ManageAgenda() {
               <div className="space-y-1">
                 <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
                   <FiType size={14} />
-                  <span>{t("manageAgenda.form.title")}</span>
+                  <span>Judul agenda</span>
                 </label>
                 <input
                   className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder={t("manageAgenda.form.titlePlaceholder")}
+                  placeholder="Contoh: Rapat Desa Bulanan"
                 />
               </div>
 
               <div className="space-y-1">
                 <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
                   <FiAlignLeft size={14} />
-                  <span>{t("manageAgenda.form.description")}</span>
+                  Keterangan
                 </label>
                 <textarea
                   className="w-full border border-gray-300 rounded-lg px-4 py-2.5 h-32 focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition"
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
-                  placeholder={t("manageAgenda.form.descriptionPlaceholder")}
+                  placeholder="Deskripsikan agenda ini "
                 />
               </div>
 
               <div className="space-y-1">
                 <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
                   <FiNavigation size={14} />
-                  <span>{t("manageAgenda.form.location")}</span>
+                  <span>Lokasi Acara</span>
                 </label>
                 <input
                   className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
-                  placeholder={t("manageAgenda.form.locationPlaceholder")}
+                  placeholder="Contoh: Balai Desa Babakan Asem"
                 />
               </div>
             </div>
@@ -337,7 +315,7 @@ export default function ManageAgenda() {
                 <div className="space-y-1">
                   <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
                     <FiClock size={14} />
-                    <span>{t("manageAgenda.form.startTime")}</span>
+                    Mulai
                   </label>
                   <input
                     type="datetime-local"
@@ -349,7 +327,7 @@ export default function ManageAgenda() {
                 <div className="space-y-1">
                   <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
                     <FiClock size={14} />
-                    <span>{t("manageAgenda.form.endTime")}</span>
+                    Selesai
                   </label>
                   <input
                     type="datetime-local"
@@ -363,7 +341,7 @@ export default function ManageAgenda() {
               <div className="space-y-1">
                 <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
                   <FiCalendar size={14} />
-                  <span>{t("manageAgenda.form.type")}</span>
+                  Tipe Agenda
                 </label>
                 <select
                   className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition"
@@ -381,7 +359,7 @@ export default function ManageAgenda() {
               <div className="space-y-1">
                 <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
                   <FiImage size={14} />
-                  <span>{t("manageAgenda.form.featuredImage")}</span>
+                  Gambar
                 </label>
                 <div className="flex items-center gap-3">
                   <label className="flex flex-col items-center justify-center w-full border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition">
@@ -390,7 +368,7 @@ export default function ManageAgenda() {
                       <p className="text-sm text-gray-500 text-center">
                         {featuredImage
                           ? featuredImage.name
-                          : t("manageAgenda.form.uploadImage")}
+                          : "Klik untuk memilih gambar"}
                       </p>
                     </div>
                     <input
@@ -426,7 +404,7 @@ export default function ManageAgenda() {
 
               <div className="space-y-1">
                 <label className="text-sm font-medium text-gray-700">
-                  {t("manageAgenda.form.publishStatus")}
+                  Status Publikasi
                 </label>
                 <div className="flex gap-2">
                   <button
@@ -438,7 +416,7 @@ export default function ManageAgenda() {
                         : "bg-gray-50 border-gray-300 text-gray-600 hover:bg-gray-100"
                     }`}
                   >
-                    <FiCheck /> {t("manageAgenda.form.publish")}
+                    <FiCheck /> Publish
                   </button>
                   <button
                     type="button"
@@ -449,7 +427,7 @@ export default function ManageAgenda() {
                         : "bg-gray-50 border-gray-300 text-gray-600 hover:bg-gray-100"
                     }`}
                   >
-                    <FiX /> {t("manageAgenda.form.draft")}
+                    <FiX /> Draft
                   </button>
                 </div>
               </div>
@@ -462,7 +440,7 @@ export default function ManageAgenda() {
               onClick={resetForm}
               className="px-5 py-2.5 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 transition"
             >
-              {t("manageAgenda.form.cancel")}
+              Batal
             </button>
             <button
               type="submit"
@@ -470,11 +448,11 @@ export default function ManageAgenda() {
             >
               {editingId ? (
                 <>
-                  <FiEdit2 /> {t("manageAgenda.form.updateAgenda")}
+                  <FiEdit2 /> Update Agenda
                 </>
               ) : (
                 <>
-                  <FiPlus /> {t("manageAgenda.form.saveAgenda")}
+                  <FiPlus /> Simpan Agenda
                 </>
               )}
             </button>
@@ -488,14 +466,12 @@ export default function ManageAgenda() {
           <div className="mx-auto max-w-md">
             <FiCalendar className="mx-auto h-12 w-12 text-gray-400" />
             <h3 className="mt-2 text-lg font-medium text-gray-900">
-              {t("manageAgenda.empty.title")}
+              Tidak ada agenda yang ditemukan
             </h3>
             <p className="mt-1 text-sm text-gray-500">
               {kategori === "Semua"
-                ? t("manageAgenda.empty.noAgenda")
-                : t("manageAgenda.empty.noAgendaForCategory", {
-                    category: kategoriLabel[kategori],
-                  })}
+                ? "Belum ada agenda yang ditambahkan."
+                : `Tidak ada agenda yang ditemukan untuk kategori ${kategoriLabel[kategori]}.`}
             </p>
             <div className="mt-6">
               <button
@@ -506,7 +482,7 @@ export default function ManageAgenda() {
                 className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
                 <FiPlus className="-ml-1 mr-2 h-5 w-5" />
-                {t("manageAgenda.buttons.addAgenda")}
+                Tambah Agenda Baru
               </button>
             </div>
           </div>
@@ -534,9 +510,7 @@ export default function ManageAgenda() {
                         : "bg-yellow-100 text-yellow-800"
                     }`}
                   >
-                    {a.is_published
-                      ? t("manageAgenda.status.published")
-                      : t("manageAgenda.status.draft")}
+                    {a.is_published ? "Published" : "Draft"}
                   </span>
                   <span className="absolute bottom-3 left-3 px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                     {type.find((t) => t.value === a.type)?.name || "Regular"}

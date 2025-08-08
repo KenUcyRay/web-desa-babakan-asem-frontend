@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Pagination from "../ui/Pagination";
-import { alertError, alertSuccess } from "../../libs/alert";
+import { alertSuccess } from "../../libs/alert";
 import { AdministrasiApi } from "../../libs/api/AdministrasiApi";
 import { Helper } from "../../utils/Helper";
 
 export default function ManageSuratPengantar() {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [filterStatus, setFilterStatus] = useState("Semua");
@@ -33,59 +33,52 @@ export default function ManageSuratPengantar() {
   const handleTerima = async (idx) => {
     const item = currentData[idx];
     setIsLoading(true);
-    try {
-      const response = await AdministrasiApi.updatePengantar(
-        item.id,
-        i18n.language
-      );
-      const responseBody = await response.json();
-      if (!response.ok) {
-        alertError(
-          typeof responseBody.error === "string"
-            ? responseBody.error
-            : t("manageAdministrasi.error.processLetter")
-        );
-        return;
-      }
-      const updatedData = data.map((d) =>
-        d.id === item.id ? { ...d, status: "diterima" } : d
-      );
-      setData(updatedData);
-      alertSuccess(t("manageAdministrasi.success.letterAccepted"));
-    } catch (error) {
-      alertError(t("manageAdministrasi.error.processLetter"));
-    } finally {
+    const response = await AdministrasiApi.updatePengantar(
+      item.id,
+      i18n.language
+    );
+    const responseBody = await response.json();
+    if (!response.ok) {
+      await Helper.errorResponseHandler(responseBody);
       setIsLoading(false);
+      return;
     }
+    const updatedData = data.map((d) =>
+      d.id === item.id ? { ...d, status: "diterima" } : d
+    );
+    setData(updatedData);
+    alertSuccess("Surat pengantar berhasil diterima.");
+
+    setIsLoading(false);
   };
 
   // Fetch data surat pengantar
   const fetchData = async () => {
     setIsLoading(true);
-    try {
-      const response = await AdministrasiApi.getPengantar(
-        "?size=1000",
-        i18n.language
-      );
-      if (!response.ok) return;
-
-      const responseData = await response.json();
-      setData(
-        responseData.data.map((item) => ({
-          id: item.id,
-          nama: item.name,
-          nik: item.nik,
-          jenis: Helper.formatText(item.type),
-          keterangan: item.keterangan,
-          created_at: item.createdAt,
-          status: item.is_pending ? "pending" : "diterima",
-        }))
-      );
-    } catch (error) {
-      alertError(t("manageAdministrasi.error.loadData"));
-    } finally {
+    const response = await AdministrasiApi.getPengantar(
+      "?size=1000",
+      i18n.language
+    );
+    if (!response.ok) {
       setIsLoading(false);
+
+      return;
     }
+
+    const responseData = await response.json();
+    setData(
+      responseData.data.map((item) => ({
+        id: item.id,
+        nama: item.name,
+        nik: item.nik,
+        jenis: Helper.formatText(item.type),
+        keterangan: item.keterangan,
+        created_at: item.createdAt,
+        status: item.is_pending ? "pending" : "diterima",
+      }))
+    );
+
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -207,10 +200,11 @@ export default function ManageSuratPengantar() {
                 <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
                   <DocumentIcon className="w-6 h-6 text-white" />
                 </div>
-                {t("manageAdministrasi.title")}
+                Kelola Administrasi
               </h1>
               <p className="text-gray-600 mt-2">
-                {t("manageAdministrasi.subtitle")}
+                Kelola permohonan surat pengantar administrasi desa dengan mudah
+                dan cepat.
               </p>
             </div>
           </div>
@@ -225,7 +219,7 @@ export default function ManageSuratPengantar() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-blue-600 text-sm font-semibold uppercase tracking-wide">
-                      {t("manageAdministrasi.stats.totalLetters")}
+                      Total surat pengantar
                     </p>
                     <p className="text-3xl font-bold text-gray-800">
                       {data.length}
@@ -246,7 +240,7 @@ export default function ManageSuratPengantar() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-yellow-600 text-sm font-semibold uppercase tracking-wide">
-                      {t("manageAdministrasi.stats.pending")}
+                      Pending
                     </p>
                     <p className="text-3xl font-bold text-gray-800">
                       {data.filter((item) => item.status === "pending").length}
@@ -267,7 +261,7 @@ export default function ManageSuratPengantar() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-green-600 text-sm font-semibold uppercase tracking-wide">
-                      {t("manageAdministrasi.stats.accepted")}
+                      Diterima
                     </p>
                     <p className="text-3xl font-bold text-gray-800">
                       {data.filter((item) => item.status === "diterima").length}
@@ -291,7 +285,7 @@ export default function ManageSuratPengantar() {
                   <FilterIcon className="w-5 h-5 text-white" />
                 </div>
                 <label className="text-gray-700 font-semibold text-lg">
-                  {t("manageAdministrasi.filter.label")}
+                  Filter Status:
                 </label>
               </div>
               <div className="relative">
@@ -303,15 +297,9 @@ export default function ManageSuratPengantar() {
                   }}
                   className="appearance-none px-6 py-3 pr-10 rounded-xl border border-gray-200 focus:ring-4 focus:ring-green-100 focus:border-green-400 bg-gradient-to-r from-white to-green-50/30 font-medium transition-all duration-300"
                 >
-                  <option value="Semua">
-                    {t("manageAdministrasi.filter.allStatus")}
-                  </option>
-                  <option value="pending">
-                    ⏳ {t("manageAdministrasi.filter.pending")}
-                  </option>
-                  <option value="diterima">
-                    ✓ {t("manageAdministrasi.filter.accepted")}
-                  </option>
+                  <option value="Semua">Semua Status</option>
+                  <option value="pending">Pending</option>
+                  <option value="diterima">Diterima</option>
                 </select>
                 <ChevronDownIcon className="w-5 h-5 text-gray-400 absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none" />
               </div>
@@ -326,7 +314,7 @@ export default function ManageSuratPengantar() {
               <div className="flex items-center gap-4">
                 <LoadingSpinner className="w-8 h-8 text-green-600" />
                 <span className="text-gray-600 font-medium">
-                  {t("manageAdministrasi.loading")}
+                  Memuat data...
                 </span>
               </div>
             </div>
@@ -342,23 +330,17 @@ export default function ManageSuratPengantar() {
                   <thead>
                     <tr className="bg-gradient-to-r from-green-500 to-emerald-600 text-white">
                       <th className="p-6 text-left font-semibold">
-                        {t("manageAdministrasi.table.applicantName")}
+                        Nama Pemohon
+                      </th>
+                      <th className="p-6 text-left font-semibold">NIK</th>
+                      <th className="p-6 text-left font-semibold">
+                        Jenis Surat
                       </th>
                       <th className="p-6 text-left font-semibold">
-                        {t("manageAdministrasi.table.nik")}
+                        Tanggal Pengajuan
                       </th>
-                      <th className="p-6 text-left font-semibold">
-                        {t("manageAdministrasi.table.letterType")}
-                      </th>
-                      <th className="p-6 text-left font-semibold">
-                        {t("manageAdministrasi.table.submissionDate")}
-                      </th>
-                      <th className="p-6 text-center font-semibold">
-                        {t("manageAdministrasi.table.status")}
-                      </th>
-                      <th className="p-6 text-center font-semibold">
-                        {t("manageAdministrasi.table.action")}
-                      </th>
+                      <th className="p-6 text-center font-semibold">Status</th>
+                      <th className="p-6 text-center font-semibold">Aksi</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -408,12 +390,12 @@ export default function ManageSuratPengantar() {
                               {item.status === "pending" ? (
                                 <>
                                   <ClockIcon className="w-4 h-4" />
-                                  {t("manageAdministrasi.status.pending")}
+                                  Pending
                                 </>
                               ) : (
                                 <>
                                   <CheckIcon className="w-4 h-4" />
-                                  {t("manageAdministrasi.status.accepted")}
+                                  Diterima
                                 </>
                               )}
                             </span>
@@ -430,7 +412,7 @@ export default function ManageSuratPengantar() {
                               >
                                 <span className="flex items-center gap-2">
                                   <CheckIcon className="w-4 h-4" />
-                                  {t("manageAdministrasi.button.accept")}
+                                  Terima
                                 </span>
                               </button>
                             )}
@@ -444,28 +426,18 @@ export default function ManageSuratPengantar() {
                                 <div className="grid md:grid-cols-2 gap-4">
                                   <div className="bg-white rounded-xl p-4 shadow-sm">
                                     <p className="text-sm font-semibold text-gray-700 mb-2">
-                                      {t(
-                                        "manageAdministrasi.details.nikDetail"
-                                      )}
+                                      Detail NIK:
                                     </p>
                                     <p className="text-gray-800 font-mono">
-                                      {item.nik ||
-                                        t(
-                                          "manageAdministrasi.details.notAvailable"
-                                        )}
+                                      {item.nik || "-"}
                                     </p>
                                   </div>
                                   <div className="bg-white rounded-xl p-4 shadow-sm">
                                     <p className="text-sm font-semibold text-gray-700 mb-2">
-                                      {t(
-                                        "manageAdministrasi.details.description"
-                                      )}
+                                      Keterangan:
                                     </p>
                                     <p className="text-gray-800">
-                                      {item.keterangan ||
-                                        t(
-                                          "manageAdministrasi.details.noAdditionalDescription"
-                                        )}
+                                      {item.keterangan || "-"}
                                     </p>
                                   </div>
                                 </div>
@@ -484,7 +456,7 @@ export default function ManageSuratPengantar() {
                               <DocumentIcon className="w-8 h-8 text-gray-400" />
                             </div>
                             <p className="text-gray-500 text-lg">
-                              {t("manageAdministrasi.empty.noData")}
+                              Tidak ada data surat pengantar yang ditemukan.
                             </p>
                           </div>
                         </td>
@@ -515,8 +487,7 @@ export default function ManageSuratPengantar() {
                             {item.nama}
                           </h3>
                           <p className="text-sm text-gray-500">
-                            {t("manageAdministrasi.table.nik")}:{" "}
-                            {item.nik || "-"}
+                            NIK: {item.nik || "-"}
                           </p>
                         </div>
                       </div>
@@ -530,12 +501,12 @@ export default function ManageSuratPengantar() {
                         {item.status === "pending" ? (
                           <>
                             <ClockIcon className="w-3 h-3" />
-                            {t("manageAdministrasi.status.pending")}
+                            Pending
                           </>
                         ) : (
                           <>
                             <CheckIcon className="w-3 h-3" />
-                            {t("manageAdministrasi.status.accepted")}
+                            Diterima
                           </>
                         )}
                       </span>
@@ -544,14 +515,14 @@ export default function ManageSuratPengantar() {
                     <div className="space-y-3">
                       <div className="bg-blue-50 rounded-lg p-3">
                         <p className="text-sm font-semibold text-blue-800 mb-1">
-                          {t("manageAdministrasi.table.letterType")}:
+                          Jenis Surat
                         </p>
                         <p className="text-blue-700">{item.jenis}</p>
                       </div>
 
                       <div className="bg-gray-50 rounded-lg p-3">
                         <p className="text-sm font-semibold text-gray-700 mb-1">
-                          {t("manageAdministrasi.table.submissionDate")}:
+                          Tanggal Pengajuan:
                         </p>
                         <p className="text-gray-600 text-sm">
                           {new Date(item.created_at).toLocaleString("id-ID", {
@@ -567,7 +538,7 @@ export default function ManageSuratPengantar() {
                       {item.keterangan && (
                         <div className="bg-green-50 rounded-lg p-3">
                           <p className="text-sm font-semibold text-green-800 mb-1">
-                            {t("manageAdministrasi.details.description")}:
+                            Keterangan:
                           </p>
                           <p className="text-green-700 text-sm">
                             {item.keterangan}
@@ -584,7 +555,7 @@ export default function ManageSuratPengantar() {
                       >
                         <span className="flex items-center justify-center gap-2">
                           <CheckIcon className="w-5 h-5" />
-                          {t("manageAdministrasi.button.acceptLetter")}
+                          Terima Surat
                         </span>
                       </button>
                     )}
@@ -600,7 +571,7 @@ export default function ManageSuratPengantar() {
                     <DocumentIcon className="w-8 h-8 text-gray-400" />
                   </div>
                   <p className="text-gray-500">
-                    {t("manageAdministrasi.empty.noData")}
+                    Tidak ada data surat pengantar yang ditemukan.
                   </p>
                 </div>
               </div>

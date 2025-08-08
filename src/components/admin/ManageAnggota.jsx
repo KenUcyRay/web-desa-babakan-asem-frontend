@@ -12,11 +12,11 @@ export default function ManageAnggota() {
   const [members, setMembers] = useState([]);
   const [kategori, setKategori] = useState("Semua");
   const kategoriList = [
-    { key: "Semua", label: t("manageAnggota.categories.all") },
-    { key: "PKK", label: t("manageAnggota.categories.pkk") },
-    { key: "KARANG TARUNA", label: t("manageAnggota.categories.karangTaruna") },
-    { key: "PEMERINTAH", label: t("manageAnggota.categories.pemerintah") },
-    { key: "BPD", label: t("manageAnggota.categories.bpd") },
+    { key: "Semua", label: "Semua" },
+    { key: "PKK", label: "PKK" },
+    { key: "KARANG TARUNA", label: "Karang Taruna" },
+    { key: "PEMERINTAH", label: "Pemerintah" },
+    { key: "BPD", label: "BPD" },
   ];
 
   const [showModal, setShowModal] = useState(false);
@@ -38,8 +38,7 @@ export default function ManageAnggota() {
 
   // Function to get translated organization name
   const getOrganizationLabel = (orgType) => {
-    const key = `manageAnggota.organizationsCard.${orgType}`;
-    return t(key, orgType); // fallback to original if translation not found
+    return orgType;
   };
 
   const fetchMembers = async () => {
@@ -52,7 +51,7 @@ export default function ManageAnggota() {
       i18n.language
     );
     if (!response.ok) {
-      alertError(t("manageAnggota.messages.fetchError"));
+      Helper.errorResponseHandler(await response.json());
       return;
     }
     const body = await response.json();
@@ -108,15 +107,14 @@ export default function ManageAnggota() {
   };
 
   const handleDelete = async (id) => {
-    if (!(await alertConfirm(t("manageAnggota.messages.deleteConfirm"))))
-      return;
+    if (!(await alertConfirm("Yakin ingin menghapus anggota ini?"))) return;
     const response = await MemberApi.deleteMember(id, i18n.language);
     if (!response.ok) {
-      alertError(t("manageAnggota.messages.deleteError"));
+      await Helper.errorResponseHandler(await response.json());
       return;
     }
     setMembers((prev) => prev.filter((a) => a.id !== id));
-    await alertSuccess(t("manageAnggota.messages.deleteSuccess"));
+    await alertSuccess("Anggota berhasil dihapus.");
   };
 
   const handleSubmit = async (e) => {
@@ -151,8 +149,8 @@ export default function ManageAnggota() {
 
     await alertSuccess(
       editingId
-        ? t("manageAnggota.messages.updateSuccess")
-        : t("manageAnggota.messages.addSuccess")
+        ? "Anggota berhasil diperbarui."
+        : "Anggota berhasil ditambahkan."
     );
     setShowModal(false);
     fetchMembers();
@@ -164,14 +162,14 @@ export default function ManageAnggota() {
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-6">
         <div className="flex items-center gap-2 text-gray-800">
           <FiUsers className="text-3xl text-green-600" />
-          <h1 className="text-2xl font-bold">{t("manageAnggota.title")}</h1>
+          <h1 className="text-2xl font-bold">Struktur Organisasi</h1>
         </div>
 
         <button
           onClick={handleAdd}
           className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2 rounded-lg shadow-lg transition transform hover:-translate-y-0.5"
         >
-          <FaPlus /> {t("manageAnggota.addMember")}
+          <FaPlus /> Tambah anggota
         </button>
       </div>
 
@@ -199,7 +197,7 @@ export default function ManageAnggota() {
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {members.length === 0 && (
           <p className="text-center text-gray-500 col-span-full">
-            {t("manageAnggota.messages.noMembers")}
+            Tidak ada anggota ditemukan.
           </p>
         )}
 
@@ -240,9 +238,7 @@ export default function ManageAnggota() {
                       : "bg-red-200 text-red-800"
                   }`}
                 >
-                  {member.is_term
-                    ? t("manageAnggota.status.activeCard")
-                    : t("manageAnggota.status.inactiveCard")}
+                  {member.is_term ? "Menjabat" : "Tidak Menjabat"}
                 </span>
               </div>
             </div>
@@ -252,13 +248,13 @@ export default function ManageAnggota() {
                 onClick={() => handleEdit(member.id)}
                 className="flex items-center gap-1 text-blue-600 hover:text-blue-800 transition"
               >
-                <FaEdit /> {t("manageAnggota.actions.edit")}
+                <FaEdit /> Edit
               </button>
               <button
                 onClick={() => handleDelete(member.id)}
                 className="flex items-center gap-1 text-red-600 hover:text-red-800 transition"
               >
-                <FaTrash /> {t("manageAnggota.actions.delete")}
+                <FaTrash /> Hapus
               </button>
             </div>
           </div>
@@ -284,9 +280,7 @@ export default function ManageAnggota() {
             <div className="bg-gradient-to-r from-green-600 to-emerald-600 p-5 flex justify-between items-center">
               <h2 className="text-xl font-bold text-white flex items-center gap-3">
                 <FaUserAlt />
-                {editingId
-                  ? t("manageAnggota.editMember")
-                  : t("manageAnggota.addNewMember")}
+                {editingId ? "Edit Anggota" : "Tambah Anggota"}
               </h2>
               <button
                 onClick={() => setShowModal(false)}
@@ -303,11 +297,11 @@ export default function ManageAnggota() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {t("manageAnggota.form.fullName")}
+                    Nama Lengkap
                   </label>
                   <input
                     type="text"
-                    placeholder={t("manageAnggota.form.fullNamePlaceholder")}
+                    placeholder="Nama Lengkap"
                     value={formData.name}
                     onChange={(e) =>
                       setFormData({ ...formData, name: e.target.value })
@@ -318,11 +312,11 @@ export default function ManageAnggota() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {t("manageAnggota.form.position")}
+                    Position
                   </label>
                   <input
                     type="text"
-                    placeholder={t("manageAnggota.form.positionPlaceholder")}
+                    placeholder="Jabatan"
                     value={formData.position}
                     onChange={(e) =>
                       setFormData({ ...formData, position: e.target.value })
@@ -335,11 +329,11 @@ export default function ManageAnggota() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {t("manageAnggota.form.startYear")}
+                    Tahun Mulai
                   </label>
                   <input
                     type="number"
-                    placeholder={t("manageAnggota.form.startYearPlaceholder")}
+                    placeholder="Tahun Mulai"
                     value={formData.term_start}
                     onChange={(e) =>
                       setFormData({ ...formData, term_start: e.target.value })
@@ -350,11 +344,11 @@ export default function ManageAnggota() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {t("manageAnggota.form.endYear")}
+                    Tahun Berakhir
                   </label>
                   <input
                     type="number"
-                    placeholder={t("manageAnggota.form.endYearPlaceholder")}
+                    placeholder="Tahun Berakhir"
                     value={formData.term_end}
                     onChange={(e) =>
                       setFormData({ ...formData, term_end: e.target.value })
@@ -367,7 +361,7 @@ export default function ManageAnggota() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {t("manageAnggota.form.organization")}
+                    Organisasi
                   </label>
                   <select
                     value={formData.organization_type}
@@ -379,30 +373,20 @@ export default function ManageAnggota() {
                     }
                     className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-200 focus:border-green-500"
                   >
-                    <option value="PEMERINTAH">
-                      {t("manageAnggota.organizations.pemerintah")}
-                    </option>
-                    <option value="PKK">
-                      {t("manageAnggota.organizations.pkk")}
-                    </option>
-                    <option value="KARANG_TARUNA">
-                      {t("manageAnggota.organizations.karangTaruna")}
-                    </option>
-                    <option value="BPD">
-                      {t("manageAnggota.organizations.bpd")}
-                    </option>
+                    <option value="PEMERINTAH">Pemerintah</option>
+                    <option value="PKK">PKK</option>
+                    <option value="KARANG_TARUNA">Karang Taruna</option>
+                    <option value="BPD">BPD</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {t("manageAnggota.form.importantLevel")}
+                    Tingkat Penting(1-10)
                   </label>
                   <input
                     type="number"
-                    placeholder={t(
-                      "manageAnggota.form.importantLevelPlaceholder"
-                    )}
+                    placeholder="Tingkat Penting"
                     value={formData.important_level}
                     onChange={(e) =>
                       setFormData({
@@ -419,7 +403,7 @@ export default function ManageAnggota() {
 
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {t("manageAnggota.form.profilePhoto")}
+                  Foto Profil
                 </label>
                 <input
                   type="file"
@@ -436,7 +420,7 @@ export default function ManageAnggota() {
 
               <div className="mb-5">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {t("manageAnggota.form.statusPosition")}
+                  Status Jabatan
                 </label>
                 <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
                   <div className="relative inline-block w-14 h-7">
@@ -461,9 +445,7 @@ export default function ManageAnggota() {
                       formData.is_term ? "text-green-600" : "text-gray-600"
                     }`}
                   >
-                    {formData.is_term
-                      ? t("manageAnggota.status.active")
-                      : t("manageAnggota.status.inactive")}
+                    {formData.is_term ? "Sedang Menjabat" : "Tidak Menjabat"}
                   </span>
                 </div>
               </div>
@@ -474,15 +456,13 @@ export default function ManageAnggota() {
                   className="px-6 py-3 rounded-xl bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium transition shadow"
                   onClick={() => setShowModal(false)}
                 >
-                  {t("manageAnggota.actions.cancel")}
+                  Batal
                 </button>
                 <button
                   type="submit"
                   className="px-7 py-3 rounded-xl bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-medium shadow-lg transition transform hover:-translate-y-0.5"
                 >
-                  {editingId
-                    ? t("manageAnggota.actions.save")
-                    : t("manageAnggota.actions.add")}
+                  {editingId ? Simpan : Tambah}
                 </button>
               </div>
             </form>

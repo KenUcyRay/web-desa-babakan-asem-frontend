@@ -1,14 +1,8 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { useTranslation } from "react-i18next";
-import {
-  FaMapMarkedAlt,
-  FaInfoCircle,
-  FaDownload,
-  FaEye,
-} from "react-icons/fa";
-import Peta from "../../assets/map.png";
+import { FaMapMarkedAlt, FaInfoCircle } from "react-icons/fa";
 
 const GisDesa = () => {
   const { t } = useTranslation();
@@ -192,7 +186,6 @@ const GisDesa = () => {
             </div>
           </div>
         </div>
-
 
         {/* Geographic Information */}
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">

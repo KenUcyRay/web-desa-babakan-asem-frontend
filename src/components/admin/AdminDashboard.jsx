@@ -76,7 +76,7 @@ function getPolygonColorByIndex(index) {
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
 
   // State dari Tes.jsx
   const [showDialogMap, setShowDialogMap] = useState(false);
@@ -216,8 +216,7 @@ export default function AdminDashboard() {
 
   const fetchGaleriPreview = async () => {
     const res = await GaleryApi.getGaleri(1, 3, i18n.language);
-    if (!res.ok)
-      return alertError(t("adminDashboard.errors.failedToGetGallery"));
+    if (!res.ok) return;
     const data = await res.json();
     setGaleriPreview(data.galeri || []);
   };
@@ -226,11 +225,7 @@ export default function AdminDashboard() {
     const res = await VillageWorkProgramApi.getVillageWorkPrograms(
       i18n.language
     );
-    if (!res.ok)
-      return alertError(
-        t("adminDashboard.errors.failedToGetWorkPrograms") ||
-          "Gagal mengambil data program kerja"
-      );
+    if (!res.ok) return;
     const data = await res.json();
     setProgramKerjaPreview(data || []);
   };
@@ -242,34 +237,10 @@ export default function AdminDashboard() {
       3,
       i18n.language
     );
-    if (!res.ok)
-      return alertError(
-        t("adminDashboard.errors.failedToGetVillageStructure") ||
-          "Gagal mengambil data struktur desa"
-      );
+    if (!res.ok) return;
     const data = await res.json();
     setStrukturPreview(data.members || []);
   };
-
-  // const formatRelativeTime = (timestamp) => {
-  //   const now = new Date();
-  //   const diff = now - timestamp;
-  //   const minutes = Math.floor(diff / 60000);
-  //   const hours = Math.floor(diff / 3600000);
-  //   const days = Math.floor(diff / 86400000);
-
-  //   if (minutes < 1)
-  //     return t("adminDashboard.timeFormat.justNow") || "Baru saja";
-  //   if (minutes < 60)
-  //     return `${minutes} ${
-  //       t("adminDashboard.timeFormat.minutesAgo") || "menit lalu"
-  //     }`;
-  //   if (hours < 24)
-  //     return `${hours} ${
-  //       t("adminDashboard.timeFormat.hoursAgo") || "jam lalu"
-  //     }`;
-  //   return `${days} ${t("adminDashboard.timeFormat.daysAgo") || "hari lalu"}`;
-  // };
 
   const fetchLog = async () => {
     const res = await LogActivityApi.getAllActivities(
@@ -376,11 +347,10 @@ export default function AdminDashboard() {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
-            {t("adminDashboard.title")}
+            Admin Dashboard
           </h1>
           <p className="text-gray-600 mt-1">
-            {t("adminDashboard.subtitle") ||
-              "Ringkasan aktivitas dan statistik terbaru"}
+            Ringkasan aktivitas dan statistik terbaru
           </p>
         </div>
         <div className="text-sm text-gray-500">
@@ -401,7 +371,7 @@ export default function AdminDashboard() {
               <div className="bg-white bg-opacity-20 p-2 rounded-lg">
                 <FaMapMarkedAlt className="text-blue-700 text-xl" />
               </div>
-              {t("adminDashboard.gisMapTitle") || "Peta Digital Desa"}
+              Peta Digital Desa
             </h2>
 
             {/* Filter Tahun - Dynamic based on available years */}
@@ -647,13 +617,8 @@ export default function AdminDashboard() {
           icon={
             <FaChartBar className="text-xl text-white bg-green-500 p-2 rounded-lg" />
           }
-          title={
-            t("adminDashboard.mainCards.dashboardVillage") || "Dashboard Desa"
-          }
-          description={
-            t("adminDashboard.mainCards.dashboardVillageDesc") ||
-            "Statistik lengkap desa"
-          }
+          title={"Dashboard Desa"}
+          description={"Statistik lengkap desa"}
           onClick={() => navigate("/admin/dashboard-desa")}
         />
 
@@ -661,11 +626,8 @@ export default function AdminDashboard() {
           icon={
             <FaDatabase className="text-xl text-white bg-blue-500 p-2 rounded-lg" />
           }
-          title={t("adminDashboard.mainCards.dataMaster") || "Data Master"}
-          description={
-            t("adminDashboard.mainCards.dataMasterDesc") ||
-            "Kelola data dasar desa"
-          }
+          title={"Data Master"}
+          description={"Kelola data dasar desa"}
           onClick={() => navigate("/admin/data-master")}
         />
 
@@ -673,14 +635,8 @@ export default function AdminDashboard() {
           icon={
             <FaFolderOpen className="text-xl text-white bg-purple-500 p-2 rounded-lg" />
           }
-          title={
-            t("adminDashboard.mainCards.documentRepository") ||
-            "Repository Dokumen"
-          }
-          description={
-            t("adminDashboard.mainCards.documentRepositoryDesc") ||
-            "Arsip dokumen desa"
-          }
+          title={"Repository Dokumen"}
+          description={"Arsip dokumen desa"}
           onClick={() =>
             window.open(
               "https://drive.google.com/drive/folders/1H6wPE94ywdVsbH3XF7z2UpJ23sKFajr_?usp=sharing",
@@ -694,47 +650,36 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8">
         <DetailStatCard
           icon={<FaComments className="text-2xl text-orange-500" />}
-          title={t("adminDashboard.statistics.messages")}
+          title={"Pesan"}
           count={messageCount}
-          detail={
-            t("adminDashboard.statistics.messagesDetail") || "Pesan masuk"
-          }
+          detail={"Pesan masuk"}
           onClick={() => navigate("/admin/manage-pesan")}
           color="bg-yellow-200"
         />
 
         <DetailStatCard
           icon={<FaUsers className="text-2xl text-purple-500" />}
-          title={t("adminDashboard.statistics.users")}
+          title={"Pengguna"}
           count={userCount}
-          detail={
-            t("adminDashboard.statistics.usersDetail") || "Pengguna terdaftar"
-          }
+          detail={"Pengguna terdaftar"}
           onClick={() => navigate("/admin/manage-user")}
           color="bg-purple-100"
         />
 
         <DetailStatCard
           icon={<FaSitemap className="text-2xl text-red-500" />}
-          title={
-            t("adminDashboard.statistics.villageStructure") || "Struktur Desa"
-          }
+          title={"Struktur Desa"}
           count={strukturPreview.length}
-          detail={
-            t("adminDashboard.statistics.villageStructureDetail") ||
-            "Pengurus desa"
-          }
+          detail={"Pengurus desa"}
           onClick={() => navigate("/admin/manage-anggota")}
           color="bg-red-100"
         />
 
         <DetailStatCard
           icon={<FaStore className="text-2xl text-teal-500" />}
-          title={t("adminDashboard.statistics.bumdes") || "BUMDes"}
+          title={"BUMDes"}
           count={bumdesPreview.length}
-          detail={
-            t("adminDashboard.statistics.bumdesDetail") || "Produk unggulan"
-          }
+          detail={"Produk unggulan"}
           onClick={() => navigate("/admin/manage-bumdes")}
           color="bg-teal-50"
         />
@@ -752,39 +697,35 @@ export default function AdminDashboard() {
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
               <FaChartBar className="text-gray-500" />
-              {t("adminDashboard.contentStatistics.title") ||
-                "Statistik Konten"}
+              Statistik Konten
             </h3>
           </div>
 
           <div className="space-y-4">
             <StatItem
               icon={<FaNewspaper className="text-blue-500" />}
-              title={t("adminDashboard.contentStatistics.news") || "Berita"}
+              title={"Berita"}
               value={newsCount}
               onClick={() => navigate("/admin/manage-news")}
             />
 
             <StatItem
               icon={<FaCalendarAlt className="text-green-500" />}
-              title={t("adminDashboard.contentStatistics.agenda") || "Agenda"}
+              title={"Agenda"}
               value={agendaCount}
               onClick={() => navigate("/admin/manage-agenda")}
             />
 
             <StatItem
               icon={<FaImage className="text-purple-500" />}
-              title={t("adminDashboard.contentStatistics.gallery") || "Galeri"}
+              title={"Galeri"}
               value={galeriCount}
               onClick={() => navigate("/admin/manage-galery")}
             />
 
             <StatItem
               icon={<FaTasks className="text-yellow-500" />}
-              title={
-                t("adminDashboard.contentStatistics.workProgram") ||
-                "Program Kerja"
-              }
+              title={"Program Kerja"}
               value={programCount}
               onClick={() => navigate("/admin/manage-program")}
             />
@@ -795,10 +736,7 @@ export default function AdminDashboard() {
       {/* PREVIEW SECTIONS */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
         <PreviewSection
-          title={
-            t("adminDashboard.preview.villageStructure.title") ||
-            "Struktur Desa"
-          }
+          title={"Struktur Desa"}
           icon={<FaSitemap className="text-blue-500" />}
           data={strukturPreview.map((s) => ({
             title: s.name || s.nama,
@@ -806,17 +744,11 @@ export default function AdminDashboard() {
             rw: s.rw || "-",
           }))}
           onClick={() => navigate("/admin/manage-anggota")}
-          description={
-            t("adminDashboard.preview.villageStructure.description") ||
-            "Pengurus dan struktur organisasi desa"
-          }
+          description={"Pengurus dan struktur organisasi desa"}
         />
 
         <PreviewSection
-          title={
-            t("adminDashboard.preview.workProgram.title") ||
-            "Program Kerja Desa"
-          }
+          title={"Program Kerja Desa"}
           icon={<FaTasks className="text-green-500" />}
           data={programKerjaPreview.map((p) => ({
             title: p.title || p.judul || p.name,
@@ -825,47 +757,33 @@ export default function AdminDashboard() {
           }))}
           onClick={() => navigate("/admin/manage-program")}
           showStatus={true}
-          description={
-            t("adminDashboard.preview.workProgram.description") ||
-            "Program dan kegiatan desa"
-          }
+          description={"Program dan kegiatan desa"}
         />
 
         <PreviewSection
-          title={
-            t("adminDashboard.preview.population.title") || "Data Penduduk"
-          }
+          title={"Data Penduduk"}
           icon={<FaUserAlt className="text-purple-500" />}
           data={[
             {
-              title:
-                t("adminDashboard.preview.population.familyHeads") ||
-                "Jumlah KK",
+              title: "Jumlah KK",
               value: "120 KK",
             },
             {
-              title:
-                t("adminDashboard.preview.population.malePopulation") ||
-                "Penduduk Laki-laki",
+              title: "Penduduk Laki-laki",
               value: "320 Jiwa",
             },
             {
-              title:
-                t("adminDashboard.preview.population.femalePopulation") ||
-                "Penduduk Perempuan",
+              title: "Penduduk Perempuan",
               value: "340 Jiwa",
             },
           ]}
           onClick={() => navigate("/admin/kelola-infografis/penduduk")}
           showValue={true}
-          description={
-            t("adminDashboard.preview.population.description") ||
-            "Statistik kependudukan terbaru"
-          }
+          description={"Statistik kependudukan terbaru"}
         />
 
         <PreviewSection
-          title={t("adminDashboard.preview.bumdes.title")}
+          title={"Produk BUMDes"}
           icon={<FaStore className="text-yellow-500" />}
           data={bumdesPreview.map((p) => ({
             title: p.product.title,
@@ -875,28 +793,22 @@ export default function AdminDashboard() {
             }`,
           }))}
           onClick={() => navigate("/admin/manage-bumdes")}
-          description={
-            t("adminDashboard.preview.bumdes.description") ||
-            "Produk unggulan BUMDes"
-          }
+          description={"Produk unggulan BUMDes"}
         />
 
         <PreviewSection
-          title={t("adminDashboard.preview.administration.title")}
+          title={"Administrasi"}
           icon={<FaClipboardList className="text-red-500" />}
           data={administrasiPreview.map((a) => ({
             title: a.name,
             desc: a.type,
           }))}
           onClick={() => navigate("/admin/manage-administrasi")}
-          description={
-            t("adminDashboard.preview.administration.description") ||
-            "Layanan administrasi warga"
-          }
+          description={"Layanan administrasi warga"}
         />
 
         <PreviewSection
-          title={t("adminDashboard.preview.gallery.title")}
+          title={"Galeri"}
           icon={<FaImage className="text-teal-500" />}
           data={galeriPreview.map((g) => ({
             title: g.title,
@@ -905,10 +817,7 @@ export default function AdminDashboard() {
             }`,
           }))}
           onClick={() => navigate("/admin/manage-galery")}
-          description={
-            t("adminDashboard.preview.gallery.description") ||
-            "Galeri kegiatan desa"
-          }
+          description={"Galeri kegiatan desa"}
         />
       </div>
 
@@ -949,16 +858,15 @@ function StatItem({ icon, title, value, onClick }) {
 
 // Komponen ActivityLog
 function ActivityLog({ activities }) {
-  const { t } = useTranslation();
   return (
     <div className="bg-white rounded-xl shadow-md p-5 h-full">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
           <FaClock className="text-gray-500" />
-          {t("adminDashboard.activityLog.title") || "Log Aktivitas Terbaru"}
+          {"Log Aktivitas Terbaru"}
         </h3>
         <button className="text-sm text-blue-600 hover:text-blue-800 font-medium">
-          {t("adminDashboard.activityLog.viewAll") || "Lihat Semua"}
+          {"Lihat Semua"}
         </button>
       </div>
 
@@ -1062,8 +970,6 @@ function PreviewSection({
   showValue = false,
   description,
 }) {
-  const { t, i18n } = useTranslation();
-
   return (
     <div className="bg-white rounded-xl shadow-md p-5 h-full flex flex-col">
       <div className="flex justify-between items-start mb-3">
@@ -1077,7 +983,7 @@ function PreviewSection({
           onClick={onClick}
           className="text-blue-600 font-medium hover:text-blue-800 flex items-center text-sm"
         >
-          {t("adminDashboard.preview.manage") || "Kelola"}{" "}
+          Kelola
           <span className="ml-1">→</span>
         </button>
       </div>
@@ -1085,15 +991,12 @@ function PreviewSection({
       <div className="mt-4 flex-grow">
         {data.length === 0 ? (
           <div className="text-center py-6">
-            <p className="text-gray-500 italic">
-              {t("adminDashboard.preview.noData")}
-            </p>
+            <p className="text-gray-500 italic">Belum ada data</p>
             <button
               onClick={onClick}
               className="mt-2 text-blue-600 hover:underline text-sm"
             >
-              {t("adminDashboard.preview.addFirstData") ||
-                "Tambah data pertama"}
+              Tambah data pertama
             </button>
           </div>
         ) : (
@@ -1156,8 +1059,7 @@ function PreviewSection({
                     rel="noreferrer"
                     className="text-blue-500 hover:underline text-sm whitespace-nowrap flex items-center"
                   >
-                    <FaEye className="mr-1" />{" "}
-                    {t("adminDashboard.preview.view") || "Lihat"}
+                    <FaEye className="mr-1" /> Lihat
                   </a>
                 )}
               </div>
@@ -1171,7 +1073,7 @@ function PreviewSection({
           onClick={onClick}
           className="mt-4 text-sm text-gray-600 hover:text-gray-800 w-full text-center"
         >
-          + {data.length - 3} {t("adminDashboard.preview.others") || "lainnya"}
+          + {data.length - 3} {"lainnya"}
         </button>
       )}
     </div>

@@ -18,7 +18,7 @@ import { Helper } from "../../utils/Helper";
 const BASE_URL = import.meta.env.VITE_NEW_BASE_URL || "http://localhost:3000";
 
 export default function ManageApb() {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
 
   // Format currency for very large numbers (billions) - same as Home component
   const formatRupiahBillion = (angka, language = "id") => {
@@ -116,7 +116,7 @@ export default function ManageApb() {
         return;
       }
       await fetchData();
-      await alertSuccess(t("manageApb.success.add"));
+      await alertSuccess("Data berhasil ditambahkan.");
       setAddForm({ key: "", anggaran: "", realisasi: "" });
       setShowAddForm(false);
     } catch (err) {
@@ -125,7 +125,7 @@ export default function ManageApb() {
   };
 
   const deleteApb = async (id) => {
-    if (!(await alertConfirm(t("manageApb.confirmation.delete")))) return;
+    if (!(await alertConfirm("Yakin ingin menghapus item ini?"))) return;
 
     const response = await fetch(`${BASE_URL}/admin/apb/${id}`, {
       method: "DELETE",
@@ -154,11 +154,11 @@ export default function ManageApb() {
   return (
     <div className="max-w-6xl mx-auto p-6">
       <h2 className="text-2xl font-bold text-green-700 flex items-center gap-2 mb-4">
-        <span className="text-3xl">📊</span> {t("manageApb.title")}
+        <span className="text-3xl">📊</span> APB Desa
       </h2>
 
       <h3 className="text-center text-lg font-semibold mb-2 text-gray-700">
-        {t("manageApb.chartTitle")}
+        Grafik perbandingan Anggaran dan Realisasi
       </h3>
 
       <ResponsiveContainer width="100%" height={300}>
@@ -172,29 +172,20 @@ export default function ManageApb() {
         >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="key" padding={{ left: 30, right: 30 }} />
-          <YAxis unit={t("manageApb.chart.unit")} />
+          <YAxis unit="jt" />
           <Tooltip
             formatter={(value, name) => [
               `${formatRupiahBillion(value * 1000000, i18n.language)}`,
-              name === "anggaran"
-                ? t("manageApb.chart.legend.anggaran")
-                : t("manageApb.chart.legend.realisasi"),
+              name === "anggaran" ? "Anggaran" : "Realisasi",
             ]}
-            labelFormatter={(value) =>
-              t("manageApb.form.fields.bidang") + ": " + value
-            }
+            labelFormatter={(value) => "Bidang : " + value}
           />
           <Legend />
-          <Bar
-            dataKey="anggaran"
-            name={t("manageApb.chart.legend.anggaran")}
-            fill="#4ade80"
-            barSize={40}
-          />
+          <Bar dataKey="anggaran" name="Anggaran" fill="#4ade80" barSize={40} />
           <Line
             type="monotone"
             dataKey="realisasi"
-            name={t("manageApb.chart.legend.realisasi")}
+            name="Realisasi"
             stroke="#3b82f6"
             activeDot={{ r: 8 }}
           />
@@ -207,19 +198,17 @@ export default function ManageApb() {
           onClick={() => setShowAddForm(!showAddForm)}
           className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded inline-flex items-center gap-2"
         >
-          <FaPlus /> {t("manageApb.buttons.add")}
+          <FaPlus /> Tambah
         </button>
       </div>
 
       {/* FORM TAMBAH */}
       {showAddForm && (
         <div className="mt-4 bg-white p-4 shadow rounded-lg">
-          <h4 className="font-bold mb-4">{t("manageApb.form.addTitle")}</h4>
+          <h4 className="font-bold mb-4">Tambah data APB Desa</h4>
           <div className="grid md:grid-cols-3 gap-4">
             <label>
-              <span className="block mb-1">
-                {t("manageApb.form.fields.bidang")}
-              </span>
+              <span className="block mb-1">Bidang</span>
               <input
                 type="text"
                 value={addForm.key}
@@ -230,9 +219,7 @@ export default function ManageApb() {
               />
             </label>
             <label>
-              <span className="block mb-1">
-                {t("manageApb.form.fields.anggaran")}
-              </span>
+              <span className="block mb-1">Anggaran (juta)</span>
               <input
                 type="number"
                 value={addForm.anggaran}
@@ -243,9 +230,7 @@ export default function ManageApb() {
               />
             </label>
             <label>
-              <span className="block mb-1">
-                {t("manageApb.form.fields.realisasi")}
-              </span>
+              <span className="block mb-1">Realisasi (juta)</span>
               <input
                 type="number"
                 value={addForm.realisasi}
@@ -261,13 +246,13 @@ export default function ManageApb() {
               onClick={() => setShowAddForm(false)}
               className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
             >
-              {t("manageApb.buttons.cancel")}
+              Batal
             </button>
             <button
               onClick={addApb}
               className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
             >
-              {t("manageApb.buttons.save")}
+              Simpan
             </button>
           </div>
         </div>
@@ -283,9 +268,9 @@ export default function ManageApb() {
             <div>
               <p className="font-semibold">{item.key}</p>
               <p className="text-sm text-gray-600">
-                {t("manageApb.list.anggaranLabel")}:{" "}
+                Anggaran:{" "}
                 {Helper.formatRupiahMillion(item.anggaran, i18n.language)} |{" "}
-                {t("manageApb.list.realisasiLabel")}:{" "}
+                Realisasi:{" "}
                 {Helper.formatRupiahMillion(item.realisasi, i18n.language)}
               </p>
             </div>
@@ -317,14 +302,10 @@ export default function ManageApb() {
       {/* FORM EDIT */}
       {editing && (
         <div className="mt-6 bg-white p-4 shadow rounded-lg">
-          <h4 className="font-bold mb-4">
-            {t("manageApb.form.editTitle")}: {editing.key}
-          </h4>
+          <h4 className="font-bold mb-4">Edit : {editing.key}</h4>
           <div className="grid md:grid-cols-3 gap-4">
             <label>
-              <span className="block mb-1">
-                {t("manageApb.form.fields.bidang")}
-              </span>
+              <span className="block mb-1">Bidang</span>
               <input
                 type="text"
                 value={form.key}
@@ -333,9 +314,7 @@ export default function ManageApb() {
               />
             </label>
             <label>
-              <span className="block mb-1">
-                {t("manageApb.form.fields.anggaran")}
-              </span>
+              <span className="block mb-1">Anggaran (juta)</span>
               <input
                 type="number"
                 value={form.anggaran}
@@ -344,9 +323,7 @@ export default function ManageApb() {
               />
             </label>
             <label>
-              <span className="block mb-1">
-                {t("manageApb.form.fields.realisasi")}
-              </span>
+              <span className="block mb-1">Realisasi (juta)</span>
               <input
                 type="number"
                 value={form.realisasi}
@@ -362,13 +339,13 @@ export default function ManageApb() {
               onClick={() => setEditing(null)}
               className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
             >
-              {t("manageApb.buttons.cancel")}
+              Batal
             </button>
             <button
               onClick={updateApb}
               className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
             >
-              {t("manageApb.buttons.save")}
+              Simpan
             </button>
           </div>
         </div>
@@ -377,25 +354,21 @@ export default function ManageApb() {
       {/* RINGKASAN */}
       <div className="grid md:grid-cols-4 gap-4 mt-6">
         <StatCard
-          label={t("manageApb.summary.totalAnggaran")}
+          label="Total Anggaran"
           value={formatRupiahBillion(totalAnggaran, i18n.language)}
           color="green"
         />
         <StatCard
-          label={t("manageApb.summary.totalRealisasi")}
+          label="Total Realisasi"
           value={formatRupiahBillion(totalRealisasi, i18n.language)}
           color="blue"
         />
         <StatCard
-          label={t("manageApb.summary.sisaAnggaran")}
+          label="Total Sisa Anggaran"
           value={formatRupiahBillion(sisaAnggaran, i18n.language)}
           color="yellow"
         />
-        <StatCard
-          label={t("manageApb.summary.penyerapan")}
-          value={`${persen}%`}
-          color="purple"
-        />
+        <StatCard label="Penyerapan (%)" value={`${persen}%`} color="purple" />
       </div>
     </div>
   );

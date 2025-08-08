@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   FaEdit,
   FaUsers,
@@ -7,7 +7,6 @@ import {
   FaPray,
   FaBriefcase,
   FaGraduationCap,
-  FaHandHoldingHeart,
   FaNewspaper,
   FaCalendarAlt,
   FaTasks,
@@ -30,7 +29,7 @@ import { VillageWorkProgramApi } from "../../libs/api/VillageWorkProgramApi";
 import { useTranslation } from "react-i18next";
 
 export default function DataMaster() {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState("all");
   const [stats, setStats] = useState({

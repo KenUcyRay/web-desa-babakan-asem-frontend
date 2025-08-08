@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
+import { alertConfirm, alertSuccess } from "../../libs/alert";
 import { Helper } from "../../utils/Helper";
 import Pagination from "../ui/Pagination";
 import {
@@ -9,8 +8,6 @@ import {
   FaTimes,
   FaEdit,
   FaTrash,
-  FaCheck,
-  FaTimesCircle,
   FaTrophy,
 } from "react-icons/fa";
 
@@ -21,7 +18,6 @@ const getImageUrl = (filename) => {
 };
 
 export default function ManagePrestasi() {
-  const { t } = useTranslation();
   const [prestasi, setPrestasi] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -55,7 +51,7 @@ export default function ManagePrestasi() {
         setTotalPages(Math.ceil((json.data || []).length / itemsPerPage) || 1);
       }
     } catch (err) {
-      alertError(t("managePrestasi.errors.fetchFailed"));
+      Helper.errorResponseHandler(err);
     } finally {
       setIsLoading(false);
     }
@@ -77,81 +73,66 @@ export default function ManagePrestasi() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!title || !content || !date) {
-      alertError(t("managePrestasi.errors.requiredFields"));
-      return;
-    }
-
-    if (!editingId && !featuredImage) {
-      setImageError(t("managePrestasi.errors.imageRequired"));
-      return;
-    }
-
     const formData = new FormData();
     formData.append("title", title);
     formData.append("description", content);
     formData.append("date", date);
     if (featuredImage) formData.append("featured_image", featuredImage);
+    if (editingId) {
+      if (!(await alertConfirm("Yakin ingin mengubah prestasi ini?"))) return;
 
-    try {
-      if (editingId) {
-        if (
-          !(await alertConfirm(t("managePrestasi.confirmation.editPrestasi")))
-        )
-          return;
-
-        await fetch(
-          `${
-            import.meta.env.VITE_NEW_BASE_URL
-          }/admin/village-achievements/${editingId}`,
-          {
-            method: "PATCH",
-            body: formData,
-            credentials: "include",
-          }
-        );
-        await alertSuccess(t("managePrestasi.success.updatePrestasi"));
-      } else {
-        await fetch(
-          `${import.meta.env.VITE_NEW_BASE_URL}/admin/village-achievements`,
-          {
-            method: "POST",
-            body: formData,
-            credentials: "include",
-          }
-        );
-        await alertSuccess(t("managePrestasi.success.addPrestasi"));
-      }
-      resetForm();
-      setShowForm(false);
-      fetchPrestasi();
-    } catch (error) {
-      console.error("Error:", error);
-      alertError(
-        editingId
-          ? t("managePrestasi.errors.updateFailed")
-          : t("managePrestasi.errors.addFailed")
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_NEW_BASE_URL
+        }/admin/village-achievements/${editingId}`,
+        {
+          method: "PATCH",
+          body: formData,
+          credentials: "include",
+        }
       );
+      if (!response.ok) {
+        Helper.errorResponseHandler(await response.json());
+        return;
+      }
+
+      await alertSuccess("Prestasi berhasil diperbarui");
+    } else {
+      const response = await fetch(
+        `${import.meta.env.VITE_NEW_BASE_URL}/admin/village-achievements`,
+        {
+          method: "POST",
+          body: formData,
+          credentials: "include",
+        }
+      );
+      if (!response.ok) {
+        Helper.errorResponseHandler(await response.json());
+        return;
+      }
+      await alertSuccess("Prestasi berhasil ditambahkan");
     }
+    resetForm();
+    setShowForm(false);
+    fetchPrestasi();
   };
 
   const handleDelete = async (id) => {
-    if (await alertConfirm(t("managePrestasi.confirmation.deletePrestasi"))) {
-      try {
-        await fetch(
-          `${
-            import.meta.env.VITE_NEW_BASE_URL
-          }/admin/village-achievements/${id}`,
-          {
-            method: "DELETE",
-            credentials: "include",
-          }
-        );
-        await alertSuccess(t("managePrestasi.success.deletePrestasi"));
-        fetchPrestasi();
-      } catch {
-        alertError(t("managePrestasi.errors.deleteFailed"));
+    if (await alertConfirm("Yakin ingin menghapus prestasi ini?")) {
+      const response = await fetch(
+        `${import.meta.env.VITE_NEW_BASE_URL}/admin/village-achievements/${id}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        }
+      );
+      if (!response.ok) {
+        Helper.errorResponseHandler(await response.json());
+        return;
       }
+
+      await alertSuccess("Prestasi berhasil dihapus");
+      fetchPrestasi();
     }
   };
 
@@ -173,10 +154,10 @@ export default function ManagePrestasi() {
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-gray-800 flex items-center gap-3">
             <FaTrophy className="text-yellow-500" />
-            {t("managePrestasi.title", "Manajemen Prestasi")}
+            Kelola Prestasi
           </h1>
           <p className="text-gray-600 mt-1">
-            {t("managePrestasi.description")}
+            Kelola prestasi dan penghargaan desa
           </p>
         </div>
         {!showForm && (
@@ -188,7 +169,7 @@ export default function ManagePrestasi() {
             className="flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white px-5 py-2.5 rounded-lg shadow-md transition transform hover:-translate-y-0.5"
           >
             <FaPlus />
-            {t("managePrestasi.buttons.addPrestasi", "Tambah Prestasi")}
+            Tambah Prestasi
           </button>
         )}
       </div>
@@ -201,9 +182,7 @@ export default function ManagePrestasi() {
         >
           <div className="flex justify-between items-center mb-5">
             <h2 className="text-xl font-semibold text-gray-800">
-              {editingId
-                ? t("managePrestasi.form.title.edit")
-                : t("managePrestasi.form.title.add")}
+              {editingId ? "Edit Prestasi" : "Tambah Prestasi"}
             </h2>
             <button
               onClick={() => {
@@ -220,25 +199,25 @@ export default function ManagePrestasi() {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {t("managePrestasi.form.fields.title")}
+                  Judul Prestasi
                 </label>
                 <input
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-yellow-500 focus:border-transparent outline-none transition"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder={t("managePrestasi.form.placeholders.title")}
+                  placeholder="Masukkan judul prestasi"
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {t("managePrestasi.form.fields.content")}
+                  Deskripsi
                 </label>
                 <textarea
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl h-32 resize-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent outline-none transition"
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
-                  placeholder={t("managePrestasi.form.placeholders.content")}
+                  placeholder="Masukkan deskripsi prestasi"
                 />
               </div>
             </div>
@@ -246,7 +225,7 @@ export default function ManagePrestasi() {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {t("managePrestasi.form.fields.date")}
+                  Tanggal Prestasi
                 </label>
                 <input
                   type="date"
@@ -258,12 +237,8 @@ export default function ManagePrestasi() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {t("managePrestasi.form.fields.image")}
-                  {!editingId && (
-                    <span className="text-red-500 ml-1">
-                      {t("managePrestasi.form.fields.imageRequired")}
-                    </span>
-                  )}
+                  Gambar
+                  {!editingId && <span className="text-red-500 ml-1">*</span>}
                 </label>
                 <div className="border-2 border-dashed border-gray-300 rounded-xl p-4">
                   <input
@@ -310,9 +285,7 @@ export default function ManagePrestasi() {
               className="flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white px-6 py-3 rounded-xl shadow-md transition transform hover:-translate-y-0.5"
             >
               <FaSave />
-              {editingId
-                ? t("managePrestasi.form.buttons.saveChanges")
-                : t("managePrestasi.form.buttons.savePrestasi")}
+              {editingId ? "Simpan Perubahan" : "Simpan Prestasi "}
             </button>
             <button
               type="button"
@@ -322,7 +295,7 @@ export default function ManagePrestasi() {
               }}
               className="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 px-5 py-3 rounded-xl transition"
             >
-              <FaTimes /> {t("managePrestasi.form.buttons.cancel")}
+              <FaTimes /> Batal
             </button>
           </div>
         </form>
@@ -341,12 +314,12 @@ export default function ManagePrestasi() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
           <FaTrophy className="text-4xl text-gray-400 mx-auto mb-4" />
           <h3 className="text-xl font-medium text-gray-700 mb-2">
-            {t("managePrestasi.emptyState.title")}
+            Belum Ada Prestasi
           </h3>
           <p className="text-gray-500 mb-4">
             {showForm
-              ? t("managePrestasi.emptyState.description")
-              : t("managePrestasi.emptyState.descriptionAlt")}
+              ? "Silakan lengkapi form di atas untuk menambahkan prestasi"
+              : "Klik tombol 'Tambah Prestasi' untuk mulai menambahkan prestasi"}
           </p>
           {!showForm && (
             <button
@@ -356,7 +329,7 @@ export default function ManagePrestasi() {
               }}
               className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white px-5 py-2.5 rounded-lg shadow-md transition"
             >
-              <FaPlus /> {t("managePrestasi.emptyState.addButton")}
+              <FaPlus /> Tambah Prestasi
             </button>
           )}
         </div>
@@ -399,13 +372,13 @@ export default function ManagePrestasi() {
                       onClick={() => handleEdit(item.id)}
                       className="flex items-center gap-1 text-blue-500 hover:text-blue-700 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition"
                     >
-                      <FaEdit size={14} /> {t("managePrestasi.card.edit")}
+                      <FaEdit size={14} /> Edit
                     </button>
                     <button
                       onClick={() => handleDelete(item.id)}
                       className="flex items-center gap-1 text-red-500 hover:text-red-700 hover:bg-red-50 px-3 py-1.5 rounded-lg transition"
                     >
-                      <FaTrash size={14} /> {t("managePrestasi.card.delete")}
+                      <FaTrash size={14} /> Hapus
                     </button>
                   </div>
                 </div>

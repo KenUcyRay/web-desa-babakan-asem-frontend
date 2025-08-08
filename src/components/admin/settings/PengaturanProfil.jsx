@@ -10,10 +10,10 @@ import {
 import { useTranslation } from "react-i18next";
 import { UserApi } from "../../../libs/api/UserApi";
 import { alertConfirm, alertError, alertSuccess } from "../../../libs/alert";
-import { Helper } from "../../../utils/Helper";
+import { Helper } from "@/utils/Helper";
 
 export default function PengaturanProfil() {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const [profile, setProfile] = useState({});
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -33,27 +33,10 @@ export default function PengaturanProfil() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (name.trim() === "" && email.trim() === "" && password.trim() === "") {
-      alertError(t("settingProfile.messages.errors.fillMinimumField"));
-      return;
-    }
-
     if (
-      !(await alertConfirm(
-        t("settingProfile.messages.confirmations.saveChanges")
-      ))
+      !(await alertConfirm("Apakah Anda yakin ingin menyimpan perubahan ini?"))
     )
       return;
-
-    if (password.trim() !== "" && confirmPassword.trim() === "") {
-      alertError(t("settingProfile.messages.errors.fillConfirmPassword"));
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      alertError(t("settingProfile.messages.errors.passwordMismatch"));
-      return;
-    }
 
     const updatedName = name === "" ? undefined : name;
     const updatedEmail = email === "" ? undefined : email;
@@ -82,16 +65,16 @@ export default function PengaturanProfil() {
     }
 
     setProfile(responseBody.user);
-    alertSuccess(t("settingProfile.messages.success.changesSaved"));
+    alertSuccess("Perubahan berhasil disimpan!");
   };
 
   const copyToClipboard = async (text) => {
     if (navigator.clipboard && window.isSecureContext) {
       try {
         await navigator.clipboard.writeText(text);
-        alertSuccess(t("profile.copied"));
+        alertSuccess("ID berhasil disalin ke clipboard!");
       } catch (err) {
-        alertError(t("profile.copyFail"));
+        alertError("Gagal menyalin ID ke clipboard.");
       }
     } else {
       const textArea = document.createElement("textarea");
@@ -100,9 +83,9 @@ export default function PengaturanProfil() {
       textArea.select();
       try {
         document.execCommand("copy");
-        alertSuccess(t("profile.copied"));
+        alertSuccess("ID berhasil disalin ke clipboard!");
       } catch (err) {
-        alertError(t("profile.copyFail"));
+        alertError("Gagal menyalin ID ke clipboard.");
       }
       document.body.removeChild(textArea);
     }
@@ -124,10 +107,11 @@ export default function PengaturanProfil() {
                 <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
                   <FaUser className="text-white text-xl" />
                 </div>
-                {t("settingProfile.title")}
+                Pengaturan Profil
               </h1>
               <p className="text-gray-600 mt-2 text-lg">
-                {t("settingProfile.subtitle")}
+                Kelola informasi akun Anda, termasuk nama, email, dan kata
+                sandi.
               </p>
             </div>
           </div>
@@ -143,9 +127,7 @@ export default function PengaturanProfil() {
                   <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center shadow-md">
                     <FaIdBadge className="text-white" />
                   </div>
-                  <span className="text-lg">
-                    {t("settingProfile.form.fields.adminId")}
-                  </span>
+                  <span className="text-lg">ID</span>
                 </label>
                 <div className="flex gap-3 mt-3">
                   <div className="relative flex-1">
@@ -162,7 +144,7 @@ export default function PengaturanProfil() {
                     onClick={() => copyToClipboard(profile.id)}
                     className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-6 py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                   >
-                    {t("settingProfile.form.buttons.copy")}
+                    Salin
                   </button>
                 </div>
               </div>
@@ -180,17 +162,12 @@ export default function PengaturanProfil() {
                     <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-lime-600 rounded-lg flex items-center justify-center shadow-md">
                       <FaUser className="text-white" />
                     </div>
-                    <span className="text-lg">
-                      {t("settingProfile.form.fields.name")}
-                    </span>
+                    <span className="text-lg">Nama</span>
                   </label>
                   <div className="relative">
                     <input
                       type="text"
-                      placeholder={
-                        profile.name ||
-                        t("settingProfile.form.placeholders.nameAdmin")
-                      }
+                      placeholder={profile.name}
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       className="border border-gray-200 rounded-xl w-full p-4 mt-2 focus:border-green-400 focus:ring-4 focus:ring-green-100 transition-all duration-300 bg-gradient-to-r from-white to-green-50/30"
@@ -210,17 +187,12 @@ export default function PengaturanProfil() {
                     <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center shadow-md">
                       <FaUser className="text-white" />
                     </div>
-                    <span className="text-lg">
-                      {t("settingProfile.form.fields.email")}
-                    </span>
+                    <span className="text-lg">Email</span>
                   </label>
                   <div className="relative">
                     <input
                       type="email"
-                      placeholder={
-                        profile.email ||
-                        t("settingProfile.form.placeholders.emailAdmin")
-                      }
+                      placeholder={profile.email}
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="border border-gray-200 rounded-xl w-full p-4 mt-2 focus:border-emerald-400 focus:ring-4 focus:ring-emerald-100 transition-all duration-300 bg-gradient-to-r from-white to-emerald-50/30"
@@ -243,16 +215,12 @@ export default function PengaturanProfil() {
                     <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-pink-600 rounded-lg flex items-center justify-center shadow-md">
                       <FaLock className="text-white" />
                     </div>
-                    <span className="text-lg">
-                      {t("settingProfile.form.fields.newPassword")}
-                    </span>
+                    <span className="text-lg">Masukkan kata sandi baru</span>
                   </label>
                   <div className="relative mt-2">
                     <input
                       type={showPassword ? "text" : "password"}
-                      placeholder={t(
-                        "settingProfile.form.placeholders.enterNewPassword"
-                      )}
+                      placeholder="Maksukkan kata sandi baru"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       className="border border-gray-200 rounded-xl w-full p-4 pr-12 focus:border-red-400 focus:ring-4 focus:ring-red-100 transition-all duration-300 bg-gradient-to-r from-white to-red-50/30"
@@ -279,16 +247,12 @@ export default function PengaturanProfil() {
                     <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-yellow-600 rounded-lg flex items-center justify-center shadow-md">
                       <FaLock className="text-white" />
                     </div>
-                    <span className="text-lg">
-                      {t("settingProfile.form.fields.confirmPassword")}
-                    </span>
+                    <span className="text-lg">Konfirmasi kata sandi baru</span>
                   </label>
                   <div className="relative mt-2">
                     <input
                       type={showConfirmPassword ? "text" : "password"}
-                      placeholder={t(
-                        "settingProfile.form.placeholders.confirmNewPassword"
-                      )}
+                      placeholder="Konfirmasi kata sandi baru"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       className="border border-gray-200 rounded-xl w-full p-4 pr-12 focus:border-orange-400 focus:ring-4 focus:ring-orange-100 transition-all duration-300 bg-gradient-to-r from-white to-orange-50/30"
@@ -320,7 +284,7 @@ export default function PengaturanProfil() {
                 <div className="w-6 h-6 bg-white/20 rounded-lg flex items-center justify-center">
                   <FaSave className="text-sm" />
                 </div>
-                {t("settingProfile.form.buttons.saveChanges")}
+                Simpan Perubahan
               </button>
             </div>
           </div>

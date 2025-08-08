@@ -79,20 +79,19 @@ const mapStatusToApi = (uiStatus) => {
 const getTranslatedStatus = (status, t) => {
   switch (status) {
     case "DIRENCANAKAN":
-      return t("manageProgram.status.planned");
+      return "Direncanakan";
     case "DALAM PENGERJAAN":
-      return t("manageProgram.status.inProgress");
+      return "Dalam Pengerjaan";
     case "SELESAI":
-      return t("manageProgram.status.completed");
+      return "Selesai";
     case "DIBATALKAN":
-      return t("manageProgram.status.cancelled");
+      return "Dibatalkan";
     default:
       return status;
   }
 };
 
 const ManageProgram = () => {
-  const { t } = useTranslation();
   const [programKerja, setProgramKerja] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -112,34 +111,30 @@ const ManageProgram = () => {
   // Fetch program kerja dari API
   const fetchProgramKerja = async () => {
     setLoading(true);
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_NEW_BASE_URL}/village-work-programs`
-      );
+    const response = await fetch(
+      `${import.meta.env.VITE_NEW_BASE_URL}/village-work-programs`
+    );
 
-      if (!response.ok) {
-        throw new Error(`Error ${response.status}: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      // Transform API data ke format UI
-      const transformedData = (data || []).map((program) => ({
-        id: program.id,
-        nama: program.description,
-        tanggal: program.date ? program.date.split("T")[0] : "",
-        budget: program.budget_amount || 0,
-        status: mapStatusFromApi(program.status),
-        justifikasi: program.justification || "",
-      }));
-
-      setProgramKerja(transformedData);
-    } catch (err) {
-      console.error("Error fetching data:", err);
-      setError(err.message);
-      alertError(t("manageProgram.errors.fetchFailed"));
-    } finally {
+    if (!response.ok) {
+      Helper.errorResponseHandler(await response.json());
       setLoading(false);
+      return;
     }
+
+    const data = await response.json();
+    // Transform API data ke format UI
+
+    const transformedData = (data || []).map((program) => ({
+      id: program.id,
+      nama: program.description,
+      tanggal: program.date ? program.date.split("T")[0] : "",
+      budget: program.budget_amount || 0,
+      status: mapStatusFromApi(program.status),
+      justifikasi: program.justification || "",
+    }));
+
+    setProgramKerja(transformedData);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -181,103 +176,80 @@ const ManageProgram = () => {
 
   const handleDelete = async (id) => {
     const confirmed = await alertConfirm(
-      t("manageProgram.confirmations.delete")
+      "Apakah anda yakin ingin menghapus program ini?"
     );
     if (!confirmed) return;
 
-    try {
-      const response = await fetch(
-        `${
-          import.meta.env.VITE_NEW_BASE_URL
-        }/admin/village-work-programs/${id}`,
-        {
-          method: "DELETE",
-          credentials: "include",
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`Error ${response.status}: ${response.statusText}`);
+    const response = await fetch(
+      `${import.meta.env.VITE_NEW_BASE_URL}/admin/village-work-programs/${id}`,
+      {
+        method: "DELETE",
+        credentials: "include",
       }
+    );
 
-      setProgramKerja(programKerja.filter((p) => p.id !== id));
-      await alertSuccess(t("manageProgram.success.deleted"));
-    } catch (err) {
-      console.error("Error deleting program:", err);
-      alertError(t("manageProgram.errors.deleteFailed"));
-    }
-  };
-
-  const handleSubmit = async () => {
-    // Validasi form
-    if (!newProgram.nama || !newProgram.tanggal || !newProgram.budget) {
-      alertError(t("manageProgram.errors.requiredFields"));
+    if (!response.ok) {
+      Helper.errorResponseHandler(await response.json());
       return;
     }
 
-    try {
-      // Prepare data untuk API
-      const payload = {
-        description: newProgram.nama,
-        date: newProgram.tanggal,
-        budget_amount: parseInt(newProgram.budget),
-        status: mapStatusToApi(newProgram.status),
-        justification: newProgram.justifikasi || newProgram.nama,
-      };
+    setProgramKerja(programKerja.filter((p) => p.id !== id));
+    await alertSuccess("Program kerja berhasil dihapus");
+  };
 
-      let response;
+  const handleSubmit = async () => {
+    const payload = {
+      description: newProgram.nama,
+      date: newProgram.tanggal,
+      budget_amount: parseInt(newProgram.budget),
+      status: mapStatusToApi(newProgram.status),
+      justification: newProgram.justifikasi || newProgram.nama,
+    };
 
-      if (editingId) {
-        // Update existing program
-        response = await fetch(
-          `${
-            import.meta.env.VITE_NEW_BASE_URL
-          }/admin/village-work-programs/${editingId}`,
-          {
-            method: "PATCH",
-            credentials: "include",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(payload),
-          }
-        );
-      } else {
-        // Create new program
-        response = await fetch(
-          `${import.meta.env.VITE_NEW_BASE_URL}/admin/village-work-programs`,
-          {
-            method: "POST",
-            credentials: "include",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(payload),
-          }
-        );
-      }
+    let response;
 
-      if (!response.ok) {
-        throw new Error(`Error ${response.status}: ${response.statusText}`);
-      }
-
-      // Refresh data after successful operation
-      await fetchProgramKerja();
-      resetForm();
-      setShowForm(false);
-      await alertSuccess(
-        editingId
-          ? t("manageProgram.success.updated")
-          : t("manageProgram.success.added")
+    if (editingId) {
+      // Update existing program
+      response = await fetch(
+        `${
+          import.meta.env.VITE_NEW_BASE_URL
+        }/admin/village-work-programs/${editingId}`,
+        {
+          method: "PATCH",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
       );
-    } catch (err) {
-      console.error("Error saving program:", err);
-      alertError(
-        editingId
-          ? t("manageProgram.errors.updateFailed")
-          : t("manageProgram.errors.addFailed")
+    } else {
+      // Create new program
+      response = await fetch(
+        `${import.meta.env.VITE_NEW_BASE_URL}/admin/village-work-programs`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
       );
     }
+
+    if (!response.ok) {
+      Helper.errorResponseHandler(await response.json());
+      return;
+    }
+
+    // Refresh data after successful operation
+    await fetchProgramKerja();
+    resetForm();
+    setShowForm(false);
+    await alertSuccess(
+      editingId ? "Program berhasil diperbarui" : "Program berhasil ditambahkan"
+    );
   };
 
   return (
@@ -288,10 +260,10 @@ const ManageProgram = () => {
           <div>
             <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-green-800 flex items-center gap-2 md:gap-3">
               <FaCalendarAlt className="text-emerald-600" />
-              {t("manageProgram.title")}
+              Program Kerja Desa
             </h1>
             <p className="text-sm sm:text-base text-gray-600 mt-1">
-              {t("manageProgram.description")}
+              Kelola program dan kegiatan desa
             </p>
           </div>
 
@@ -302,7 +274,7 @@ const ManageProgram = () => {
               setShowForm(true);
             }}
           >
-            <FaPlus /> {t("manageProgram.addButton")}
+            <FaPlus /> Tambah Program
           </button>
         </div>
 
@@ -314,9 +286,7 @@ const ManageProgram = () => {
           >
             <div className="flex justify-between items-center mb-3 sm:mb-5">
               <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
-                {editingId
-                  ? t("manageProgram.form.title.edit")
-                  : t("manageProgram.form.title.add")}
+                {editingId ? "Edit Program Kerja" : "Tambah Program Kerja"}
               </h2>
               <button
                 onClick={() => {
@@ -333,11 +303,11 @@ const ManageProgram = () => {
               <div className="space-y-3 sm:space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">
-                    {t("manageProgram.form.fields.name")}
+                    Nama Program
                   </label>
                   <input
                     type="text"
-                    placeholder={t("manageProgram.form.placeholders.name")}
+                    placeholder="Nama Program Kerja"
                     className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition"
                     value={newProgram.nama}
                     onChange={(e) =>
@@ -348,7 +318,7 @@ const ManageProgram = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">
-                    {t("manageProgram.form.fields.date")}
+                    Tanggal Pelaksanaan
                   </label>
                   <input
                     type="date"
@@ -364,7 +334,7 @@ const ManageProgram = () => {
               <div className="space-y-3 sm:space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">
-                    {t("manageProgram.form.fields.budget")}
+                    Budget
                   </label>
                   <div className="relative">
                     <span className="absolute left-3 sm:left-4 top-2 sm:top-3 text-gray-500">
@@ -372,7 +342,7 @@ const ManageProgram = () => {
                     </span>
                     <input
                       type="number"
-                      placeholder={t("manageProgram.form.placeholders.budget")}
+                      placeholder="Budget"
                       className="w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-2 sm:py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition"
                       value={newProgram.budget}
                       onChange={(e) =>
@@ -384,7 +354,7 @@ const ManageProgram = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">
-                    {t("manageProgram.form.fields.status")}
+                    Status
                   </label>
                   <select
                     className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition"
@@ -393,30 +363,20 @@ const ManageProgram = () => {
                       setNewProgram({ ...newProgram, status: e.target.value })
                     }
                   >
-                    <option value="DIRENCANAKAN">
-                      {t("manageProgram.status.planned")}
-                    </option>
-                    <option value="DALAM PENGERJAAN">
-                      {t("manageProgram.status.inProgress")}
-                    </option>
-                    <option value="SELESAI">
-                      {t("manageProgram.status.completed")}
-                    </option>
-                    <option value="DIBATALKAN">
-                      {t("manageProgram.status.cancelled")}
-                    </option>
+                    <option value="DIRENCANAKAN">Direncanakan</option>
+                    <option value="DALAM PENGERJAAN">Dalam Pengerjaan</option>
+                    <option value="SELESAI">Selesai</option>
+                    <option value="DIBATALKAN">Dibatalkan</option>
                   </select>
                 </div>
               </div>
 
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">
-                  {t("manageProgram.form.fields.justification")}
+                  Keterangan Program
                 </label>
                 <textarea
-                  placeholder={t(
-                    "manageProgram.form.placeholders.justification"
-                  )}
+                  placeholder="Keterangan program kerja"
                   className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition"
                   value={newProgram.justifikasi}
                   onChange={(e) =>
@@ -436,9 +396,7 @@ const ManageProgram = () => {
                 className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2.5 sm:px-6 sm:py-3 rounded-xl shadow-md transition order-1 sm:order-none"
               >
                 <FaSave />
-                {editingId
-                  ? t("manageProgram.form.buttons.update")
-                  : t("manageProgram.form.buttons.save")}
+                {editingId ? "Update Program Kerja" : "Simpan Program Kerja"}
               </button>
               <button
                 onClick={() => {
@@ -447,7 +405,7 @@ const ManageProgram = () => {
                 }}
                 className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2.5 sm:px-5 sm:py-3 rounded-xl transition"
               >
-                <FaTimes /> {t("manageProgram.form.buttons.cancel")}
+                <FaTimes /> Batal
               </button>
             </div>
           </div>
@@ -467,7 +425,7 @@ const ManageProgram = () => {
             <div className="text-red-500">
               <FaTimesCircle className="text-3xl md:text-4xl mx-auto mb-2 md:mb-3" />
               <h3 className="text-lg md:text-xl font-medium mb-1 md:mb-2">
-                {t("manageProgram.error.title")}
+                Error Memuat Data
               </h3>
               <p className="text-sm md:text-base">{error}</p>
             </div>
@@ -476,12 +434,12 @@ const ManageProgram = () => {
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6 md:p-8 text-center">
             <FaCalendarAlt className="text-3xl md:text-4xl text-gray-400 mx-auto mb-3 md:mb-4" />
             <h3 className="text-lg md:text-xl font-medium text-gray-700 mb-2">
-              {t("manageProgram.emptyState.title")}
+              Belum Ada Program
             </h3>
             <p className="text-sm md:text-base text-gray-500 mb-3 sm:mb-4">
               {showForm
-                ? t("manageProgram.emptyState.description")
-                : t("manageProgram.emptyState.descriptionAlt")}
+                ? "Silakan lengkapi form di atas untuk menambahkan program"
+                : "Tidak ada program kerja yang tersedia saat ini."}
             </p>
             {!showForm && (
               <button
@@ -491,7 +449,7 @@ const ManageProgram = () => {
                 }}
                 className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2 sm:px-5 sm:py-2.5 rounded-lg shadow-md transition w-full sm:w-auto"
               >
-                <FaPlus /> {t("manageProgram.emptyState.addButton")}
+                <FaPlus /> Tambah Program
               </button>
             )}
           </div>
@@ -503,22 +461,22 @@ const ManageProgram = () => {
                 <thead className="bg-gray-50">
                   <tr>
                     <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      {t("manageProgram.table.headers.no")}
+                      No
                     </th>
                     <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      {t("manageProgram.table.headers.program")}
+                      Program
                     </th>
                     <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      {t("manageProgram.table.headers.date")}
+                      Tanggal
                     </th>
                     <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      {t("manageProgram.table.headers.budget")}
+                      Budget
                     </th>
                     <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      {t("manageProgram.table.headers.status")}
+                      Status
                     </th>
                     <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      {t("manageProgram.table.headers.actions")}
+                      Aksi
                     </th>
                   </tr>
                 </thead>
@@ -548,7 +506,7 @@ const ManageProgram = () => {
                           <span
                             className={`inline-flex items-center gap-2 px-2 sm:px-3 py-1 rounded-full text-xs font-medium ${style.bg} ${style.color}`}
                           >
-                            {style.icon} {getTranslatedStatus(item.status, t)}
+                            {style.icon}
                           </span>
                         </td>
                         <td className="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-sm font-medium">
@@ -577,7 +535,7 @@ const ManageProgram = () => {
             </div>
 
             {/* Mobile card view */}
-            <div className="sm:hidden space-y-3 p-3">
+            {/* <div className="sm:hidden space-y-3 p-3">
               {programKerja.map((item, index) => {
                 const style = getStatusStyle(item.status);
                 return (
@@ -599,7 +557,7 @@ const ManageProgram = () => {
                     <div className="grid grid-cols-2 gap-2 text-xs text-gray-600 mb-2">
                       <div>
                         <div className="text-gray-500 uppercase mb-1">
-                          {t("manageProgram.table.headers.date")}
+                          Tanggal
                         </div>
                         <div className="flex items-center gap-1">
                           <FaCalendarAlt className="text-emerald-500" />
@@ -608,7 +566,7 @@ const ManageProgram = () => {
                       </div>
                       <div>
                         <div className="text-gray-500 uppercase mb-1">
-                          {t("manageProgram.table.headers.budget")}
+                          Budget
                         </div>
                         <div className="font-medium">
                           {formatRupiah(item.budget)}
@@ -635,7 +593,7 @@ const ManageProgram = () => {
                   </div>
                 );
               })}
-            </div>
+            </div> */}
           </div>
         )}
       </div>

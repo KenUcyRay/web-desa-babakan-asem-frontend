@@ -18,7 +18,7 @@ import { useTranslation } from "react-i18next";
 
 export default function DashboardDesa() {
   const navigate = useNavigate();
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
 
   const [newsCount, setNewsCount] = useState(0);
   const [agendaCount, setAgendaCount] = useState(0);

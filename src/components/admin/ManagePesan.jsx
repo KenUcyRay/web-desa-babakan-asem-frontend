@@ -5,7 +5,7 @@ import { MessageApi } from "../../libs/api/MessageApi";
 import Pagination from "../ui/Pagination";
 
 export default function ManagePesan() {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const [messages, setMessages] = useState([]);
   const [filter, setFilter] = useState("all");
   const [totalPages, setTotalPages] = useState(1);
@@ -55,11 +55,10 @@ export default function ManagePesan() {
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
-            {t("managePesan.title")}
+            📩 Kelola Pesan Masuk
           </h1>
           <p className="text-gray-600 mt-1">
-            {t("managePesan.subtitle") ||
-              "Kelola pesan yang masuk dari pengunjung"}
+            Kelola pesan yang masuk dari pengunjung
           </p>
         </div>
       </div>
@@ -68,9 +67,7 @@ export default function ManagePesan() {
       <div className="bg-white rounded-xl shadow-sm p-4 mb-6">
         <div className="flex items-center gap-2 mb-3">
           <FaFilter className="text-gray-500" />
-          <h2 className="font-medium text-gray-700">
-            {t("managePesan.filterTitle") || "Filter Pesan"}
-          </h2>
+          <h2 className="font-medium text-gray-700">Filter Pesan</h2>
         </div>
         <div className="flex flex-wrap gap-2">
           {["all", "read", "unread"].map((f) => (
@@ -88,7 +85,11 @@ export default function ManagePesan() {
             >
               {f === "read" && <FaEnvelopeOpen size={12} />}
               {f === "unread" && <FaEnvelope size={12} />}
-              {t(`managePesan.filters.${f}`)}
+              {f === "all"
+                ? "Semua Pesan"
+                : f === "read"
+                ? "Pesan Dibaca"
+                : "Pesan Belum Dibaca"}
             </button>
           ))}
         </div>
@@ -104,9 +105,9 @@ export default function ManagePesan() {
               </div>
             </div>
             <h3 className="text-xl font-medium text-gray-700 mb-2">
-              {t("managePesan.empty.title") || "Belum Ada Pesan"}
+              Belum Ada Pesan
             </h3>
-            <p className="text-gray-500">{t("managePesan.empty.noMessages")}</p>
+            <p className="text-gray-500">Tidak ada pesan</p>
           </div>
         ) : (
           messages.map((p) => (
@@ -130,8 +131,7 @@ export default function ManagePesan() {
                     onClick={() => handleMarkRead(p.id)}
                     className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg text-sm font-medium transition"
                   >
-                    <FaEnvelopeOpen size={14} />{" "}
-                    {t("managePesan.buttons.markRead")}
+                    <FaEnvelopeOpen size={14} /> Tandai Dibaca
                   </button>
                 )}
                 <span className="text-xs text-gray-400">

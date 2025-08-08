@@ -11,14 +11,13 @@ import {
   FaEdit,
   FaTrash,
   FaCheck,
-  FaTimesCircle,
   FaNewspaper,
   FaImage,
   FaCalendarAlt,
 } from "react-icons/fa";
 
 export default function ManageBerita() {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const [news, setNews] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -34,10 +33,8 @@ export default function ManageBerita() {
 
   const fetchNews = async () => {
     const response = await NewsApi.getOwnNews(currentPage, 6, i18n.language);
-    if (!response.ok) {
-      alertError(t("manageNews.error.fetchFailed"));
-      return;
-    }
+    if (!response.ok) return;
+
     const responseBody = await response.json();
     setTotalPages(responseBody.total_page);
     setCurrentPage(responseBody.current_page);
@@ -66,7 +63,7 @@ export default function ManageBerita() {
     };
 
     if (editingId) {
-      if (!(await alertConfirm(t("manageNews.confirmation.editNews")))) return;
+      if (!(await alertConfirm("Yakin ingin mengedit berita ini?"))) return;
 
       const response = await NewsApi.updateNews(
         editingId,
@@ -81,7 +78,7 @@ export default function ManageBerita() {
 
       resetForm();
       setShowForm(false);
-      await alertSuccess(t("manageNews.success.updateNews"));
+      await alertSuccess("Berita berhasil diperbarui");
       fetchNews();
       return;
     }
@@ -93,7 +90,7 @@ export default function ManageBerita() {
       await Helper.errorResponseHandler(responseBody);
       return;
     }
-    await alertSuccess(t("manageNews.success.addNews"));
+    await alertSuccess("Berita berhasil ditambahkan!");
     fetchNews();
 
     resetForm();
@@ -101,7 +98,7 @@ export default function ManageBerita() {
   };
 
   const handleDelete = async (id) => {
-    if (await alertConfirm(t("manageNews.confirmation.deleteNews"))) {
+    if (await alertConfirm("Yakin ingin menghapus berita ini?")) {
       const response = await NewsApi.deleteNews(id, i18n.language);
       if (!response.ok) {
         const responseBody = await response.json();
@@ -132,10 +129,10 @@ export default function ManageBerita() {
             <span className="bg-green-100 text-green-600 p-2 rounded-lg">
               <FaNewspaper className="inline" />
             </span>
-            {t("manageNews.title")}
+            Kelola Berita
           </h1>
           <p className="text-gray-500 text-sm mt-1">
-            {t("manageNews.subtitle")}
+            Kelola berita dan informasi terbaru desa
           </p>
         </div>
 
@@ -147,7 +144,7 @@ export default function ManageBerita() {
             }}
             className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-lg shadow-md transition hover:shadow-lg"
           >
-            <FaPlus /> {t("manageNews.buttons.addNews")}
+            <FaPlus /> Tambah Berita
           </button>
         )}
       </div>
@@ -163,12 +160,12 @@ export default function ManageBerita() {
               {editingId ? (
                 <>
                   <FaEdit className="text-green-600" />
-                  <span>{t("manageNews.form.editTitle")}</span>
+                  <span>Edit Berita</span>
                 </>
               ) : (
                 <>
                   <FaPlus className="text-green-600" />
-                  <span>{t("manageNews.form.addTitle")}</span>
+                  <span>Tambah Berita</span>
                 </>
               )}
             </h2>
@@ -187,40 +184,40 @@ export default function ManageBerita() {
           <div className="space-y-1">
             <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
               <FaNewspaper size={14} />
-              <span>{t("manageNews.form.newsTitle")}</span>
+              <span>Judul</span>
             </label>
             <input
               className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-green-200 focus:border-green-500 transition"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder={t("manageNews.form.titlePlaceholder")}
+              placeholder="Masukkan judul berita"
             />
           </div>
 
           <div className="space-y-1">
             <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
               <FaNewspaper size={14} />
-              <span>{t("manageNews.form.content")}</span>
+              <span>Konten</span>
             </label>
             <textarea
               className="w-full border border-gray-300 rounded-lg px-4 py-2.5 h-32 focus:ring-2 focus:ring-green-200 focus:border-green-500 transition"
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              placeholder={t("manageNews.form.contentPlaceholder")}
+              placeholder="Tuliskan isi berita di sini"
             ></textarea>
           </div>
 
           <div className="space-y-1">
             <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
               <FaImage size={14} />
-              <span>{t("manageNews.form.uploadMainImage")}</span>
+              <span>Unggah gambar</span>
             </label>
             <div className="flex items-center gap-3">
               <label className="flex flex-col items-center justify-center w-full border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition">
                 <div className="flex flex-col items-center justify-center pt-5 pb-6 px-4">
                   <FaImage className="w-8 h-8 text-gray-400" />
                   <p className="text-sm text-gray-500 text-center">
-                    {t("manageNews.form.uploadHint")}
+                    Klik untuk memilih gambar atau drag & drop
                   </p>
                 </div>
                 <input
@@ -243,7 +240,7 @@ export default function ManageBerita() {
                           news.find((b) => b.id === editingId)?.featured_image
                         }`
                   }
-                  alt={t("manageNews.preview")}
+                  alt="Preview"
                   className="w-full h-40 object-cover rounded-lg border"
                 />
               </div>
@@ -252,7 +249,7 @@ export default function ManageBerita() {
 
           <div className="space-y-1">
             <label className="block text-sm font-medium text-gray-700">
-              {t("manageNews.form.publishStatus")}
+              Status publish
             </label>
             <div className="flex gap-2">
               <button
@@ -264,7 +261,7 @@ export default function ManageBerita() {
                     : "bg-gray-50 border-gray-300 text-gray-600 hover:bg-gray-100"
                 }`}
               >
-                <FaCheck /> {t("manageNews.status.yes")}
+                <FaCheck /> Yes
               </button>
               <button
                 type="button"
@@ -275,7 +272,7 @@ export default function ManageBerita() {
                     : "bg-gray-50 border-gray-300 text-gray-600 hover:bg-gray-100"
                 }`}
               >
-                <FaTimes /> {t("manageNews.status.no")}
+                <FaTimes /> No
               </button>
             </div>
           </div>
@@ -290,7 +287,7 @@ export default function ManageBerita() {
               className="px-5 py-2.5 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 transition"
             >
               <FaTimes className="inline mr-2" />
-              {t("manageNews.buttons.cancel")}
+              Batal
             </button>
             <button
               type="submit"
@@ -298,11 +295,11 @@ export default function ManageBerita() {
             >
               {editingId ? (
                 <>
-                  <FaSave /> {t("manageNews.buttons.updateNews")}
+                  <FaSave /> Ubah Berita
                 </>
               ) : (
                 <>
-                  <FaPlus /> {t("manageNews.buttons.saveNews")}
+                  <FaPlus /> Simpan Berita)
                 </>
               )}
             </button>
@@ -316,10 +313,11 @@ export default function ManageBerita() {
           <div className="mx-auto max-w-md">
             <FaNewspaper className="mx-auto h-12 w-12 text-gray-400" />
             <h3 className="mt-2 text-lg font-medium text-gray-900">
-              {t("manageNews.emptyState.title")}
+              Belum ada berita
             </h3>
             <p className="mt-1 text-sm text-gray-500">
-              {t("manageNews.emptyState.description")}
+              Mulai tambahkan berita baru untuk menginformasikan kepada warga
+              desa
             </p>
             <div className="mt-6">
               <button
@@ -330,7 +328,7 @@ export default function ManageBerita() {
                 className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
               >
                 <FaPlus className="-ml-1 mr-2 h-5 w-5" />
-                {t("manageNews.buttons.addNews")}
+                Tambah Berita
               </button>
             </div>
           </div>
@@ -358,9 +356,7 @@ export default function ManageBerita() {
                         : "bg-yellow-100 text-yellow-800"
                     }`}
                   >
-                    {item.is_published
-                      ? t("manageNews.status.published")
-                      : t("manageNews.status.unpublished")}
+                    {item.is_published ? "Published" : "Unpublished"}
                   </span>
                 </div>
 
@@ -382,13 +378,13 @@ export default function ManageBerita() {
                       onClick={() => handleEdit(item.id)}
                       className="flex items-center gap-1.5 text-sm font-medium text-blue-600 hover:text-blue-800 transition"
                     >
-                      <FaEdit size={14} /> {t("manageNews.buttons.edit")}
+                      <FaEdit size={14} /> Edit
                     </button>
                     <button
                       onClick={() => handleDelete(item.id)}
                       className="flex items-center gap-1.5 text-sm font-medium text-red-600 hover:text-red-800 transition"
                     >
-                      <FaTrash size={14} /> {t("manageNews.buttons.delete")}
+                      <FaTrash size={14} /> Hapus
                     </button>
                   </div>
                 </div>

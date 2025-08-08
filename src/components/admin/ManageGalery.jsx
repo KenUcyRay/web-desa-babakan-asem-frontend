@@ -11,9 +11,10 @@ import { useTranslation } from "react-i18next";
 import Pagination from "../ui/Pagination";
 import { GaleryApi } from "../../libs/api/GaleryApi";
 import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
+import { Helper } from "@/utils/Helper";
 
 export default function ManageGalery() {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const [galeries, setGaleries] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -32,13 +33,8 @@ export default function ManageGalery() {
   const handleSave = async (e) => {
     e.preventDefault();
 
-    if (!title || (!image && !editingId)) {
-      return alertError(t("manageGallery.validation.completeData"));
-    }
-
     if (editingId) {
-      if (!(await alertConfirm(t("manageGallery.confirmation.editPhoto"))))
-        return;
+      if (!(await alertConfirm("Yakin ingin menyimpan perubahan?"))) return;
 
       const response = await GaleryApi.updateGaleri(
         editingId,
@@ -48,18 +44,14 @@ export default function ManageGalery() {
       const body = await response.json();
 
       if (!response.ok) {
-        alertError(
-          typeof body.error === "string"
-            ? body.error
-            : t("manageGallery.error.saveChanges")
-        );
+        await Helper.errorResponseHandler(body);
         return;
       }
 
       setGaleries((prev) =>
         prev.map((g) => (g.id === editingId ? body.galeri : g))
       );
-      await alertSuccess(t("manageGallery.success.photoUpdated"));
+      await alertSuccess("Galeri berhasil diperbarui.");
       resetForm();
       return;
     }
@@ -71,36 +63,27 @@ export default function ManageGalery() {
     const body = await response.json();
 
     if (!response.ok) {
-      alertError(
-        typeof body.error === "string"
-          ? body.error
-          : t("manageGallery.error.savePhoto")
-      );
+      await Helper.errorResponseHandler(body);
       return;
     }
 
     setGaleries([body.galeri, ...galeries]);
-    await alertSuccess(t("manageGallery.success.photoAdded"));
+    await alertSuccess("Galeri berhasil ditambahkan.");
     resetForm();
   };
 
   const handleDelete = async (id) => {
-    if (!(await alertConfirm(t("manageGallery.confirmation.deletePhoto"))))
-      return;
+    if (!(await alertConfirm("Yakin ingin menghapus foto ini?"))) return;
 
     const response = await GaleryApi.deleteGaleri(id, i18n.language);
     if (!response.ok) {
       const body = await response.json();
-      alertError(
-        typeof body.error === "string"
-          ? body.error
-          : t("manageGallery.error.deletePhoto")
-      );
+      await Helper.errorResponseHandler(body);
       return;
     }
 
     setGaleries((prev) => prev.filter((g) => g.id !== id));
-    await alertSuccess(t("manageGallery.success.photoDeleted"));
+    await alertSuccess("Galeri berhasil dihapus.");
   };
 
   const handleEdit = (id) => {
@@ -117,11 +100,7 @@ export default function ManageGalery() {
     const body = await response.json();
 
     if (!response.ok) {
-      alertError(
-        typeof body.error === "string"
-          ? body.error
-          : t("manageGallery.error.fetchData")
-      );
+      await Helper.errorResponseHandler(body);
       return;
     }
 
@@ -141,9 +120,9 @@ export default function ManageGalery() {
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-gray-800 flex items-center gap-3">
             <FaImage className="text-blue-500" />
-            {t("manageGallery.title")}
+            Kelola Galeri
           </h1>
-          <p className="text-gray-600 mt-1">{t("manageGallery.subtitle")}</p>
+          <p className="text-gray-600 mt-1">Kelola Foto Desa</p>
         </div>
 
         {!showForm && (
@@ -151,7 +130,7 @@ export default function ManageGalery() {
             onClick={() => setShowForm(true)}
             className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-5 py-2.5 rounded-lg shadow-md transition transform hover:-translate-y-0.5"
           >
-            <FaPlus /> {t("manageGallery.buttons.addPhoto")}
+            <FaPlus /> Tambah Foto
           </button>
         )}
       </div>
@@ -164,9 +143,7 @@ export default function ManageGalery() {
         >
           <div className="flex justify-between items-center mb-5">
             <h2 className="text-xl font-semibold text-gray-800">
-              {editingId
-                ? t("manageGallery.form.editPhoto")
-                : t("manageGallery.form.addPhoto")}
+              {editingId ? "Edit Galeri" : "Tambah Galeri"}
             </h2>
             <button
               type="button"
@@ -180,20 +157,20 @@ export default function ManageGalery() {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                {t("manageGallery.form.photoTitle")}
+                Judul Foto
               </label>
               <input
                 type="text"
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder={t("manageGallery.form.photoTitlePlaceholder")}
+                placeholder="Masukkan judul foto"
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                {t("manageGallery.form.uploadImage")}
+                Unggah Gambar
               </label>
               <div className="border-2 border-dashed border-gray-300 rounded-xl p-4">
                 <input
@@ -216,7 +193,7 @@ export default function ManageGalery() {
                               galeries.find((b) => b.id === editingId)?.image
                             }`
                       }
-                      alt={t("manageGallery.preview.altText")}
+                      alt="Preview"
                       className="max-w-full h-48 rounded-lg object-contain border"
                     />
                   </div>
@@ -230,17 +207,14 @@ export default function ManageGalery() {
               type="submit"
               className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-xl shadow-md transition transform hover:-translate-y-0.5"
             >
-              <FaSave />{" "}
-              {editingId
-                ? t("manageGallery.buttons.updatePhoto")
-                : t("manageGallery.buttons.savePhoto")}
+              <FaSave /> {editingId ? "Ubah Galeri" : "Simpan Galeri"}
             </button>
             <button
               type="button"
               onClick={resetForm}
               className="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 px-5 py-3 rounded-xl transition"
             >
-              <FaTimes /> {t("manageGallery.buttons.cancel")}
+              <FaTimes /> Batal
             </button>
           </div>
         </form>
@@ -251,19 +225,19 @@ export default function ManageGalery() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
           <FaImage className="text-4xl text-gray-400 mx-auto mb-4" />
           <h3 className="text-xl font-medium text-gray-700 mb-2">
-            {t("manageGallery.empty.title")}
+            Belum Ada Galeri
           </h3>
           <p className="text-gray-500 mb-4">
             {showForm
-              ? t("manageGallery.empty.completeForm")
-              : t("manageGallery.empty.noPhotos")}
+              ? "Silakan lengkapi form di atas untuk menambahkan galeri."
+              : "Belum ada foto"}
           </p>
           {!showForm && (
             <button
               onClick={() => setShowForm(true)}
               className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-5 py-2.5 rounded-lg shadow-md transition"
             >
-              <FaPlus /> {t("manageGallery.buttons.addPhoto")}
+              <FaPlus /> Tambah Foto
             </button>
           )}
         </div>
@@ -293,13 +267,13 @@ export default function ManageGalery() {
                       onClick={() => handleEdit(galeri.id)}
                       className="flex items-center gap-1 text-blue-500 hover:text-blue-700 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition"
                     >
-                      <FaEdit size={14} /> {t("manageGallery.buttons.edit")}
+                      <FaEdit size={14} /> Edit
                     </button>
                     <button
                       onClick={() => handleDelete(galeri.id)}
                       className="flex items-center gap-1 text-red-500 hover:text-red-700 hover:bg-red-50 px-3 py-1.5 rounded-lg transition"
                     >
-                      <FaTrash size={14} /> {t("manageGallery.buttons.delete")}
+                      <FaTrash size={14} /> Hapus
                     </button>
                   </div>
                 </div>
