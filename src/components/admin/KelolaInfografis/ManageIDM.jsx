@@ -11,9 +11,10 @@ import {
 } from "recharts";
 import { alertConfirm, alertError, alertSuccess } from "../../../libs/alert";
 import { InfografisApi } from "../../../libs/api/InfografisApi";
+import { Helper } from "../../../utils/Helper";
 
 export default function ManageIDM() {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   // - Data grafik IDM
   const [skorIDM, setSkorIDM] = useState([]);
   const [extraIdmId, setExtraIdmId] = useState(null);
@@ -32,9 +33,6 @@ export default function ManageIDM() {
 
   // - Simpan perubahan kotak statistik
   const handleSaveStatistik = async () => {
-    if (!extraIdmId)
-      return alertError(t("manageIDM.errors.statisticIdNotFound"));
-
     const response = await InfografisApi.updateExtraIdm(
       extraIdmId,
       {
@@ -49,9 +47,8 @@ export default function ManageIDM() {
     const resBody = await response.json();
 
     if (!response.ok) {
-      return alertError(
-        resBody?.error ?? t("manageIDM.errors.saveStatisticFailed")
-      );
+      await Helper.errorResponseHandler(resBody);
+      return;
     }
 
     // Simpan ke state utama
@@ -60,7 +57,7 @@ export default function ManageIDM() {
     setDimensiEkonomi(resBody.extraIdm.ekonomi);
     setDimensiLingkungan(resBody.extraIdm.lingkungan);
 
-    alertSuccess(t("manageIDM.success.statisticUpdated"));
+    alertSuccess("Data statistik desa berhasil disimpan");
   };
 
   // - Modal tambah/edit skor IDM
@@ -89,16 +86,18 @@ export default function ManageIDM() {
   };
 
   const handleDelete = async (id) => {
-    if (!(await alertConfirm(t("manageIDM.confirmations.deleteData")))) return;
+    const confirm = await alertConfirm("Yakin ingin menghapus data ini?");
+    if (!confirm) return;
 
     const response = await InfografisApi.deleteIdm(id, i18n.language);
 
     if (!response.ok) {
-      return alertError(t("manageIDM.errors.deleteFromServerFailed"));
+      await Helper.errorResponseHandler(await response.json());
+      return;
     }
 
     setSkorIDM((prev) => prev.filter((d) => d.id !== id));
-    alertSuccess(t("manageIDM.success.dataDeleted"));
+    alertSuccess("Data berhasil dihapus");
   };
 
   const handleSave = async () => {
@@ -106,20 +105,9 @@ export default function ManageIDM() {
     const skorTrimmed = formData.skor.trim();
     const skorNum = parseFloat(skorTrimmed);
 
-    if (!tahunTrimmed)
-      return alertError(t("manageIDM.validation.yearRequired"));
-    if (!skorTrimmed || isNaN(skorNum) || skorNum < 0 || skorNum > 1)
-      return alertError(t("manageIDM.validation.scoreRange"));
-
     const year = parseInt(tahunTrimmed);
 
     if (isAdding) {
-      const exists = skorIDM.some((d) => d.tahun === tahunTrimmed);
-      if (exists)
-        return alertError(
-          t("manageIDM.validation.yearExists", { year: tahunTrimmed })
-        );
-
       const response = await InfografisApi.createIdm(
         {
           year,
@@ -130,9 +118,8 @@ export default function ManageIDM() {
       const resBody = await response.json();
 
       if (!response.ok) {
-        return alertError(
-          resBody?.error ?? t("manageIDM.errors.saveDataFailed")
-        );
+        await Helper.errorResponseHandler(resBody);
+        return;
       }
 
       const newData = resBody.idm; // karena API return-nya array
@@ -145,10 +132,10 @@ export default function ManageIDM() {
           skor: newData.skor / 100,
         },
       ]);
-      alertSuccess(t("manageIDM.success.dataAdded"));
+      await alertSuccess("Data berhasil ditambahkan!");
     } else {
-      if (!(await alertConfirm(t("manageIDM.confirmations.updateData"))))
-        return;
+      const confirm = await alertConfirm("Yakin ingin memperbarui data ini?");
+      if (!confirm) return;
 
       const response = await InfografisApi.updateIdm(
         editingIndex,
@@ -162,9 +149,8 @@ export default function ManageIDM() {
       const resBody = await response.json();
 
       if (!response.ok) {
-        return alertError(
-          resBody?.error ?? t("manageIDM.errors.updateDataFailed")
-        );
+        await Helper.errorResponseHandler(resBody);
+        return;
       }
 
       const updated = skorIDM.map((item) =>
@@ -178,7 +164,7 @@ export default function ManageIDM() {
       );
 
       setSkorIDM(updated);
-      alertSuccess(t("manageIDM.success.dataUpdated"));
+      alertSuccess("Data berhasil diperbarui!");
     }
 
     setShowForm(false);
@@ -200,7 +186,7 @@ export default function ManageIDM() {
       }));
       setSkorIDM(mapped);
     } else {
-      alertError(t("manageIDM.errors.fetchIdmDataFailed"));
+      await Helper.errorResponseHandler(resIdmBody);
     }
 
     // --- Ambil data Extra IDM (status + 3 dimensi) ---
@@ -225,7 +211,7 @@ export default function ManageIDM() {
       setTempEkonomi(data.ekonomi);
       setTempLingkungan(data.lingkungan);
     } else {
-      alertError(t("manageIDM.errors.fetchVillageDataFailed"));
+      await Helper.errorResponseHandler(resExtraBody);
     }
   };
 
@@ -235,46 +221,40 @@ export default function ManageIDM() {
       <div className="flex justify-between items-center mb-8">
         <div>
           <h2 className="text-3xl font-bold text-gray-800">
-            {t("manageIDM.title")}
+            Skor IDM Desa Babakan Asem
           </h2>
-          <p
-            className="mt-2 text-gray-600"
-            dangerouslySetInnerHTML={{ __html: t("manageIDM.description") }}
-          />
+          <p className="mt-2 text-gray-600">
+            Perkembangan <strong>Indeks Desa Membangun (IDM)</strong> dari tahun
+            ke tahun.
+          </p>
         </div>
         <button
           onClick={handleAdd}
           className="px-4 py-2 bg-green-500 text-white rounded-lg shadow hover:bg-green-600 transition"
         >
-          {t("manageIDM.buttons.addData")}
+          + Tambah data
         </button>
       </div>
 
       {/* - Kotak Statistik (edit & simpan) */}
       <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-6 mt-8">
         <div className="flex flex-col items-center bg-white p-6 rounded-xl shadow">
-          <p className="text-gray-600">{t("manageIDM.labels.villageStatus")}</p>
+          <p className="text-gray-600">Status desa</p>
           <select
             value={tempStatus}
             onChange={(e) => setTempStatus(e.target.value)}
             className="mt-2 border rounded px-3 py-2 text-gray-800"
           >
-            <option value="MAJU">{t("manageIDM.status.advanced")}</option>
-            <option value="BERKEMBANG">
-              {t("manageIDM.status.developing")}
-            </option>
-            <option value="MANDIRI">{t("manageIDM.status.independent")}</option>
-            <option value="TERINGGAL">{t("manageIDM.status.lagging")}</option>
-            <option value="SANGAT_TERTINGGAL">
-              {t("manageIDM.status.veryLagging")}
-            </option>
+            <option value="MAJU">Maju</option>
+            <option value="BERKEMBANG">Berkembang</option>
+            <option value="MANDIRI">Mandiri</option>
+            <option value="TERINGGAL">Tertinggal</option>
+            <option value="SANGAT_TERTINGGAL">Sangat Tertinggal</option>
           </select>
         </div>
 
         <div className="flex flex-col items-center bg-white p-6 rounded-xl shadow">
-          <p className="text-gray-600">
-            {t("manageIDM.labels.socialDimension")}
-          </p>
+          <p className="text-gray-600">Dimensi sosial</p>
           <input
             type="number"
             step="0.01"
@@ -287,9 +267,7 @@ export default function ManageIDM() {
         </div>
 
         <div className="flex flex-col items-center bg-white p-6 rounded-xl shadow">
-          <p className="text-gray-600">
-            {t("manageIDM.labels.economicDimension")}
-          </p>
+          <p className="text-gray-600">Dimensi ekonomi</p>
           <input
             type="number"
             step="0.01"
@@ -302,9 +280,7 @@ export default function ManageIDM() {
         </div>
 
         <div className="flex flex-col items-center bg-white p-6 rounded-xl shadow">
-          <p className="text-gray-600">
-            {t("manageIDM.labels.environmentalDimension")}
-          </p>
+          <p className="text-gray-600">Dimensi lingkungan</p>
           <input
             type="number"
             step="0.01"
@@ -323,26 +299,23 @@ export default function ManageIDM() {
           onClick={handleSaveStatistik}
           className="px-5 py-2 bg-blue-500 text-white rounded-lg shadow hover:bg-blue-600 transition"
         >
-          {t("manageIDM.buttons.saveChanges")}
+          💾 Simpan perubahan
         </button>
       </div>
 
       {/* - Tampilan nilai tersimpan */}
       <div className="mt-4 text-gray-700">
         <p>
-          <strong>{t("manageIDM.labels.villageStatus")}:</strong> {statusDesa}
+          <strong>Status desa:</strong> {statusDesa}
         </p>
         <p>
-          <strong>{t("manageIDM.labels.socialDimension")}:</strong>{" "}
-          {dimensiSosial}
+          <strong>Dimensi sosial:</strong> {dimensiSosial}
         </p>
         <p>
-          <strong>{t("manageIDM.labels.economicDimension")}:</strong>{" "}
-          {dimensiEkonomi}
+          <strong>Dimensi ekonomi:</strong> {dimensiEkonomi}
         </p>
         <p>
-          <strong>{t("manageIDM.labels.environmentalDimension")}:</strong>{" "}
-          {dimensiLingkungan}
+          <strong>Dimensi lingkungan:</strong> {dimensiLingkungan}
         </p>
       </div>
 
@@ -352,13 +325,13 @@ export default function ManageIDM() {
           <thead className="bg-gray-100">
             <tr>
               <th className="p-3 text-left font-semibold text-gray-700">
-                {t("manageIDM.table.year")}
+                Tahun
               </th>
               <th className="p-3 text-left font-semibold text-gray-700">
-                {t("manageIDM.table.score")}
+                Skor
               </th>
               <th className="p-3 text-left font-semibold text-gray-700">
-                {t("manageIDM.table.actions")}
+                Aksi
               </th>
             </tr>
           </thead>
@@ -372,13 +345,13 @@ export default function ManageIDM() {
                     onClick={() => handleEdit(data.id)}
                     className="text-blue-600 hover:underline"
                   >
-                    {t("manageIDM.table.edit")}
+                    Edit
                   </button>
                   <button
                     onClick={() => handleDelete(data.id)}
                     className="text-red-600 hover:underline"
                   >
-                    {t("manageIDM.table.delete")}
+                    Hapus
                   </button>
                 </td>
               </tr>
@@ -387,7 +360,7 @@ export default function ManageIDM() {
             {skorIDM.length === 0 && (
               <tr>
                 <td colSpan={3} className="p-4 text-center text-gray-500">
-                  {t("manageIDM.table.noData")}
+                  Belum ada data IDM.
                 </td>
               </tr>
             )}
@@ -398,7 +371,7 @@ export default function ManageIDM() {
       {/* - Grafik Line */}
       <div className="mt-12">
         <h3 className="text-2xl font-bold text-gray-800 text-center mb-6">
-          {t("manageIDM.chart.title")}
+          Grafik Perkembangan Skor IDM
         </h3>
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={skorIDM}>
@@ -422,13 +395,11 @@ export default function ManageIDM() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg p-6 w-80">
             <h3 className="text-xl font-semibold mb-4">
-              {isAdding
-                ? t("manageIDM.modal.addTitle")
-                : t("manageIDM.modal.editTitle")}
+              {isAdding ? "Tambah data IDM" : "Edit data IDM"}
             </h3>
 
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              {t("manageIDM.modal.year")}
+              Tahun
             </label>
             <input
               type="text"
@@ -437,11 +408,11 @@ export default function ManageIDM() {
                 setFormData({ ...formData, tahun: e.target.value })
               }
               className="w-full p-2 border rounded mb-4"
-              placeholder={t("manageIDM.modal.yearPlaceholder")}
+              placeholder="Contoh: 2025"
             />
 
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              {t("manageIDM.modal.score")}
+              Skor (0 - 1)
             </label>
             <input
               type="number"
@@ -453,7 +424,7 @@ export default function ManageIDM() {
                 setFormData({ ...formData, skor: e.target.value })
               }
               className="w-full p-2 border rounded mb-4"
-              placeholder={t("manageIDM.modal.scorePlaceholder")}
+              placeholder="Contoh: 0.85"
             />
 
             <div className="flex justify-end gap-2">
@@ -461,13 +432,13 @@ export default function ManageIDM() {
                 onClick={() => setShowForm(false)}
                 className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
               >
-                {t("manageIDM.modal.cancel")}
+                Batal
               </button>
               <button
                 onClick={handleSave}
                 className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
               >
-                {t("manageIDM.modal.save")}
+                Simpan
               </button>
             </div>
           </div>

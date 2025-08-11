@@ -346,11 +346,6 @@ export default function ManagePrestasi() {
                     src={getImageUrl(item.featured_image)}
                     alt={item.title}
                     className="w-full h-48 object-cover"
-                    onError={(e) => {
-                      e.target.src = `https://via.placeholder.com/640x360?text=${t(
-                        "managePrestasi.card.noImage"
-                      )}`;
-                    }}
                   />
                 </div>
                 <div className="p-5">

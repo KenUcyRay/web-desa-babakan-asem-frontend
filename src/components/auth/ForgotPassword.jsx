@@ -6,6 +6,7 @@ import { alertError, alertSuccess } from "../../libs/alert";
 import { useAuth } from "../../contexts/AuthContext";
 import { useTranslation } from "react-i18next";
 import { useProfile } from "../../hook/useProfile";
+import { Helper } from "../../utils/Helper";
 
 export default function ForgotPassword() {
   const { t, i18n } = useTranslation();
@@ -25,7 +26,7 @@ export default function ForgotPassword() {
       navigate("/wait");
       return;
     }
-    await alertError(t("forgotPassword.failedSend"));
+    await Helper.errorResponseHandler(await response.json());
     setEmail("");
   };
 

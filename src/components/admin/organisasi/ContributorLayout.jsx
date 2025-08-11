@@ -10,7 +10,7 @@ import ContributorSidebar from "./ContributorSidebar";
 
 const ContributorLayout = () => {
   const navigate = useNavigate();
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { profile, setProfile } = useAuth();
 
@@ -61,7 +61,7 @@ const ContributorLayout = () => {
           >
             <FaBars />
           </button>
-          <h1 className="font-semibold text-lg">{t("adminLayout.title")}</h1>
+          <h1 className="font-semibold text-lg">Panel Contributor</h1>
           <div className="w-6" /> {/* Spacer biar balance */}
         </div>
 

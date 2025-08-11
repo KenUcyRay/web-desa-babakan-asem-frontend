@@ -1,39 +1,26 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   FaTachometerAlt,
-  FaNewspaper,
-  FaCalendarAlt,
-  FaEnvelope,
   FaUsers,
   FaSignOutAlt,
   FaArrowLeft,
-  FaStore,
-  FaImage,
-  FaSitemap,
-  FaClipboardList,
-  FaUsersCog,
-  FaChartPie,
-  FaUserFriends,
-  FaHandshake,
-  FaGlobeAsia,
-  FaPeopleCarry,
-  FaStar,
-  FaTasks,
-  FaMoneyCheckAlt,
 } from "react-icons/fa";
-import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import logo from "../../../assets/logo.png";
 import { useAuth } from "../../../contexts/AuthContext";
 import { alertConfirm, alertSuccess, alertError } from "../../../libs/alert";
 import { UserApi } from "../../../libs/api/UserApi";
+import { Helper } from "../../../utils/Helper";
 
 export default function KarangTarunaSidebar({ isOpen, onClose }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const { setProfile } = useAuth();
+
+  // State untuk waktu saat ini
+  const [currentTime, setCurrentTime] = useState(new Date());
 
   // - supaya sidebar mobile gak langsung hilang
   const [isVisible, setIsVisible] = useState(false);
@@ -41,25 +28,52 @@ export default function KarangTarunaSidebar({ isOpen, onClose }) {
   useEffect(() => {
     if (isOpen) setIsVisible(true);
     else setTimeout(() => setIsVisible(false), 300); // sesuai durasi animasi
+
+    // Update waktu setiap detik
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(timer);
   }, [isOpen]);
 
+  // Format waktu menjadi string: "HH:MM:SS"
+  const formatTime = (date) => {
+    return date.toLocaleTimeString("id-ID", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+  };
+
+  // Format tanggal menjadi string: "Hari, DD MMMM YYYY"
+  const formatDate = (date) => {
+    return date.toLocaleDateString("id-ID", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  };
+
   const handleLogout = async () => {
-    const confirm = await alertConfirm(t("adminSidebar.actions.logoutConfirm"));
+    const confirm = await alertConfirm("Apakah Anda yakin ingin keluar?");
     if (!confirm) return;
     const response = await UserApi.logout(i18n.language);
     if (!response.ok) {
-      await alertError(t("adminSidebar.actions.logoutError"));
+      const responseBody = await response.json();
+      await Helper.errorResponseHandler(responseBody);
       return;
     }
     setProfile(null);
-    await alertSuccess(t("adminSidebar.actions.logoutSuccess"));
+    await alertSuccess("Anda telah keluar.");
     navigate("/login");
   };
 
   const menu = [
     {
       to: "/karang-taruna/admin",
-      label: t("adminSidebar.menu.dashboard") || "Dashboard",
+      label: "Dashboard",
       icon: <FaTachometerAlt />,
     },
   ];
@@ -67,7 +81,7 @@ export default function KarangTarunaSidebar({ isOpen, onClose }) {
   const pengaturan = [
     {
       to: "profil",
-      label: t("adminSidebar.settings.profile") || "Profil",
+      label: "Profil",
       icon: <FaUsers />,
     },
   ];
@@ -75,17 +89,31 @@ export default function KarangTarunaSidebar({ isOpen, onClose }) {
   const renderSidebarContent = () => (
     <>
       {/* LOGO + JUDUL */}
-      <div className="flex items-center gap-3 px-4 py-5 border-b bg-gradient-to-r from-green-400 to-[#B6F500]">
-        <div className="bg-white p-1 rounded-lg shadow-sm">
-          <img src={logo} alt="Logo Desa" className="w-9 h-9 object-contain" />
+      <div className="flex flex-col px-4 py-5 border-b bg-gradient-to-r from-green-400 to-[#B6F500]">
+        <div className="flex items-center gap-3">
+          <div className="bg-white p-1 rounded-lg shadow-sm">
+            <img
+              src={logo}
+              alt="Logo Desa"
+              className="w-11 h-11 object-contain"
+            />
+          </div>
+          <div>
+            <h1 className="font-bold text-white leading-tight text-base">
+              Karang Taruna Panel
+            </h1>
+            <p className="text-sm text-white">Babakan Asem</p>
+          </div>
         </div>
-        <div>
-          <h1 className="font-bold text-white leading-tight text-base">
-            {t("adminSidebar.title") || "Admin Panel Desa"}
-          </h1>
-          <p className="text-xs text-green-100">
-            {t("karangTarunaSidebar.subtitle") || "Karang Taruna Panel"}
-          </p>
+
+        {/* Tampilan Tanggal dan Waktu */}
+        <div className="mt-2 text-center">
+          <div className="text-xs text-white font-semibold">
+            {formatDate(currentTime)}
+          </div>
+          <div className="text-xs text-white font-medium">
+            {formatTime(currentTime)}
+          </div>
         </div>
       </div>
 
@@ -112,7 +140,7 @@ export default function KarangTarunaSidebar({ isOpen, onClose }) {
 
         {/* PENGATURAN */}
         <p className="text-xs text-gray-400 mt-5 mb-2 px-2 uppercase tracking-wide">
-          {t("adminSidebar.settings.title") || "Pengaturan"}
+          Pengaturan
         </p>
         {pengaturan.map((item) => {
           const isActive = location.pathname === item.to;
@@ -141,15 +169,14 @@ export default function KarangTarunaSidebar({ isOpen, onClose }) {
           onClick={onClose}
           className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 text-gray-700 text-sm transition-all duration-200"
         >
-          <FaArrowLeft />{" "}
-          {t("adminSidebar.actions.backToWebsite") || "Kembali ke Website"}
+          <FaArrowLeft /> Kembali ke Website
         </Link>
 
         <button
           onClick={handleLogout}
           className="flex items-center gap-3 px-3 py-2 w-full text-left rounded-md hover:bg-red-50 text-red-500 text-sm transition-all duration-200"
         >
-          <FaSignOutAlt /> {t("adminSidebar.actions.logout") || "Keluar"}
+          <FaSignOutAlt /> Keluar
         </button>
       </nav>
     </>

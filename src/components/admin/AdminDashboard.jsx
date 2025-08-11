@@ -49,13 +49,18 @@ import DialogMap from "../../DialogMap";
 import { alertConfirm, alertSuccess } from "../../libs/alert";
 
 // ==== ICON CUSTOM ====
-const createIcon = (iconUrl) =>
-  L.icon({
+const createIcon = (iconUrl) => {
+  if (!iconUrl) {
+    // fallback to Leaflet default icon
+    return new L.Icon.Default();
+  }
+  return L.icon({
     iconUrl,
     iconSize: [30, 30],
     iconAnchor: [15, 30],
     popupAnchor: [0, -30],
   });
+};
 
 // Palet warna untuk polygon (tidak boleh sama)
 const polygonColors = [
@@ -72,6 +77,85 @@ const polygonColors = [
 // Assign colors by order of appearance for guaranteed uniqueness
 function getPolygonColorByIndex(index) {
   return polygonColors[index % polygonColors.length];
+}
+
+// Helper: safe JSON parse
+function tryParseJSON(value) {
+  if (typeof value === "string") {
+    try {
+      return JSON.parse(value);
+    } catch (e) {
+      return null;
+    }
+  }
+  return value;
+}
+
+// Helper: normalize polygon coordinates to array of [lat, lng]
+function normalizePolygonCoordinates(input) {
+  // input may be: [[lng,lat],[lng,lat], ...]
+  // or GeoJSON style: [[[lng,lat],...]] (one more nesting)
+  const parsed = tryParseJSON(input) ?? input;
+  if (!Array.isArray(parsed) || parsed.length === 0) return null;
+
+  // If first element is an array and first element's first element is number -> e.g. [ [lng,lat], ... ]
+  if (typeof parsed[0] === "number") {
+    // single coordinate only -> invalid for polygon
+    return null;
+  }
+
+  // Detect extra nesting: parsed[0][0] is array -> take that
+  let coordsArray = parsed;
+  if (Array.isArray(parsed[0]) && Array.isArray(parsed[0][0])) {
+    // Could be [[[lng,lat],...]] -> use parsed[0]
+    // However sometimes parsed could be [ [ [lng,lat], ... ] , ... ] (multi-polygons) -> flatten first ring
+    coordsArray = parsed[0];
+  }
+
+  // Map to [lat, lng] and coerce to numbers
+  const mapped = coordsArray
+    .map((pt) => {
+      if (!Array.isArray(pt) || pt.length < 2) return null;
+      const lng = Number(pt[0]);
+      const lat = Number(pt[1]);
+      if (Number.isFinite(lat) && Number.isFinite(lng)) return [lat, lng];
+      return null;
+    })
+    .filter(Boolean);
+
+  return mapped.length ? mapped : null;
+}
+
+// Helper: normalize marker coordinates to [[lat,lng]]
+function normalizeMarkerCoordinates(input) {
+  const parsed = tryParseJSON(input) ?? input;
+  // Could be [lng, lat] or [[lng, lat]] or {lng:.., lat:..}
+  if (Array.isArray(parsed)) {
+    if (parsed.length >= 2 && typeof parsed[0] === "number") {
+      const lng = Number(parsed[0]);
+      const lat = Number(parsed[1]);
+      if (Number.isFinite(lat) && Number.isFinite(lng)) return [[lat, lng]];
+    }
+    if (Array.isArray(parsed[0]) && parsed[0].length >= 2) {
+      const lng = Number(parsed[0][0]);
+      const lat = Number(parsed[0][1]);
+      if (Number.isFinite(lat) && Number.isFinite(lng)) return [[lat, lng]];
+    }
+  }
+  if (parsed && typeof parsed === "object") {
+    const lat = Number(parsed.lat ?? parsed.latitude ?? parsed[1] ?? parsed[0]);
+    const lng = Number(
+      parsed.lng ?? parsed.longitude ?? parsed[0] ?? parsed[1]
+    );
+    if (Number.isFinite(lat) && Number.isFinite(lng)) return [[lat, lng]];
+  }
+  return null;
+}
+
+function safeToFixedMaybe(val, dec = 6) {
+  const num = Number(val);
+  if (Number.isFinite(num)) return num.toFixed(dec);
+  return "N/A";
 }
 
 export default function AdminDashboard() {
@@ -109,36 +193,51 @@ export default function AdminDashboard() {
 
       if (responseData.data && Array.isArray(responseData.data)) {
         responseData.data.forEach((item) => {
-          if (item.type === "POLYGON") {
-            // Process polygon data - IMPORTANT: Swap coordinates for Leaflet
-            formattedData.push({
-              id: item.id,
-              name: item.name,
-              description: item.description || "Wilayah Desa",
-              type: "polygon",
-              year: item.year || 2025,
-              // Transform coordinates: Leaflet expects [lat, lng] pairs
-              coordinates: item.coordinates.map((coord) => [
-                coord[1],
-                coord[0],
-              ]),
-            });
-          } else if (item.type === "MARKER") {
-            // Process marker data - coordinates format correction
-            formattedData.push({
-              id: item.id,
-              name: item.name,
-              description: item.description || "Point of Interest",
-              type: "marker",
-              year: item.year || 2025,
-              // For marker: Leaflet expects [lat, lng] position
-              coordinates: [[item.coordinates[0], item.coordinates[1]]],
-              icon: item.icon
-                ? `${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
-                    item.icon
-                  }`
-                : null,
-            });
+          try {
+            if (item.type === "POLYGON") {
+              const normalized = normalizePolygonCoordinates(item.coordinates);
+              if (!normalized) {
+                console.warn(
+                  "Skipping polygon with invalid coordinates:",
+                  item.id
+                );
+                return;
+              }
+
+              formattedData.push({
+                id: item.id,
+                name: item.name,
+                description: item.description || "Wilayah Desa",
+                type: "polygon",
+                year: item.year || 2025,
+                coordinates: normalized, // already [lat,lng]
+              });
+            } else if (item.type === "MARKER") {
+              const normalized = normalizeMarkerCoordinates(item.coordinates);
+              if (!normalized) {
+                console.warn(
+                  "Skipping marker with invalid coordinates:",
+                  item.id
+                );
+                return;
+              }
+
+              formattedData.push({
+                id: item.id,
+                name: item.name,
+                description: item.description || "Point of Interest",
+                type: "marker",
+                year: item.year || 2025,
+                coordinates: normalized, // [[lat,lng]]
+                icon: item.icon
+                  ? `${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
+                      item.icon
+                    }`
+                  : null,
+              });
+            }
+          } catch (err) {
+            console.error("Error processing map item", item, err);
           }
         });
       }
@@ -146,7 +245,6 @@ export default function AdminDashboard() {
       setMapData(formattedData);
     } catch (error) {
       console.error("Error fetching map data:", error);
-    } finally {
     }
   };
 
@@ -330,7 +428,8 @@ export default function AdminDashboard() {
     const response = await MapApi.delete(id, i18n.language);
 
     if (!response.ok) {
-      return alertError("Gagal menghapus data peta. Silakan coba lagi.");
+      await Helper.errorResponseHandler(await response.json());
+      return;
     }
 
     // Refresh map data after successful deletion
@@ -461,8 +560,9 @@ export default function AdminDashboard() {
                         </strong>
                         <p className="text-sm my-2">{item.description}</p>
                         <p className="text-xs text-gray-600">
-                          Koordinat: {item.coordinates[0][0].toFixed(6)},{" "}
-                          {item.coordinates[0][1].toFixed(6)}
+                          Koordinat:{" "}
+                          {safeToFixedMaybe(item.coordinates[0][0], 6)},{" "}
+                          {safeToFixedMaybe(item.coordinates[0][1], 6)}
                         </p>
                       </div>
                     </Popup>
@@ -562,8 +662,8 @@ export default function AdminDashboard() {
                         <div className="mt-1 flex items-center gap-1 text-xs text-gray-400">
                           <span>Koordinat:</span>
                           <code className="bg-gray-50 px-1 py-0.5 rounded">
-                            {marker.coordinates[0][0].toFixed(4)},{" "}
-                            {marker.coordinates[0][1].toFixed(4)}
+                            {safeToFixedMaybe(marker.coordinates[0][0], 4)},{" "}
+                            {safeToFixedMaybe(marker.coordinates[0][1], 4)}
                           </code>
                         </div>
                       </div>
@@ -609,41 +709,6 @@ export default function AdminDashboard() {
             </span>
           </div>
         </div>
-      </div>
-
-      {/* GRID KARTU UTAMA - DIKURANGI MENJADI 3 */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 mb-6">
-        <SmallMainCard
-          icon={
-            <FaChartBar className="text-xl text-white bg-green-500 p-2 rounded-lg" />
-          }
-          title={"Dashboard Desa"}
-          description={"Statistik lengkap desa"}
-          onClick={() => navigate("/admin/dashboard-desa")}
-        />
-
-        <SmallMainCard
-          icon={
-            <FaDatabase className="text-xl text-white bg-blue-500 p-2 rounded-lg" />
-          }
-          title={"Data Master"}
-          description={"Kelola data dasar desa"}
-          onClick={() => navigate("/admin/data-master")}
-        />
-
-        <SmallMainCard
-          icon={
-            <FaFolderOpen className="text-xl text-white bg-purple-500 p-2 rounded-lg" />
-          }
-          title={"Repository Dokumen"}
-          description={"Arsip dokumen desa"}
-          onClick={() =>
-            window.open(
-              "https://drive.google.com/drive/folders/1H6wPE94ywdVsbH3XF7z2UpJ23sKFajr_?usp=sharing",
-              "_blank"
-            )
-          }
-        />
       </div>
 
       {/* GRID STATISTIK DETAIL */}
@@ -764,18 +829,9 @@ export default function AdminDashboard() {
           title={"Data Penduduk"}
           icon={<FaUserAlt className="text-purple-500" />}
           data={[
-            {
-              title: "Jumlah KK",
-              value: "120 KK",
-            },
-            {
-              title: "Penduduk Laki-laki",
-              value: "320 Jiwa",
-            },
-            {
-              title: "Penduduk Perempuan",
-              value: "340 Jiwa",
-            },
+            { title: "Jumlah KK", value: "120 KK" },
+            { title: "Penduduk Laki-laki", value: "320 Jiwa" },
+            { title: "Penduduk Perempuan", value: "340 Jiwa" },
           ]}
           onClick={() => navigate("/admin/kelola-infografis/penduduk")}
           showValue={true}
@@ -983,8 +1039,7 @@ function PreviewSection({
           onClick={onClick}
           className="text-blue-600 font-medium hover:text-blue-800 flex items-center text-sm"
         >
-          Kelola
-          <span className="ml-1">→</span>
+          Kelola<span className="ml-1">→</span>
         </button>
       </div>
 

@@ -20,7 +20,7 @@ import { alertConfirm, alertError, alertSuccess } from "../../../libs/alert";
 import { Helper } from "../../../utils/Helper";
 
 export default function ManagePkk() {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const [activeTab, setActiveTab] = useState("program");
 
   // State untuk Program PKK
@@ -130,8 +130,10 @@ export default function ManagePkk() {
     };
 
     if (editingProgramId) {
-      if (!(await alertConfirm(t("managePkk.confirmation.saveChanges"))))
-        return;
+      const confirm = await alertConfirm(
+        "Apakah Anda yakin ingin menyimpan perubahan?"
+      );
+      if (!confirm) return;
 
       const response = await ProgramApi.updateProgram(
         editingProgramId,
@@ -148,7 +150,7 @@ export default function ManagePkk() {
       setPrograms((prev) =>
         prev.map((p) => (p.id === editingProgramId ? body.program : p))
       );
-      await alertSuccess(t("managePkk.success.programUpdated"));
+      await alertSuccess("Program berhasil diperbarui");
     } else {
       const response = await ProgramApi.createProgram(rawData, i18n.language);
       const body = await response.json();
@@ -159,7 +161,7 @@ export default function ManagePkk() {
       }
 
       setPrograms([body.program, ...programs]);
-      await alertSuccess(t("managePkk.success.programAdded"));
+      await alertSuccess("Program berhasil ditambahkan");
     }
 
     resetForms();
@@ -177,8 +179,10 @@ export default function ManagePkk() {
   };
 
   const handleProgramDelete = async (id) => {
-    if (!(await alertConfirm(t("managePkk.confirmation.deleteProgram"))))
-      return;
+    const confirm = await alertConfirm(
+      "Apakah Anda yakin ingin menghapus program ini?"
+    );
+    if (!confirm) return;
 
     const response = await ProgramApi.deleteProgram(id, i18n.language);
     if (!response.ok) {
@@ -187,7 +191,7 @@ export default function ManagePkk() {
     }
 
     setPrograms((prev) => prev.filter((p) => p.id !== id));
-    await alertSuccess(t("managePkk.success.programDeleted"));
+    await alertSuccess("Program berhasil dihapus");
   };
 
   // ==================== FUNGSI STRUKTUR PKK ====================
@@ -216,10 +220,10 @@ export default function ManagePkk() {
     };
 
     if (editingMemberId) {
-      if (
-        !(await alertConfirm(t("pkkAdminStructure.confirmations.saveChanges")))
-      )
-        return;
+      const confirm = await alertConfirm(
+        "Anda yakin ingin menyimpan perubahan?"
+      );
+      if (!confirm) return;
 
       const response = await MemberApi.updateMember(
         editingMemberId,
@@ -231,7 +235,7 @@ export default function ManagePkk() {
         return;
       }
 
-      await alertSuccess(t("pkkAdminStructure.alerts.updateSuccess"));
+      await alertSuccess("Anggota PKK berhasil diperbarui");
     } else {
       const response = await MemberApi.createMember(rawData, i18n.language);
       if (!response.ok) {
@@ -239,7 +243,7 @@ export default function ManagePkk() {
         return;
       }
 
-      await alertSuccess(t("pkkAdminStructure.alerts.addSuccess"));
+      await alertSuccess("Anggota PKK berhasil ditambahkan");
     }
 
     resetForms();
@@ -263,8 +267,10 @@ export default function ManagePkk() {
   };
 
   const handleMemberDelete = async (id) => {
-    if (!(await alertConfirm(t("pkkAdminStructure.confirmations.delete"))))
-      return;
+    const confirm = await alertConfirm(
+      "Apakah Anda yakin ingin menghapus anggota ini?"
+    );
+    if (!confirm) return;
 
     const response = await MemberApi.deleteMember(id, i18n.language);
     if (!response.ok) {
@@ -273,7 +279,7 @@ export default function ManagePkk() {
     }
 
     setMembers((prev) => prev.filter((m) => m.id !== id));
-    await alertSuccess(t("pkkAdminStructure.alerts.deleteSuccess"));
+    await alertSuccess("Anggota PKK berhasil dihapus");
   };
 
   // ==================== FUNGSI AGENDA PKK ====================
@@ -313,8 +319,10 @@ export default function ManagePkk() {
     };
 
     if (editingAgendaId) {
-      if (!(await alertConfirm(t("pkkAdminAgenda.confirmations.saveChanges"))))
-        return;
+      const confirm = await alertConfirm(
+        "Anda yakin ingin menyimpan perubahan?"
+      );
+      if (!confirm) return;
 
       const response = await AgendaApi.updateAgenda(
         editingAgendaId,
@@ -325,7 +333,7 @@ export default function ManagePkk() {
         await Helper.errorResponseHandler(await response.json());
         return;
       }
-      await alertSuccess(t("pkkAdminAgenda.alerts.updateSuccess"));
+      await alertSuccess("Agenda PKK berhasil diperbarui");
     } else {
       const response = await AgendaApi.createAgenda(rawData, i18n.language);
       if (!response.ok) {
@@ -333,7 +341,7 @@ export default function ManagePkk() {
         return;
       }
 
-      await alertSuccess(t("pkkAdminAgenda.alerts.addSuccess"));
+      await alertSuccess("Agenda PKK berhasil ditambahkan");
     }
 
     resetForms();
@@ -357,7 +365,10 @@ export default function ManagePkk() {
   };
 
   const handleAgendaDelete = async (id) => {
-    if (!(await alertConfirm(t("pkkAdminAgenda.confirmations.delete")))) return;
+    const confirm = await alertConfirm(
+      "Apakah Anda yakin ingin menghapus agenda ini?"
+    );
+    if (!confirm) return;
 
     const response = await AgendaApi.deleteAgenda(id, i18n.language);
     if (!response.ok) {
@@ -366,7 +377,7 @@ export default function ManagePkk() {
     }
 
     setAgendas((prev) => prev.filter((a) => a.id !== id));
-    await alertSuccess(t("pkkAdminAgenda.alerts.deleteSuccess"));
+    await alertSuccess("Agenda PKK berhasil dihapus");
   };
 
   const formatDateTime = (dt) =>
@@ -386,9 +397,7 @@ export default function ManagePkk() {
     <div className="font-[Poppins,sans-serif]">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-green-700">
-          {t("managePkk.title")}
-        </h1>
+        <h1 className="text-2xl font-bold text-green-700">Kelola PKK</h1>
       </div>
 
       {/* Tab Navigation */}
@@ -401,7 +410,7 @@ export default function ManagePkk() {
               : "text-gray-500"
           }`}
         >
-          <FaList className="inline mr-2" /> {t("managePkk.tabs.program")}
+          <FaList className="inline mr-2" /> Program PKK
         </button>
         <button
           onClick={() => setActiveTab("structure")}
@@ -411,7 +420,7 @@ export default function ManagePkk() {
               : "text-gray-500"
           }`}
         >
-          <FaUsers className="inline mr-2" /> {t("managePkk.tabs.structure")}
+          <FaUsers className="inline mr-2" /> Struktur PKK
         </button>
         <button
           onClick={() => setActiveTab("agenda")}
@@ -421,7 +430,7 @@ export default function ManagePkk() {
               : "text-gray-500"
           }`}
         >
-          <FaCalendarAlt className="inline mr-2" /> {t("managePkk.tabs.agenda")}
+          <FaCalendarAlt className="inline mr-2" /> Agenda PKK
         </button>
       </div>
 
@@ -432,9 +441,7 @@ export default function ManagePkk() {
           <div className="flex justify-between items-center mb-6">
             <div className="flex items-center gap-2 text-gray-800">
               <FaList className="text-2xl text-green-600" />
-              <h2 className="text-xl font-semibold">
-                {t("pkkAdminProgram.title")}
-              </h2>
+              <h2 className="text-xl font-semibold">Program PKK Desa</h2>
             </div>
             {!showProgramForm && (
               <button
@@ -444,7 +451,7 @@ export default function ManagePkk() {
                 }}
                 className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2 rounded-lg shadow-lg transition transform hover:-translate-y-0.5"
               >
-                <FaPlus /> {t("pkkAdminProgram.buttons.add")}
+                <FaPlus /> Tambah Program PKK
               </button>
             )}
           </div>
@@ -459,34 +466,32 @@ export default function ManagePkk() {
                 {editingProgramId ? (
                   <>
                     <FaEdit className="text-emerald-500" />
-                    {t("pkkAdminProgram.modal.editTitle")}
+                    Edit Program PKK
                   </>
                 ) : (
                   <>
                     <FaPlus className="text-emerald-500" />
-                    {t("pkkAdminProgram.modal.addTitle")}
+                    Tambah Program PKK
                   </>
                 )}
               </h3>
 
               <div>
                 <label className="block font-medium text-gray-700 mb-1">
-                  {t("pkkAdminProgram.form.programName.label")}
+                  Nama program
                 </label>
                 <input
                   type="text"
                   className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-green-300 outline-none"
                   value={programTitle}
                   onChange={(e) => setProgramTitle(e.target.value)}
-                  placeholder={t(
-                    "pkkAdminProgram.form.programName.placeholder"
-                  )}
+                  placeholder="Contoh: pelatihan keterampilan"
                 />
               </div>
 
               <div>
                 <label className="block font-medium text-gray-700 mb-1">
-                  {t("pkkAdminProgram.form.image.label")}
+                  Gambar program
                 </label>
                 <input
                   type="file"
@@ -515,16 +520,14 @@ export default function ManagePkk() {
 
               <div>
                 <label className="block font-medium text-gray-700 mb-1">
-                  {t("pkkAdminProgram.form.description.label")}
+                  Deskripsi program
                 </label>
                 <textarea
                   rows={4}
                   className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-green-300 outline-none"
                   value={programDesc}
                   onChange={(e) => setProgramDesc(e.target.value)}
-                  placeholder={t(
-                    "pkkAdminProgram.form.description.placeholder"
-                  )}
+                  placeholder="Deskripsi lengkap program..."
                 />
               </div>
 
@@ -533,17 +536,14 @@ export default function ManagePkk() {
                   type="submit"
                   className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-5 py-2 rounded-lg shadow hover:shadow-lg transition"
                 >
-                  <FaSave />{" "}
-                  {editingProgramId
-                    ? t("pkkAdminProgram.buttons.update")
-                    : t("pkkAdminProgram.buttons.save")}
+                  <FaSave /> {editingProgramId ? "Edit" : "Simpan"}
                 </button>
                 <button
                   type="button"
                   onClick={resetForms}
                   className="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition"
                 >
-                  <FaTimes /> {t("pkkAdminProgram.buttons.cancel")}
+                  <FaTimes /> Batal
                 </button>
               </div>
             </form>
@@ -553,7 +553,7 @@ export default function ManagePkk() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {programs.length === 0 ? (
               <p className="text-center text-gray-500 col-span-full italic">
-                {t("pkkAdminProgram.empty.noPrograms")}
+                Belum ada program PKK yang ditambahkan.
               </p>
             ) : (
               programs.map((program) => (
@@ -580,13 +580,15 @@ export default function ManagePkk() {
                         onClick={() => handleProgramEdit(program.id)}
                         className="flex items-center gap-1 text-blue-500 hover:text-blue-700 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition"
                       >
-                        <FaEdit /> {t("pkkAdminProgram.buttons.edit")}
+                        <FaEdit />
+                        Edit
                       </button>
                       <button
                         onClick={() => handleProgramDelete(program.id)}
                         className="flex items-center gap-1 text-red-500 hover:text-red-700 hover:bg-red-50 px-3 py-1.5 rounded-lg transition"
                       >
-                        <FaTrash /> {t("pkkAdminProgram.buttons.delete")}
+                        <FaTrash />
+                        Hapus
                       </button>
                     </div>
                   </div>
@@ -613,9 +615,7 @@ export default function ManagePkk() {
           <div className="flex justify-between items-center mb-6">
             <div className="flex items-center gap-2 text-gray-800">
               <FaUsers className="text-2xl text-green-600" />
-              <h2 className="text-xl font-semibold">
-                {t("pkkAdminStructure.title")}
-              </h2>
+              <h2 className="text-xl font-semibold">Struktur Organisasi PKK</h2>
             </div>
 
             <button
@@ -625,7 +625,7 @@ export default function ManagePkk() {
               }}
               className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2 rounded-lg shadow-lg transition transform hover:-translate-y-0.5"
             >
-              <FaPlus /> {t("pkkAdminStructure.buttons.add")}
+              <FaPlus /> Tambah Anggota PKK
             </button>
           </div>
 
@@ -633,7 +633,7 @@ export default function ManagePkk() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {members.length === 0 ? (
               <p className="text-center text-gray-500 col-span-full italic">
-                {t("pkkAdminStructure.empty.noMembers")}
+                Belum ada anggota PKK yang ditambahkan.
               </p>
             ) : (
               members.map((member) => (
@@ -661,7 +661,7 @@ export default function ManagePkk() {
 
                     <div className="flex flex-wrap gap-2 mt-3 text-xs">
                       <span className="px-2 py-1 rounded bg-green-100 text-green-700">
-                        {t("pkkAdminStructure.labels.orgType")}
+                        PKK
                       </span>
                       <span className="px-2 py-1 rounded bg-blue-100 text-blue-700">
                         {member.term_start} - {member.term_end}
@@ -673,9 +673,7 @@ export default function ManagePkk() {
                             : "bg-red-200 text-red-800"
                         }`}
                       >
-                        {member.is_term
-                          ? t("pkkAdminStructure.labels.active")
-                          : t("pkkAdminStructure.labels.inactive")}
+                        {member.is_term ? "Menjabat" : "Tidak Menjabat"}
                       </span>
                     </div>
                   </div>
@@ -685,13 +683,14 @@ export default function ManagePkk() {
                       onClick={() => handleMemberEdit(member.id)}
                       className="flex items-center gap-1 text-blue-600 hover:text-blue-800 transition"
                     >
-                      <FaEdit /> {t("pkkAdminStructure.buttons.edit")}
+                      <FaEdit />
+                      Edit
                     </button>
                     <button
                       onClick={() => handleMemberDelete(member.id)}
                       className="flex items-center gap-1 text-red-600 hover:text-red-800 transition"
                     >
-                      <FaTrash /> {t("pkkAdminStructure.buttons.delete")}
+                      <FaTrash /> Hapus
                     </button>
                   </div>
                 </div>
@@ -717,8 +716,8 @@ export default function ManagePkk() {
                   <h2 className="text-xl font-bold text-white flex items-center gap-3">
                     <FaUsers />
                     {editingMemberId
-                      ? t("pkkAdminStructure.modal.editTitle")
-                      : t("pkkAdminStructure.modal.addTitle")}
+                      ? "Edit Anggota PKK"
+                      : "Tambah Anggota PKK"}
                   </h2>
                   <button
                     onClick={resetForms}
@@ -735,13 +734,11 @@ export default function ManagePkk() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        {t("pkkAdminStructure.form.name.label")}
+                        Nama lengkap
                       </label>
                       <input
                         type="text"
-                        placeholder={t(
-                          "pkkAdminStructure.form.name.placeholder"
-                        )}
+                        placeholder="Masukkan nama lengkap"
                         value={memberForm.name}
                         onChange={(e) =>
                           setMemberForm({ ...memberForm, name: e.target.value })
@@ -752,13 +749,11 @@ export default function ManagePkk() {
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        {t("pkkAdminStructure.form.position.label")}
+                        Jabatan
                       </label>
                       <input
                         type="text"
-                        placeholder={t(
-                          "pkkAdminStructure.form.position.placeholder"
-                        )}
+                        placeholder="Contoh: Ketua PKK, Sekretaris PKK. dll"
                         value={memberForm.position}
                         onChange={(e) =>
                           setMemberForm({
@@ -774,13 +769,11 @@ export default function ManagePkk() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        {t("pkkAdminStructure.form.termStart.label")}
+                        Masa jabatan mulai
                       </label>
                       <input
                         type="number"
-                        placeholder={t(
-                          "pkkAdminStructure.form.termStart.placeholder"
-                        )}
+                        placeholder="Tahun mulai masa jabatan"
                         value={memberForm.term_start}
                         onChange={(e) =>
                           setMemberForm({
@@ -794,13 +787,11 @@ export default function ManagePkk() {
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        {t("pkkAdminStructure.form.termEnd.label")}
+                        Masa jabatan berakhir
                       </label>
                       <input
                         type="number"
-                        placeholder={t(
-                          "pkkAdminStructure.form.termEnd.placeholder"
-                        )}
+                        placeholder="Tahun berakhir masa jabatan"
                         value={memberForm.term_end}
                         onChange={(e) =>
                           setMemberForm({
@@ -815,13 +806,11 @@ export default function ManagePkk() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      {t("pkkAdminStructure.form.importance.label")}
+                      Tingkat kepentingan
                     </label>
                     <input
                       type="number"
-                      placeholder={t(
-                        "pkkAdminStructure.form.importance.placeholder"
-                      )}
+                      placeholder="Skala 1-10 (1 paling penting)"
                       value={memberForm.important_level}
                       onChange={(e) =>
                         setMemberForm({
@@ -837,7 +826,7 @@ export default function ManagePkk() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      {t("pkkAdminStructure.form.photo.label")}
+                      Foto profil anggota
                     </label>
                     <input
                       type="file"
@@ -854,7 +843,7 @@ export default function ManagePkk() {
 
                   <div className="mb-5">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      {t("pkkAdminStructure.form.status.label")}
+                      Status Menjabat
                     </label>
                     <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
                       <div className="relative inline-block w-14 h-7">
@@ -884,9 +873,7 @@ export default function ManagePkk() {
                             : "text-gray-600"
                         }`}
                       >
-                        {memberForm.is_term
-                          ? t("pkkAdminStructure.form.status.active")
-                          : t("pkkAdminStructure.form.status.inactive")}
+                        {memberForm.is_term ? "Menjabat" : "Tidak Menjabat"}
                       </span>
                     </div>
                   </div>
@@ -897,15 +884,13 @@ export default function ManagePkk() {
                       className="px-6 py-3 rounded-xl bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium transition shadow"
                       onClick={resetForms}
                     >
-                      {t("pkkAdminStructure.buttons.cancel")}
+                      Batal
                     </button>
                     <button
                       type="submit"
                       className="px-7 py-3 rounded-xl bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-medium shadow-lg transition transform hover:-translate-y-0.5"
                     >
-                      {editingMemberId
-                        ? t("pkkAdminStructure.buttons.update")
-                        : t("pkkAdminStructure.buttons.save")}
+                      {editingMemberId ? "Edit" : "Simpan"}
                     </button>
                   </div>
                 </form>
@@ -922,9 +907,7 @@ export default function ManagePkk() {
           <div className="flex justify-between items-center mb-6">
             <div className="flex items-center gap-2 text-gray-800">
               <FaCalendarAlt className="text-2xl text-green-600" />
-              <h2 className="text-xl font-semibold">
-                {t("pkkAdminAgenda.title")}
-              </h2>
+              <h2 className="text-xl font-semibold">Agenda Kegiatam PKK</h2>
             </div>
             {!showAgendaForm && (
               <button
@@ -934,7 +917,7 @@ export default function ManagePkk() {
                 }}
                 className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2 rounded-lg shadow-lg transition transform hover:-translate-y-0.5"
               >
-                <FaPlus /> {t("pkkAdminAgenda.buttons.add")}
+                <FaPlus /> Tambah Agenda PKK
               </button>
             )}
           </div>
@@ -946,12 +929,12 @@ export default function ManagePkk() {
                 {editingAgendaId ? (
                   <>
                     <FaEdit className="text-emerald-500" />
-                    {t("pkkAdminAgenda.modal.editTitle")}
+                    Edit Agenda PKK
                   </>
                 ) : (
                   <>
                     <FaPlus className="text-emerald-500" />
-                    {t("pkkAdminAgenda.modal.addTitle")}
+                    Tambah Agenda PKK
                   </>
                 )}
               </h3>
@@ -959,7 +942,7 @@ export default function ManagePkk() {
               <form onSubmit={handleAgendaSave} className="space-y-4">
                 <div>
                   <label className="block font-medium text-gray-700 mb-1">
-                    {t("pkkAdminAgenda.form.title.label")}{" "}
+                    Judul agenda
                     <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -969,13 +952,13 @@ export default function ManagePkk() {
                     onChange={(e) =>
                       setAgendaForm({ ...agendaForm, title: e.target.value })
                     }
-                    placeholder={t("pkkAdminAgenda.form.title.placeholder")}
+                    placeholder="Masukkan judul agenda PKK"
                   />
                 </div>
 
                 <div>
                   <label className="block font-medium text-gray-700 mb-1">
-                    {t("pkkAdminAgenda.form.description.label")}{" "}
+                    Deskripsi agenda
                     <span className="text-red-500">*</span>
                   </label>
                   <textarea
@@ -985,16 +968,14 @@ export default function ManagePkk() {
                     onChange={(e) =>
                       setAgendaForm({ ...agendaForm, content: e.target.value })
                     }
-                    placeholder={t(
-                      "pkkAdminAgenda.form.description.placeholder"
-                    )}
+                    placeholder="Deskripsikan agenda secara lengkap..."
                   />
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
                     <label className="block font-medium text-gray-700 mb-1">
-                      {t("pkkAdminAgenda.form.startTime.label")}{" "}
+                      Waktu mulai
                       <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -1011,7 +992,7 @@ export default function ManagePkk() {
                   </div>
                   <div>
                     <label className="block font-medium text-gray-700 mb-1">
-                      {t("pkkAdminAgenda.form.endTime.label")}{" "}
+                      Waktu berakhir
                       <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -1030,7 +1011,7 @@ export default function ManagePkk() {
 
                 <div>
                   <label className="block font-medium text-gray-700 mb-1">
-                    {t("pkkAdminAgenda.form.location.label")}{" "}
+                    Lokasi
                     <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -1040,13 +1021,13 @@ export default function ManagePkk() {
                     onChange={(e) =>
                       setAgendaForm({ ...agendaForm, location: e.target.value })
                     }
-                    placeholder={t("pkkAdminAgenda.form.location.placeholder")}
+                    placeholder="Masukkan lokasi agenda"
                   />
                 </div>
 
                 <div>
                   <label className="block font-medium text-gray-700 mb-1">
-                    {t("pkkAdminAgenda.form.image.label")}
+                    Gambar agenda
                   </label>
                   <input
                     type="file"
@@ -1075,7 +1056,7 @@ export default function ManagePkk() {
                                   ?.featured_image
                               }`
                         }
-                        alt={t("pkkAdminAgenda.form.image.preview")}
+                        alt="Pratinjau gambar"
                         className="w-full h-40 object-cover rounded-lg shadow-sm"
                       />
                     </div>
@@ -1096,7 +1077,7 @@ export default function ManagePkk() {
                     className="w-4 h-4 text-green-600 rounded focus:ring-green-500"
                   />
                   <label htmlFor="is_published" className="text-gray-700">
-                    {t("pkkAdminAgenda.form.publishAgenda")}
+                    Publikasikan agenda
                   </label>
                 </div>
 
@@ -1105,17 +1086,15 @@ export default function ManagePkk() {
                     type="submit"
                     className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-5 py-2 rounded-lg shadow hover:shadow-lg transition"
                   >
-                    <FaSave />{" "}
-                    {editingAgendaId
-                      ? t("pkkAdminAgenda.buttons.update")
-                      : t("pkkAdminAgenda.buttons.save")}
+                    <FaSave /> {editingAgendaId ? "Edit" : "Simpan"}
                   </button>
                   <button
                     type="button"
                     onClick={resetForms}
                     className="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition"
                   >
-                    <FaTimes /> {t("pkkAdminAgenda.buttons.cancel")}
+                    <FaTimes />
+                    Batal
                   </button>
                 </div>
               </form>
@@ -1127,7 +1106,7 @@ export default function ManagePkk() {
             {agendas.length === 0 ? (
               <div className="text-center py-12">
                 <p className="text-gray-500 italic text-lg">
-                  {t("pkkAdminAgenda.empty.noAgenda")}
+                  Belum ada agenda PKK yang ditambahkan.
                 </p>
               </div>
             ) : (
@@ -1190,9 +1169,7 @@ export default function ManagePkk() {
                                   : "bg-red-100 text-red-700"
                               }`}
                             >
-                              {agenda.is_published
-                                ? t("pkkAdminAgenda.status.published")
-                                : t("pkkAdminAgenda.status.draft")}
+                              {agenda.is_published ? "Published" : "Draft"}
                             </span>
                           </div>
                         </div>
@@ -1203,13 +1180,13 @@ export default function ManagePkk() {
                             onClick={() => handleAgendaEdit(agenda.id)}
                             className="flex items-center gap-1 px-3 py-2 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded transition text-sm"
                           >
-                            <FaEdit /> {t("pkkAdminAgenda.buttons.edit")}
+                            <FaEdit /> Edit
                           </button>
                           <button
                             onClick={() => handleAgendaDelete(agenda.id)}
                             className="flex items-center gap-1 px-3 py-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded transition text-sm"
                           >
-                            <FaTrash /> {t("pkkAdminAgenda.buttons.delete")}
+                            <FaTrash /> Hapus
                           </button>
                         </div>
                       </div>

@@ -7,7 +7,7 @@ import { alertError } from "../../libs/alert";
 import { useTranslation } from "react-i18next";
 
 export default function StPkk() {
-  const { t,i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [members, setMembers] = useState([]);
   const [galery, setGalery] = useState([]);
 
@@ -16,7 +16,6 @@ export default function StPkk() {
     const responseBody = await response.json();
 
     if (!response.ok) {
-      await alertError(t("detailPkk.errorMembers"));
       return;
     }
     setMembers(responseBody.members);
@@ -24,12 +23,9 @@ export default function StPkk() {
 
   const fetchGalery = async () => {
     const response = await GaleryApi.getGaleri(1, 8, "PKK", i18n.language);
-    if (response.status === 200) {
-      const responseBody = await response.json();
-      setGalery(responseBody.galeri);
-    } else {
-      await alertError(t("detailPkk.errorGalery"));
-    }
+    if (!response.ok) return;
+    const responseBody = await response.json();
+    setGalery(responseBody.galeri);
   };
 
   useEffect(() => {

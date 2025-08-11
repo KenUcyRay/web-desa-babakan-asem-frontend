@@ -1,12 +1,7 @@
 import { useState, useEffect } from "react";
 import {
-  FaEdit,
   FaUsers,
-  FaIdCard,
   FaMapMarkedAlt,
-  FaPray,
-  FaBriefcase,
-  FaGraduationCap,
   FaNewspaper,
   FaCalendarAlt,
   FaTasks,
@@ -14,24 +9,24 @@ import {
   FaEnvelope,
   FaFolderOpen,
   FaCog,
-  FaChartLine,
-  FaMap,
+  FaDrawPolygon,
+  FaTrash,
 } from "react-icons/fa";
-import { GiProgression } from "react-icons/gi";
-import { MdVolunteerActivism } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
-import { alertError } from "../../libs/alert";
+import { alertError, alertSuccess, alertConfirm } from "../../libs/alert";
 import { NewsApi } from "../../libs/api/NewsApi";
 import { AgendaApi } from "../../libs/api/AgendaApi";
 import { GaleryApi } from "../../libs/api/GaleryApi";
 import { MessageApi } from "../../libs/api/MessageApi";
 import { VillageWorkProgramApi } from "../../libs/api/VillageWorkProgramApi";
 import { useTranslation } from "react-i18next";
+import DialogMap from "../../DialogMap";
+import { MapApi } from "../../libs/api/MapApi";
+import { Helper } from "../../utils/Helper";
 
 export default function DataMaster() {
   const { i18n } = useTranslation();
   const navigate = useNavigate();
-  const [activeCategory, setActiveCategory] = useState("all");
   const [stats, setStats] = useState({
     newsCount: 0,
     agendaCount: 0,
@@ -39,11 +34,11 @@ export default function DataMaster() {
     galeriCount: 0,
     pesanCount: 0,
   });
-  const [masterStats, setMasterStats] = useState({
-    pendudukCount: 0,
-    kkCount: 0,
-    wilayahCount: { dusun: 0, rw: 0, rt: 0 },
-  });
+
+  // State untuk DialogMap
+  const [showDialogMap, setShowDialogMap] = useState(false);
+  const [mapData, setMapData] = useState([]);
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
   // Fetch statistics for top cards
   const fetchStats = async () => {
@@ -94,46 +89,58 @@ export default function DataMaster() {
     }
   };
 
-  // Fetch statistics for master data cards
-  // const fetchMasterStats = async () => {
-  //   try {
-  //     // Penduduk
-  //     const pendudukRes = await PendudukApi.getPenduduk();
-  //     const pendudukCount = pendudukRes.ok
-  //       ? (await pendudukRes.json()).length
-  //       : 0;
+  // Fetch data peta
+  const fetchMapData = async () => {
+    try {
+      const response = await MapApi.getAll(i18n.language);
+      if (!response.ok) return;
+      const responseData = await response.json();
+      setMapData(responseData.data || []);
+    } catch (error) {
+      console.error("Error fetching map data:", error);
+    }
+  };
 
-  //     // Kartu Keluarga
-  //     const kkRes = await KartuKeluargaApi.getKartuKeluarga();
-  //     const kkCount = kkRes.ok ? (await kkRes.json()).length : 0;
+  // Fungsi untuk menangani submit DialogMap
+  const handleDialogMapSubmit = async (payload) => {
+    const response = await MapApi.create(payload, i18n.language);
+    if (!response.ok) {
+      Helper.errorResponseHandler(await response.json());
+      return;
+    }
+    await fetchMapData();
+    setShowDialogMap(false);
+    alertSuccess("Data peta berhasil ditambahkan!");
+  };
 
-  //     // Wilayah
-  //     const wilayahRes = await WilayahApi.getWilayah();
-  //     const wilayahData = wilayahRes.ok ? await wilayahRes.json() : [];
+  // Fungsi untuk menghapus item peta
+  const handleDeleteMapItem = async (id, name, type) => {
+    const confirmed = await alertConfirm(
+      `Hapus data peta?`,
+      `Anda yakin ingin menghapus ${
+        type === "polygon" ? "wilayah" : "titik"
+      } "${name}"? Tindakan ini tidak dapat dibatalkan.`
+    );
 
-  //     const wilayahCount = wilayahData.reduce(
-  //       (acc, wilayah) => {
-  //         acc.dusun += wilayah.dusun ? 1 : 0;
-  //         acc.rw += wilayah.rw ? 1 : 0;
-  //         acc.rt += wilayah.rt ? 1 : 0;
-  //         return acc;
-  //       },
-  //       { dusun: 0, rw: 0, rt: 0 }
-  //     );
+    if (!confirmed) return;
 
-  //     setMasterStats({
-  //       pendudukCount,
-  //       kkCount,
-  //       wilayahCount,
-  //     });
-  //   } catch (error) {
-  //     console.error("Error fetching master stats:", error);
-  //   }
-  // };
+    const response = await MapApi.delete(id, i18n.language);
+    if (!response.ok) {
+      Helper.errorResponseHandler(await response.json());
+      return;
+    }
+
+    await fetchMapData();
+    alertSuccess(
+      `Berhasil menghapus ${
+        type === "polygon" ? "wilayah" : "titik"
+      } "${name}".`
+    );
+  };
 
   useEffect(() => {
     fetchStats();
-    // fetchMasterStats();
+    fetchMapData();
   }, [i18n.language]);
 
   // Statistik untuk card bagian atas
@@ -179,95 +186,23 @@ export default function DataMaster() {
   const masterData = [
     {
       id: 1,
-      name: "Data Penduduk",
-      icon: <FaUsers className="text-blue-500 text-3xl" />,
-      description: "Kelola data seluruh penduduk desa secara komprehensif",
-      category: "penduduk",
-      stats: `${masterStats.pendudukCount.toLocaleString()} data`,
+      name: "Data Infografis Desa",
+      icon: <FaUsers className="text-blue-500 text-4xl" />,
+      description: "Visualisasi data kependudukan dan statistik desa",
+      longDescription:
+        "Akses dashboard interaktif dengan berbagai grafik dan visualisasi data kependudukan, perkembangan desa, dan statistik penting lainnya yang disajikan secara informatif dan mudah dipahami.",
+      buttonText: "Kelola Data",
       link: "/admin/kelola-infografis/penduduk",
-    },
-    {
-      id: 2,
-      name: "Data KK",
-      icon: <FaIdCard className="text-green-500 text-3xl" />,
-      description:
-        "Kelola data jumlah kartu keluarga dan hubungan antar anggota keluarga",
-      category: "penduduk",
-      stats: `${masterStats.kkCount} KK`,
-      link: "/admin/kelola-infografis/penduduk",
-    },
-    {
-      id: 3,
-      name: "Wilayah Dusun",
-      icon: <FaMapMarkedAlt className="text-purple-500 text-3xl" />,
-      description: "Kelola pembagian wilayah administratif desa",
-      category: "wilayah",
-      stats: `${masterStats.wilayahCount.dusun} Dusun, ${masterStats.wilayahCount.rw} RW, ${masterStats.wilayahCount.rt} RT`,
-      link: "/admin/manage-wilayah",
-    },
-    {
-      id: 4,
-      name: "Agama",
-      icon: <FaPray className="text-red-500 text-3xl" />,
-      description: "Kelola data keagamaan penduduk desa",
-      category: "kategori",
-      stats: "6 agama",
-      link: "/admin/kelola-infografis/penduduk",
-    },
-    {
-      id: 5,
-      name: "Pekerjaan",
-      icon: <FaBriefcase className="text-yellow-500 text-3xl" />,
-      description: "Kelola jenis-jenis pekerjaan penduduk desa",
-      category: "kategori",
-      stats: "23 jenis pekerjaan",
-      link: "/admin/kelola-infografis/penduduk",
-    },
-    {
-      id: 6,
-      name: "Pendidikan",
-      icon: <FaGraduationCap className="text-teal-500 text-3xl" />,
-      description: "Kelola tingkat pendidikan penduduk desa",
-      category: "kategori",
-      stats: "8 tier pendidikan",
-      link: "/admin/kelola-infografis/penduduk",
-    },
-    {
-      id: 7,
-      name: "Perkembangan IDM",
-      icon: <FaChartLine className="text-pink-500 text-3xl" />,
-      description: "Pantau perkembangan Indeks Desa Membangun",
-      category: "infografis",
-      stats: "Tahap 3",
-      link: "/admin/kelola-infografis/idm",
-    },
-    {
-      id: 8,
-      name: "Jenis Bantuan",
-      icon: <MdVolunteerActivism className="text-orange-500 text-3xl" />,
-      description:
-        "Kelola jenis bantuan sosial yang diberikan untuk masyarakat kesejahteraan",
-      category: "bantuan",
-      stats: "12 jenis bantuan",
-      link: "/admin/kelola-infografis/bansos",
-    },
-    {
-      id: 9,
-      name: "Kategori SDGs",
-      icon: <GiProgression className="text-indigo-500 text-3xl" />,
-      description: "Kelola data terkait Sustainable Development Goals",
-      category: "infografis",
-      stats: "17 goals",
-      link: "/admin/kelola-infografis/sdgs",
     },
     {
       id: 10,
-      name: "GIS Desa",
-      icon: <FaMap className="text-blue-600 text-3xl" />,
-      description: "Sistem Informasi Geografis wilayah desa",
-      category: "infografis",
-      stats: `${masterStats.wilayahCount.dusun} wilayah`,
-      link: "/admin/gis-desa",
+      name: "Sistem Informasi Geografis",
+      icon: <FaMapMarkedAlt className="text-blue-600 text-4xl" />,
+      description: "Peta digital wilayah desa dan fasilitas umum",
+      longDescription:
+        "Kelola data spasial desa seperti batas wilayah, fasilitas umum, dan titik penting. Tambahkan data baru untuk memperkaya informasi geografis desa.",
+      buttonText: "Tambah Data",
+      onClick: () => setShowDialogMap(true), // Buka dialog tambah legenda
     },
   ];
 
@@ -296,19 +231,26 @@ export default function DataMaster() {
     },
   ];
 
-  const categories = [
-    { id: "all", name: "Semua Data" },
-    { id: "penduduk", name: "Data Penduduk" },
-    { id: "wilayah", name: "Wilayah" },
-    { id: "kategori", name: "Kategori" },
-    { id: "bantuan", name: "Bantuan" },
-    { id: "infografis", name: "Infografis" },
+  // Palet warna untuk polygon
+  const polygonColors = [
+    "#dc2626",
+    "#2563eb",
+    "#059669",
+    "#f59e42",
+    "#a21caf",
+    "#eab308",
+    "#0ea5e9",
+    "#f43f5e",
   ];
 
-  const filteredData =
-    activeCategory === "all"
-      ? masterData
-      : masterData.filter((item) => item.category === activeCategory);
+  // Data legenda untuk ditampilkan
+  const legendData = mapData.map((item, index) => ({
+    id: item.id,
+    name: item.name,
+    type: item.type,
+    description: item.description,
+    color: polygonColors[index % polygonColors.length],
+  }));
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 p-4 md:p-8">
@@ -372,83 +314,162 @@ export default function DataMaster() {
           ))}
         </div>
 
-        {/* Kategori Filter */}
-        <div className="flex flex-wrap justify-center gap-3 mb-8">
-          {categories.map((category) => (
-            <button
-              key={category.id}
-              onClick={() => setActiveCategory(category.id)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
-                activeCategory === category.id
-                  ? "bg-blue-600 text-white shadow-lg"
-                  : "bg-white text-gray-700 hover:bg-gray-100 shadow"
-              }`}
-            >
-              {category.name}
-            </button>
-          ))}
-        </div>
-
-        {/* Data Master Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredData.map((item) => (
+        {/* Data Master Cards - Diperbesar dan lebih sedikit */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {masterData.map((item) => (
             <div
               key={item.id}
               className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex flex-col h-full"
             >
-              <div className="p-5 flex-grow">
-                <div className="flex items-start">
-                  <div className="bg-gray-100 p-3 rounded-lg mr-4">
+              <div className="p-6 flex-grow">
+                <div className="flex items-start mb-4">
+                  <div className="bg-blue-50 p-4 rounded-xl mr-5">
                     {item.icon}
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-gray-800">
+                    <h3 className="text-2xl font-bold text-gray-800 mb-2">
                       {item.name}
                     </h3>
-                    <p className="text-gray-600 mt-1 text-sm">
+                    <p className="text-blue-600 font-medium mb-3">
                       {item.description}
                     </p>
                   </div>
                 </div>
+
+                <p className="text-gray-600 mt-4 mb-6">
+                  {item.longDescription}
+                </p>
               </div>
 
-              <div className="p-5 pt-0">
-                <div className="flex justify-between items-center">
-                  {/* <span className="text-xs font-semibold bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
-                    {item.stats}
-                  </span> */}
-                  <button
-                    className="flex items-center gap-2 bg-gradient-to-r from-green-400 to-[#B6F500] hover:from-blue-600 hover:to-indigo-700 text-white text-sm px-4 py-2 rounded-lg shadow transition-all duration-300"
-                    onClick={() => navigate(item.link)}
-                  >
-                    <FaEdit />
-                    Kelola Data
-                  </button>
-                </div>
+              <div className="px-6 pb-6">
+                <button
+                  className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-green-400 to-[#B6F500] hover:from-blue-600 hover:to-indigo-700 text-white font-medium py-3 px-6 rounded-lg shadow transition-all duration-300"
+                  onClick={item.onClick || (() => navigate(item.link))}
+                >
+                  <span className="text-lg">{item.buttonText}</span>
+                </button>
               </div>
 
-              <div className="bg-gradient-to-r from-green-400 to-[#B6F500] h-1 w-full mt-auto"></div>
+              <div className="bg-gradient-to-r from-green-400 to-[#B6F500] h-2 w-full"></div>
             </div>
           ))}
         </div>
 
+        {/* Section Tambah Legenda */}
+        <div className="mt-12 bg-white rounded-xl shadow-lg overflow-hidden">
+          <div className="bg-gradient-to-r from-green-400 to-[#B6F500] p-4 md:p-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <h2 className="text-xl md:text-2xl font-bold text-white flex items-center gap-3">
+                <div className="bg-white bg-opacity-20 p-2 rounded-lg">
+                  <FaMapMarkedAlt className="text-blue-700 text-xl" />
+                </div>
+                Legenda Peta Desa
+              </h2>
+            </div>
+          </div>
+
+          <div className="p-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+              <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                <FaMapMarkedAlt className="text-green-600" />
+                Daftar Legenda
+              </h3>
+              <button
+                className="px-4 py-2 bg-gradient-to-r from-green-600 to-green-500 text-white rounded-xl hover:from-green-700 hover:to-green-600 transition font-bold flex items-center gap-2 shadow-lg border-2 border-green-700 w-full sm:w-auto"
+                onClick={() => setShowDialogMap(true)}
+              >
+                <span className="text-xl">+</span>
+                <span>Tambah Legenda</span>
+              </button>
+            </div>
+
+            {/* Daftar Legenda */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {legendData.length > 0 ? (
+                legendData.map((item) => (
+                  <div
+                    key={item.id}
+                    className="bg-white rounded-lg shadow-md border border-blue-100 p-4 hover:shadow-lg transition"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-3">
+                        {item.type === "POLYGON" ? (
+                          <div
+                            className="w-12 h-0 border-t-3 border-dashed"
+                            style={{
+                              borderColor: item.color,
+                              borderWidth: "2px",
+                            }}
+                          ></div>
+                        ) : (
+                          <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center">
+                            <FaMapMarkedAlt className="text-blue-500" />
+                          </div>
+                        )}
+                        <div>
+                          <h4 className="font-medium text-gray-800">
+                            {item.name}
+                          </h4>
+                          <p className="text-sm text-gray-500">
+                            {item.description}
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        className="text-gray-400 hover:text-red-500 p-2"
+                        onClick={() =>
+                          handleDeleteMapItem(
+                            item.id,
+                            item.name,
+                            item.type === "POLYGON" ? "polygon" : "marker"
+                          )
+                        }
+                        title="Hapus"
+                      >
+                        <FaTrash size={16} />
+                      </button>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="col-span-full text-center py-8">
+                  <p className="text-gray-500 mb-4">
+                    Belum ada data legenda untuk ditampilkan
+                  </p>
+                  <button
+                    className="px-4 py-2 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 font-medium flex items-center gap-2 mx-auto"
+                    onClick={() => setShowDialogMap(true)}
+                  >
+                    <span className="text-xl">+</span> Tambah Legenda
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
         {/* Footer */}
         <div className="mt-12 text-center text-gray-500 text-sm">
-          <p>
-            Total {filteredData.length} data master ditemukan • Terakhir
-            diperbarui:{" "}
-            {new Date().toLocaleDateString("id-ID", {
-              day: "numeric",
-              month: "long",
-              year: "numeric",
-            })}
-          </p>
           <p className="mt-2">
             © {new Date().getFullYear()} Sistem Informasi Desa • Hak Cipta
             Dilindungi
           </p>
         </div>
       </div>
+
+      {/* Dialog Tambah Legenda */}
+      {showDialogMap && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full mx-4">
+            <DialogMap
+              open={showDialogMap}
+              onClose={() => setShowDialogMap(false)}
+              onSubmit={handleDialogMapSubmit}
+              year={selectedYear}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

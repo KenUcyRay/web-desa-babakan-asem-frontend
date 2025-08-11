@@ -78,22 +78,16 @@ export default function Profile() {
     const payload = {
       name: formData.name,
       password: formData.password,
+      confirm_password: formData.confirm_password,
       email: formData.email || null,
       phone: formData.phone || null,
     };
-
-    if (formData.password.trim() !== "") {
-      if (formData.password !== formData.confirm_password) {
-        return alertError(t("profile.passwordMismatch"));
-      } else {
-        payload.password = formData.password;
-      }
-    }
 
     const response = await UserApi.updateUser(
       payload.name,
       payload.email,
       payload.password,
+      payload.confirm_password,
       payload.phone,
       i18n.language
     );

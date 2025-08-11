@@ -16,14 +16,14 @@ export default function Bpd() {
   const fetchAgenda = async () => {
     const response = await AgendaApi.getAgenda(1, 3, "BPD", i18n.language);
     const responseBody = await response.json();
-    if (!response.ok) return alertError(t("bpd.error.agenda"));
+    if (!response.ok) return;
     setAgenda(responseBody.agenda);
   };
 
   const fetchMembers = async () => {
     const response = await MemberApi.getMembers("BPD", 1, 8, i18n.language);
     const responseBody = await response.json();
-    if (!response.ok) return alertError(t("bpd.error.members"));
+    if (!response.ok) return;
     setMembers(responseBody.members);
   };
 

@@ -60,15 +60,14 @@ export default function DetailBerita() {
     );
     const resBody = await response.json();
 
-    if (response.status === 200) {
-      await alertSuccess(t("detailNews.alert.commentUpdateSuccess"));
-      setEditingCommentId(null);
-      fetchComment();
-    } else {
-      await alertError(
-        t("detailNews.alert.commentUpdateFail", { error: resBody.error })
-      );
+    if (!response.ok) {
+      await Helper.errorResponseHandler(resBody);
+      return;
     }
+
+    await alertSuccess(t("detailNews.alert.commentUpdateSuccess"));
+    setEditingCommentId(null);
+    fetchComment();
   };
   const handleDeleteComment = async (commentId) => {
     if (!(await alertConfirm(t("detailNews.alert.confirmDelete")))) return;
@@ -76,14 +75,13 @@ export default function DetailBerita() {
     const response = await CommentApi.deleteComment(commentId, i18n.language);
     const resBody = await response.json();
 
-    if (response.status === 200) {
-      await alertSuccess(t("detailNews.alert.commentDeleteSuccess"));
-      fetchComment();
-    } else {
-      await alertError(
-        t("detailNews.alert.commentDeleteFail", { error: resBody.error })
-      );
+    if (!response.ok) {
+      await Helper.errorResponseHandler(resBody);
+      return;
     }
+
+    await alertSuccess(t("detailNews.alert.commentDeleteSuccess"));
+    fetchComment();
   };
   const startEditComment = (comment) => {
     setEditingCommentId(comment.id);

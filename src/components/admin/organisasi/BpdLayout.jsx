@@ -11,9 +11,9 @@ import BpdSidebar from "./BpdSidebar";
 
 const BpdLayout = () => {
   const navigate = useNavigate();
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { profile, setProfile } = useAuth();
+  const { setProfile } = useAuth();
 
   // - Cek Auth & Role
   const checkAuth = async () => {
@@ -62,7 +62,7 @@ const BpdLayout = () => {
           >
             <FaBars />
           </button>
-          <h1 className="font-semibold text-lg">{t("adminLayout.title")}</h1>
+          <h1 className="font-semibold text-lg">Panel BPD</h1>
           <div className="w-6" /> {/* Spacer biar balance */}
         </div>
 

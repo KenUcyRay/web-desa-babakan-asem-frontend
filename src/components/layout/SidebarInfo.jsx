@@ -1,4 +1,3 @@
-import berita1 from "../../assets/berita1.jpeg";
 import { Link } from "react-router-dom";
 import { FaWhatsapp, FaPhoneAlt, FaEnvelope } from "react-icons/fa";
 import { useEffect, useState } from "react";
@@ -21,12 +20,10 @@ export default function SidebarInfo() {
 
   const fetchAgenda = async () => {
     const response = await AgendaApi.getAgenda(1, 4, "", i18n.language);
-    if (response.status === 200) {
-      const responseBody = await response.json();
-      setAgenda(responseBody.agenda);
-    } else {
-      alertError(t("sidebarInfo.alert.agenda_error"));
-    }
+    if (!response.ok) return;
+
+    const responseBody = await response.json();
+    setAgenda(responseBody.agenda);
   };
 
   const fetchAll = async () => {

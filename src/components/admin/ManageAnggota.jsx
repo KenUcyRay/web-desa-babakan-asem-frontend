@@ -8,7 +8,7 @@ import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 import { Helper } from "../../utils/Helper";
 
 export default function ManageAnggota() {
-  const { t, i18n } = useTranslation();
+  const {  i18n } = useTranslation();
   const [members, setMembers] = useState([]);
   const [kategori, setKategori] = useState("Semua");
   const kategoriList = [

@@ -49,6 +49,7 @@ export default function PengaturanProfil() {
       updatedEmail,
       updatedPassword,
       updatedConfirmPassword,
+      "",
       i18n.language
     );
 
@@ -64,7 +65,7 @@ export default function PengaturanProfil() {
       return;
     }
 
-    setProfile(responseBody.user);
+    fetchProfile();
     alertSuccess("Perubahan berhasil disimpan!");
   };
 

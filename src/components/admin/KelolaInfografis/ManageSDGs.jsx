@@ -43,7 +43,7 @@ const iconList = [
 ];
 
 export default function ManageSDGs() {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const [sdg, setSdg] = useState([]);
   const [editingIndex, setEditingIndex] = useState(null);
   const [progressBaru, setProgressBaru] = useState("");
@@ -55,7 +55,6 @@ export default function ManageSDGs() {
     const data = await response.json();
 
     if (!response.ok) {
-      alertError(t("manageSDGs.errors.fetchFailed"));
       return;
     }
 
@@ -78,11 +77,6 @@ export default function ManageSDGs() {
   };
 
   const handleSave = async () => {
-    if (isNaN(progressBaru) || progressBaru === "") {
-      alertError(t("manageSDGs.validation.progressNumber"));
-      return;
-    }
-
     const updated = [...sdg];
     const id = updated[editingIndex].id;
     const body = { progress: parseInt(progressBaru) };
@@ -92,10 +86,10 @@ export default function ManageSDGs() {
       updated[editingIndex].progress = parseInt(progressBaru);
       updated[editingIndex].updated_at = new Date().toISOString();
       setSdg(updated);
-      alertSuccess(t("manageSDGs.success.progressUpdated"));
+      alertSuccess("Progress SDG berhasil diperbarui");
       setShowForm(false);
     } else {
-      alertError(t("manageSDGs.errors.updateFailed"));
+      await Helper.errorResponseHandler(await res.json());
     }
   };
 
@@ -108,23 +102,17 @@ export default function ManageSDGs() {
       {/* Header */}
       <div className="grid md:grid-cols-2 gap-6 items-center mb-8">
         <div>
-          <h2 className="text-3xl font-bold text-gray-800">
-            {t("manageSDGs.title")}
-          </h2>
-          <p className="text-gray-600 mt-2">{t("manageSDGs.description")}</p>
+          <h2 className="text-3xl font-bold text-gray-800">Kelola SDGs</h2>
+          <p className="text-gray-600 mt-2">
+            Kelola progress 17 Tujuan Pembangunan Berkelanjutan Desa.
+          </p>
           {lastUpdated && (
             <p className="text-sm text-gray-500 mt-1">
-              {t("manageSDGs.lastUpdated", {
-                date: Helper.formatTanggal(lastUpdated),
-              })}
+              Terakhir diperbarui: {Helper.formatTanggal(lastUpdated)}
             </p>
           )}
         </div>
-        <img
-          src={cuate}
-          alt={t("manageSDGs.altText")}
-          className="w-full max-w-md mx-auto"
-        />
+        <img src={cuate} alt="SDGs" className="w-full max-w-md mx-auto" />
       </div>
 
       {/* Grid SDGs */}
@@ -143,9 +131,7 @@ export default function ManageSDGs() {
             <p className="text-xl font-bold text-gray-800">{item.progress}%</p>
             {item.updated_at && (
               <p className="mt-1 text-xs text-gray-400">
-                {t("manageSDGs.updated", {
-                  date: Helper.formatTanggal(item.updated_at),
-                })}
+                Diperbarui: {Helper.formatTanggal(item.updated_at)}
               </p>
             )}
             <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
@@ -158,7 +144,7 @@ export default function ManageSDGs() {
               onClick={() => handleEdit(idx)}
               className="absolute top-3 right-3 text-blue-600 hover:underline text-sm"
             >
-              {t("manageSDGs.edit")}
+              Edit
             </button>
           </div>
         ))}
@@ -169,10 +155,10 @@ export default function ManageSDGs() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg p-6 w-80">
             <h3 className="text-xl font-semibold mb-4">
-              {t("manageSDGs.modal.title", { name: sdg[editingIndex].name })}
+              Edit Progress - {sdg[editingIndex].name}
             </h3>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              {t("manageSDGs.modal.progressLabel")}
+              Progress Baru (%)
             </label>
             <input
               type="number"
@@ -187,13 +173,13 @@ export default function ManageSDGs() {
                 onClick={() => setShowForm(false)}
                 className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
               >
-                {t("manageSDGs.modal.cancel")}
+                Batal
               </button>
               <button
                 onClick={handleSave}
                 className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
               >
-                {t("manageSDGs.modal.save")}
+                Simpan
               </button>
             </div>
           </div>

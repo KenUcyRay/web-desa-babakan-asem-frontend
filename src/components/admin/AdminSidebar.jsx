@@ -20,8 +20,10 @@ import {
   FaStar,
   FaTasks,
   FaMoneyCheckAlt,
+  FaMapMarkerAlt,
 } from "react-icons/fa";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
+import { BsDatabaseFillLock } from "react-icons/bs";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import logo from "../../assets/logo.png";
@@ -40,13 +42,42 @@ export default function AdminSidebar({ isOpen, onClose }) {
   const [openManageInformasi, setOpenManageInformasi] = useState(false);
   const [openManageOrganisasi, setOpenManageOrganisasi] = useState(false);
 
+  // State untuk waktu saat ini
+  const [currentTime, setCurrentTime] = useState(new Date());
+
   // - supaya sidebar mobile gak langsung hilang
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     if (isOpen) setIsVisible(true);
     else setTimeout(() => setIsVisible(false), 300); // sesuai durasi animasi
+
+    // Update waktu setiap detik
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(timer);
   }, [isOpen]);
+
+  // Format waktu menjadi string: "HH:MM:SS"
+  const formatTime = (date) => {
+    return date.toLocaleTimeString("id-ID", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+  };
+
+  // Format tanggal menjadi string: "Hari, DD MMMM YYYY"
+  const formatDate = (date) => {
+    return date.toLocaleDateString("id-ID", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  };
 
   const handleLogout = async () => {
     const confirm = await alertConfirm("Apakah Anda yakin ingin keluar?");
@@ -66,6 +97,12 @@ export default function AdminSidebar({ isOpen, onClose }) {
       to: "/admin",
       label: "Dashboard",
       icon: <FaTachometerAlt />,
+    },
+    // TOMBOL DATA MASTER SATUAN
+    {
+      to: "/admin/data-master",
+      label: "Data Master",
+      icon: <BsDatabaseFillLock />,
     },
   ];
 
@@ -123,22 +160,6 @@ export default function AdminSidebar({ isOpen, onClose }) {
       label: "Administrasi",
       icon: <FaClipboardList />,
     },
-    // {
-    //   to: "/admin/manage-region",
-    //   label:
-    //     i18n.language === "en"
-    //       ? "Manage Region (Area)"
-    //       : "Kelola Wilayah (Region)",
-    //   icon: <FaSitemap />,
-    // },
-    // {
-    //   to: "/admin/manage-poi",
-    //   label:
-    //     i18n.language === "en"
-    //       ? "Manage POI (Point of Interest)"
-    //       : "Kelola POI (Point of Interest)",
-    //   icon: <FaMapMarkerAlt />,
-    // },
   ];
 
   const manageOrganisasiSubmenu = [
@@ -188,15 +209,31 @@ export default function AdminSidebar({ isOpen, onClose }) {
   const renderSidebarContent = () => (
     <>
       {/* LOGO + JUDUL */}
-      <div className="flex items-center gap-3 px-4 py-5 border-b bg-gradient-to-r from-green-400 to-[#B6F500]">
-        <div className="bg-white p-1 rounded-lg shadow-sm">
-          <img src={logo} alt="Logo Desa" className="w-9 h-9 object-contain" />
+      <div className="flex flex-col px-4 py-5 border-b bg-gradient-to-r from-green-400 to-[#B6F500]">
+        <div className="flex items-center gap-3">
+          <div className="bg-white p-1 rounded-lg shadow-sm">
+            <img
+              src={logo}
+              alt="Logo Desa"
+              className="w-11 h-11 object-contain"
+            />
+          </div>
+          <div>
+            <h1 className="font-bold text-white leading-tight text-base">
+              Admin Panel Desa
+            </h1>
+            <p className="text-sm text-white">Babakan Asem</p>
+          </div>
         </div>
-        <div>
-          <h1 className="font-bold text-white leading-tight text-base">
-            Admin Panel Desa
-          </h1>
-          <p className="text-xs text-green-100">Babakan Asem</p>
+
+        {/* Tampilan Tanggal dan Waktu */}
+        <div className="mt-2 text-center">
+          <div className="text-xs text-white font-semibold">
+            {formatDate(currentTime)}
+          </div>
+          <div className="text-xs text-white font-medium">
+            {formatTime(currentTime)}
+          </div>
         </div>
       </div>
 

@@ -114,7 +114,14 @@ export class UserApi {
     );
   }
 
-  static async updateUser(name, email, password, phone, language) {
+  static async updateUser(
+    name,
+    email,
+    password,
+    confirm_password,
+    phone,
+    language
+  ) {
     return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/private/users`, {
       method: "PATCH",
       credentials: "include",
@@ -127,6 +134,8 @@ export class UserApi {
         name: name,
         email: email !== null ? email : undefined,
         password: password !== "" ? password : undefined,
+        confirm_password:
+          confirm_password !== "" ? confirm_password : undefined,
         phone_number: phone ? phone : undefined,
       }),
     });

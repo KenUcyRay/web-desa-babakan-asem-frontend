@@ -102,7 +102,7 @@ export default function ManageBumdes() {
       );
       const body = await response.json();
       if (!response.ok) {
-        alertError(Helper.parseError(body));
+        await Helper.errorResponseHandler(body);
         return;
       }
       await alertSuccess("Produk berhasil diupdate");
@@ -162,7 +162,7 @@ export default function ManageBumdes() {
       );
       const body = await response.json();
       if (!response.ok) {
-        alertError(body);
+        await Helper.errorResponseHandler(body);
         return;
       }
       await alertSuccess("Kategori berhasil diperbarui");

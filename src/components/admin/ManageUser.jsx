@@ -103,28 +103,25 @@ export default function ManageUser() {
     )
       return;
 
-    try {
-      const response = await UserApi.updateRoleById(userId, newRole);
-      const resBody = await response.json();
-      if (!response.ok) {
-        throw new Error(resBody.error || "Gagal mengubah role user");
-      }
-
-      setUsers((prevUsers) =>
-        prevUsers.map((user) =>
-          user.id === userId ? { ...user, role: newRole } : user
-        )
-      );
-
-      alertSuccess(
-        `Role user berhasil diubah menjadi ${
-          newRole === "KARANG_TARUNA" ? "KARANG TARUNA" : newRole
-        }`
-      );
-      closeAllDropdowns();
-    } catch (err) {
-      alertError(err.message);
+    const response = await UserApi.updateRoleById(userId, newRole);
+    const resBody = await response.json();
+    if (!response.ok) {
+      await Helper.errorResponseHandler(resBody);
+      return;
     }
+
+    setUsers((prevUsers) =>
+      prevUsers.map((user) =>
+        user.id === userId ? { ...user, role: newRole } : user
+      )
+    );
+
+    alertSuccess(
+      `Role user berhasil diubah menjadi ${
+        newRole === "KARANG_TARUNA" ? "KARANG TARUNA" : newRole
+      }`
+    );
+    closeAllDropdowns();
   };
 
   // Handle promote user form submission
@@ -144,33 +141,26 @@ export default function ManageUser() {
     )
       return;
 
-    try {
-      const response = await UserApi.updateRoleById(
-        promoteUserId,
-        promoteToRole
-      );
-      const resBody = await response.json();
-      if (!response.ok) {
-        await Helper.errorResponseHandler(resBody);
-        return;
-      }
-
-      setUsers((prevUsers) =>
-        prevUsers.map((user) =>
-          user.id === promoteUserId ? { ...user, role: promoteToRole } : user
-        )
-      );
-
-      alertSuccess(
-        `Role user berhasil diubah menjadi ${
-          promoteToRole === "KARANG_TARUNA" ? "KARANG TARUNA" : promoteToRole
-        }`
-      );
-      setShowPromoteForm(false);
-      setPromoteUserId("");
-    } catch (err) {
-      alertError(err.message);
+    const response = await UserApi.updateRoleById(promoteUserId, promoteToRole);
+    const resBody = await response.json();
+    if (!response.ok) {
+      await Helper.errorResponseHandler(resBody);
+      return;
     }
+
+    setUsers((prevUsers) =>
+      prevUsers.map((user) =>
+        user.id === promoteUserId ? { ...user, role: promoteToRole } : user
+      )
+    );
+
+    alertSuccess(
+      `Role user berhasil diubah menjadi ${
+        promoteToRole === "KARANG_TARUNA" ? "KARANG TARUNA" : promoteToRole
+      }`
+    );
+    setShowPromoteForm(false);
+    setPromoteUserId("");
   };
 
   // Function to get role display name

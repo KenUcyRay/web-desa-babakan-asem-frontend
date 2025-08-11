@@ -1,4 +1,3 @@
-import berita1 from "../../assets/berita1.jpeg";
 import { useEffect, useState } from "react";
 import { ProductApi } from "../../libs/api/ProductApi";
 import { Helper } from "../../utils/Helper";
@@ -11,12 +10,10 @@ export default function SidebarProduk() {
 
   const fetchProduct = async () => {
     const response = await ProductApi.getProducts(1, 4, i18n.language);
-    if (response.status === 200) {
-      const responseBody = await response.json();
-      setProducts(responseBody.products);
-    } else {
-      await alertError(t("sidebarProduct.alert.product_error"));
-    }
+    if (!response.ok) return;
+
+    const responseBody = await response.json();
+    setProducts(responseBody.products);
   };
 
   useEffect(() => {
@@ -27,9 +24,7 @@ export default function SidebarProduk() {
     <div className="space-y-6">
       {/* ✅ Produk Lainnya */}
       <div className="bg-white p-4 rounded-xl shadow-lg">
-        <h2 className="font-bold text-lg mb-4 border-b pb-2">
-          {t("sidebarProduct.other_products")}
-        </h2>
+        <h2 className="font-bold text-lg mb-4 border-b pb-2">Produk Lainnya</h2>
         {products.map((item) => (
           <div key={item.product.id} className="relative">
             <Link

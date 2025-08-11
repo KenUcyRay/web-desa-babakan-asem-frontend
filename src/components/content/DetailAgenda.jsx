@@ -57,15 +57,14 @@ export default function DetailAgenda() {
     );
     const resBody = await response.json();
 
-    if (response.status === 200) {
-      await alertSuccess(t("detailAgenda.alert.updateSuccess"));
-      setEditingCommentId(null);
-      fetchComments();
-    } else {
-      await alertError(
-        t("detailAgenda.alert.updateFailed", { error: resBody.error })
-      );
+    if (!response.ok) {
+      await Helper.errorResponseHandler(resBody);
+      return;
     }
+
+    await alertSuccess(t("detailAgenda.alert.updateSuccess"));
+    setEditingCommentId(null);
+    fetchComments();
   };
   const handleDeleteComment = async (commentId) => {
     if (!(await alertConfirm(t("detailAgenda.alert.deleteConfirm")))) return;
@@ -73,14 +72,12 @@ export default function DetailAgenda() {
     const response = await CommentApi.deleteComment(commentId, i18n.language);
     const resBody = await response.json();
 
-    if (response.status === 200) {
-      await alertSuccess(t("detailAgenda.alert.deleteSuccess"));
-      fetchComments();
-    } else {
-      await alertError(
-        t("detailAgenda.alert.deleteFailed", { error: resBody.error })
-      );
+    if (!response.ok) {
+      await Helper.errorResponseHandler(resBody);
+      return;
     }
+    await alertSuccess(t("detailAgenda.alert.deleteSuccess"));
+    fetchComments();
   };
   const fetchComments = async () => {
     const response = await CommentApi.getComments(id, i18n.language);

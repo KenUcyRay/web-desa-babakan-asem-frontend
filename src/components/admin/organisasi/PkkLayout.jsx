@@ -9,7 +9,7 @@ import PkkSidebar from "./PkkSidebar";
 
 const PkkLayout = () => {
   const navigate = useNavigate();
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { profile, setProfile } = useAuth();
 
@@ -60,7 +60,7 @@ const PkkLayout = () => {
           >
             <FaBars />
           </button>
-          <h1 className="font-semibold text-lg">{t("adminLayout.title")}</h1>
+          <h1 className="font-semibold text-lg">Panel Pkk</h1>
           <div className="w-6" /> {/* Spacer biar balance */}
         </div>
 

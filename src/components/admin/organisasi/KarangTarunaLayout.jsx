@@ -10,9 +10,9 @@ import KarangTarunaSidebar from "./KarangTarunaSidebar";
 
 const KarangTarunaLayout = () => {
   const navigate = useNavigate();
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { profile, setProfile } = useAuth();
+  const { setProfile } = useAuth();
 
   // - Cek Auth & Role
   const checkAuth = async () => {
@@ -61,7 +61,7 @@ const KarangTarunaLayout = () => {
           >
             <FaBars />
           </button>
-          <h1 className="font-semibold text-lg">{t("adminLayout.title")}</h1>
+          <h1 className="font-semibold text-lg">Panel Karang Taruna</h1>
           <div className="w-6" /> {/* Spacer biar balance */}
         </div>
 

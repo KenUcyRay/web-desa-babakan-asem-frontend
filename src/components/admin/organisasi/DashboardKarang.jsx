@@ -19,7 +19,7 @@ import { alertConfirm, alertError, alertSuccess } from "../../../libs/alert";
 import { Helper } from "../../../utils/Helper";
 
 export default function DashboardKarangTaruna() {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const [activeTab, setActiveTab] = useState("structure");
 
   // State untuk Struktur Karang Taruna
@@ -109,12 +109,8 @@ export default function DashboardKarangTaruna() {
     };
 
     if (editingMemberId) {
-      if (
-        !(await alertConfirm(
-          t("karangTarunaAdminStructure.confirmations.saveChanges")
-        ))
-      )
-        return;
+      const confirm = await alertConfirm("Yakin ingin menyimpan perubahan?");
+      if (!confirm) return;
 
       const response = await MemberApi.updateMember(
         editingMemberId,
@@ -126,7 +122,7 @@ export default function DashboardKarangTaruna() {
         return;
       }
 
-      await alertSuccess(t("karangTarunaAdminStructure.alerts.updateSuccess"));
+      await alertSuccess("Anggota Karang Taruna berhasil diperbarui!");
     } else {
       const response = await MemberApi.createMember(rawData, i18n.language);
       if (!response.ok) {
@@ -134,7 +130,7 @@ export default function DashboardKarangTaruna() {
         return;
       }
 
-      await alertSuccess(t("karangTarunaAdminStructure.alerts.addSuccess"));
+      await alertSuccess("Anggota Karang Taruna berhasil ditambahkan!");
     }
 
     resetForms();
@@ -158,12 +154,8 @@ export default function DashboardKarangTaruna() {
   };
 
   const handleMemberDelete = async (id) => {
-    if (
-      !(await alertConfirm(
-        t("karangTarunaAdminStructure.confirmations.delete")
-      ))
-    )
-      return;
+    const confirm = await alertConfirm("Yakin ingin menghapus anggota ini?");
+    if (!confirm) return;
 
     const response = await MemberApi.deleteMember(id, i18n.language);
     if (!response.ok) {
@@ -172,7 +164,7 @@ export default function DashboardKarangTaruna() {
     }
 
     setMembers((prev) => prev.filter((m) => m.id !== id));
-    await alertSuccess(t("karangTarunaAdminStructure.alerts.deleteSuccess"));
+    await alertSuccess("Anggota Karang Taruna berhasil dihapus!");
   };
 
   // ==================== FUNGSI AGENDA KARANG TARUNA ====================
@@ -212,12 +204,8 @@ export default function DashboardKarangTaruna() {
     };
 
     if (editingAgendaId) {
-      if (
-        !(await alertConfirm(
-          t("karangTarunaAdminAgenda.confirmations.saveChanges")
-        ))
-      )
-        return;
+      const confirm = await alertConfirm("Yakin ingin menyimpan perubahan?");
+      if (!confirm) return;
 
       const response = await AgendaApi.updateAgenda(
         editingAgendaId,
@@ -229,7 +217,7 @@ export default function DashboardKarangTaruna() {
         return;
       }
 
-      await alertSuccess(t("karangTarunaAdminAgenda.alerts.updateSuccess"));
+      await alertSuccess("Agenda Karang Taruna berhasil diperbarui!");
     } else {
       const response = await AgendaApi.createAgenda(rawData, i18n.language);
       if (!response.ok) {
@@ -237,7 +225,7 @@ export default function DashboardKarangTaruna() {
         return;
       }
 
-      await alertSuccess(t("karangTarunaAdminAgenda.alerts.addSuccess"));
+      await alertSuccess("Agenda Karang Taruna berhasil ditambahkan!");
     }
 
     resetForms();
@@ -261,10 +249,8 @@ export default function DashboardKarangTaruna() {
   };
 
   const handleAgendaDelete = async (id) => {
-    if (
-      !(await alertConfirm(t("karangTarunaAdminAgenda.confirmations.delete")))
-    )
-      return;
+    const confirm = await alertConfirm("Yakin ingin menghapus agenda ini?");
+    if (!confirm) return;
 
     const response = await AgendaApi.deleteAgenda(id, i18n.language);
     if (!response.ok) {
@@ -272,7 +258,7 @@ export default function DashboardKarangTaruna() {
     }
 
     setAgendas((prev) => prev.filter((a) => a.id !== id));
-    await alertSuccess(t("karangTarunaAdminAgenda.alerts.deleteSuccess"));
+    await alertSuccess("Agenda Karang Taruna berhasil dihapus!");
   };
 
   const formatDateTime = (dt) =>
@@ -292,7 +278,7 @@ export default function DashboardKarangTaruna() {
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-green-700">
-          {t("manageKarangTaruna.title") || "Dashboard Karang Taruna"}
+          Dashboard Karang Taruna
         </h1>
       </div>
 
@@ -306,8 +292,7 @@ export default function DashboardKarangTaruna() {
               : "text-gray-500"
           }`}
         >
-          <FaUsers className="inline mr-2" />{" "}
-          {t("manageKarangTaruna.tabs.structure") || "Struktur Karang Taruna"}
+          <FaUsers className="inline mr-2" /> Struktur Karang Taruna
         </button>
         <button
           onClick={() => setActiveTab("agenda")}
@@ -317,8 +302,7 @@ export default function DashboardKarangTaruna() {
               : "text-gray-500"
           }`}
         >
-          <FaCalendarAlt className="inline mr-2" />{" "}
-          {t("manageKarangTaruna.tabs.agenda") || "Agenda Karang Taruna"}
+          <FaCalendarAlt className="inline mr-2" /> Agenda Karang Taruna
         </button>
       </div>
 
@@ -330,8 +314,7 @@ export default function DashboardKarangTaruna() {
             <div className="flex items-center gap-2 text-gray-800">
               <FaUsers className="text-2xl text-green-600" />
               <h2 className="text-xl font-semibold">
-                {t("karangTarunaAdminStructure.title") ||
-                  "Struktur Organisasi Karang Taruna"}
+                Struktur Organisasi Karang Taruna
               </h2>
             </div>
             {!showMemberForm && (
@@ -342,9 +325,7 @@ export default function DashboardKarangTaruna() {
                 }}
                 className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2 rounded-lg shadow-lg transition transform hover:-translate-y-0.5"
               >
-                <FaPlus />{" "}
-                {t("karangTarunaAdminStructure.buttons.add") ||
-                  "Tambah Anggota"}
+                <FaPlus /> Tambah Anggota
               </button>
             )}
           </div>
@@ -359,22 +340,19 @@ export default function DashboardKarangTaruna() {
                 {editingMemberId ? (
                   <>
                     <FaEdit className="text-emerald-500" />
-                    {t("karangTarunaAdminStructure.modal.editTitle") ||
-                      "Edit Anggota Karang Taruna"}
+                    Edit Anggota Karang Taruna
                   </>
                 ) : (
                   <>
                     <FaPlus className="text-emerald-500" />
-                    {t("karangTarunaAdminStructure.modal.addTitle") ||
-                      "Tambah Anggota Karang Taruna Baru"}
+                    Tambah Anggota Karang Taruna Baru
                   </>
                 )}
               </h3>
 
               <div>
                 <label className="block font-medium text-gray-700 mb-1">
-                  {t("karangTarunaAdminStructure.form.name.label") ||
-                    "Nama Lengkap"}
+                  Nama Lengkap
                 </label>
                 <input
                   type="text"
@@ -383,17 +361,13 @@ export default function DashboardKarangTaruna() {
                   onChange={(e) =>
                     setMemberForm({ ...memberForm, name: e.target.value })
                   }
-                  placeholder={
-                    t("karangTarunaAdminStructure.form.name.placeholder") ||
-                    "Nama lengkap anggota"
-                  }
+                  placeholder="Nama lengkap anggota"
                 />
               </div>
 
               <div>
                 <label className="block font-medium text-gray-700 mb-1">
-                  {t("karangTarunaAdminStructure.form.position.label") ||
-                    "Jabatan"}
+                  Jabatan
                 </label>
                 <input
                   type="text"
@@ -402,18 +376,14 @@ export default function DashboardKarangTaruna() {
                   onChange={(e) =>
                     setMemberForm({ ...memberForm, position: e.target.value })
                   }
-                  placeholder={
-                    t("karangTarunaAdminStructure.form.position.placeholder") ||
-                    "Jabatan dalam struktur"
-                  }
+                  placeholder="Jabatan dalam struktur"
                 />
               </div>
 
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
                   <label className="block font-medium text-gray-700 mb-1">
-                    {t("karangTarunaAdminStructure.form.termStart.label") ||
-                      "Masa Jabatan Mulai"}
+                    Masa Jabatan Mulai
                   </label>
                   <input
                     type="number"
@@ -425,17 +395,12 @@ export default function DashboardKarangTaruna() {
                         term_start: e.target.value,
                       })
                     }
-                    placeholder={
-                      t(
-                        "karangTarunaAdminStructure.form.termStart.placeholder"
-                      ) || "Tahun mulai"
-                    }
+                    placeholder="Tahun mulai"
                   />
                 </div>
                 <div>
                   <label className="block font-medium text-gray-700 mb-1">
-                    {t("karangTarunaAdminStructure.form.termEnd.label") ||
-                      "Masa Jabatan Berakhir"}
+                    Masa Jabatan Berakhir
                   </label>
                   <input
                     type="number"
@@ -444,19 +409,14 @@ export default function DashboardKarangTaruna() {
                     onChange={(e) =>
                       setMemberForm({ ...memberForm, term_end: e.target.value })
                     }
-                    placeholder={
-                      t(
-                        "karangTarunaAdminStructure.form.termEnd.placeholder"
-                      ) || "Tahun berakhir"
-                    }
+                    placeholder="Tahun berakhir"
                   />
                 </div>
               </div>
 
               <div>
                 <label className="block font-medium text-gray-700 mb-1">
-                  {t("karangTarunaAdminStructure.form.photo.label") ||
-                    "Foto Profil"}
+                  Foto Profil
                 </label>
                 <input
                   type="file"
@@ -479,10 +439,7 @@ export default function DashboardKarangTaruna() {
                     setMemberForm({ ...memberForm, is_term: e.target.checked })
                   }
                 />
-                <span>
-                  {t("karangTarunaAdminStructure.form.status.active") ||
-                    "Masih menjabat?"}
-                </span>
+                <span>Masih menjabat?</span>
               </div>
 
               <div className="flex gap-3">
@@ -490,18 +447,14 @@ export default function DashboardKarangTaruna() {
                   type="submit"
                   className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-5 py-2 rounded-lg shadow hover:shadow-lg transition"
                 >
-                  <FaSave />{" "}
-                  {editingMemberId
-                    ? t("karangTarunaAdminStructure.buttons.update") || "Update"
-                    : t("karangTarunaAdminStructure.buttons.save") || "Simpan"}
+                  <FaSave /> {editingMemberId ? "Edit" : "Simpan"}
                 </button>
                 <button
                   type="button"
                   onClick={resetForms}
                   className="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition"
                 >
-                  <FaTimes />{" "}
-                  {t("karangTarunaAdminStructure.buttons.cancel") || "Batal"}
+                  <FaTimes /> Batal
                 </button>
               </div>
             </form>
@@ -511,8 +464,7 @@ export default function DashboardKarangTaruna() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {members.length === 0 ? (
               <p className="text-center text-gray-500 col-span-full italic">
-                {t("karangTarunaAdminStructure.empty.noMembers") ||
-                  "Belum ada anggota struktur Karang Taruna"}
+                Belum ada anggota struktur Karang Taruna
               </p>
             ) : (
               members.map((member) => (
@@ -549,11 +501,7 @@ export default function DashboardKarangTaruna() {
                             : "bg-red-200 text-red-800"
                         }`}
                       >
-                        {member.is_term
-                          ? t("karangTarunaAdminStructure.labels.active") ||
-                            "Menjabat"
-                          : t("karangTarunaAdminStructure.labels.inactive") ||
-                            "Tidak Menjabat"}
+                        {member.is_term ? "Menjabat" : "Tidak Menjabat"}
                       </span>
                     </div>
                   </div>
@@ -563,16 +511,13 @@ export default function DashboardKarangTaruna() {
                       onClick={() => handleMemberEdit(member.id)}
                       className="flex items-center gap-1 text-blue-600 hover:text-blue-800 transition"
                     >
-                      <FaEdit />{" "}
-                      {t("karangTarunaAdminStructure.buttons.edit") || "Edit"}
+                      <FaEdit /> Edit
                     </button>
                     <button
                       onClick={() => handleMemberDelete(member.id)}
                       className="flex items-center gap-1 text-red-600 hover:text-red-800 transition"
                     >
-                      <FaTrash />{" "}
-                      {t("karangTarunaAdminStructure.buttons.delete") ||
-                        "Hapus"}
+                      <FaTrash /> Hapus
                     </button>
                   </div>
                 </div>
@@ -599,8 +544,7 @@ export default function DashboardKarangTaruna() {
             <div className="flex items-center gap-2 text-gray-800">
               <FaCalendarAlt className="text-2xl text-green-600" />
               <h2 className="text-xl font-semibold">
-                {t("karangTarunaAdminAgenda.title") ||
-                  "Agenda Kegiatan Karang Taruna"}
+                Agenda Kegiatan Karang Taruna
               </h2>
             </div>
             {!showAgendaForm && (
@@ -611,8 +555,7 @@ export default function DashboardKarangTaruna() {
                 }}
                 className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2 rounded-lg shadow-lg transition transform hover:-translate-y-0.5"
               >
-                <FaPlus />{" "}
-                {t("karangTarunaAdminAgenda.buttons.add") || "Tambah Agenda"}
+                <FaPlus /> Tambah Agenda
               </button>
             )}
           </div>
@@ -624,14 +567,12 @@ export default function DashboardKarangTaruna() {
                 {editingAgendaId ? (
                   <>
                     <FaEdit className="text-emerald-500" />
-                    {t("karangTarunaAdminAgenda.modal.editTitle") ||
-                      "Edit Agenda Karang Taruna"}
+                    Edit Agenda Karang Taruna
                   </>
                 ) : (
                   <>
                     <FaPlus className="text-emerald-500" />
-                    {t("karangTarunaAdminAgenda.modal.addTitle") ||
-                      "Tambah Agenda Karang Taruna Baru"}
+                    Tambah Agenda Karang Taruna Baru
                   </>
                 )}
               </h3>
@@ -639,8 +580,7 @@ export default function DashboardKarangTaruna() {
               <form onSubmit={handleAgendaSave} className="space-y-4">
                 <div>
                   <label className="block font-medium text-gray-700 mb-1">
-                    {t("karangTarunaAdminAgenda.form.title.label") ||
-                      "Judul Agenda"}{" "}
+                    Judul Agenda
                     <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -650,17 +590,13 @@ export default function DashboardKarangTaruna() {
                     onChange={(e) =>
                       setAgendaForm({ ...agendaForm, title: e.target.value })
                     }
-                    placeholder={
-                      t("karangTarunaAdminAgenda.form.title.placeholder") ||
-                      "Contoh: Rapat Rutin Karang Taruna"
-                    }
+                    placeholder="Contoh: Rapat Rutin Karang Taruna"
                   />
                 </div>
 
                 <div>
                   <label className="block font-medium text-gray-700 mb-1">
-                    {t("karangTarunaAdminAgenda.form.description.label") ||
-                      "Deskripsi Agenda"}{" "}
+                    Deskripsi Agenda
                     <span className="text-red-500">*</span>
                   </label>
                   <textarea
@@ -670,19 +606,14 @@ export default function DashboardKarangTaruna() {
                     onChange={(e) =>
                       setAgendaForm({ ...agendaForm, content: e.target.value })
                     }
-                    placeholder={
-                      t(
-                        "karangTarunaAdminAgenda.form.description.placeholder"
-                      ) || "Deskripsi lengkap agenda..."
-                    }
+                    placeholder="Deskripsi lengkap agenda..."
                   />
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
                     <label className="block font-medium text-gray-700 mb-1">
-                      {t("karangTarunaAdminAgenda.form.startTime.label") ||
-                        "Waktu Mulai"}{" "}
+                      Waktu Mulai
                       <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -699,8 +630,7 @@ export default function DashboardKarangTaruna() {
                   </div>
                   <div>
                     <label className="block font-medium text-gray-700 mb-1">
-                      {t("karangTarunaAdminAgenda.form.endTime.label") ||
-                        "Waktu Selesai"}{" "}
+                      Waktu Selesai
                       <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -719,8 +649,7 @@ export default function DashboardKarangTaruna() {
 
                 <div>
                   <label className="block font-medium text-gray-700 mb-1">
-                    {t("karangTarunaAdminAgenda.form.location.label") ||
-                      "Lokasi"}{" "}
+                    Lokasi
                     <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -730,17 +659,13 @@ export default function DashboardKarangTaruna() {
                     onChange={(e) =>
                       setAgendaForm({ ...agendaForm, location: e.target.value })
                     }
-                    placeholder={
-                      t("karangTarunaAdminAgenda.form.location.placeholder") ||
-                      "Tempat/lokasi kegiatan"
-                    }
+                    placeholder="Tempat/lokasi kegiatan"
                   />
                 </div>
 
                 <div>
                   <label className="block font-medium text-gray-700 mb-1">
-                    {t("karangTarunaAdminAgenda.form.image.label") ||
-                      "Gambar Agenda"}
+                    Gambar Agenda
                   </label>
                   <input
                     type="file"
@@ -769,10 +694,7 @@ export default function DashboardKarangTaruna() {
                                   ?.featured_image
                               }`
                         }
-                        alt={
-                          t("karangTarunaAdminAgenda.form.image.preview") ||
-                          "preview"
-                        }
+                        alt="preview"
                         className="w-full h-40 object-cover rounded-lg shadow-sm"
                       />
                     </div>
@@ -793,8 +715,7 @@ export default function DashboardKarangTaruna() {
                     className="w-4 h-4 text-green-600 rounded focus:ring-green-500"
                   />
                   <label htmlFor="is_published" className="text-gray-700">
-                    {t("karangTarunaAdminAgenda.form.publishAgenda") ||
-                      "Publikasikan agenda?"}
+                    Publikasikan agenda?
                   </label>
                 </div>
 
@@ -803,18 +724,15 @@ export default function DashboardKarangTaruna() {
                     type="submit"
                     className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-5 py-2 rounded-lg shadow hover:shadow-lg transition"
                   >
-                    <FaSave />{" "}
-                    {editingAgendaId
-                      ? t("karangTarunaAdminAgenda.buttons.update") || "Update"
-                      : t("karangTarunaAdminAgenda.buttons.save") || "Simpan"}
+                    <FaSave /> {editingAgendaId ? "Edit" : "Simpan"}
                   </button>
                   <button
                     type="button"
                     onClick={resetForms}
                     className="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition"
                   >
-                    <FaTimes />{" "}
-                    {t("karangTarunaAdminAgenda.buttons.cancel") || "Batal"}
+                    <FaTimes />
+                    Batal
                   </button>
                 </div>
               </form>
@@ -826,8 +744,7 @@ export default function DashboardKarangTaruna() {
             {agendas.length === 0 ? (
               <div className="text-center py-12">
                 <p className="text-gray-500 italic text-lg">
-                  {t("karangTarunaAdminAgenda.empty.noAgenda") ||
-                    "Belum ada agenda Karang Taruna yang tersedia"}
+                  Belum ada agenda Karang Taruna yang tersedia
                 </p>
               </div>
             ) : (
@@ -891,11 +808,8 @@ export default function DashboardKarangTaruna() {
                               }`}
                             >
                               {agenda.is_published
-                                ? t(
-                                    "karangTarunaAdminAgenda.status.published"
-                                  ) || "Published"
-                                : t("karangTarunaAdminAgenda.status.draft") ||
-                                  "Unpublished"}
+                                ? "Published"
+                                : "Unpublished"}
                             </span>
                           </div>
                         </div>
@@ -906,17 +820,14 @@ export default function DashboardKarangTaruna() {
                             onClick={() => handleAgendaEdit(agenda.id)}
                             className="flex items-center gap-1 px-3 py-2 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded transition text-sm"
                           >
-                            <FaEdit />{" "}
-                            {t("karangTarunaAdminAgenda.buttons.edit") ||
-                              "Edit"}
+                            <FaEdit /> Edit
                           </button>
                           <button
                             onClick={() => handleAgendaDelete(agenda.id)}
                             className="flex items-center gap-1 px-3 py-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded transition text-sm"
                           >
-                            <FaTrash />{" "}
-                            {t("karangTarunaAdminAgenda.buttons.delete") ||
-                              "Hapus"}
+                            <FaTrash />
+                            Hapus
                           </button>
                         </div>
                       </div>

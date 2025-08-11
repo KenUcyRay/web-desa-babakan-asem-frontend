@@ -15,14 +15,14 @@ export default function Galery() {
 
   const fetchGalery = async () => {
     const response = await GaleryApi.getGaleri(currentPage, 12, i18n.language);
-    if (response.status === 200) {
-      const responseBody = await response.json();
-      setTotalPages(responseBody.total_page);
-      setCurrentPage(responseBody.page);
-      setGalery(responseBody.galeri);
-    } else {
-      await alertError("Gagal mengambil data galeri. Silakan coba lagi nanti.");
+    if (!response.ok) {
+      return;
     }
+
+    const responseBody = await response.json();
+    setTotalPages(responseBody.total_page);
+    setCurrentPage(responseBody.page);
+    setGalery(responseBody.galeri);
   };
 
   useEffect(() => {

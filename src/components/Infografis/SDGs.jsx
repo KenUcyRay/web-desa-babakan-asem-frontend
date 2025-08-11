@@ -51,7 +51,6 @@ export default function SDGs() {
     const response = await InfografisApi.getSdg(i18n.language);
     const responseBody = await response.json();
     if (!response.ok) {
-      alertError("Gagal mengambil data SDGs.");
       return;
     }
     setSdg(responseBody.sdgs);

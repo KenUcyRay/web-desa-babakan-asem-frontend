@@ -54,7 +54,6 @@ export default function Bansos() {
     const response = await InfografisApi.getBansos(i18n.language);
     const responseBody = await response.json();
     if (!response.ok) {
-      await alertError("Gagal mengambil data Bantuan Sosial.");
       return;
     }
     setBansos(responseBody.bansos);

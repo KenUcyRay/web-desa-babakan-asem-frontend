@@ -47,22 +47,8 @@ export default function Pemerintahan() {
       i18n.language
     );
     const responseBody = await response.json();
-    if (!response.ok) {
-      let errorMessage = "Gagal mengambil data.";
-      if (responseBody.error && Array.isArray(responseBody.error)) {
-        const errorMessages = responseBody.error.map((err) => {
-          if (err.path && err.path.length > 0) {
-            return `${err.path[0]}: ${err.message}`;
-          }
-          return err.message;
-        });
-        errorMessage = errorMessages.join(", ");
-      } else if (responseBody.error && typeof responseBody.error === "string") {
-        errorMessage = responseBody.error;
-      }
-      await alertError(errorMessage);
-      return;
-    }
+    if (!response.ok) return;
+
     setMembers(responseBody.members);
   };
 

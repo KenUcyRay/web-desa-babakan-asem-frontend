@@ -39,8 +39,6 @@ export default function IDM() {
           setLastUpdated(latestData.updated_at);
         }
       }
-    } else {
-      alertError("Gagal mengambil data IDM.");
     }
 
     const resExtra = await InfografisApi.getExtraIdm(i18n.language);
@@ -55,8 +53,6 @@ export default function IDM() {
       if (!lastUpdated && bodyExtra.extraIdm[0].updated_at) {
         setLastUpdated(bodyExtra.extraIdm[0].updated_at);
       }
-    } else {
-      alertError("Gagal mengambil data status desa & dimensi.");
     }
   };
 

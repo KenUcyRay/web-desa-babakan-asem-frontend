@@ -30,7 +30,7 @@ export default function ResetPassword() {
       await alertSuccess(t("resetPassword.success"));
       navigate("/login");
     } else {
-      await alertError(t("resetPassword.failed"));
+      await Helper.errorResponseHandler(await response.json());
     }
 
     setPassword("");
@@ -40,7 +40,7 @@ export default function ResetPassword() {
   const verifyToken = async () => {
     const response = await UserApi.verifyResetToken(token, i18n.language);
     if (!response.ok) {
-      await alertError(t("resetPassword.tokenInvalid"));
+      await Helper.errorResponseHandler(await response.json());
       navigate("/forgot-password");
     }
   };

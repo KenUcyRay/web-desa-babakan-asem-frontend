@@ -16,18 +16,14 @@ export default function Pkk() {
 
   const fetchAgenda = async () => {
     const response = await AgendaApi.getAgenda(1, 3, "PKK", i18n.language);
-    if (response.status === 200) {
-      const responseBody = await response.json();
-      setAgenda(responseBody.agenda);
-    } else {
-      alertError(t("pkk.agendaError"));
-    }
+    if (!response.ok) return;
+    const responseBody = await response.json();
+    setAgenda(responseBody.agenda);
   };
 
   const fetchPrograms = async () => {
     const response = await ProgramApi.getPrograms(1, 3, i18n.language);
     if (!response.ok) {
-      alertError(t("pkk.programError"));
       return;
     }
     const responseBody = await response.json();

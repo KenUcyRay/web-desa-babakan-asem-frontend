@@ -44,8 +44,6 @@ export default function Agenda() {
       setTotalPages(responseBody.total_page);
       setCurrentPage(responseBody.page);
       setAgenda(responseBody.agenda);
-    } else {
-      alertError("Gagal mengambil data agenda. Silakan coba lagi nanti.");
     }
     setLoading(false);
   };
