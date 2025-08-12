@@ -21,7 +21,7 @@
     "start": "node dist/index.js",
     "seed": "ts-node src/seeder/resident-seeder.ts",
     "seed-map": "ts-node src/seeder/seed.ts",
-    "dev": "ts-node-dev -r tsconfig-paths/register src/index.ts",
+    "dev": "ts-node-dev --respawn --transpile-only -r tsconfig-paths/register src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {

@@ -8,6 +8,89 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Enum
+
+enum ResidentType {
+  GENDER
+  PERNIKAHAN
+  AGAMA
+  USIA
+  KEPALA_KELUARGA
+  PERKERJAAN
+  PENDIDIKAN
+  WAJIB_PILIH
+  DUSUN
+  ANAK_ANAK
+}
+
+enum Role {
+  REGULAR // Regular user with basic access
+  ADMIN
+  PKK
+  KARANG_TARUNA
+  BPD
+  CONTRIBUTOR
+}
+
+enum MapType {
+  POLYGON
+  MARKER
+}
+
+enum ActivityLogLocation {
+  NEWS
+  AGENDA
+  GALLERY
+  MESSAGE
+  BUMDES
+  VILLAGEWORKPROGRAM
+  USER
+}
+
+enum VillageWorkProgramStatus {
+  PLANNED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum TargetType {
+  NEWS
+  AGENDA
+  PRODUCT
+}
+
+enum AgendaType {
+  REGULAR
+  PKK
+  KARANG_TARUNA
+  DPD
+  BPD
+}
+
+enum StatusDesa {
+  MAJU
+  BERKEMBANG
+  MANDIRI
+  TERTINGGAL
+  SANGAT_TERTINGGAL
+}
+
+enum PengantarType {
+  KTP
+  KK
+  SKCK
+  LAINNYA
+}
+
+enum Organization {
+  PEMERINTAH
+  PKK
+  KARANG_TARUNA
+  DPD
+  BPD
+}
+
 //Rill Fix
 
 model SiteContent {
@@ -43,11 +126,6 @@ model Map {
   @@map("maps")
 }
 
-enum MapType {
-  POLYGON
-  MARKER
-}
-
 model ActivityLog {
   id         String              @id @default(uuid())
   user_id    String
@@ -58,16 +136,6 @@ model ActivityLog {
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@map("activity_logs")
-}
-
-enum ActivityLogLocation {
-  NEWS
-  AGENDA
-  GALLERY
-  MESSAGE
-  BUMDES
-  VILLAGEWORKPROGRAM
-  USER
 }
 
 model User {
@@ -85,15 +153,6 @@ model User {
   ActivityLog ActivityLog[]
 
   @@map("users")
-}
-
-enum Role {
-  REGULAR // Regular user with basic access
-  ADMIN
-  PKK
-  KARANG_TARUNA
-  BPD
-  CONTRIBUTOR
 }
 
 model Message {
@@ -122,13 +181,6 @@ model Pengantar {
   updatedAt  DateTime      @updatedAt
 
   @@map("pengantar")
-}
-
-enum PengantarType {
-  KTP
-  KK
-  SKCK
-  LAINNYA
 }
 
 model Galeri {
@@ -181,14 +233,6 @@ model Member {
   @@map("members")
 }
 
-enum Organization {
-  PEMERINTAH
-  PKK
-  KARANG_TARUNA
-  DPD
-  BPD
-}
-
 model Idm {
   id         String   @id @default(uuid())
   year       Int
@@ -209,14 +253,6 @@ model ExtraIdm {
   updated_at  DateTime   @updatedAt
 
   @@map("extra_idms")
-}
-
-enum StatusDesa {
-  MAJU
-  BERKEMBANG
-  MANDIRI
-  TERTINGGAL
-  SANGAT_TERTINGGAL
 }
 
 model SocialAssistance {
@@ -256,14 +292,6 @@ model Agenda {
   updated_at     DateTime   @updatedAt
 
   @@map("agenda")
-}
-
-enum AgendaType {
-  REGULAR
-  PKK
-  KARANG_TARUNA
-  DPD
-  BPD
 }
 
 model Product {
@@ -322,12 +350,6 @@ model Comment {
   @@map("comments")
 }
 
-enum TargetType {
-  NEWS
-  AGENDA
-  PRODUCT
-}
-
 // yang atas migrasi dari microservice
 
 model VillageWorkProgram {
@@ -341,13 +363,6 @@ model VillageWorkProgram {
   updated_at    DateTime                 @updatedAt
 
   @@map("village_work_programs")
-}
-
-enum VillageWorkProgramStatus {
-  PLANNED
-  IN_PROGRESS
-  COMPLETED
-  CANCELLED
 }
 
 model VillageAchievement {
@@ -373,19 +388,6 @@ model Resident {
   @@map("resident_statistics")
 }
 
-enum ResidentType {
-  GENDER
-  PERNIKAHAN
-  AGAMA
-  USIA
-  KEPALA_KELUARGA
-  PERKERJAAN
-  PENDIDIKAN
-  WAJIB_PILIH
-  DUSUN
-  ANAK_ANAK
-}
-
 model Apb {
   id        String   @id @default(uuid())
   bidang    String
@@ -396,139 +398,4 @@ model Apb {
   updatedAt DateTime @updatedAt
 
   @@map("apb")
-}
-
-//
-
-enum OrganizationCategory {
-  REGULAR
-  PKK
-  KARANG_TARUNA
-  DPD
-  BPD
-}
-
-enum OrganizationType {
-  GOVERNMENT
-  PKK
-  KARANG_TARUNA
-  DPD
-  BPD
-}
-
-enum OnlineRequestType {
-  LETTER_TRACKING
-  SERVICE_STATUS_CHECK
-  SERVICE_REQUEST
-}
-
-enum PublicServiceType {
-  COMPLAINT
-  REQUEST
-  OTHER
-}
-
-enum LetterType {
-  ID_CARD
-  FAMILY_CARD
-  POLICE_CLEARANCE
-  OTHER
-}
-
-enum VillageStatus {
-  ADVANCED
-  DEVELOPING
-  INDEPENDENT
-  UNDERDEVELOPED
-  VERY_UNDERDEVELOPED
-}
-
-model Gallery {
-  id         String               @id @default(uuid())
-  image      String               @db.VarChar(255)
-  title      String               @db.VarChar(255)
-  type       OrganizationCategory
-  created_at DateTime             @default(now())
-  updated_at DateTime             @default(now()) @updatedAt
-
-  @@map("galleries")
-}
-
-model ProgramPkk {
-  id             String   @id @default(uuid())
-  title          String   @db.VarChar(255)
-  description    String   @db.Text
-  featured_image String   @db.VarChar(255)
-  created_at     DateTime @default(now())
-  updated_at     DateTime @updatedAt
-
-  @@map("program_pkks")
-}
-
-model OnlineRequest {
-  id           String            @id @default(uuid())
-  name         String
-  email        String
-  phone_number String
-  type         OnlineRequestType
-  is_accept    Boolean           @default(false)
-  created_at   DateTime          @default(now())
-  updated_at   DateTime          @updatedAt
-
-  @@map("online_requests")
-}
-
-model PublicService {
-  id         String            @id @default(uuid())
-  name       String
-  email      String
-  message    String
-  type       PublicServiceType
-  is_accept  Boolean           @default(false)
-  created_at DateTime          @default(now())
-  updated_at DateTime          @updatedAt
-
-  @@map("public_services")
-}
-
-model IdmIndex {
-  id         String   @id @default(uuid())
-  year       Int
-  score      Float
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-
-  @@map("idm_indexes")
-}
-
-model IdmDetail {
-  id             String        @id @default(uuid())
-  village_status VillageStatus
-  social         Float
-  economy        Float
-  environment    Float
-  created_at     DateTime      @default(now())
-  updated_at     DateTime      @updatedAt
-
-  @@map("idm_details")
-}
-
-model SocialAid {
-  id         String   @id @default(uuid())
-  name       String
-  amount     Int
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-
-  @@map("social_aids")
-}
-
-model SdgsGoal {
-  id         String   @id @default(uuid())
-  name       String
-  progress   Int
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-
-  @@map("sdgs_goals")
 }

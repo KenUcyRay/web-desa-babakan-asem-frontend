@@ -57,18 +57,18 @@ export const errorMiddleware = (
   } else if (error instanceof ResponseError) {
     res.status(error.status).json({
       success: false,
-      message: error.message, // Sudah diterjemahkan di service
+      errors: error.message,
     });
   } else if (error instanceof AxiosError) {
     res.status(error.response?.status || 500).json({
       success: false,
-      message:
+      errors:
         error.response?.data.error || req.t("common.internal_server_error"),
     });
   } else {
     res.status(500).json({
       success: false,
-      message: req.t("common.internal_server_error"),
+      errors: req.t("common.internal_server_error"),
     });
   }
 };
