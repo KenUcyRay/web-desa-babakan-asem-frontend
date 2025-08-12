@@ -71,7 +71,7 @@ const CustomTooltip = ({ active, payload, label }) => {
   return null;
 };
 
-// Custom Label for Pie Chart
+// Custom Label for Pie Chart - Responsive for mobile
 const renderCustomizedLabel = ({
   cx,
   cy,
@@ -83,7 +83,8 @@ const renderCustomizedLabel = ({
   name,
 }) => {
   const RADIAN = Math.PI / 180;
-  const radius = outerRadius + 30;
+  const isMobile = window.innerWidth < 768;
+  const radius = isMobile ? outerRadius + 10 : outerRadius + 30;
   const x = cx + radius * Math.cos(-midAngle * RADIAN);
   const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
@@ -94,10 +95,12 @@ const renderCustomizedLabel = ({
       fill="#374151"
       textAnchor={x > cx ? "start" : "end"}
       dominantBaseline="central"
-      fontSize={12}
+      fontSize={isMobile ? 10 : 12}
       fontWeight="600"
     >
-      {`${name}: ${value} (${(percent * 100).toFixed(1)}%)`}
+      {isMobile
+        ? `${name}: ${value}`
+        : `${name}: ${value} (${(percent * 100).toFixed(1)}%)`}
     </text>
   );
 };
@@ -416,6 +419,14 @@ export default function Penduduk() {
           <p className="mt-2 text-gray-500 italic text-sm">
             {t("penduduk.updateNote")}
           </p>
+          <div className="mt-4 p-4 bg-blue-50 rounded-lg border-l-4 border-blue-400">
+            <p className="text-sm text-blue-800">
+              💡 <strong>Tahukah Anda?</strong> Data demografis desa ini
+              mencerminkan keragaman sosial dan ekonomi masyarakat yang dinamis.
+              Setiap angka memiliki cerita tentang kehidupan dan perkembangan
+              komunitas lokal.
+            </p>
+          </div>
         </div>
         <img
           src={pana}
@@ -437,6 +448,13 @@ export default function Penduduk() {
               <p className="text-gray-600 text-sm leading-relaxed">
                 {t("penduduk.mainData.description")}
               </p>
+              <div className="mt-3 p-3 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-700">
+                  📊 <strong>Menarik:</strong> Komposisi gender dan struktur
+                  keluarga menentukan dinamika sosial dan kebutuhan pembangunan
+                  desa.
+                </p>
+              </div>
             </div>
             <div className="md:col-span-2">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -473,40 +491,46 @@ export default function Penduduk() {
 
           {/* Chart untuk Data Penduduk Utama */}
           <div>
-            <h4 className="text-2xl font-bold text-gray-800 text-center mb-4">
-              {t("penduduk.mainData.chartTitle")}
+            <h4 className="text-2xl font-bold text-gray-800 text-center mb-2">
+              Komposisi Penduduk Utama
             </h4>
             <p className="text-center text-gray-600 mb-8">
-              {t("penduduk.mainData.chartDescription")}
+              Distribusi berdasarkan jenis kelamin, kepala keluarga, dan
+              anak-anak yang mencerminkan struktur demografis desa
             </p>
-            <ResponsiveContainer width="100%" height={350}>
-              <BarChart
-                data={[
-                  ...genderData.map((d) => ({ name: d.key, jumlah: d.value })),
-                  ...kepalaKeluargaData.map((d) => ({
-                    name: d.key,
-                    jumlah: d.value,
-                  })),
-                  ...anakAnakData.map((d) => ({
-                    name: d.key,
-                    jumlah: d.value,
-                  })),
-                ]}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis allowDecimals={false} />
-                <Tooltip content={<CustomTooltip />} />
-                <Legend />
-                <Bar
-                  dataKey="jumlah"
-                  name="Jumlah Penduduk"
-                  fill="#B6F500"
-                  barSize={40}
-                  radius={[6, 6, 0, 0]}
-                />
-              </BarChart>
-            </ResponsiveContainer>
+            <div className="w-full overflow-x-auto">
+              <ResponsiveContainer width="100%" height={350} minWidth={300}>
+                <BarChart
+                  data={[
+                    ...genderData.map((d) => ({
+                      name: d.key,
+                      jumlah: d.value,
+                    })),
+                    ...kepalaKeluargaData.map((d) => ({
+                      name: d.key,
+                      jumlah: d.value,
+                    })),
+                    ...anakAnakData.map((d) => ({
+                      name: d.key,
+                      jumlah: d.value,
+                    })),
+                  ]}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis allowDecimals={false} />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Legend />
+                  <Bar
+                    dataKey="jumlah"
+                    name="Jumlah Penduduk"
+                    fill="#B6F500"
+                    barSize={40}
+                    radius={[6, 6, 0, 0]}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
           </div>
         </section>
       )}
@@ -522,6 +546,13 @@ export default function Penduduk() {
               <p className="text-gray-600 text-sm leading-relaxed">
                 {t("penduduk.pekerjaan.description")}
               </p>
+              <div className="mt-3 p-3 bg-purple-50 rounded-lg">
+                <p className="text-xs text-purple-700">
+                  🏢 <strong>Insight:</strong> Keragaman profesi menunjukkan
+                  ekonomi desa yang tidak tergantung pada satu sektor saja,
+                  menciptakan ketahanan ekonomi yang lebih baik.
+                </p>
+              </div>
             </div>
             <div className="md:col-span-2">
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -538,27 +569,36 @@ export default function Penduduk() {
             </div>
           </div>
 
-          <ResponsiveContainer width="100%" height={350}>
-            <BarChart
-              data={pekerjaanData.map((d) => ({
-                name: d.key,
-                jumlah: d.value,
-              }))}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis allowDecimals={false} />
-              <Tooltip content={<CustomTooltip />} />
-              <Legend />
-              <Bar
-                dataKey="jumlah"
-                name="Jumlah Penduduk"
-                fill="#FF69B4"
-                barSize={35}
-                radius={[6, 6, 0, 0]}
-              />
-            </BarChart>
-          </ResponsiveContainer>
+          <h4 className="text-2xl font-bold text-gray-800 text-center mb-2">
+            Distribusi Pekerjaan Penduduk
+          </h4>
+          <p className="text-center text-gray-600 mb-8">
+            Ragam profesi yang menunjukkan dinamika perekonomian dan potensi
+            pengembangan sektor unggulan desa
+          </p>
+          <div className="w-full overflow-x-auto">
+            <ResponsiveContainer width="100%" height={350} minWidth={300}>
+              <BarChart
+                data={pekerjaanData.map((d) => ({
+                  name: d.key,
+                  jumlah: d.value,
+                }))}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis allowDecimals={false} />
+                <Tooltip content={<CustomTooltip />} />
+                <Legend />
+                <Bar
+                  dataKey="jumlah"
+                  name="Jumlah Penduduk"
+                  fill="#FF69B4"
+                  barSize={35}
+                  radius={[6, 6, 0, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </section>
       )}
 
@@ -568,9 +608,18 @@ export default function Penduduk() {
           <h3 className="text-3xl font-bold text-gray-800 text-center mb-4">
             {t("penduduk.pendidikan.title")}
           </h3>
-          <p className="text-center text-gray-600 mb-8 max-w-4xl mx-auto">
+          <p className="text-center text-gray-600 mb-4 max-w-4xl mx-auto">
             {t("penduduk.pendidikan.description")}
           </p>
+          <div className="text-center mb-8">
+            <div className="inline-block p-4 bg-yellow-50 rounded-lg border-l-4 border-yellow-400">
+              <p className="text-sm text-yellow-800">
+                � <strong>Fakta Menarik:</strong> Tingkat pendidikan
+                mencerminkan kualitas sumber daya manusia dan berkorelasi dengan
+                tingkat kesejahteraan masyarakat desa.
+              </p>
+            </div>
+          </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 max-w-4xl mx-auto">
             {pendidikanData.map((item, idx) => (
@@ -584,27 +633,36 @@ export default function Penduduk() {
             ))}
           </div>
 
-          <ResponsiveContainer width="100%" height={350}>
-            <BarChart
-              data={pendidikanData.map((d) => ({
-                name: d.key,
-                jumlah: d.value,
-              }))}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis allowDecimals={false} />
-              <Tooltip content={<CustomTooltip />} />
-              <Legend />
-              <Bar
-                dataKey="jumlah"
-                name="Jumlah Penduduk"
-                fill="#FFD700"
-                barSize={35}
-                radius={[6, 6, 0, 0]}
-              />
-            </BarChart>
-          </ResponsiveContainer>
+          <h4 className="text-2xl font-bold text-gray-800 text-center mb-2">
+            Tingkat Pendidikan Penduduk
+          </h4>
+          <p className="text-center text-gray-600 mb-8">
+            Jenjang pendidikan yang menggambarkan kualitas SDM dan potensi
+            pengembangan kapasitas masyarakat
+          </p>
+          <div className="w-full overflow-x-auto">
+            <ResponsiveContainer width="100%" height={350} minWidth={300}>
+              <BarChart
+                data={pendidikanData.map((d) => ({
+                  name: d.key,
+                  jumlah: d.value,
+                }))}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis allowDecimals={false} />
+                <Tooltip content={<CustomTooltip />} />
+                <Legend />
+                <Bar
+                  dataKey="jumlah"
+                  name="Jumlah Penduduk"
+                  fill="#FFD700"
+                  barSize={35}
+                  radius={[6, 6, 0, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </section>
       )}
 
@@ -614,9 +672,18 @@ export default function Penduduk() {
           <h3 className="text-3xl font-bold text-gray-800 text-center mb-4">
             {t("penduduk.pernikahan.title")}
           </h3>
-          <p className="text-center text-gray-600 mb-8 max-w-4xl mx-auto">
+          <p className="text-center text-gray-600 mb-4 max-w-4xl mx-auto">
             {t("penduduk.pernikahan.description")}
           </p>
+          <div className="text-center mb-8">
+            <div className="inline-block p-4 bg-pink-50 rounded-lg border-l-4 border-pink-400">
+              <p className="text-sm text-pink-800">
+                💕 <strong>Did You Know:</strong> Status pernikahan mempengaruhi
+                struktur sosial dan pola kehidupan bermasyarakat, serta menjadi
+                indikator stabilitas keluarga di desa.
+              </p>
+            </div>
+          </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8 max-w-4xl mx-auto">
             {pernikahanData.map((item, idx) => (
@@ -630,30 +697,41 @@ export default function Penduduk() {
             ))}
           </div>
 
-          <ResponsiveContainer width="100%" height={400}>
-            <PieChart>
-              <Pie
-                data={pernikahanData.map((d) => ({
-                  name: d.key,
-                  value: d.value,
-                }))}
-                dataKey="value"
-                nameKey="name"
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                label={renderCustomizedLabel}
-                outerRadius={80}
-                fill="#8884d8"
-              >
-                {pernikahanData.map((_, i) => (
-                  <Cell key={i} fill={COLORS[i % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip formatter={tooltipFormatter} />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
+          <h4 className="text-2xl font-bold text-gray-800 text-center mb-2">
+            Status Pernikahan Penduduk
+          </h4>
+          <p className="text-center text-gray-600 mb-8">
+            Komposisi status pernikahan yang memberikan gambaran struktur sosial
+            dan dinamika keluarga di masyarakat
+          </p>
+          <div className="flex justify-center">
+            <div className="w-full max-w-full md:max-w-[500px] h-[300px] md:h-[450px] mx-auto">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={pernikahanData.map((d) => ({
+                      name: d.key,
+                      value: d.value,
+                    }))}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={renderCustomizedLabel}
+                    outerRadius={window.innerWidth < 768 ? 70 : 100}
+                    fill="#8884d8"
+                  >
+                    {pernikahanData.map((_, i) => (
+                      <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={tooltipFormatter} />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
         </section>
       )}
 
@@ -663,9 +741,18 @@ export default function Penduduk() {
           <h3 className="text-3xl font-bold text-gray-800 text-center mb-4">
             {t("penduduk.agama.title")}
           </h3>
-          <p className="text-center text-gray-600 mb-8 max-w-4xl mx-auto">
+          <p className="text-center text-gray-600 mb-4 max-w-4xl mx-auto">
             {t("penduduk.agama.description")}
           </p>
+          <div className="text-center mb-8">
+            <div className="inline-block p-4 bg-indigo-50 rounded-lg border-l-4 border-indigo-400">
+              <p className="text-sm text-indigo-800">
+                🕌 <strong>Keberagaman:</strong> Pluralitas agama mencerminkan
+                toleransi dan harmoni antar umat beragama, menjadi kekuatan
+                sosial dalam membangun persatuan masyarakat desa.
+              </p>
+            </div>
+          </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 max-w-4xl mx-auto">
             {agamaData.map((item, idx) => (
@@ -679,27 +766,41 @@ export default function Penduduk() {
             ))}
           </div>
 
-          <ResponsiveContainer width="100%" height={400}>
-            <PieChart>
-              <Pie
-                data={agamaData.map((d) => ({ name: d.key, value: d.value }))}
-                dataKey="value"
-                nameKey="name"
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                label={renderCustomizedLabel}
-                outerRadius={80}
-                fill="#8884d8"
-              >
-                {agamaData.map((_, i) => (
-                  <Cell key={i} fill={COLORS[i % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip formatter={tooltipFormatter} />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
+          <h4 className="text-2xl font-bold text-gray-800 text-center mb-2">
+            Komposisi Keagamaan
+          </h4>
+          <p className="text-center text-gray-600 mb-8">
+            Keragaman kepercayaan yang menunjukkan toleransi beragama dan
+            harmoni sosial dalam masyarakat multikultural
+          </p>
+          <div className="flex justify-center">
+            <div className="w-full max-w-full md:max-w-[500px] h-[300px] md:h-[450px] mx-auto">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={agamaData.map((d) => ({
+                      name: d.key,
+                      value: d.value,
+                    }))}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={renderCustomizedLabel}
+                    outerRadius={window.innerWidth < 768 ? 70 : 100}
+                    fill="#8884d8"
+                  >
+                    {agamaData.map((_, i) => (
+                      <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={tooltipFormatter} />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
         </section>
       )}
 
@@ -709,9 +810,18 @@ export default function Penduduk() {
           <h3 className="text-3xl font-bold text-gray-800 text-center mb-4">
             {t("penduduk.usia.title")}
           </h3>
-          <p className="text-center text-gray-600 mb-8 max-w-4xl mx-auto">
+          <p className="text-center text-gray-600 mb-4 max-w-4xl mx-auto">
             {t("penduduk.usia.description")}
           </p>
+          <div className="text-center mb-8">
+            <div className="inline-block p-4 bg-green-50 rounded-lg border-l-4 border-green-400">
+              <p className="text-sm text-green-800">
+                👥 <strong>Bonus Demografi:</strong> Struktur usia penduduk
+                menentukan potensi bonus demografi dan kebutuhan layanan publik
+                yang harus disediakan pemerintah desa.
+              </p>
+            </div>
+          </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
             {usiaData.map((item, idx) => (
@@ -725,31 +835,40 @@ export default function Penduduk() {
             ))}
           </div>
 
-          <ResponsiveContainer width="100%" height={350}>
-            <AreaChart
-              data={usiaData.map((d) => ({ name: d.key, value: d.value }))}
-              margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-            >
-              <defs>
-                <linearGradient id="colorAge" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#82ca9d" stopOpacity={0.8} />
-                  <stop offset="95%" stopColor="#82ca9d" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <XAxis dataKey="name" />
-              <YAxis allowDecimals={false} />
-              <Tooltip content={<CustomTooltip />} />
-              <Legend />
-              <Area
-                type="monotone"
-                dataKey="value"
-                name="Jumlah Penduduk"
-                stroke="#82ca9d"
-                fillOpacity={1}
-                fill="url(#colorAge)"
-              />
-            </AreaChart>
-          </ResponsiveContainer>
+          <h4 className="text-2xl font-bold text-gray-800 text-center mb-2">
+            Distribusi Kelompok Usia
+          </h4>
+          <p className="text-center text-gray-600 mb-8">
+            Piramida usia yang menunjukkan potensi demografis dan perencanaan
+            pembangunan berkelanjutan
+          </p>
+          <div className="w-full overflow-x-auto">
+            <ResponsiveContainer width="100%" height={350} minWidth={300}>
+              <AreaChart
+                data={usiaData.map((d) => ({ name: d.key, value: d.value }))}
+                margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+              >
+                <defs>
+                  <linearGradient id="colorAge" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#82ca9d" stopOpacity={0.8} />
+                    <stop offset="95%" stopColor="#82ca9d" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <XAxis dataKey="name" />
+                <YAxis allowDecimals={false} />
+                <Tooltip content={<CustomTooltip />} />
+                <Legend />
+                <Area
+                  type="monotone"
+                  dataKey="value"
+                  name="Jumlah Penduduk"
+                  stroke="#82ca9d"
+                  fillOpacity={1}
+                  fill="url(#colorAge)"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
         </section>
       )}
 
@@ -764,6 +883,13 @@ export default function Penduduk() {
               <p className="text-gray-600 text-sm leading-relaxed">
                 {t("penduduk.wajibPilih.description")}
               </p>
+              <div className="mt-3 p-3 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-700">
+                  🗳️ <strong>Partisipasi Politik:</strong> Jumlah pemilih
+                  menunjukkan tingkat partisipasi demokratis dan pengaruh desa
+                  dalam proses politik nasional.
+                </p>
+              </div>
             </div>
             <div className="md:col-span-2">
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -788,9 +914,18 @@ export default function Penduduk() {
           <h3 className="text-3xl font-bold text-gray-800 text-center mb-4">
             {t("penduduk.dusun.title")}
           </h3>
-          <p className="text-center text-gray-600 mb-8 max-w-4xl mx-auto">
+          <p className="text-center text-gray-600 mb-4 max-w-4xl mx-auto">
             {t("penduduk.dusun.description")}
           </p>
+          <div className="text-center mb-8">
+            <div className="inline-block p-4 bg-teal-50 rounded-lg border-l-4 border-teal-400">
+              <p className="text-sm text-teal-800">
+                🗺️ <strong>Pemerataan Wilayah:</strong> Distribusi penduduk per
+                dusun mempengaruhi alokasi anggaran pembangunan infrastruktur
+                dan pelayanan publik di setiap wilayah.
+              </p>
+            </div>
+          </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
             {dusunData.map((item, idx) => (
@@ -804,23 +939,32 @@ export default function Penduduk() {
             ))}
           </div>
 
-          <ResponsiveContainer width="100%" height={350}>
-            <BarChart
-              data={dusunData.map((d) => ({ name: d.key, jumlah: d.value }))}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis allowDecimals={false} />
-              <Tooltip content={<CustomTooltip />} />
-              <Legend />
-              <Bar
-                dataKey="jumlah"
-                name="Jumlah Penduduk"
-                fill="#8884d8"
-                radius={[6, 6, 0, 0]}
-              />
-            </BarChart>
-          </ResponsiveContainer>
+          <h4 className="text-2xl font-bold text-gray-800 text-center mb-2">
+            Sebaran Penduduk Per Dusun
+          </h4>
+          <p className="text-center text-gray-600 mb-8">
+            Distribusi geografis yang menentukan pola pembangunan dan prioritas
+            pengembangan infrastruktur wilayah
+          </p>
+          <div className="w-full overflow-x-auto">
+            <ResponsiveContainer width="100%" height={350} minWidth={300}>
+              <BarChart
+                data={dusunData.map((d) => ({ name: d.key, jumlah: d.value }))}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis allowDecimals={false} />
+                <Tooltip content={<CustomTooltip />} />
+                <Legend />
+                <Bar
+                  dataKey="jumlah"
+                  name="Jumlah Penduduk"
+                  fill="#8884d8"
+                  radius={[6, 6, 0, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </section>
       )}
     </div>

@@ -417,39 +417,46 @@ export default function Home() {
       </div>
 
       {/* BERITA */}
-      <div className="w-full px-[5%] py-10">
+      <div className="bg-green-50 py-10 px-[5%]" data-aos="fade-up">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-bold">{t("home.latestnews.title")}</h2>
           <Link to="/berita" className="text-green-600 hover:underline">
             {t("home.latestnews.seeall")}
           </Link>
         </div>
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(230px,1fr))] gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {news.map((item) => (
-            <Link
+            <div
               key={item.news.id}
-              to={`/berita/${item.news.id}`}
-              className="bg-white shadow rounded-xl overflow-hidden"
-              data-aos="zoom-in"
+              className="bg-white rounded-xl shadow hover:shadow-xl"
+              data-aos="fade-up"
             >
-              <img
-                src={`${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
-                  item.news.featured_image
-                }`}
-                alt={item.news.title}
-                className="w-full h-[18vh] object-cover"
-              />
-              <div className="p-4">
-                <p className="text-xs text-gray-500">
-                  {Helper.formatTanggal(item.news.created_at)}
-                </p>
-                <h3 className="font-semibold mt-1">{item.news.title}</h3>
+              <Link to={`/berita/${item.news.id}`}>
+                <img
+                  src={`${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
+                    item.news.featured_image
+                  }`}
+                  alt={item.news.title}
+                  className="w-full h-48 object-cover rounded-t-xl"
+                />
+              </Link>
+              <div className="p-4 flex flex-col">
+                <Link to={`/berita/${item.news.id}`}>
+                  <h3 className="font-semibold text-gray-800 hover:text-green-700">
+                    {item.news.title}
+                  </h3>
+                </Link>
+                <div className="flex items-center gap-1 mt-2">
+                  <FaCalendarAlt className="text-green-500" />
+                  <span className="text-xs text-gray-500 ml-1">
+                    {Helper.formatTanggal(item.news.created_at)}
+                  </span>
+                </div>
               </div>
-            </Link>
+            </div>
           ))}
         </div>
       </div>
-
       {/* BUMDES */}
       <div className="bg-green-50 py-10 px-[5%]" data-aos="fade-up">
         <div className="flex justify-between items-center mb-6">

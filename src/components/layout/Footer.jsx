@@ -70,7 +70,7 @@ export default function Footer() {
             {t("footer.explore")}
           </p>
           <ul className="space-y-2 text-[15px]">
-            {[1, 2, 3, 4].map((i) => (
+            {[1, 2, 3].map((i) => (
               <li key={i}>
                 <a
                   href="#"

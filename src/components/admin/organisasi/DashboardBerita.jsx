@@ -144,7 +144,7 @@ export default function ManageBerita() {
       {/* HEADER */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
         <div className="flex items-center gap-3">
-          <FaNewspaper className="text-3xl text-indigo-600" />
+          <FaNewspaper className="text-3xl text-green-600" />
           <div>
             <h1 className="text-2xl font-bold text-gray-800">Kelola Berita</h1>
             <p className="text-gray-500 text-sm">
@@ -159,7 +159,7 @@ export default function ManageBerita() {
               resetForm();
               setShowForm(true);
             }}
-            className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-lg shadow-md transition-all hover:shadow-lg"
+            className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-lg shadow-md transition-all hover:shadow-lg"
           >
             <FaPlus className="text-sm" />
             Tambah berita
@@ -192,7 +192,7 @@ export default function ManageBerita() {
               Judul Berita
             </label>
             <input
-              className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-300 focus:border-indigo-300 outline-none transition"
+              className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-300 focus:border-green-300 outline-none transition"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Masukkan judul berita di sini..."
@@ -202,7 +202,7 @@ export default function ManageBerita() {
           <div className="space-y-1">
             <label className="block font-medium text-gray-700">Konten</label>
             <textarea
-              className="w-full border border-gray-300 rounded-lg p-3 h-40 focus:ring-2 focus:ring-indigo-300 focus:border-indigo-300 outline-none transition"
+              className="w-full border border-gray-300 rounded-lg p-3 h-40 focus:ring-2 focus:ring-green-300 focus:border-green-300 outline-none transition"
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="Tuliskan isi berita di sini..."
@@ -285,7 +285,7 @@ export default function ManageBerita() {
             <button
               type="submit"
               disabled={isLoading}
-              className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-lg shadow-md transition-all hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-lg shadow-md transition-all hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed"
             >
               <FaSave /> {editingId ? "Edit berita" : "Simpan berita"}
             </button>
@@ -306,7 +306,7 @@ export default function ManageBerita() {
       {/* LIST BERITA */}
       {isLoading && news.length === 0 ? (
         <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
         </div>
       ) : news.length === 0 ? (
         <div className="bg-white rounded-xl shadow-sm p-8 text-center">
@@ -324,7 +324,7 @@ export default function ManageBerita() {
                   resetForm();
                   setShowForm(true);
                 }}
-                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
               >
                 <FaPlus className="-ml-1 mr-2 h-5 w-5" />
                 Tambah berita

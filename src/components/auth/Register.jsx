@@ -33,11 +33,10 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const contactValue = email;
 
     const body = {
       name,
-      contactValue,
+      email,
       phone,
       password,
       confirmPassword,

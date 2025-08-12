@@ -3,7 +3,6 @@ import { FaWpforms, FaUsers, FaPhotoVideo } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { Helper } from "../../utils/Helper";
 import { AgendaApi } from "../../libs/api/AgendaApi";
-import { alertError } from "../../libs/alert";
 import { ProgramApi } from "../../libs/api/ProgramApi";
 import AOS from "aos";
 import "aos/dist/aos.css";

@@ -11,7 +11,7 @@ export class UserApi {
       body: JSON.stringify({
         name: body.name,
         email: body.email === "" ? undefined : body.email,
-        phone_number: body.phone_number === "" ? undefined : body.phone_number,
+        phone_number: body.phone === "" ? undefined : body.phone,
         password: body.password,
         confirm_password: body.confirmPassword,
         remember_me: body.rememberMe,

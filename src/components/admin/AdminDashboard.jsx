@@ -163,7 +163,6 @@ export default function AdminDashboard() {
   const { i18n } = useTranslation();
 
   // State dari Tes.jsx
-  const [showDialogMap, setShowDialogMap] = useState(false);
   const [selectedYear, setSelectedYear] = useState(2025);
   const [mapData, setMapData] = useState([]);
   const [newsCount, setNewsCount] = useState(0);
@@ -402,17 +401,6 @@ export default function AdminDashboard() {
     }
   }, [uniqueYears, selectedYear]);
 
-  // State for DialogMap modal
-  const handleDialogMapSubmit = async (payload) => {
-    const response = await MapApi.create(payload, i18n.language);
-    if (!response.ok) {
-      Helper.errorResponseHandler(await response.json());
-      return;
-    }
-    await fetchMapData();
-    setShowDialogMap(false);
-  };
-
   const handleDeleteMapItem = async (id, name, type) => {
     const confirmed = await alertConfirm(
       `Hapus data peta?`,
@@ -493,9 +481,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <div
-          className={`p-6 relative ${showDialogMap ? "invisible" : "visible"} `}
-        >
+        <div className="p-6 relative">
           <div className="rounded-xl overflow-hidden  shadow-md border-2 border-green-100 relative">
             <MapContainer
               center={[-6.75, 108.05861]}
@@ -580,13 +566,6 @@ export default function AdminDashboard() {
               <FaMapMarkedAlt className="text-green-600" />
               Legenda Peta
             </h3>
-            <button
-              className="px-4 py-2 md:px-6 md:py-3 bg-gradient-to-r from-green-600 to-green-500 text-white rounded-xl hover:from-green-700 hover:to-green-600 transition text-sm md:text-lg font-bold flex items-center gap-2 shadow-lg border-2 border-green-700 w-full sm:w-auto"
-              onClick={() => setShowDialogMap(true)}
-            >
-              <span className="text-xl md:text-2xl leading-none">+</span>
-              <span>Tambah Legenda</span>
-            </button>
           </div>
 
           {/* Dynamic legend cards */}
@@ -692,12 +671,6 @@ export default function AdminDashboard() {
                 <span className="text-lg text-gray-600 text-center mb-4">
                   Belum ada data legenda untuk ditampilkan
                 </span>
-                <button
-                  className="px-5 py-3 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 font-medium flex items-center gap-2"
-                  onClick={() => setShowDialogMap(true)}
-                >
-                  <span className="text-xl">+</span> Tambah Item Legenda
-                </button>
               </div>
             )}
           </div>
@@ -876,22 +849,6 @@ export default function AdminDashboard() {
           description={"Galeri kegiatan desa"}
         />
       </div>
-
-      {/* DialogMap modal */}
-      {showDialogMap && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-white/70 via-gray-100/80 to-green-100/70 backdrop-blur-xl">
-          <div className="relative z-50">
-            <div className="rounded-2xl shadow-2xl border border-green-200 bg-white/80 backdrop-blur-lg p-0 w-[95vw] max-w-3xl">
-              <DialogMap
-                open={showDialogMap}
-                onClose={() => setShowDialogMap(false)}
-                onSubmit={handleDialogMapSubmit}
-                year={selectedYear}
-              />
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
@@ -1106,7 +1063,7 @@ function PreviewSection({
                     </span>
                   )}
                 </div>
-
+1
                 {showLink && item.link && (
                   <a
                     href={item.link}

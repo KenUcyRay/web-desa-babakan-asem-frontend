@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { FaPlus, FaEdit, FaTrash, FaTimes, FaUserAlt } from "react-icons/fa";
+import { useEffect, useRef, useState } from "react";
+import { FaPlus, FaEdit, FaTrash, FaTimes, FaUserAlt, FaImage } from "react-icons/fa";
 import { FiUsers } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
 import Pagination from "../ui/Pagination";
@@ -8,7 +8,7 @@ import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 import { Helper } from "../../utils/Helper";
 
 export default function ManageAnggota() {
-  const {  i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const [members, setMembers] = useState([]);
   const [kategori, setKategori] = useState("Semua");
   const kategoriList = [
@@ -154,6 +154,23 @@ export default function ManageAnggota() {
     );
     setShowModal(false);
     fetchMembers();
+  };
+
+  const fileInputRef = useRef(null);
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setFormData((prev) => ({
+      ...prev,
+      profile_photo: file,
+    }));
+  };
+
+  const handleFileClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
   };
 
   return (
@@ -405,16 +422,23 @@ export default function ManageAnggota() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Foto Profil
                 </label>
+                <button
+                  type="button"
+                  onClick={handleFileClick}
+                  className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 
+                   hover:from-green-700 hover:to-emerald-700 text-white px-5 py-2 rounded-lg 
+                   shadow hover:shadow-lg transition active:scale-95 cursor-pointer"
+                >
+                  <FaImage />
+                  Unggah Gambar
+                </button>
+
                 <input
                   type="file"
                   accept="image/*"
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      profile_photo: e.target.files[0],
-                    })
-                  }
-                  className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-200 focus:border-green-500"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-200 focus:border-green-500 hidden"
                 />
               </div>
 
@@ -462,7 +486,7 @@ export default function ManageAnggota() {
                   type="submit"
                   className="px-7 py-3 rounded-xl bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-medium shadow-lg transition transform hover:-translate-y-0.5"
                 >
-                  {editingId ? Simpan : Tambah}
+                  {editingId ? "Simpan" : "Tambah"}
                 </button>
               </div>
             </form>

@@ -21,9 +21,12 @@ export default function NavbarBottom() {
   const isTentangActive = ["/profil", "/pemerintahan", "/potensi"].includes(
     location.pathname
   );
-  const isInformasiActive = ["/administrasi", "/agenda", "/berita"].includes(
-    location.pathname
-  );
+  const isInformasiActive = [
+    "/administrasi",
+    "/agenda",
+    "/berita",
+    "/galeri",
+  ].includes(location.pathname);
 
   const activeClass = "text-[#B6F500] font-semibold";
   const normalClass = "hover:text-[#B6F500] transition";
@@ -316,6 +319,12 @@ export default function NavbarBottom() {
               >
                 {t("navbarTop.berita")}
               </NavLink>
+              <NavLink
+                to="/galeri"
+                className="block px-4 py-2 text-black hover:underline"
+              >
+                Galeri
+              </NavLink>
             </div>
           </div>
 
@@ -410,6 +419,13 @@ export default function NavbarBottom() {
                 className="hover:underline"
               >
                 {t("navbarTop.berita")}
+              </NavLink>
+              <NavLink
+                to="/galeri"
+                onClick={() => setMobileOpen(false)}
+                className="hover:underline"
+              >
+                Galer
               </NavLink>
             </div>
           </details>

@@ -189,17 +189,17 @@ const DialogMap = ({
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50 p-4"
       onClick={handleOverlayClick}
     >
       <div
-        className="bg-white backdrop-blur-lg border border-green-200 rounded-2xl shadow-2xl w-full max-w-7xl max-h-[95vh] overflow-hidden relative"
+        className="bg-white/95 backdrop-blur-md border border-white/20 rounded-2xl shadow-2xl w-full max-w-7xl max-h-[95vh] overflow-hidden relative"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="bg-gradient-to-r from-green-600 to-green-700 px-6 py-4 relative">
+        <div className="bg-gradient-to-r from-green-500/90 to-green-600/90 backdrop-blur-sm px-6 py-4 relative border-b border-white/20">
           <button
-            className="absolute top-2 right-2 text-white hover:text-gray-200 text-3xl font-bold z-50 w-10 h-10 flex items-center justify-center rounded-full hover:bg-white hover:bg-opacity-20 transition-all duration-200"
+            className="absolute top-2 right-2 text-white/90 hover:text-white text-3xl font-bold z-50 w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/20 transition-all duration-200"
             onClick={onClose}
             type="button"
           >
@@ -208,23 +208,23 @@ const DialogMap = ({
           <h2 className="text-2xl font-bold text-white pr-12">
             Tambah Data Peta
           </h2>
-          <p className="text-green-100 mt-1">
+          <p className="text-white/80 mt-1">
             Buat marker peta baru atau area polygon
           </p>
         </div>
 
         {/* Content */}
         <div className="p-6 overflow-y-auto max-h-[calc(95vh-120px)]">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* LEFT: FORM */}
-            <div className="space-y-6">
-              <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid grid-cols-1 xl:grid-cols-5 lg:grid-cols-3 gap-8">
+            {/* LEFT: FORM - Diperbesar untuk desktop */}
+            <div className="xl:col-span-2 lg:col-span-1 space-y-6">
+              <div className="space-y-6">
                 {/* Type Selection */}
-                <div className="bg-gray-50 p-4 rounded-xl">
-                  <label className="block text-gray-700 font-semibold mb-3">
+                <div className="bg-white/60 backdrop-blur-sm p-6 rounded-xl border border-white/30">
+                  <label className="block text-gray-700 font-semibold mb-4 text-lg">
                     Tipe Peta <span className="text-red-500">*</span>
                   </label>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 gap-4">
                     {MAP_TYPES.map((opt) => (
                       <label key={opt.value} className="cursor-pointer">
                         <input
@@ -237,11 +237,11 @@ const DialogMap = ({
                         />
                         <div
                           className={`
-                            p-3 border-2 rounded-lg text-center font-medium transition-all duration-200
+                            p-4 border-2 rounded-lg text-center font-semibold transition-all duration-200 text-base backdrop-blur-sm
                             ${
                               formData.type === opt.value
-                                ? "border-green-500 bg-green-50 text-green-700"
-                                : "border-gray-200 bg-white text-gray-600 hover:border-green-300"
+                                ? "border-green-500 bg-green-100/80 text-green-700"
+                                : "border-gray-300/50 bg-white/50 text-gray-600 hover:border-green-300/80"
                             }
                           `}
                         >
@@ -251,17 +251,17 @@ const DialogMap = ({
                     ))}
                   </div>
                   {errors.type && (
-                    <span className="text-xs text-red-500 mt-2 block">
+                    <span className="text-sm text-red-500 mt-3 block">
                       {errors.type}
                     </span>
                   )}
                 </div>
 
                 {/* Basic Info */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-6">
                   {/* Name */}
                   <div>
-                    <label className="block text-gray-700 font-semibold mb-2">
+                    <label className="block text-gray-700 font-semibold mb-3 text-lg">
                       Nama <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -269,13 +269,13 @@ const DialogMap = ({
                       name="name"
                       value={formData.name}
                       onChange={handleChange}
-                      className={`w-full border ${
-                        errors.name ? "border-red-500" : "border-gray-300"
-                      } rounded-lg px-4 py-3 focus:ring-2 focus:ring-green-400 focus:border-transparent transition-all duration-200`}
+                      className={`w-full border backdrop-blur-sm bg-white/70 ${
+                        errors.name ? "border-red-500" : "border-gray-300/50"
+                      } rounded-lg px-4 py-4 text-base focus:ring-2 focus:ring-green-400 focus:border-transparent transition-all duration-200`}
                       placeholder="Contoh: Babakan Asem"
                     />
                     {errors.name && (
-                      <span className="text-xs text-red-500 mt-1 block">
+                      <span className="text-sm text-red-500 mt-2 block">
                         {errors.name}
                       </span>
                     )}
@@ -283,7 +283,7 @@ const DialogMap = ({
 
                   {/* Year */}
                   <div>
-                    <label className="block text-gray-700 font-semibold mb-2">
+                    <label className="block text-gray-700 font-semibold mb-3 text-lg">
                       Tahun <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -291,15 +291,15 @@ const DialogMap = ({
                       name="year"
                       value={formData.year}
                       onChange={handleChange}
-                      className={`w-full border ${
-                        errors.year ? "border-red-500" : "border-gray-300"
-                      } rounded-lg px-4 py-3 focus:ring-2 focus:ring-green-400 focus:border-transparent transition-all duration-200`}
+                      className={`w-full border backdrop-blur-sm bg-white/70 ${
+                        errors.year ? "border-red-500" : "border-gray-300/50"
+                      } rounded-lg px-4 py-4 text-base focus:ring-2 focus:ring-green-400 focus:border-transparent transition-all duration-200`}
                       min={1900}
                       max={2100}
                       placeholder="Contoh: 2025"
                     />
                     {errors.year && (
-                      <span className="text-xs text-red-500 mt-1 block">
+                      <span className="text-sm text-red-500 mt-2 block">
                         {errors.year}
                       </span>
                     )}
@@ -308,21 +308,21 @@ const DialogMap = ({
 
                 {/* Description */}
                 <div>
-                  <label className="block text-gray-700 font-semibold mb-2">
+                  <label className="block text-gray-700 font-semibold mb-3 text-lg">
                     Deskripsi <span className="text-red-500">*</span>
                   </label>
                   <textarea
                     name="description"
                     value={formData.description}
                     onChange={handleChange}
-                    rows={3}
-                    className={`w-full border ${
-                      errors.description ? "border-red-500" : "border-gray-300"
-                    } rounded-lg px-4 py-3 focus:ring-2 focus:ring-green-400 focus:border-transparent transition-all duration-200 resize-none`}
-                    placeholder="Deskripsikan area atau lokasi ini..."
+                    rows={5}
+                    className={`w-full border backdrop-blur-sm bg-white/70 ${
+                      errors.description ? "border-red-500" : "border-gray-300/50"
+                    } rounded-lg px-4 py-4 text-base focus:ring-2 focus:ring-green-400 focus:border-transparent transition-all duration-200 resize-none`}
+                    placeholder="Deskripsikan area atau lokasi ini dengan detail..."
                   />
                   {errors.description && (
-                    <span className="text-xs text-red-500 mt-1 block">
+                    <span className="text-sm text-red-500 mt-2 block">
                       {errors.description}
                     </span>
                   )}
@@ -330,26 +330,26 @@ const DialogMap = ({
 
                 {/* Icon Upload (only for MARKER) */}
                 {formData.type === "MARKER" && (
-                  <div className="bg-blue-50 p-4 rounded-xl border border-blue-200">
-                    <label className="block text-gray-700 font-semibold mb-3">
+                  <div className="bg-blue-100/60 backdrop-blur-sm p-6 rounded-xl border border-blue-200/50">
+                    <label className="block text-gray-700 font-semibold mb-4 text-lg">
                       Icon Kustom
-                      <span className="text-xs text-gray-500 ml-2 font-normal">
+                      <span className="text-sm text-gray-500 ml-2 font-normal">
                         (PNG/JPG/SVG - Opsional)
                       </span>
                     </label>
-                    <div className="flex items-center gap-4">
+                    <div className="flex flex-col gap-4">
                       <input
                         type="file"
                         name="icon"
                         accept="image/*"
                         ref={fileInputRef}
                         onChange={handleChange}
-                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition-all duration-200"
+                        className="block w-full text-base text-gray-500 file:mr-4 file:py-3 file:px-6 file:rounded-lg file:border-0 file:text-base file:font-medium file:bg-blue-100/80 file:text-blue-700 hover:file:bg-blue-200/80 transition-all duration-200 backdrop-blur-sm"
                       />
                       {formData.icon && (
                         <button
                           type="button"
-                          className="text-sm text-red-500 hover:text-red-700 font-medium"
+                          className="text-base text-red-500 hover:text-red-700 font-medium self-start"
                           onClick={() => {
                             setFormData((prev) => ({ ...prev, icon: null }));
                             setIconPreview("");
@@ -357,66 +357,69 @@ const DialogMap = ({
                               fileInputRef.current.value = "";
                           }}
                         >
-                          Hapus
+                          Hapus File
                         </button>
                       )}
                     </div>
                     {iconPreview && (
-                      <div className="mt-3 flex items-center gap-3">
+                      <div className="mt-4 flex items-center gap-4">
                         <img
                           src={iconPreview}
                           alt="icon preview"
-                          className="h-12 w-12 object-contain border-2 border-blue-200 rounded-lg shadow-sm bg-white"
+                          className="h-16 w-16 object-contain border-2 border-blue-200/50 rounded-lg shadow-sm bg-white/80 backdrop-blur-sm"
                         />
-                        <span className="text-sm text-gray-600">
-                          Preview icon
+                        <span className="text-base text-gray-600">
+                          Preview icon yang akan digunakan
                         </span>
                       </div>
                     )}
                     {errors.icon && (
-                      <span className="text-xs text-red-500 mt-2 block">
+                      <span className="text-sm text-red-500 mt-3 block">
                         {errors.icon}
                       </span>
                     )}
                   </div>
                 )}
-              </form>
+              </div>
             </div>
 
             {/* RIGHT: MAP */}
-            <div className="lg:sticky lg:top-6">
-              <div className="bg-gray-50 p-4 rounded-xl">
-                <h3 className="font-semibold text-gray-700 mb-3 flex items-center gap-2">
+            <div className="xl:col-span-3 lg:col-span-2">
+              <div className="bg-white/60 backdrop-blur-sm p-6 rounded-xl h-full border border-white/30">
+                <h3 className="font-semibold text-gray-700 mb-4 flex items-center gap-2 text-xl">
                   🗺️ Peta Interaktif
                 </h3>
 
                 {/* Map Status Info */}
-                <div className="mb-4 p-3 bg-white rounded-lg border text-sm">
+                <div className="mb-4 p-4 bg-white/70 backdrop-blur-sm rounded-lg border border-white/30 text-base">
                   {formData.type === "MARKER" ? (
                     markerPos ? (
-                      <div className="flex items-center gap-2 text-green-600">
-                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                        <span className="font-medium">Lokasi Dipilih:</span>
+                      <div className="flex items-center gap-3 text-green-600">
+                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                        <span className="font-semibold">Lokasi Dipilih:</span>
                         <span className="font-mono">
                           {markerPos.lat.toFixed(6)}, {markerPos.lng.toFixed(6)}
                         </span>
                       </div>
                     ) : (
-                      <div className="flex items-center gap-2 text-blue-600">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                      <div className="flex items-center gap-3 text-blue-600">
+                        <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
                         <span>Klik di peta untuk memilih lokasi</span>
                       </div>
                     )
                   ) : (
-                    <div className="flex items-center gap-2 text-gray-600">
-                      <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
-                      <span>Preview area polygon</span>
+                    <div className="flex items-center gap-3 text-gray-600">
+                      <div className="w-3 h-3 bg-gray-500 rounded-full"></div>
+                      <span>
+                        Titik polygon: {polygonPoints.length} 
+                        {polygonPoints.length >= 3 ? " (Siap disimpan)" : " (Minimal 3 titik)"}
+                      </span>
                     </div>
                   )}
                 </div>
 
                 {/* Map Container */}
-                <div className="h-96 rounded-xl overflow-hidden border-2 border-gray-200 shadow-lg relative">
+                <div className="h-[500px] rounded-xl overflow-hidden border-2 border-white/40 shadow-lg relative backdrop-blur-sm">
                   <div style={{ height: "100%", width: "100%" }}>
                     <MapContainer
                       center={
@@ -473,59 +476,75 @@ const DialogMap = ({
                 </div>
 
                 {/* Map Instructions */}
-                <div className="mt-3 text-xs text-gray-500 space-y-1">
+                <div className="mt-4 text-sm text-gray-600 space-y-2 bg-white/70 backdrop-blur-sm p-4 rounded-lg border border-white/30">
+                  <h4 className="font-semibold text-gray-700 mb-2">Instruksi:</h4>
                   {formData.type === "MARKER" ? (
                     <>
-                      <div>
-                        • Klik di mana saja pada peta untuk menempatkan marker
+                      <div className="flex items-start gap-2">
+                        <span className="text-green-500 font-bold">•</span>
+                        <span>Klik di mana saja pada peta untuk menempatkan marker</span>
                       </div>
-                      <div>• Seret marker untuk menyesuaikan posisi</div>
+                      <div className="flex items-start gap-2">
+                        <span className="text-green-500 font-bold">•</span>
+                        <span>Seret marker untuk menyesuaikan posisi yang tepat</span>
+                      </div>
                     </>
                   ) : (
-                    <div>• Klik pada peta untuk menambah titik polygon</div>
+                    <>
+                      <div className="flex items-start gap-2">
+                        <span className="text-blue-500 font-bold">•</span>
+                        <span>Klik pada peta untuk menambah titik polygon</span>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <span className="text-blue-500 font-bold">•</span>
+                        <span>Minimal 3 titik diperlukan untuk membuat polygon</span>
+                      </div>
+                    </>
                   )}
                 </div>
 
                 {/* Undo Polygon Point */}
                 {formData.type === "POLYGON" && polygonPoints.length > 0 && (
-                  <button
-                    type="button"
-                    className="mt-3 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
-                    onClick={undoLastPoint}
-                  >
-                    Batalkan Titik Terakhir
-                  </button>
+                  <div className="mt-4">
+                    <button
+                      type="button"
+                      className="px-6 py-3 bg-red-500/90 backdrop-blur-sm text-white rounded-lg hover:bg-red-600/90 transition font-semibold text-base"
+                      onClick={undoLastPoint}
+                    >
+                      Batalkan Titik Terakhir ({polygonPoints.length})
+                    </button>
+                  </div>
                 )}
               </div>
             </div>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 justify-end pt-6 border-t border-gray-200 mt-8">
+          <div className="flex flex-col sm:flex-row gap-4 justify-end pt-8 border-t border-white/30 mt-8">
             <button
               type="button"
-              className="px-6 py-3 rounded-lg bg-gray-100 text-gray-700 font-semibold hover:bg-gray-200 transition-all duration-200"
+              className="px-8 py-4 rounded-lg bg-white/70 backdrop-blur-sm border border-white/40 text-gray-700 font-semibold hover:bg-white/80 transition-all duration-200 text-base"
               onClick={onClose}
               disabled={loading}
             >
               Batal
             </button>
             <button
-              type="submit"
-              className="px-6 py-3 rounded-lg bg-green-600 text-white font-semibold hover:bg-green-700 transition-all duration-200"
+              type="button"
+              className="px-8 py-4 rounded-lg bg-green-600/90 backdrop-blur-sm text-white font-semibold hover:bg-green-700/90 transition-all duration-200 text-base shadow-lg"
               onClick={handleSubmit}
               disabled={loading}
             >
-              {loading ? "Menyimpan..." : "Simpan"}
+              {loading ? "Menyimpan..." : "Simpan Data"}
             </button>
           </div>
           {errors.submission && (
-            <p className="text-red-600 mt-4 font-semibold">
+            <p className="text-red-600 mt-4 font-semibold text-base">
               {errors.submission}
             </p>
           )}
           {errors.coordinates && (
-            <p className="text-red-600 mt-4 font-semibold">
+            <p className="text-red-600 mt-4 font-semibold text-base">
               {errors.coordinates}
             </p>
           )}

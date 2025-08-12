@@ -87,28 +87,31 @@ export default function ProfilDesa() {
   };
 
   return (
-    <div className="font-poppins bg-gray-50">
+    <div className="font-poppins bg-gray-50 pt-[60px] lg:pt-[40px] animate-fade overflow-x-hidden">
       {/* - HERO SECTION */}
       <section className="relative bg-[#FFFDF6]" data-aos="fade-up">
-        <div className="max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-2 gap-10 items-center">
-          <div data-aos="fade-right">
-            <span className="inline-block px-4 py-1 text-sm font-medium rounded-full bg-gradient-to-r from-[#9BEC00] to-[#D2FF72] text-gray-900 mb-4 shadow">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 md:py-16 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 items-center">
+          <div data-aos="fade-right" className="order-2 md:order-1">
+            <span className="inline-block px-3 sm:px-4 py-1 text-xs sm:text-sm font-medium rounded-full bg-gradient-to-r from-[#9BEC00] to-[#D2FF72] text-gray-900 mb-3 sm:mb-4 shadow">
               {t("profileVillage.tagline")}
             </span>
             <h1
-              className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight mb-6"
+              className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-4 sm:mb-6"
               dangerouslySetInnerHTML={{ __html: t("profileVillage.title") }}
             />
-            <p className="text-gray-700 text-lg leading-relaxed">
+            <p className="text-sm sm:text-base md:text-lg text-gray-700 leading-relaxed">
               {t("profileVillage.description")}
             </p>
           </div>
-          <div className="relative flex justify-center" data-aos="zoom-in">
-            <div className="rounded-2xl overflow-hidden shadow-xl w-full md:w-4/5">
+          <div
+            className="relative flex justify-center order-1 md:order-2"
+            data-aos="zoom-in"
+          >
+            <div className="rounded-xl sm:rounded-2xl overflow-hidden shadow-lg sm:shadow-xl w-full md:w-4/5">
               <img
                 src={kumpul}
                 alt="Warga Desa Berkumpul"
-                className="object-cover w-full h-full"
+                className="object-cover w-full h-48 sm:h-56 md:h-64"
               />
             </div>
           </div>
@@ -116,13 +119,13 @@ export default function ProfilDesa() {
       </section>
 
       {/* - SEJARAH */}
-      <section className="bg-white py-14" data-aos="fade-up">
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">
+      <section className="bg-white py-8 sm:py-10 md:py-14" data-aos="fade-up">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6">
             {t("profileVillage.historyTitle")}
           </h2>
           <p
-            className="text-gray-700 leading-relaxed text-justify"
+            className="text-sm sm:text-base text-gray-700 leading-relaxed text-left sm:text-justify"
             dangerouslySetInnerHTML={{
               __html: t("profileVillage.historyText"),
             }}
@@ -132,28 +135,28 @@ export default function ProfilDesa() {
 
       {/* - VISI & MISI */}
       <section
-        className="max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-2 gap-8"
+        className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 md:py-16 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8"
         data-aos="fade-up"
       >
         <div
-          className="bg-gradient-to-br from-[#f7ffe5] to-white shadow-md rounded-2xl p-8"
+          className="bg-gradient-to-br from-[#f7ffe5] to-white shadow-md rounded-xl sm:rounded-2xl p-6 sm:p-8"
           data-aos="fade-right"
         >
-          <h3 className="text-2xl font-bold text-green-700 mb-4">
+          <h3 className="text-xl sm:text-2xl font-bold text-green-700 mb-3 sm:mb-4">
             {t("profileVillage.visionTitle")}
           </h3>
-          <p className="text-gray-700 leading-relaxed">
+          <p className="text-sm sm:text-base text-gray-700 leading-relaxed">
             {t("profileVillage.visionText")}
           </p>
         </div>
         <div
-          className="bg-gradient-to-br from-[#f7ffe5] to-white shadow-md rounded-2xl p-8"
+          className="bg-gradient-to-br from-[#f7ffe5] to-white shadow-md rounded-xl sm:rounded-2xl p-6 sm:p-8"
           data-aos="fade-left"
         >
-          <h3 className="text-2xl font-bold text-green-700 mb-4">
+          <h3 className="text-xl sm:text-2xl font-bold text-green-700 mb-3 sm:mb-4">
             {t("profileVillage.missionTitle")}
           </h3>
-          <ul className="list-disc list-inside text-gray-700 space-y-2">
+          <ul className="list-disc list-inside text-sm sm:text-base text-gray-700 space-y-2">
             {t("profileVillage.missionList", { returnObjects: true }).map(
               (item, i) => (
                 <li key={i}>{item}</li>
@@ -164,17 +167,17 @@ export default function ProfilDesa() {
       </section>
 
       {/* - Prestasi */}
-      <section className="bg-white py-14" data-aos="fade-up">
-        <div className="max-w-5xl mx-auto px-6">
-          <h2 className="text-3xl font-bold text-center text-green-700 mb-10">
+      <section className="bg-white py-8 sm:py-10 md:py-14" data-aos="fade-up">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center text-green-700 mb-6 sm:mb-8 md:mb-10">
             {t("profileVillage.achievementsTitle")}
           </h2>
 
           {/* Loading State */}
           {loading && (
-            <div className="flex justify-center items-center py-10">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-700"></div>
-              <span className="ml-3 text-gray-600">
+            <div className="flex justify-center items-center py-8 md:py-10">
+              <div className="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-b-2 border-green-700"></div>
+              <span className="ml-3 text-sm sm:text-base text-gray-600">
                 {t("profileVillage.loading")}
               </span>
             </div>
@@ -183,12 +186,12 @@ export default function ProfilDesa() {
           {/* Error State */}
           {error && !loading && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-              <p className="text-red-700">
+              <p className="text-sm sm:text-base text-red-700">
                 {t("profileVillage.errorMessage")}: {error}
               </p>
               <button
                 onClick={fetchAchievements}
-                className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
+                className="mt-2 px-4 py-2 text-sm sm:text-base bg-red-600 text-white rounded hover:bg-red-700 transition"
               >
                 {t("profileVillage.retryButton")}
               </button>
@@ -198,7 +201,7 @@ export default function ProfilDesa() {
           {/* Achievements List */}
           {!loading && achievements.length > 0 && (
             <>
-              <div className="space-y-10 mb-16">
+              <div className="space-y-6 sm:space-y-8 md:space-y-10 mb-8 sm:mb-12 md:mb-16">
                 {achievements.map((item, index) => (
                   <Link
                     to={`/prestasi/${item.id}`}
@@ -206,24 +209,26 @@ export default function ProfilDesa() {
                     className="block"
                   >
                     <div
-                      className="flex flex-col md:flex-row gap-6 items-center bg-gray-50 rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow duration-300 cursor-pointer"
+                      className="flex flex-col md:flex-row gap-4 sm:gap-6 items-center bg-gray-50 rounded-lg sm:rounded-xl shadow-md p-4 sm:p-6 hover:shadow-lg transition-shadow duration-300 cursor-pointer"
                       data-aos="fade-up"
                     >
                       <img
                         src={item.imageUrl || item.image || kumpul}
                         alt={item.title}
-                        className="w-full md:w-1/3 h-56 object-cover rounded-lg shadow"
+                        className="w-full md:w-1/3 h-48 sm:h-56 object-cover rounded-lg shadow"
                         onError={(e) => {
                           e.target.src = kumpul;
                         }}
                       />
-                      <div className="md:w-2/3">
-                        <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                      <div className="w-full md:w-2/3 text-center md:text-left">
+                        <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2">
                           {item.title}
                         </h3>
-                        <p className="text-gray-600">{item.description}</p>
+                        <p className="text-sm sm:text-base text-gray-600 mb-2">
+                          {item.description}
+                        </p>
                         {item.date && (
-                          <p className="text-sm text-green-600 mt-2">
+                          <p className="text-sm text-green-600">
                             {new Date(item.date).toLocaleDateString("id-ID", {
                               year: "numeric",
                               month: "long",
@@ -237,37 +242,74 @@ export default function ProfilDesa() {
                 ))}
               </div>
 
-              {/* Milestone Horizontal Timeline */}
-              <div className="relative w-full py-10">
-                <h3 className="text-xl font-bold text-center text-gray-800 mb-14">
+              {/* Timeline - Mobile Vertical, Desktop Horizontal */}
+              <div className="w-full py-6 sm:py-8 md:py-10">
+                <h3 className="text-lg sm:text-xl font-bold text-center text-gray-800 mb-6 sm:mb-10 md:mb-14">
                   {t("profileVillage.timelineTitle")}
                 </h3>
 
-                {/* Timeline Container */}
-                <div className="relative">
-                  {/* Timeline Line */}
-                  <div className="absolute top-1/2 left-0 right-0 h-1 bg-gray-300 transform -translate-y-1/2 z-0"></div>
+                {/* Mobile: Vertical Timeline */}
+                <div className="block md:hidden">
+                  <div className="relative pl-6 space-y-6">
+                    {/* Vertical Line */}
+                    <div className="absolute left-3 top-0 bottom-0 w-0.5 bg-gray-300"></div>
 
-                  {/* Milestone Items */}
-                  <div className="relative flex justify-between z-10">
                     {achievements.map((item, index) => (
                       <div
                         key={item.id || index}
-                        className="relative flex flex-col items-center"
+                        className="relative cursor-pointer"
+                        onClick={() => {
+                          if (item.id)
+                            window.location.href = `/prestasi/${item.id}`;
+                        }}
+                      >
+                        {/* Timeline Dot */}
+                        <div className="absolute -left-5 top-2 w-5 h-5 rounded-full bg-white border-3 border-green-600 flex items-center justify-center shadow-sm">
+                          <div className="w-2 h-2 rounded-full bg-green-600" />
+                        </div>
+
+                        {/* Content */}
+                        <div className="bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow duration-200 border border-gray-100">
+                          <div className="text-xs font-semibold text-green-600 mb-1">
+                            {item.year || new Date(item.date).getFullYear()}
+                          </div>
+                          <h4 className="text-sm font-semibold text-gray-800 mb-2 leading-tight">
+                            {item.title}
+                          </h4>
+                          <p className="text-xs text-gray-600 leading-relaxed">
+                            {item.description}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Desktop: Horizontal Timeline */}
+                <div className="hidden md:block relative">
+                  {/* Horizontal Line */}
+                  <div className="absolute top-1/2 left-0 right-0 h-1 bg-gray-300 transform -translate-y-1/2 z-0"></div>
+
+                  {/* Timeline Items - No overflow, responsive spacing */}
+                  <div className="relative z-10 flex justify-between items-center px-4">
+                    {achievements.map((item, index) => (
+                      <div
+                        key={item.id || index}
+                        className="relative flex flex-col items-center max-w-[120px] lg:max-w-[150px]"
                       >
                         {/* Milestone Dot */}
                         <div
-                          className="relative w-10 h-10 rounded-full bg-white border-4 border-green-600 flex items-center justify-center mb-2 cursor-pointer shadow-md hover:shadow-lg transition-all duration-300 group"
+                          className="relative w-8 h-8 lg:w-10 lg:h-10 rounded-full bg-white border-4 border-green-600 flex items-center justify-center mb-2 cursor-pointer shadow-md hover:shadow-lg transition-all duration-300 group"
                           onClick={() => {
                             if (item.id) {
                               window.location.href = `/prestasi/${item.id}`;
                             }
                           }}
                         >
-                          <div className="w-4 h-4 rounded-full bg-green-600"></div>
+                          <div className="w-3 h-3 lg:w-4 lg:h-4 rounded-full bg-green-600"></div>
 
-                          {/* Milestone Popup */}
-                          <div className="absolute bottom-full mb-3 w-64 p-4 rounded-lg shadow-lg bg-white opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform -translate-x-1/2 left-1/2">
+                          {/* Popup - Only on large screens */}
+                          <div className="absolute bottom-full mb-3 w-64 p-4 rounded-lg shadow-lg bg-white opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform -translate-x-1/2 left-1/2 z-20 hidden lg:block">
                             <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1 w-4 h-4 bg-white rotate-45"></div>
                             <div className="text-xs font-semibold text-green-600 mb-1">
                               {item.year || new Date(item.date).getFullYear()}
@@ -281,11 +323,11 @@ export default function ProfilDesa() {
                           </div>
                         </div>
 
-                        {/* Milestone Label */}
-                        <div className="text-xs font-medium text-gray-700 mt-10 text-center px-2">
+                        {/* Labels */}
+                        <div className="text-xs font-medium text-gray-700 mt-8 text-center">
                           {item.year || new Date(item.date).getFullYear()}
                         </div>
-                        <div className="text-sm font-semibold text-gray-900 mt-1 text-center px-2">
+                        <div className="text-xs lg:text-sm font-semibold text-gray-900 mt-1 text-center px-1 line-clamp-2">
                           {item.title}
                         </div>
                       </div>
@@ -298,8 +340,8 @@ export default function ProfilDesa() {
 
           {/* Empty State */}
           {!loading && achievements.length === 0 && !error && (
-            <div className="text-center py-10">
-              <p className="text-gray-600">
+            <div className="text-center py-8 md:py-10">
+              <p className="text-sm sm:text-base text-gray-600">
                 {t("profileVillage.noAchievements")}
               </p>
             </div>
@@ -308,38 +350,44 @@ export default function ProfilDesa() {
       </section>
 
       {/* - KONTAK & SOSMED */}
-      <section className="bg-white py-16" data-aos="fade-up">
-        <div className="max-w-6xl mx-auto px-6">
-          <h2 className="text-3xl font-bold text-center text-green-700 mb-10">
+      <section className="bg-white py-8 sm:py-12 md:py-16" data-aos="fade-up">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center text-green-700 mb-6 sm:mb-8 md:mb-10">
             {t("profileVillage.contactTitle")}
           </h2>
-          <div className="flex flex-col gap-6 max-w-3xl mx-auto">
+          <div className="flex flex-col gap-4 sm:gap-6 max-w-3xl mx-auto">
+            {/* Location */}
             <div
-              className="p-6 rounded-xl shadow-lg bg-white flex items-start gap-4 hover:shadow-xl transition"
+              className="p-4 sm:p-6 rounded-lg sm:rounded-xl shadow-lg bg-white flex items-start gap-3 sm:gap-4 hover:shadow-xl transition"
               data-aos="fade-right"
             >
-              <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-[#9BEC00] to-[#D2FF72] shadow text-gray-900">
-                <FaMapMarkerAlt size={20} />
+              <div className="w-10 h-10 sm:w-12 sm:h-12 flex-shrink-0 flex items-center justify-center rounded-full bg-gradient-to-br from-[#9BEC00] to-[#D2FF72] shadow text-gray-900">
+                <FaMapMarkerAlt size={16} className="sm:w-5 sm:h-5" />
               </div>
-              <div>
-                <h4 className="font-bold text-gray-900 text-lg">
+              <div className="flex-1 min-w-0">
+                <h4 className="font-bold text-gray-900 text-base sm:text-lg">
                   {t("profileVillage.locationTitle")}
                 </h4>
-                <p className="text-sm text-gray-600 leading-relaxed">
+                <p className="text-xs sm:text-sm text-gray-600 leading-relaxed break-words">
                   {t("profileVillage.locationDetail")}
                 </p>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4" data-aos="fade-up">
+
+            {/* Phone & WhatsApp */}
+            <div
+              className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+              data-aos="fade-up"
+            >
               <a
                 href="tel:085330192025"
-                className="p-5 rounded-xl shadow-md bg-white flex flex-col items-start gap-2 hover:shadow-xl transition"
+                className="p-4 sm:p-5 rounded-lg sm:rounded-xl shadow-md bg-white flex flex-col items-start gap-2 hover:shadow-xl transition"
               >
-                <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-br from-[#9BEC00] to-[#D2FF72] shadow text-gray-900">
-                  <FaPhoneAlt />
+                <div className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-gradient-to-br from-[#9BEC00] to-[#D2FF72] shadow text-gray-900">
+                  <FaPhoneAlt size={14} className="sm:w-4 sm:h-4" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-gray-900 text-sm">
+                  <h4 className="font-bold text-gray-900 text-xs sm:text-sm">
                     {t("profileVillage.phoneTitle")}
                   </h4>
                   <p className="text-xs text-gray-700">0853-3019-2025</p>
@@ -347,64 +395,76 @@ export default function ProfilDesa() {
               </a>
               <a
                 href="https://wa.me/6285330192025"
-                className="p-5 rounded-xl shadow-md bg-white flex flex-col items-start gap-2 hover:shadow-xl transition"
+                className="p-4 sm:p-5 rounded-lg sm:rounded-xl shadow-md bg-white flex flex-col items-start gap-2 hover:shadow-xl transition"
               >
-                <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-br from-[#9BEC00] to-[#D2FF72] shadow text-gray-900">
-                  <FaWhatsapp />
+                <div className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-gradient-to-br from-[#9BEC00] to-[#D2FF72] shadow text-gray-900">
+                  <FaWhatsapp size={14} className="sm:w-4 sm:h-4" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-gray-900 text-sm">
+                  <h4 className="font-bold text-gray-900 text-xs sm:text-sm">
                     {t("profileVillage.whatsappTitle")}
                   </h4>
                   <p className="text-xs text-gray-700">+62 853‑3019‑2025</p>
                 </div>
               </a>
             </div>
+
+            {/* Email */}
             <a
               href="mailto:babakanasem@gmail.com"
-              className="p-5 rounded-xl shadow-md bg-white flex items-center gap-4 hover:shadow-xl transition"
+              className="p-4 sm:p-5 rounded-lg sm:rounded-xl shadow-md bg-white flex items-center gap-3 sm:gap-4 hover:shadow-xl transition"
               data-aos="fade-left"
             >
-              <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-br from-[#9BEC00] to-[#D2FF72] shadow text-gray-900">
-                <FaEnvelope />
+              <div className="w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0 flex items-center justify-center rounded-full bg-gradient-to-br from-[#9BEC00] to-[#D2FF72] shadow text-gray-900">
+                <FaEnvelope size={14} className="sm:w-4 sm:h-4" />
               </div>
-              <div>
-                <h4 className="font-bold text-gray-900">
+              <div className="flex-1 min-w-0">
+                <h4 className="font-bold text-gray-900 text-sm sm:text-base">
                   {t("profileVillage.emailTitle")}
                 </h4>
-                <p className="text-sm text-gray-700">babakanasem@gmail.com</p>
+                <p className="text-xs sm:text-sm text-gray-700 break-all">
+                  babakanasem@gmail.com
+                </p>
               </div>
             </a>
+
+            {/* Social Media */}
             <div
-              className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-4"
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4"
               data-aos="fade-up"
             >
               <a
                 href="https://facebook.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-4 p-4 rounded-xl bg-white shadow hover:shadow-lg transition"
+                className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-white shadow hover:shadow-lg transition"
               >
-                <FaFacebook className="text-blue-600 text-3xl" />
-                <span className="font-semibold text-gray-800">Facebook</span>
+                <FaFacebook className="text-blue-600 text-2xl sm:text-3xl flex-shrink-0" />
+                <span className="font-semibold text-gray-800 text-sm sm:text-base">
+                  Facebook
+                </span>
               </a>
               <a
                 href="https://instagram.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-4 p-4 rounded-xl bg-white shadow hover:shadow-lg transition"
+                className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-white shadow hover:shadow-lg transition"
               >
-                <FaInstagram className="text-pink-500 text-3xl" />
-                <span className="font-semibold text-gray-800">Instagram</span>
+                <FaInstagram className="text-pink-500 text-2xl sm:text-3xl flex-shrink-0" />
+                <span className="font-semibold text-gray-800 text-sm sm:text-base">
+                  Instagram
+                </span>
               </a>
               <a
                 href="https://tiktok.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-4 p-4 rounded-xl bg-white shadow hover:shadow-lg transition"
+                className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-white shadow hover:shadow-lg transition sm:col-span-2 lg:col-span-1"
               >
-                <FaTiktok className="text-black text-3xl" />
-                <span className="font-semibold text-gray-800">TikTok</span>
+                <FaTiktok className="text-black text-2xl sm:text-3xl flex-shrink-0" />
+                <span className="font-semibold text-gray-800 text-sm sm:text-base">
+                  TikTok
+                </span>
               </a>
             </div>
           </div>
@@ -413,17 +473,17 @@ export default function ProfilDesa() {
 
       {/* - MAP */}
       <section
-        className="max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-2 gap-10 items-center"
+        className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 md:py-16 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 items-center"
         data-aos="fade-up"
       >
         <div
-          className="bg-gradient-to-br from-[#9BEC00]/10 to-[#D2FF72]/20 shadow-lg rounded-2xl p-10"
+          className="bg-gradient-to-br from-[#9BEC00]/10 to-[#D2FF72]/20 shadow-lg rounded-xl sm:rounded-2xl p-6 sm:p-8 md:p-10 order-2 md:order-1"
           data-aos="fade-right"
         >
-          <h3 className="text-3xl font-bold text-green-700 mb-6">
+          <h3 className="text-2xl sm:text-3xl font-bold text-green-700 mb-4 sm:mb-6">
             {t("profileVillage.mapTitle")}
           </h3>
-          <ul className="space-y-4 text-gray-800 text-lg">
+          <ul className="space-y-2 sm:space-y-4 text-gray-800 text-sm sm:text-base md:text-lg">
             <li
               dangerouslySetInnerHTML={{ __html: t("profileVillage.mapNorth") }}
             />
@@ -439,14 +499,15 @@ export default function ProfilDesa() {
           </ul>
         </div>
         <div
-          className="rounded-2xl overflow-hidden shadow-xl border border-green-100"
+          className="rounded-xl sm:rounded-2xl overflow-hidden shadow-xl border border-green-100 order-1 md:order-2"
           data-aos="zoom-in"
         >
           <iframe
             title="Lokasi Desa Babakan Asem"
             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d50846.83215472047!2d108.04488070198364!3d-6.7568080545342095!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e6f2aaf583cd373%3A0x997e0a8c838d37df!2sBabakan%20Asem%2C%20Kec.%20Conggeang%2C%20Kabupaten%20Sumedang%2C%20Jawa%20Barat!5e0!3m2!1sid!2sid!4v1753327873604!5m2!1sid!2sid"
             width="100%"
-            height="380"
+            height="300"
+            className="sm:h-80 md:h-96"
             allowFullScreen=""
             loading="lazy"
           ></iframe>

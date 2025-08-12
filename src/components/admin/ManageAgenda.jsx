@@ -188,7 +188,7 @@ export default function ManageAgenda() {
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-800 flex items-center gap-2">
-            <span className="bg-blue-100 text-blue-600 p-2 rounded-lg">
+            <span className="bg-green-100 text-green-600 p-2 rounded-lg">
               <FiCalendar className="inline" />
             </span>
             Kelola Agenda
@@ -202,7 +202,7 @@ export default function ManageAgenda() {
               setEditingId(null);
               setShowForm(true);
             }}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-lg shadow-md transition hover:shadow-lg"
+            className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-3 rounded-lg shadow-md transition hover:shadow-lg"
           >
             <FiPlus className="text-lg" />
             Tambah Agenda Baru
@@ -221,7 +221,7 @@ export default function ManageAgenda() {
             }}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition cursor-pointer shadow-sm flex items-center gap-1 ${
               kategori === k
-                ? "bg-blue-600 text-white shadow-md"
+                ? "bg-green-600 text-white shadow-md"
                 : "bg-gray-100 hover:bg-gray-200 text-gray-700"
             }`}
           >
@@ -444,7 +444,7 @@ export default function ManageAgenda() {
             </button>
             <button
               type="submit"
-              className="px-6 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white shadow-md transition flex items-center gap-2"
+              className="px-6 py-2.5 rounded-lg bg-green-600 hover:bg-green-700 text-white shadow-md transition flex items-center gap-2"
             >
               {editingId ? (
                 <>
@@ -479,7 +479,7 @@ export default function ManageAgenda() {
                   setEditingId(null);
                   setShowForm(true);
                 }}
-                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
                 <FiPlus className="-ml-1 mr-2 h-5 w-5" />
                 Tambah Agenda Baru
@@ -512,7 +512,7 @@ export default function ManageAgenda() {
                   >
                     {a.is_published ? "Published" : "Draft"}
                   </span>
-                  <span className="absolute bottom-3 left-3 px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                  <span className="absolute bottom-3 left-3 px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-blue-800">
                     {type.find((t) => t.value === a.type)?.name || "Regular"}
                   </span>
                 </div>

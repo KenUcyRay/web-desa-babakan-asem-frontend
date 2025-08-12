@@ -6,16 +6,13 @@ import { useTranslation } from "react-i18next";
 export default function NavbarTop() {
   const { i18n } = useTranslation();
   const [currentLang, setCurrentLang] = useState("ID");
-  const [showAlt, setShowAlt] = useState(false);
   const [hideTopbar, setHideTopbar] = useState(false);
   const [lastScroll, setLastScroll] = useState(0);
 
-  const toggleLangMenu = () => setShowAlt((prev) => !prev);
   const changeLanguage = (lng) => i18n.changeLanguage(lng);
   const changeLang = (lang) => {
     setCurrentLang(lang);
     changeLanguage(lang.toLowerCase());
-    setShowAlt(false);
   };
 
   useEffect(() => {
@@ -36,8 +33,6 @@ export default function NavbarTop() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScroll]);
 
-  const altLang = currentLang === "ID" ? "EN" : "ID";
-
   return (
     <div
       className={`w-full bg-white shadow transition-transform duration-300 z-[40] ${
@@ -52,7 +47,7 @@ export default function NavbarTop() {
             ["BUMDes", "/bumdes"],
             ["Karang Taruna", "/karang-taruna"],
             ["BPD", "/bpd"],
-            ["Galeri", "/galeri"],
+            // ["Galeri", "/galeri"],
             // ["Koperasi Merah Putih", "/koperasi-merah-putih"],
           ].map(([label, to]) => (
             <Link
@@ -68,30 +63,33 @@ export default function NavbarTop() {
         {/* ✅ ROW 2 Bahasa */}
         <div className="flex flex-wrap justify-center md:justify-end items-center gap-4">
           {/* Language Toggle */}
-          <div
-            className="flex items-center gap-1 text-gray-600 cursor-pointer select-none hover:text-[#B6F500]"
-            onClick={toggleLangMenu}
-          >
-            <FaGlobe size={14} />
-            {!showAlt ? (
-              <span className="text-sm">{currentLang}</span>
-            ) : (
-              <>
-                <span className="font-semibold text-[#B6F500]">
-                  {currentLang}
-                </span>
-                <span>|</span>
+          <div className="flex items-center gap-3">
+            <FaGlobe className="text-gray-600" size={14} />
+            <div
+              className="relative flex items-center cursor-pointer"
+              onClick={() => changeLang(currentLang === "ID" ? "EN" : "ID")}
+            >
+              <div className="flex bg-gray-100 rounded-md p-1">
                 <span
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    changeLang(altLang);
-                  }}
-                  className="hover:text-[#B6F500]"
+                  className={`px-3 py-1 rounded-md transition-all duration-200 ${
+                    currentLang === "ID"
+                      ? "bg-white text-gray-900 font-semibold shadow-sm"
+                      : "text-gray-500"
+                  }`}
                 >
-                  {altLang}
+                  ID
                 </span>
-              </>
-            )}
+                <span
+                  className={`px-3 py-1 rounded-md transition-all duration-200 ${
+                    currentLang === "EN"
+                      ? "bg-white text-gray-900 font-semibold shadow-sm"
+                      : "text-gray-500"
+                  }`}
+                >
+                  EN
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </div>

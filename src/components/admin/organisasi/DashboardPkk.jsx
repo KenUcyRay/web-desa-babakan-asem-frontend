@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   FaPlus,
   FaTrash,
@@ -393,6 +393,48 @@ export default function ManagePkk() {
     if (activeTab === "agenda") fetchAgendas();
   }, [activeTab, programPage, memberPage, agendaPage, i18n.language]);
 
+  const fileInputProgramRef = useRef(null);
+  const fileInputMemberRef = useRef(null);
+  const fileInputAgendaRef = useRef(null);
+
+  const handleClickProgramImage = () => {
+    fileInputProgramRef.current.click();
+  };
+  const handleProgramImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setProgramImage(file);
+  };
+
+  const handleClickMemberImage = () => {
+    fileInputMemberRef.current.click();
+  };
+
+  const handleMemberImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setMemberForm((prev) => ({
+      ...prev,
+      profile_photo: file,
+    }));
+  };
+
+  const handleClickAgendaImage = () => {
+    fileInputAgendaRef.current.click();
+  };
+
+  const handleAgendaImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setAgendaForm((prev) => ({
+      ...prev,
+      featured_image: file,
+    }));
+  };
+
   return (
     <div className="font-[Poppins,sans-serif]">
       {/* Header */}
@@ -493,11 +535,22 @@ export default function ManagePkk() {
                 <label className="block font-medium text-gray-700 mb-1">
                   Gambar program
                 </label>
+                <button
+                  type="button"
+                  onClick={handleClickProgramImage}
+                  className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 
+                   hover:from-green-700 hover:to-emerald-700 text-white px-5 py-2 rounded-lg 
+                   shadow hover:shadow-lg transition active:scale-95 cursor-pointer"
+                >
+                  <FaImage />
+                  Unggah Gambar
+                </button>
                 <input
                   type="file"
                   accept="image/*"
-                  className="w-full border rounded-lg p-2"
-                  onChange={(e) => setProgramImage(e.target.files[0])}
+                  ref={fileInputProgramRef}
+                  className="w-full border rounded-lg p-2 hidden"
+                  onChange={handleProgramImageChange}
                 />
                 {(programImage ||
                   (editingProgramId &&
@@ -828,16 +881,23 @@ export default function ManagePkk() {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Foto profil anggota
                     </label>
+                    <button
+                      type="button"
+                      onClick={handleClickMemberImage}
+                      className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 
+                   hover:from-green-700 hover:to-emerald-700 text-white px-5 py-2 rounded-lg 
+                   shadow hover:shadow-lg transition active:scale-95 cursor-pointer"
+                    >
+                      <FaImage />
+                      Unggah Gambar
+                    </button>
+
                     <input
                       type="file"
                       accept="image/*"
-                      onChange={(e) =>
-                        setMemberForm({
-                          ...memberForm,
-                          profile_photo: e.target.files[0],
-                        })
-                      }
-                      className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-200 focus:border-green-500"
+                      ref={fileInputMemberRef}
+                      onChange={handleMemberImageChange}
+                      className="hidden w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-200 focus:border-green-500"
                     />
                   </div>
 
@@ -1029,16 +1089,22 @@ export default function ManagePkk() {
                   <label className="block font-medium text-gray-700 mb-1">
                     Gambar agenda
                   </label>
+                  <button
+                    type="button"
+                    onClick={handleClickAgendaImage}
+                    className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 
+                   hover:from-green-700 hover:to-emerald-700 text-white px-5 py-2 rounded-lg 
+                   shadow hover:shadow-lg transition active:scale-95 cursor-pointer"
+                  >
+                    <FaImage />
+                    Unggah Gambar
+                  </button>
                   <input
                     type="file"
                     accept="image/*"
-                    className="w-full border rounded-lg p-2"
-                    onChange={(e) =>
-                      setAgendaForm({
-                        ...agendaForm,
-                        featured_image: e.target.files[0],
-                      })
-                    }
+                    ref={fileInputAgendaRef}
+                    className="w-full border rounded-lg p-2 hidden"
+                    onChange={handleAgendaImageChange}
                   />
                   {(agendaForm.featured_image ||
                     (editingAgendaId &&

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   FaUsers,
   FaCalendarAlt,
@@ -273,6 +273,34 @@ export default function DashboardKarangTaruna() {
     if (activeTab === "agenda") fetchAgendas();
   }, [activeTab, memberPage, agendaPage, i18n.language]);
 
+  const fileInputMemberRef = useRef(null);
+
+  const handleClickMemberClick = () => {
+    fileInputMemberRef.current.click();
+  };
+
+  const handleMemberImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setMemberForm((prev) => ({
+      ...prev,
+      profile_photo: file,
+    }));
+  };
+
+  const fileInputAgendaRef = useRef(null);
+  const handleClickAgendaImage = () => {
+    fileInputAgendaRef.current.click();
+  };
+  const handleAgendaImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setAgendaForm((prev) => ({
+      ...prev,
+      featured_image: file,
+    }));
+  };
+
   return (
     <div className="font-[Poppins,sans-serif]">
       {/* Header */}
@@ -415,19 +443,47 @@ export default function DashboardKarangTaruna() {
               </div>
 
               <div>
-                <label className="block font-medium text-gray-700 mb-1">
-                  Foto Profil
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Tingkat kepentingan
                 </label>
                 <input
-                  type="file"
-                  accept="image/*"
-                  className="w-full border rounded-lg p-2"
+                  type="number"
+                  placeholder="Skala 1-10 (1 paling penting)"
+                  value={memberForm.important_level}
                   onChange={(e) =>
                     setMemberForm({
                       ...memberForm,
-                      profile_photo: e.target.files[0],
+                      important_level: e.target.value,
                     })
                   }
+                  className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-200 focus:border-green-500"
+                  min={1}
+                  max={10}
+                />
+              </div>
+
+              <div>
+                <label className="block font-medium text-gray-700 mb-1">
+                  Foto Profil
+                </label>
+
+                <button
+                  type="button"
+                  onClick={handleClickMemberClick}
+                  className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 
+                   hover:from-green-700 hover:to-emerald-700 text-white px-5 py-2 rounded-lg 
+                   shadow hover:shadow-lg transition active:scale-95 cursor-pointer"
+                >
+                  <FaImage />
+                  Unggah Gambar
+                </button>
+
+                <input
+                  type="file"
+                  accept="image/*"
+                  ref={fileInputMemberRef}
+                  className="w-full border rounded-lg p-2 hidden"
+                  onChange={handleMemberImageChange}
                 />
               </div>
 
@@ -667,16 +723,23 @@ export default function DashboardKarangTaruna() {
                   <label className="block font-medium text-gray-700 mb-1">
                     Gambar Agenda
                   </label>
+                  <button
+                    type="button"
+                    onClick={handleClickAgendaImage}
+                    className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 
+                   hover:from-green-700 hover:to-emerald-700 text-white px-5 py-2 rounded-lg 
+                   shadow hover:shadow-lg transition active:scale-95 cursor-pointer"
+                  >
+                    <FaImage />
+                    Unggah Gambar
+                  </button>
+
                   <input
                     type="file"
+                    ref={fileInputAgendaRef}
                     accept="image/*"
-                    className="w-full border rounded-lg p-2"
-                    onChange={(e) =>
-                      setAgendaForm({
-                        ...agendaForm,
-                        featured_image: e.target.files[0],
-                      })
-                    }
+                    className="w-full border rounded-lg p-2 hidden"
+                    onChange={handleAgendaImageChange}
                   />
                   {(agendaForm.featured_image ||
                     (editingAgendaId &&

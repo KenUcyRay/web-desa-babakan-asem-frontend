@@ -119,7 +119,7 @@ export default function ManageGalery() {
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-8">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-gray-800 flex items-center gap-3">
-            <FaImage className="text-blue-500" />
+            <FaImage className="text-green-500" />
             Kelola Galeri
           </h1>
           <p className="text-gray-600 mt-1">Kelola Foto Desa</p>
@@ -128,7 +128,7 @@ export default function ManageGalery() {
         {!showForm && (
           <button
             onClick={() => setShowForm(true)}
-            className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-5 py-2.5 rounded-lg shadow-md transition transform hover:-translate-y-0.5"
+            className="flex items-center gap-2 bg-gradient-to-r bg-green-500 hover:bg-green-600 text-white px-5 py-2.5 rounded-lg shadow-md transition transform"
           >
             <FaPlus /> Tambah Foto
           </button>
@@ -161,7 +161,7 @@ export default function ManageGalery() {
               </label>
               <input
                 type="text"
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Masukkan judul foto"
@@ -205,7 +205,7 @@ export default function ManageGalery() {
           <div className="flex gap-3 mt-6 pt-5 border-t border-gray-200">
             <button
               type="submit"
-              className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-xl shadow-md transition transform hover:-translate-y-0.5"
+              className="flex items-center gap-2 bg-gradient-to-r bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-xl shadow-md transition transform "
             >
               <FaSave /> {editingId ? "Ubah Galeri" : "Simpan Galeri"}
             </button>
@@ -235,7 +235,7 @@ export default function ManageGalery() {
           {!showForm && (
             <button
               onClick={() => setShowForm(true)}
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-5 py-2.5 rounded-lg shadow-md transition"
+              className="inline-flex items-center gap-2 bg-gradient-to-r bg-green-500 hover:bg-green-600 text-white px-5 py-2.5 rounded-lg shadow-md transition"
             >
               <FaPlus /> Tambah Foto
             </button>
@@ -265,7 +265,7 @@ export default function ManageGalery() {
                   <div className="flex justify-between mt-5 pt-4 border-t border-gray-100">
                     <button
                       onClick={() => handleEdit(galeri.id)}
-                      className="flex items-center gap-1 text-blue-500 hover:text-blue-700 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition"
+                      className="flex items-center gap-1 text-blue-500 hover:text-blue-700 hover:bg-green-50 px-3 py-1.5 rounded-lg transition"
                     >
                       <FaEdit size={14} /> Edit
                     </button>
