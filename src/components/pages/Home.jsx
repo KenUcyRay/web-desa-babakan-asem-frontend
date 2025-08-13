@@ -58,7 +58,6 @@ class ApbApi {
 
       return response;
     } catch (error) {
-      console.error("Error fetching APB data:", error);
       throw error;
     }
   }
@@ -127,7 +126,6 @@ export default function Home() {
       const responseBody = await response.json();
       setProducts(responseBody.products);
     } catch (error) {
-      console.error("Error fetching products:", error);
       setProducts([]);
     }
   };
@@ -139,7 +137,6 @@ export default function Home() {
       const responseBody = await response.json();
       setNews(responseBody.news);
     } catch (error) {
-      console.error("Error fetching news:", error);
       setNews([]);
     }
   };
@@ -155,14 +152,10 @@ export default function Home() {
         const responseBody = await response.json();
         setWorkPrograms(responseBody.data || responseBody || []);
       } else {
-        console.error(
-          "Failed to fetch village work programs:",
-          response.status
-        );
+      
         setWorkPrograms([]);
       }
     } catch (error) {
-      console.error("Error fetching village work programs:", error);
       setWorkPrograms([]);
     } finally {
       setIsLoadingWorkPrograms(false);
@@ -191,7 +184,6 @@ export default function Home() {
 
         setApbData(transformedData);
       } else {
-        console.error("Failed to fetch APB data:", response.status);
         // Fallback to default data if API fails
         setApbData([
           {
@@ -217,7 +209,6 @@ export default function Home() {
         ]);
       }
     } catch (error) {
-      console.error("Error fetching APB data:", error);
       // Fallback to default data if API fails
       setApbData([
         {

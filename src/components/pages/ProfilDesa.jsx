@@ -59,11 +59,9 @@ export default function ProfilDesa() {
         }));
         setAchievements(transformedData);
       } else {
-        console.warn("Data format tidak sesuai:", result);
         setAchievements([]);
       }
     } catch (err) {
-      console.error("Error fetching achievements:", err);
       setError(err.message);
       // Fallback ke data translation jika API gagal
       setAchievements(

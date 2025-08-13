@@ -196,10 +196,7 @@ export default function AdminDashboard() {
             if (item.type === "POLYGON") {
               const normalized = normalizePolygonCoordinates(item.coordinates);
               if (!normalized) {
-                console.warn(
-                  "Skipping polygon with invalid coordinates:",
-                  item.id
-                );
+            
                 return;
               }
 
@@ -214,10 +211,7 @@ export default function AdminDashboard() {
             } else if (item.type === "MARKER") {
               const normalized = normalizeMarkerCoordinates(item.coordinates);
               if (!normalized) {
-                console.warn(
-                  "Skipping marker with invalid coordinates:",
-                  item.id
-                );
+            
                 return;
               }
 
@@ -236,14 +230,12 @@ export default function AdminDashboard() {
               });
             }
           } catch (err) {
-            console.error("Error processing map item", item, err);
           }
         });
       }
 
       setMapData(formattedData);
     } catch (error) {
-      console.error("Error fetching map data:", error);
     }
   };
 

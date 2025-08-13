@@ -71,7 +71,6 @@ export default function ManageApb() {
         })) || [];
       setData(transformedData);
     } catch (err) {
-      console.error("Fetch error:", err);
     }
   };
 
@@ -93,7 +92,6 @@ export default function ManageApb() {
       await fetchData();
       setEditing(null);
     } catch (err) {
-      console.error("Update error:", err);
     }
   };
 
@@ -120,7 +118,6 @@ export default function ManageApb() {
       setAddForm({ key: "", anggaran: "", realisasi: "" });
       setShowAddForm(false);
     } catch (err) {
-      console.error("Add error:", err);
     }
   };
 

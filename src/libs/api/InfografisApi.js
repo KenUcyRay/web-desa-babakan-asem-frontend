@@ -30,7 +30,6 @@ export class InfografisApi {
   }
 
   static async createBansos(data, language) {
-    console.log("Creating Bansos with data:", data);
     return fetch(
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/infografis/bansos`,
       {

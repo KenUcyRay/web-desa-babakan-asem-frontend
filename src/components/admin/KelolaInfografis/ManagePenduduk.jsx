@@ -237,7 +237,6 @@ export default function ManagePenduduk() {
       const result = await response.json();
       return result.data || [];
     } catch (error) {
-      console.error(`Error fetching ${type}:`, error);
       return [];
     }
   };

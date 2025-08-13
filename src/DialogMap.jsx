@@ -123,7 +123,6 @@ const DialogMap = ({
       }
       if (onClose) onClose();
     } catch (error) {
-      console.error("Error menyimpan data peta:", error);
       setErrors({
         submission: "Gagal menyimpan data peta",
       });

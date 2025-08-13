@@ -15,7 +15,6 @@ export class VillageWorkProgramApi {
 
       return response;
     } catch (error) {
-      console.error("Error fetching village work programs:", error);
       throw error;
     }
   }
@@ -36,10 +35,6 @@ export class VillageWorkProgramApi {
 
       return response;
     } catch (error) {
-      console.error(
-        `Error fetching village work program with id ${id}:`,
-        error
-      );
       throw error;
     }
   }
