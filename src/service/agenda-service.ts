@@ -60,9 +60,14 @@ export class AgendaService {
       throw new ResponseError(403, t("agenda.kt_only_agenda"));
     } else if (user.role === Role.BPD && request.type !== AgendaType.BPD) {
       throw new ResponseError(403, t("agenda.bpd_only_agenda"));
-    } else if (user.role === Role.ADMIN) {
+    } else if (
+      user.role === Role.ADMIN ||
+      user.role === Role.PKK ||
+      user.role === Role.KARANG_TARUNA ||
+      user.role === Role.BPD
+    ) {
     } else {
-      throw new ResponseError(403, t("agenda.admin_only_agenda"));
+      throw new ResponseError(403, "forbidden");
     }
 
     if (!file) {
@@ -100,9 +105,14 @@ export class AgendaService {
       throw new ResponseError(403, t("agenda.kt_only_agenda"));
     } else if (user.role === Role.BPD && request.type !== AgendaType.BPD) {
       throw new ResponseError(403, t("agenda.bpd_only_agenda"));
-    } else if (user.role === Role.ADMIN) {
+    } else if (
+      user.role === Role.ADMIN ||
+      user.role === Role.PKK ||
+      user.role === Role.KARANG_TARUNA ||
+      user.role === Role.BPD
+    ) {
     } else {
-      throw new ResponseError(403, t("agenda.admin_only_agenda"));
+      throw new ResponseError(403, "forbidden");
     }
 
     const agenda = await prismaClient.agenda.findUnique({

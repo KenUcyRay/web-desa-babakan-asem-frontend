@@ -95,9 +95,14 @@ export class MemberService {
       memberCreateRequest.organization_type !== Organization.BPD
     ) {
       throw new ResponseError(403, t("member.bpd_only_member"));
-    } else if (user.role === Role.ADMIN) {
+    } else if (
+      user.role === Role.ADMIN ||
+      user.role === Role.PKK ||
+      user.role === Role.KARANG_TARUNA ||
+      user.role === Role.BPD
+    ) {
     } else {
-      throw new ResponseError(403, t("member.admin_only_member"));
+      throw new ResponseError(403, "forbidden");
     }
 
     if (!file) {
@@ -140,9 +145,14 @@ export class MemberService {
       memberUpdateRequest.organization_type !== Organization.BPD
     ) {
       throw new ResponseError(403, t("member.bpd_only_member"));
-    } else if (user.role === Role.ADMIN) {
+    } else if (
+      user.role === Role.ADMIN ||
+      user.role === Role.PKK ||
+      user.role === Role.KARANG_TARUNA ||
+      user.role === Role.BPD
+    ) {
     } else {
-      throw new ResponseError(403, t("member.admin_only_member"));
+      throw new ResponseError(403, "forbidden");
     }
 
     const existingMember = await prismaClient.member.findUnique({
