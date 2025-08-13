@@ -66,7 +66,7 @@ export default function ManageBansos() {
   const handleSave = async () => {
     const { nama, penerima, id } = formData;
 
-    const payload = { name: nama.trim(), amount };
+    const payload = { name: nama.trim(), amount: parseInt(penerima) };
 
     if (isEditing) {
       const res = await InfografisApi.updateBansos(id, payload, i18n.language);
@@ -76,7 +76,9 @@ export default function ManageBansos() {
       }
 
       const updated = [...bansos].map((item) =>
-        item.id === id ? { ...item, name: nama.trim(), amount } : item
+        item.id === id
+          ? { ...item, name: nama.trim(), amount: parseInt(penerima) }
+          : item
       );
       setBansos(updated);
       alertSuccess("Data berhasil diperbarui!");
