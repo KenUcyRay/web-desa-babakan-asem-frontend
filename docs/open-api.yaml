@@ -1,221 +1,2322 @@
 # yaml-language-server: $schema=https://spec.openapis.org/oas/3.1/schema/2022-10-07
-
 openapi: 3.1.0
 info:
-  title: Desa Babakan Asem OpenAPI
+  title: API Desa Babakan Asem
+  description: Dokumentasi API layanan Desa Babakan Asem.
   version: 1.0.0
-  description: OpenAPI specification for Desa Babakan Asem API
   contact:
-    name: Rangga Dedi Darmawan
+    name: Rangga
     email: ranggadendi6@gmail.com
-    # url: ranggadendi6@gmail.com
+
 servers:
   - url: http://localhost:4000/api
-    description: Main API server  
+    description: Base Url
+
 paths:
-  /public/users/login:
+#Public Route
+  
+  #User
+  /users/register:
     post:
-      summary: Login users
-      operationId: listUsers
-      tags:
-        - Users
-      responses:
-        '200':
-          description: A list of users
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                      example: 1
-                    name:
-                      type: string
-                      example: John Doe
-  /public/users/register:                      
-    post:
-      summary: Create a new user
-      operationId: createUser
-      tags:
-        - Users
+      tags: [User Public]
+      summary: Registrasi user baru
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                  example: Jane Doe
+              $ref: '#/components/schemas/RegisterUser'
       responses:
         '201':
-          description: User created successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                    example: 2
-                  name:
-                    type: string
-                    example: Jane Doe
-  
-  # Village Work Programs
-  /village-work-programs:
+          description: Registrasi berhasil
+  /users/login:
+    post:
+      tags: [User Public]
+      summary: Login user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginUser'
+      responses:
+        '200':
+          description: Login berhasil
+  /users/forgot-password:
+    post:
+      tags: [User Public]
+      summary: Minta reset password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForgetPasswordUser'
+            
+      responses:
+        '200':
+          description: Email reset dikirim
+  /users/verify-reset-token:
+    post:
+      tags: [User Public]
+      summary: Verifikasi token reset password
+      parameters: 
+        - $ref: '#/components/parameters/TokenParam'
+      responses:
+        '200':
+          description: Token valid
+  /users/reset-password:
+    post:
+      tags: [User Public]
+      summary: Reset password user
+      parameters: 
+        - $ref: '#/components/parameters/TokenParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordUser'
+      responses:
+        '200':
+          description: Password berhasil direset
+
+  #Message
+  /messages:
+    post:
+      tags: [Message Public]
+      summary: Kirim pesan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMessage'
+                
+      responses:
+        '201':
+          description: Pesan berhasil dikirim
+
+  #Administration
+  /administrations:
+    post:
+      tags: [Administration Public]
+      summary: Pengajuan surat pengantar
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAdministration'
+      responses:
+        '201':
+          description: Surat pengantar dibuat
+
+  #News
+  /news:
     get:
-      summary: Get all village work programs
-      operationId: getVillageWorkPrograms
-      tags:
-        - Village Work Programs
+      tags: [News Public]
+      summary: Ambil semua berita
+      parameters: 
+       - $ref: '#/components/parameters/PageParam'
+       - $ref: '#/components/parameters/LimitParam'
       responses:
         '200':
-          description: A list of village work programs
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: string
-                      example: "123e4567-e89b-12d3-a456-426614174000"
-                    description:
-                      type: string
-                      example: "Road construction project"
-                    date:
-                      type: string
-                      format: date-time
-                      example: "2023-10-01T00:00:00Z"
-                    status:
-                      type: string
-                      example: "In Progress"
-                    justification:
-                      type: string
-                      example: "Necessary for community development"
-                    budget_amount:
-                      type: number
-                      format: double
-                      example: 15000.00  
-    post:
-      summary: Create a new village work program
-      operationId: createVillageWorkProgram
-      security:
-        - bearerAuth: []
-      tags:
-        - Village Work Programs
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                description:
-                  type: string
-                  example: "New park construction"
-                date:
-                  type: string
-                  format: date-time
-                  example: "2023-10-01T00:00:00Z"
-                status:
-                  type: string
-                  example: "Planned"
-                justification:
-                  type: string
-                  example: "Enhancing community green spaces"
-                budget_amount:
-                  type: number
-                  format: double
-                  example: 20000.00
-      responses:
-        '201':
-          description: Village work program created successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                    example: "123e4567-e89b-12d3-a456-426614174001"
-  
-  /village-work-programs/{villageWorkProgramid}:                  
-    patch:
-      summary: Update a village work program
-      operationId: updateVillageWorkProgram
-      security:
-        - bearerAuth: []
-      tags:
-        - Village Work Programs
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                id:
-                  type: string
-                  example: "123e4567-e89b-12d3-a456-426614174000"
-                description:
-                  type: string
-                  example: "Updated road construction project"
-                date:
-                  type: string
-                  format: date-time
-                  example: "2023-10-02T00:00:00Z"
-                status:
-                  type: string
-                  example: "Completed"
-                justification:
-                  type: string
-                  example: "Project completed successfully"
-                budget_amount:
-                  type: number
-                  format: double
-                  example: 16000.00
-      responses:
-        '200':
-          description: Village work program updated successfully
-    delete:
-      summary: Delete a village work program
-      operationId: deleteVillageWorkProgram
-      security:
-        - bearerAuth: []
-      tags:
-        - Village Work Programs
+          description: Berhasil mengambil data
+  /news/{id}:
+    get:
+      tags: [News Public]
+      summary: Ambil detail berita
       parameters:
         - name: id
-          in: query
+          in: path
           required: true
           schema:
             type: string
-            example: "123e4567-e89b-12d3-a456-426614174000"
+      responses:
+        '200':
+          description: Berhasil mengambil detail
+          
+  #Comment
+  /comments/{targetId}:
+    get:
+      tags: [Comment Public]
+      summary: Ambil komentar berdasarkan target
+      parameters:
+        - name: targetId
+          in: path
+          required: true
+          schema:
+            type: string
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Berhasil mengambil komentar
+
+  #Village Work Program
+  /village-work-programs:
+    get:
+      tags: [Village Work Program Public]
+      summary: Ambil semua program kerja desa
+      responses:
+        '200':
+          description: Berhasil mengambil data
+
+  #Village Achievements
+  /village-achievements:
+    get:
+      tags: [Village Achievement Public]
+      summary: Ambil semua prestasi desa
+      responses:
+        '200':
+          description: Berhasil mengambil data
+  /village-achievements/{id}:
+    get:
+      tags: [Village Achievement Public]
+      summary: Ambil detail prestasi desa
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Berhasil mengambil detail
+
+  #Infografis
+  /residents:
+    get:
+      tags: [Infografis Public]
+      summary: Ambil semua data penduduk
+      parameters: 
+        - $ref: '#/components/parameters/TypeResidentParam'
+      responses:
+        '200':
+          description: Berhasil mengambil data
+  /infografis/idm:
+    get:
+      tags: [Infografis Public]
+      summary: Ambil infografis IDM
+      responses:
+        '200':
+          description: Berhasil mengambil data
+  /infografis/bansos:
+    get:
+      tags: [Infografis Public]
+      summary: Ambil infografis Bansos
+      responses:
+        '200':
+          description: Berhasil mengambil data
+  /infografis/sdg:
+    get:
+      tags: [Infografis Public]
+      summary: Ambil infografis SDGs
+      responses:
+        '200':
+          description: Berhasil mengambil data
+  /infografis/extra-idm:
+    get:
+      tags: [Infografis Public]
+      summary: Ambil infografis tambahan IDM
+      responses:
+        '200':
+          description: Berhasil mengambil data
+
+  #APB
+  /apb:
+    get:
+      tags: [APB Public]
+      summary: Ambil data APB Desa
+      responses:
+        '200':
+          description: Berhasil mengambil data
+
+  #Galeri
+  /galeri:
+    get:
+      tags: [Galeri Public]
+      summary: Ambil semua galeri
+      parameters: 
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Berhasil mengambil data
+
+  #Program Pkk
+  /programs:
+    get:
+      tags: [PKK Program Public]
+      summary: Ambil semua program PKK
+      parameters: 
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Berhasil mengambil data
+
+  
+  #Organization Member
+  /organizations/members:
+    get:
+      tags: [Organization Member Public]
+      summary: Ambil data anggota organisasi
+      parameters: 
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - $ref: '#/components/parameters/TypeOrganizationtParam'
+      responses:
+        '200':
+          description: Berhasil mengambil data
+
+  #Agenda
+  /agenda:
+    get:
+      tags: [Agenda Public]
+      summary: Ambil semua agenda
+      parameters: 
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Berhasil mengambil data
+  /agenda/{id}:
+    get:
+      tags: [Agenda Public]
+      summary: Ambil detail agenda
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Berhasil mengambil detail
+
+  #Product
+  /products:
+    get:
+      tags: [Product Public]
+      summary: Ambil semua produk
+      parameters: 
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Berhasil mengambil data
+  /products/{id}:
+    get:
+      tags: [Product Public]
+      summary: Ambil detail produk
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Berhasil mengambil detail
+
+#Private Route
+
+  #User
+  /private/users/logout:
+    post:
+      tags: [User Private]
+      summary: Logout user
+      security: 
+        - cookieAuth: []
       responses:
         '204':
-          description: Village work program deleted successfully
+          description: Logout berhasil
+  /private/users:
+    get:
+      tags: [User Private]
+      summary: Ambil profil user
+      security: 
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Berhasil mengambil profil
+    patch:
+      tags: [User Private]
+      summary: Update profil user
+      security: 
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProfileUser'
+      responses:
+        '200':
+          description: Profil berhasil diupdate
+    delete:
+      tags: [User Private]
+      summary: Hapus akun user
+      security: 
+        - cookieAuth: []
+      responses:
+        '204':
+          description: Akun berhasil dihapus
 
+  #Product
+  /private/products/rating/{productId}:
+    get:
+      tags: [Rating Private]
+      summary: Cek apakah sudah memberi rating
+      security: 
+        - cookieAuth: []
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Status rating
+    post:
+      tags: [Rating Private]
+      summary: Beri rating produk
+      security: 
+        - cookieAuth: []
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUpdateRating'
+      responses:
+        '201':
+          description: Rating berhasil dibuat
+  /private/products/rating/{id}:
+    put:
+      tags: [Rating Private]
+      summary: Update rating
+      security: 
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUpdateRating'
+      responses:
+        '200':
+          description: Rating berhasil diupdate
+    delete:
+      tags: [Rating Private]
+      summary: Hapus rating
+      security: 
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Rating berhasil dihapus
+
+  #Comment
+  /private/comments/create/{targetId}:
+    post:
+      tags: [Comment Private]
+      summary: Buat komentar baru
+      security: 
+        - cookieAuth: []
+      parameters:
+        - name: targetId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref : '#/components/schemas/CreateComment'
+      responses:
+        '201':
+          description: Komentar berhasil dibuat
+  /private/comments/update/{id}:
+    patch:
+      tags: [Comment Private]
+      summary: Update komentar
+      security: 
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref : '#/components/schemas/UpdateComment'
+      responses:
+        '200':
+          description: Komentar berhasil diupdate
+  /private/comments/delete/{id}:
+    delete:
+      tags: [Comment Private]
+      summary: Hapus komentar
+      security: 
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Komentar berhasil dihapus
+
+#Admin Route
+
+  # News
+  /admin/news:
+    get:
+      tags: [News Admin]
+      summary: Ambil berita milik admin
+      security: 
+        - cookieAuth: []
+      parameters: 
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - $ref: '#/components/parameters/IsPublishedParam'
+      responses:
+        '200':
+          description: Berhasil mengambil data
+    post:
+      tags: [News Admin]
+      summary: Buat berita baru
+      security: 
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateNews'
+      responses:
+        '201':
+          description: Berita berhasil dibuat
+  /admin/news/{id}:
+    patch:
+      tags: [News Admin]
+      summary: Update berita
+      security: 
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UpdateNews'
+      responses:
+        '200':
+          description: Berita berhasil diupdate
+    delete:
+      tags: [News Admin]
+      summary: Hapus berita
+      security: 
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Berita berhasil dihapus
+
+  #Organization Member
+  /admin/organizations/members:
+    get:
+      tags: [Organization Admin]
+      summary: Tampilkan semua anggota organisasi
+      security: 
+        - cookieAuth: []
+      parameters: 
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - $ref: '#/components/parameters/TypeOrganizationtParam'
+      responses:
+        '200':
+          description: Anggota berhasil di tampilkan
+    post:
+      tags: [Organization Admin]
+      summary: Buat anggota organisasi baru
+      security: 
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateOrganizationMember'
+      responses:
+        '201':
+          description: Anggota berhasil dibuat
+  /admin/organizations/members/{memberId}:
+    patch:
+      tags: [Organization Admin]
+      summary: Update anggota organisasi
+      security: 
+        - cookieAuth: []
+      parameters:
+        - name: memberId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UpdateOrganizationMember'
+      responses:
+        '200':
+          description: Anggota berhasil diupdate
+    delete:
+      tags: [Organization Admin]
+      summary: Hapus anggota organisasi
+      security: 
+        - cookieAuth: []
+      parameters:
+        - name: memberId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Anggota berhasil dihapus
+          
+  # Agenda
+  /admin/agenda/me:
+    get:
+      tags: [Agenda Admin]
+      summary: Ambil agenda milik admin
+      security: 
+        - cookieAuth: []
+      parameters: 
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - $ref: '#/components/parameters/TypeAgendaParam'
+        - $ref: '#/components/parameters/IsPublishedParam'
+      responses:
+        '200':
+          description: Berhasil mengambil data
+  /admin/agenda/create:
+    post:
+      tags: [Agenda Admin]
+      summary: Buat agenda baru
+      security: 
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema: 
+              $ref: '#/components/schemas/CreateAgenda'
+      responses:
+        '201':
+          description: Agenda berhasil dibuat
+  /admin/agenda/update-by-agenda/{id}:
+    patch:
+      tags: [Agenda Admin]
+      summary: Update agenda
+      security: 
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UpdateAgenda'
+      responses:
+        '200':
+          description: Agenda berhasil diupdate
+  /admin/agenda/delete-by-agenda/{id}:
+    delete:
+      tags: [Agenda Admin]
+      summary: Hapus agenda
+      security: 
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Agenda berhasil dihapus
+
+  # Program PKK  
+  /admin/programs:
+    post:
+      tags: [PKK Program Admin]
+      summary: Buat program PKK
+      security: 
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateProgramPKK'
+      responses:
+        '201':
+          description: Program berhasil dibuat
+  /admin/programs/{programId}:
+    patch:
+      tags: [PKK Program Admin]
+      summary: Update program PKK
+      security: 
+        - cookieAuth: []
+      parameters:
+        - name: programId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UpdateProgramPKK'
+      responses:
+        '200':
+          description: Program berhasil diupdate
+    delete:
+      tags: [PKK Program Admin]
+      summary: Hapus program PKK
+      security: 
+        - cookieAuth: []
+      parameters:
+        - name: programId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Program berhasil dihapus
+
+  #Galeri
+  /admin/galeri:
+    post:
+      tags: [Galeri Admin]
+      summary: Buat galeri baru
+      security: 
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateGaleri'
+      responses:
+        '201':
+          description: Galeri berhasil dibuat
+  /admin/galeri/{id}:
+    put:
+      tags: [Galeri Admin]
+      summary: Update galeri
+      security: 
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UpdateGaleri'
+      responses:
+        '200':
+          description: Galeri berhasil diupdate
+    delete:
+      tags: [Galeri Admin]
+      summary: Hapus galeri
+      security: 
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Galeri berhasil dihapus
+
+  #Map
+  /admin/maps:
+    post:
+      tags: [Map Admin]
+      summary: Buat map baru
+      security: 
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateMap'
+      responses:
+        '201':
+          description: Map berhasil dibuat
+    get:
+      tags: [Map Admin]
+      summary: Ambil semua map
+      security: 
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Berhasil mengambil data map
+  /admin/maps/{id}:
+    delete:
+      tags: [Map Admin]
+      summary: Hapus map
+      security: 
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Map berhasil dihapus
+
+  #Activity Log
+  /admin/activity-log:
+    get:
+      tags: [ActivityLog Admin]
+      summary: Ambil semua activity log
+      security: 
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Berhasil mengambil activity log
+
+  #User
+  /admin/users:
+    get:
+      tags: [User Admin]
+      summary: Ambil semua user
+      security: 
+        - cookieAuth: []
+      parameters: 
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/SizeParam'
+        - $ref: '#/components/parameters/RoleParam'
+      responses:
+        '200':
+          description: Berhasil mengambil user
+    post:
+      tags: [User Admin]
+      summary: Buat user baru
+      security: 
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref : '#/components/schemas/CreateUser'
+      responses:
+        '201':
+          description: User berhasil dibuat
+  /admin/users/{id}:
+    patch:
+      tags: [User Admin]
+      summary: Update role user
+      security: 
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref : '#/components/schemas/UpdateRoleUser'
+      responses:
+        '200':
+          description: Role user berhasil diupdate
+  
+  #Message
+  /admin/messages:
+    get:
+      tags: [Messages Admin]
+      summary: Ambil semua pesan
+      security: 
+        - cookieAuth: []
+      parameters: 
+        - $ref: '#/components/parameters/SizeParam'
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/IsReadParam'
+      responses:
+        '200':
+          description: Berhasil mengambil pesan
+  /admin/messages/{id}:
+    patch:
+      tags: [Messages Admin]
+      summary: Update pesan
+      security: 
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Pesan berhasil diupdate
+
+  #Administration
+  /admin/administrations:
+    get:
+      tags: [Administration Admin]
+      summary: Ambil semua pengajuan surat
+      security: 
+        - cookieAuth: []
+      parameters: 
+        - $ref: '#/components/parameters/SizeParam'
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/IsPendingParam'
+      responses:
+        '200':
+          description: Berhasil mengambil data
+  /admin/administrations/{id}:
+    patch:
+      tags: [Administration Admin]
+      summary: Update pengajuan surat
+      security: 
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Pengajuan surat berhasil diupdate
+
+  #Village Work Program
+  /admin/village-work-programs:
+    post:
+      tags: [Village Work Program Admin]
+      summary: Buat program kerja desa
+      security: 
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateVillageWorkProgram'
+      responses:
+        '201':
+          description: Program kerja desa berhasil dibuat
+  /admin/village-work-programs/{villageWorkProgramId}:
+    patch:
+      tags: [Village Work Program Admin]
+      summary: Update program kerja desa
+      security: 
+        - cookieAuth: []
+      parameters:
+        - name: villageWorkProgramId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref : '#/components/schemas/UpdateVillageWorkProgram'
+      responses:
+        '200':
+          description: Program kerja desa berhasil diupdate
+    delete:
+      tags: [Village Work Program Admin]
+      summary: Hapus program kerja desa
+      security: 
+        - cookieAuth: []
+      parameters:
+        - name: villageWorkProgramId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Program kerja desa berhasil dihapus
+
+  #Village Achievement
+  /admin/village-achievements:
+    post:
+      tags: [Village Achievement Admin]
+      summary: Buat prestasi desa baru
+      security: 
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateVillageAchievement'
+      responses:
+        '201':
+          description: Prestasi desa berhasil dibuat
+  /admin/village-achievements/{id}:
+    patch:
+      tags: [Village Achievement Admin]
+      summary: Update prestasi desa
+      security: 
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UpdateVillageAchievement'
+      responses:
+        '200':
+          description: Prestasi desa berhasil diupdate
+    delete:
+      tags: [Village Achievement Admin]
+      summary: Hapus prestasi desa
+      security: 
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Prestasi desa berhasil dihapus
+  
+  #APB
+  /admin/apb:
+    post:
+      tags: [APB Admin]
+      summary: Buat data APB baru
+      security: 
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAPB'
+      responses:
+        '201':
+          description: APB berhasil dibuat
+  /admin/apb/{id}:
+    patch:
+      tags: [APB Admin]
+      summary: Update data APB
+      security: 
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref : '#/components/schemas/UpdateAPB'
+      responses:
+        '200':
+          description: APB berhasil diupdate
+    delete:
+      tags: [APB Admin]
+      summary: Hapus data APB
+      security: 
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: APB berhasil dihapus
+
+  #Infografis
+  /admin/residents/{id}:
+    patch:
+      tags: [Infografis Admin]
+      summary: Update data penduduk
+      security: 
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateResident'
+      responses:
+        '200':
+          description: Data penduduk berhasil diupdate
+  /admin/infografis/idm:
+    post:
+      tags: [Infografis Admin]
+      summary: Buat infografis IDM
+      security: 
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateIdm'
+      responses:
+        '201':
+          description: Infografis IDM berhasil dibuat
+  /admin/infografis/idm/{id}:
+    patch:
+      tags: [Infografis Admin]
+      summary: Update infografis IDM
+      security: 
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateIdm'
+      responses:
+        '200':
+          description: Infografis IDM berhasil diupdate
+    delete:
+      tags: [Infografis Admin]
+      summary: Hapus infografis IDM
+      security: 
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Infografis IDM berhasil dihapus
+  /admin/infografis/bansos:
+    post:
+      tags: [Infografis Admin]
+      summary: Buat infografis Bansos
+      security: 
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBansos'
+      responses:
+        '201':
+          description: Infografis Bansos berhasil dibuat
+  /admin/infografis/bansos/{bansosId}:
+    patch:
+      tags: [Infografis Admin]
+      summary: Update infografis Bansos
+      security: 
+        - cookieAuth: []
+      parameters:
+        - name: bansosId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateBansos'
+      responses:
+        '200':
+          description: Infografis Bansos berhasil diupdate
+    delete:
+      tags: [Infografis Admin]
+      summary: Hapus infografis Bansos
+      security: 
+        - cookieAuth: []
+      parameters:
+        - name: bansosId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Infografis Bansos berhasil dihapus
+  /admin/infografis/sdg/{sdgId}:
+    patch:
+      tags: [Infografis Admin]
+      summary: Update infografis SDG
+      security: 
+        - cookieAuth: []
+      parameters:
+        - name: sdgId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSDG'
+      responses:
+        '200':
+          description: Infografis SDG berhasil diupdate
+  /admin/infografis/extra-idm/{id}:
+    patch:
+      tags: [Infografis Admin]
+      summary: Update infografis tambahan IDM
+      security: 
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateExtraIdm'
+      responses:
+        '200':
+          description: Infografis tambahan IDM berhasil diupdate
+
+  #Product
+  /admin/products/categories:
+    get:
+      tags: [Product Admin]
+      summary: Ambil semua kategori produk
+      security: 
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Berhasil mengambil kategori
+    post:
+      tags: [Product Admin]
+      summary: Buat kategori produk baru
+      security: 
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUpdateCategoryProduct'
+      responses:
+        '201':
+          description: Kategori berhasil dibuat
+  /admin/products/categories/{categoryId}:
+    put:
+      tags: [Product Admin]
+      summary: Update kategori produk
+      security: 
+        - cookieAuth: []
+      parameters:
+        - name: categoryId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUpdateCategoryProduct'
+      responses:
+        '200':
+          description: Kategori berhasil diupdate
+    delete:
+      tags: [Product Admin]
+      summary: Hapus kategori produk
+      security: 
+        - cookieAuth: []
+      parameters:
+        - name: categoryId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Kategori berhasil dihapus
+  /admin/products/me:
+    get:
+      tags: [Product Admin]
+      summary: Ambil produk admin sendiri
+      security: 
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/LimitParam'
+        - $ref: '#/components/parameters/PageParam'
+      responses:
+        '200':
+          description: Berhasil mengambil produk
+  /admin/products/create:
+    post:
+      tags: [Product Admin]
+      summary: Buat produk baru
+      security: 
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateProduct'
+
+      responses:
+        '201':
+          description: Produk berhasil dibuat
+  /admin/products/update-by-product/{productId}:
+    patch:
+      tags: [Product Admin]
+      summary: Update produk
+      security: 
+        - cookieAuth: []
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UpdateProduct'
+      responses:
+        '200':
+          description: Produk berhasil diupdate
+  /admin/products/delete-by-product/{productId}:
+    delete:
+      tags: [Product Admin]
+      summary: Hapus produk
+      security: 
+        - cookieAuth: []
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Produk berhasil dihapus
 
 
 components:
   securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: token
+
+  parameters:
+    LimitParam:
+      name: limit
+      in: query
+      description: Jumlah maksimal item yang diambil
+      required: false
+      schema:
+        type: integer
+        default: 10
+        minimum: 1
+        
+    SizeParam:
+      name: size
+      in: query
+      description: Jumlah maksimal item yang diambil
+      required: false
+      schema:
+        type: integer
+        default: 10
+        minimum: 1
+        
+    PageParam:
+      name: page
+      in: query
+      description: Page sekarang
+      required: false
+      schema:
+        type: integer
+        default: 1
+        minimum: 1
+
+    IsPendingParam:
+      name: isPending
+      in: query
+      description: Filter data berdasarkan status pending (true/false)
+      required: false
+      schema:
+        type: boolean
+        example: true
+        
+    IsReadParam:
+      name: isRead
+      in: query
+      description: Filter data berdasarkan status read (true/false)
+      required: false
+      schema:
+        type: boolean
+        example: true
+        
+    IsPublishedParam:
+      name: is_published
+      in: query
+      description: Filter data berdasarkan status published (true/false)
+      required: false
+      schema:
+        type: boolean
+        example: true
+        
+    RoleParam:
+      name: role
+      in: query
+      description: Filter data berdasarkan role
+      required: false
+      schema:
+        type: string
+        enum:
+          - "REGULAR"
+          - "ADMIN"
+          - "PKK"
+          - "KARANG_TARUNA"
+          - "BPD"
+          - "CONTRIBUTOR"
+    
+    TypeResidentParam:
+      name: type
+      in: query
+      description: Filter data berdasarkan type
+      required: true
+      schema:
+        type: string
+        enum:
+          - "GENDER"
+          - "PERNIKAHAN"
+          - "AGAMA"
+          - "USIA"
+          - "KEPALA_KELUARGA"
+          - "PERKERJAAN"
+          - "PENDIDIKAN"
+          - "WAJIB_PILIH"
+          - "DUSUN"
+          - "ANAK_ANAK"
+    
+    TypeOrganizationtParam:
+      name: organizationType
+      in: query
+      description: Filter data berdasarkan type
+      required: false
+      schema:
+        type: string
+        enum:
+          - "PKK"
+          - "KARANG_TARUNA"
+          - "BPD"
+          - "PEMERINTAH"
+          
+    TypeAgendaParam:
+      name: type
+      in: query
+      description: Filter data berdasarkan type
+      required: false
+      schema:
+        type: string
+        enum:
+          - "PKK"
+          - "KARANG_TARUNA"
+          - "BPD"
+          - "REGULAR"
+    
+    TokenParam:
+      name: token
+      in: query
+      description: Verify token
+      required: true
+      schema:
+        type: string
+    
   schemas:
+    #User
+    RegisterUser:
+      type: object
+      required:
+        - name
+        - password
+        - confirm_password
+        - remember_me
+        - recaptcha_token
+      properties:
+        name:
+          type: string
+          example: "Rangga"
+        email:
+          type: string
+          example: "rangga@example.com"
+        phone_number:
+          type: string
+          example: "081234567890"
+        password:
+          type: string
+          example: "password123"
+        confirm_password:
+          type: string
+          example: "password123"
+        remember_me:
+          type: boolean
+          example: true
+        recaptcha_token:
+          type: string
+          example: "Dari api google"
     LoginUser:
       type: object
+      required:
+        - password
+        - remember_me
+        - recaptcha_token
       properties:
         email:
           type: string
-          format: email
-          example: user@example.com
+          example: "admin@gmail.com"
+        phone_number:
+          type: string
+          example: "081234567890"
+        password:
+          type: string
+          example: "admin123"
+        remember_me:
+          type: boolean
+          example: true
+        recaptcha_token:
+          type: string
+          example: "Dari api google"
+    ForgetPasswordUser:
+      type: object
+      required:
+        - email
+      properties:
+        email:
+          type: string
+          example: "rangga@example.com"
+    ResetPasswordUser:
+      type: object
+      required:
+        - password
+        - confirm_password
+      properties:
+        password:
+          type: string
+          example: "admin123"
+        confirm_password:
+          type: string
+          example: "admin123"
+    UpdateProfileUser:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "admin"
+        phone_number:
+          type: string
+          example: "081234567890"
+        email:
+          type: string
+          example: "admin@gmail.com"
+        password:
+          type: string
+          example: "password123"
+        confirm_password:
+          type: string
+          example: "password123"
+    CreateUser:
+      type: object
+      required:
+        - name
+        - password
+        - confirm_password
+      properties:
+        name:
+          type: string
+          example: "Rangga"
+        email:
+          type: string
+          example: "rangga@example.com"
+        phone_number:
+          type: string
+          example: "081234567890"
+        password:
+          type: string
+          example: "password123"
+        confirm_password:
+          type: string
+          example: "password123"
+    UpdateRoleUser:
+      type: object
+      required:
+        - role
+      properties:
+        role:
+          type: string
+          enum:
+            - "REGULAR"
+            - "ADMIN"
+            - "PKK"
+            - "KARANG_TARUNA"
+            - "BPD"
+            - "CONTRIBUTOR"
 
+    #Message
+    CreateMessage:
+      type: object
+      required: 
+        - name
+        - email
+        - message
+      properties:
+        name: 
+          type: string
+          example: "rangga"
+        email:
+          type: string
+          example: "rangga@example.com"
+        message:
+          type: string
+          example: "Ini Pesan"
+
+    #Administration
+    CreateAdministration:
+      type: object
+      required:
+        - name
+        - nik
+        - keterangan
+        - type
+      properties:
+        name:
+          type: string
+          example: "Rangga"
+        nik:
+          type: string
+          example: "3201011506990001"
+        keterangan:
+          type: string
+          example: "Ini keterangan"
+        type:
+          type: string
+          enum:
+            - "KTP"
+            - "PKK"
+            - "KARANG_TARUNA"
+            - "BPD"
+     
+    #Rating
+    CreateUpdateRating:
+      type: object
+      required:
+        - rating
+      properties:
+        rating: 
+          type: number
+          example: 1
+          minimum: 1
+          maximum: 5
+     
+    #Comment
+    CreateComment:
+      type: object
+      required:
+        - target_type
+        - content
+      properties:
+        target_type:
+          type: string
+          enum: 
+            - "NEWS"
+            - "AGENDA"
+            - "PRODUCT"
+        content:
+          type: string
+          example: "Ini konten"
+    UpdateComment:
+      type: object
+      required:
+        - content
+      properties:
+        content:
+          type: string
+          example: "Ini konten"
+        
+    #Village Work Program
+    CreateVillageWorkProgram:
+      type: object
+      required:
+        - description
+        - date
+        - status
+        - justification
+        - budget_amount
+      properties:
+        description:
+          type: string
+          example: "Ini description"
+        date:
+          type:  string
+          format: date
+          example: "2025-08-20"
+        status:
+          type: string
+          enum: 
+            - "PLANNED"
+            - "IN_PROGRESS"
+            - "COMPLETED"
+            - "COMPLETED"
+        justification:
+          type: string
+          example: "Ini justification"
+        budget_amount:
+          type: number
+          example: 100000000
+    UpdateVillageWorkProgram:
+      type: object
+      properties:
+        description:
+          type: string
+          example: "Ini description"
+        date:
+          type:  string
+          format: date
+          example: "2025-08-20"
+        status:
+          type: string
+          enum: 
+            - "PLANNED"
+            - "IN_PROGRESS"
+            - "COMPLETED"
+            - "COMPLETED"
+        justification:
+          type: string
+          example: "Ini justification"
+        budget_amount:
+          type: number
+          example: 100000000
+      
+    #APB
+    CreateAPB:
+      type: object
+      required:
+        - bidang
+        - anggaran
+        - realisasi
+        - tahun
+      properties:
+        bidang:
+          type: string
+          example: "Pangan"
+        anggaran:
+          type: number
+          example: 10000000
+        realisasi:
+          type: number
+          example: 9000000
+        tahun:
+          type: string
+          format: date
+          example: "2025-08-20"
+    UpdateAPB:
+      type: object
+      properties:
+        bidang:
+          type: string
+          example: "Pangan"
+        anggaran:
+          type: number
+          example: 10000000
+        realisasi:
+          type: number
+          example: 9000000
+        tahun:
+          type: string
+          format: date
+          example: "2025-08-20"
+          
+    #Product
+    CreateUpdateCategoryProduct:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          example: "Makanan"
+    CreateProduct:
+      type: object
+      required:
+        - category_id
+        - title
+        - description
+        - price
+        - link_whatsapp
+        - featured_image
+      properties:
+        category_id:
+          type: string
+          example: "uuid"
+        title:
+          type: string
+          example: "Ini title"
+        description:
+          type: string
+          example: "Ini Description"
+        price:
+          type: number
+          example: 10000
+        link_whatsapp:
+          type: string
+          format: uri
+          example: "https://wa.me/6281234567890"
+        featured_image:
+          type: string
+          format: binary
+    UpdateProduct:
+      type: object
+      properties:
+        category_id:
+          type: string
+          example: "uuid"
+        title:
+          type: string
+          example: "Ini title"
+        description:
+          type: string
+          example: "Ini Description"
+        price:
+          type: number
+          example: 10000
+        link_whatsapp:
+          type: string
+          format: uri
+          example: "https://wa.me/6281234567890"
+        featured_image:
+          type: string
+          format: binary
+     
+    #Infografis
+    UpdateExtraIdm:
+      type: object
+      properties:
+        status_desa:
+          type: string
+          enum:
+            - "MAJU"
+            - "BERKEMBANG"
+            - "MANDIRI"
+            - "TERTINGGAL"
+            - "SANGAT_TERTINGGAL"
+        sosial:
+          type: number
+          minimum: 0
+          maximum: 1
+          example: 0.4
+          format: float
+        ekonomi:
+          type: number
+          minimum: 0
+          maximum: 1
+          example: 0.4
+          format: float
+        lingkungan:
+          type: number
+          minimum: 0
+          maximum: 1
+          example: 0.4
+          format: float
+    UpdateSDG:
+      type: object
+      required: 
+        - progres
+      properties:
+        progres:
+          type: number
+          minimum: 0
+          maximum: 100
+          example: 80
+    UpdateBansos:
+      type: object
+      properties:
+        name:
+         type: string
+         example: "Ini name"
+        amount:
+          type: number
+          example: 100
+    CreateBansos:
+      type: object
+      required: 
+        - name
+        - amount
+      properties:
+        name:
+         type: string
+         example: "Ini name"
+        amount:
+          type: number
+          example: 100
+    UpdateIdm:
+      type: object
+      properties:
+        year:
+          type: number
+          example: 2025
+          minimum: 1900
+        skor:
+          type: number
+          example: 0.4
+          minimum: 0
+          maximum: 1
+          format: float
+    CreateIdm:
+      type: object
+      required: 
+        - year
+        - skor
+      properties:
+        year:
+          type: number
+          example: 2025
+          minimum: 1900
+        skor:
+          type: number
+          example: 0.4
+          minimum: 0
+          maximum: 1
+          format: float
+    UpdateResident:
+      type: object
+      required: 
+        - value
+      properties:
+        value:
+          type: number
+          minimum: 0
+          example: 100
+     
+    #Village Achievement
+    CreateVillageAchievement:
+      type: object
+      required:
+        - title
+        - description
+        - date
+        - featured_image
+      properties:
+        title:
+          type: string
+          example: "Ini title"
+        description:
+          type: string
+          example: "Ini Description"
+        date:
+          type: string
+          example: "2025-8-20"
+        featured_image:
+          type: string
+          format: binary
+    UpdateVillageAchievement:
+      type: object
+      properties:
+        title:
+          type: string
+          example: "Ini title"
+        description:
+          type: string
+          example: "Ini Description"
+        date:
+          type: string
+          example: "2025-8-20"
+        featured_image:
+          type: string
+          format: binary
+     
+    #Map
+    CreateMap:
+      type: object
+      required:
+        - type
+        - name
+        - description
+        - year
+        - coordinates
+      properties:
+        type:
+          type: string
+          enum: 
+            - "POLYGON"
+            - "MARKER"
+        name:
+          type: string
+          example: "Ini name"
+        description:
+          type: string
+          example: "Ini name"
+        year:
+          type: number
+          minimum: 1900
+          example: 2025
+        coordinates:
+          oneOf:
+            - type: array
+              items:
+                type: number
+              example: [1, 2, 3]
+            - type: array
+              items:
+                type: array
+                items:
+                  type: number
+              example: [[1, 2], [3, 4]]
+        icon:
+          type: string
+          format: binary
+     
+    #Galeri
+    CreateGaleri:
+      type: object
+      required:
+        - title
+        - image
+      properties:
+        title:
+          type: string
+          example: "Ini title"
+        image:
+          type: string
+          format: binary
+    UpdateGaleri:
+      type: object
+      properties:
+        title:
+          type: string
+          example: "Ini title"
+        image:
+          type: string
+          format: binary
+     
+    #Program PKK
+    CreateProgramPKK:
+      type: object
+      required:
+        - title
+        - description
+        - featured_image
+      properties:
+        title:
+          type: string
+          example: "Ini title"
+        description:
+          type: string
+          example: "Ini description"
+        featured_image:
+          type: string
+          format: binary
+    UpdateProgramPKK:
+      type: object
+      properties:
+        title:
+          type: string
+          example: "Ini title"
+        description:
+          type: string
+          example: "Ini description"
+        featured_image:
+          type: string
+          format: binary
+     
+    #News
+    CreateNews:
+      type: object
+      required:
+        - title
+        - content
+        - is_published
+        - featured_image
+      properties:
+        title:
+          type: string
+          example: "Ini title"
+        content:
+          type: string
+          example: "Ini content"
+        is_published:
+          type: boolean
+          example: false
+        featured_image:
+          type: string
+          format: binary
+    UpdateNews:
+      type: object
+      properties:
+        title:
+          type: string
+          example: "Ini title"
+        content:
+          type: string
+          example: "Ini content"
+        is_published:
+          type: boolean
+          example: false
+        featured_image:
+          type: string
+          format: binary
+    
+    #Agenda
+    CreateAgenda:
+      type: object
+      required:
+        - title
+        - content
+        - location
+        - start_time
+        - end_time
+        - is_published
+        - type
+        - featured_image
+      properties:
+        title:
+          type: string
+          example: "Ini title"
+        content:
+          type: string
+          example: "Ini content"
+        location:
+          type: string
+          example: "Ini lokasi"
+        start_time:
+          type: string
+          format: date-time
+          example: "2025-08-14T07:30:00Z"
+        end_time:
+          type: string
+          format: date-time
+          example: "2025-08-14T010:30:00Z"
+        is_published:
+          type: boolean
+          example: false
+        type:
+          type: string
+          enum: 
+            - "REGULAR"
+            - "PKK"
+            - "KARANG_TARUNA"
+            - "BPD"
+        featured_image:
+          type: string
+          format: binary
+    UpdateAgenda:
+      type: object
+      properties:
+        title:
+          type: string
+          example: "Ini title"
+        content:
+          type: string
+          example: "Ini content"
+        location:
+          type: string
+          example: "Ini lokasi"
+        start_time:
+          type: string
+          format: date-time
+          example: "2025-08-14T07:30:00Z"
+        end_time:
+          type: string
+          format: date-time
+          example: "2025-08-14T010:30:00Z"
+        is_published:
+          type: boolean
+          example: false
+        type:
+          type: string
+          enum: 
+            - "REGULAR"
+            - "PKK"
+            - "KARANG_TARUNA"
+            - "BPD"
+        featured_image:
+          type: string
+          format: binary
+    
+    #Organization Member
+    CreateOrganizationMember:
+      type: object
+      required:
+        - name
+        - position
+        - term_start
+        - term_end
+        - organization_type
+        - is_term
+        - important_level
+        - profile_photo
+      properties:
+        name:
+          type: string
+          example: "Ini name"
+        position:
+          type: string
+          example: "Ini position"
+        term_start:
+          type: number
+          example: 2024
+        term_end:
+          type: number
+          example: 2028
+        organization_type:
+          type: string
+          enum: 
+            - "PEMERINTAH"
+            - "PKK"
+            - "KARANG_TARUNA"
+            - "BPD"
+        is_term:
+          type: boolean
+          example: false
+        important_level:
+          type: number
+          minimum: 1
+          maximum: 10
+          example: 1
+        profile_photo:
+          type: string
+          format: binary
+    UpdateOrganizationMember:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Ini name"
+        position:
+          type: string
+          example: "Ini position"
+        term_start:
+          type: number
+          example: 2024
+        term_end:
+          type: number
+          example: 2028
+        organization_type:
+          type: string
+          enum: 
+            - "PEMERINTAH"
+            - "PKK"
+            - "KARANG_TARUNA"
+            - "BPD"
+        is_term:
+          type: boolean
+          example: false
+        important_level:
+          type: number
+          minimum: 1
+          maximum: 10
+          example: 1
+        profile_photo:
+          type: string
+          format: binary

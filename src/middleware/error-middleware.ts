@@ -50,8 +50,6 @@ export const errorMiddleware = (
     };
 
     res.status(400).json({
-      success: false,
-      message: req.t("common.validation_error"),
       errors: frontendFormat,
     });
   } else if (error instanceof ResponseError) {

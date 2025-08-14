@@ -14,8 +14,8 @@
   "type": "commonjs",
   "main": "src/index.ts",
   "_moduleAliases": {
-  "@": "dist"
-},
+    "@": "dist"
+  },
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
@@ -41,8 +41,10 @@
     "module-alias": "^2.2.3",
     "multer": "^2.0.2",
     "nodemailer": "^7.0.5",
+    "swagger-ui-express": "^5.0.1",
     "uuid": "^11.1.0",
     "winston": "^3.17.0",
+    "yamljs": "^0.3.0",
     "zod": "^3.25.74"
   },
   "devDependencies": {
@@ -53,7 +55,9 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/multer": "^2.0.0",
     "@types/nodemailer": "^6.4.17",
+    "@types/swagger-ui-express": "^4.1.8",
     "@types/uuid": "^10.0.0",
+    "@types/yamljs": "^0.2.34",
     "prisma": "^6.11.1",
     "ts-node-dev": "^2.0.0",
     "tsconfig-paths": "^4.2.0",

@@ -15,7 +15,7 @@ privateRouter.patch("/users", UserController.update);
 privateRouter.delete("/users", UserController.delete);
 
 
-// Products
+// Rating
 privateRouter.get("/products/rating/:productId", RatingController.alreadyRated);
 privateRouter.post(
   "/products/rating/:productId",

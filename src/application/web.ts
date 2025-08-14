@@ -10,6 +10,7 @@ import { adminRouter } from "@/router/admin-router";
 import { i18nMiddleware } from "@/middleware/i18n-middleware";
 import path from "node:path";
 import cookieParser from "cookie-parser";
+import { setupSwagger } from "./swagger";
 
 export const web = express();
 
@@ -44,6 +45,10 @@ web.use(
 web.use("/api", publicRouter);
 web.use("/api/private", privateRouter);
 web.use("/api/admin", adminRouter);
+
+if (process.env.NODE_ENV === "development") {
+  setupSwagger(web);
+}
 
 // 404 handler
 web.use((req, res) => {

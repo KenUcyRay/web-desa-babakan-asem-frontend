@@ -19,7 +19,7 @@ import { SiteContentController } from "@/controller/site-content-controller";
 export const publicRouter = express.Router();
 
 // Site Content
-publicRouter.get("/site-contents/:key", SiteContentController.getByKey);
+// publicRouter.get("/site-contents/:key", SiteContentController.getByKey);
 
 // Users
 publicRouter.post("/users/register", UserController.register);
@@ -36,14 +36,10 @@ publicRouter.post("/administrations", AdministrationController.pengantar);
 
 //News
 publicRouter.get("/news", NewsController.getAll);
-publicRouter.get("/news/:userId", NewsController.getById);
+publicRouter.get("/news/:id", NewsController.getById);
 
 //Comments
 publicRouter.get("/comments/:targetId", CommentController.getByTargetId);
-
-// publicRouter.post("/administrations", AdministrationController.create);
-
-// publicRouter.get("/agenda",)
 
 // Public routes for village work programs
 publicRouter.get("/village-work-programs", VillageWorkProgramController.getAll);
@@ -54,8 +50,7 @@ publicRouter.get(
   VillageAchievementController.get
 );
 
-publicRouter.get("/residents", ResidentController.getAll);
-
+//APB
 publicRouter.get("/apb", ApbController.getAll);
 
 //Galeri
@@ -68,10 +63,10 @@ publicRouter.get("/programs", PkkController.getAll);
 publicRouter.get("/organizations/members", MemberController.getAll);
 
 //Infografis
+publicRouter.get("/residents", ResidentController.getAll);
 publicRouter.get("/infografis/idm", InfografisController.getIdm);
 publicRouter.get("/infografis/bansos", InfografisController.getBansos);
 publicRouter.get("/infografis/sdg", InfografisController.getSdgs);
-
 publicRouter.get("/infografis/extra-idm", InfografisController.getExtraIdm);
 
 //Agenda

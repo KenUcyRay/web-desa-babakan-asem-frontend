@@ -107,7 +107,7 @@ export class NewsController {
     next: NextFunction
   ) {
     try {
-      const response = await NewsService.getById(req.t, req.params.userId);
+      const response = await NewsService.getById(req.t, req.params.id);
       res.status(200).json(response);
     } catch (error) {
       next(error);

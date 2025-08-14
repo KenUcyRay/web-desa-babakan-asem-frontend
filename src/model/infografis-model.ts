@@ -25,7 +25,7 @@ export interface PendudukUpdateRequest {
 }
 
 export interface SdgsUpdateRequest {
-  progres: string;
+  progres: number;
 }
 
 export interface ExtraIdmUpdateRequest {

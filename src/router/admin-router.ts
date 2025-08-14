@@ -64,7 +64,7 @@ adminRouter.patch(
   upload.single("profile_photo"),
   MemberController.updateMember
 );
-adminRouter.delete(
+adminRouter.delete( 
   "/organizations/members/:memberId",
   MemberController.deleteMember
 );
@@ -90,18 +90,18 @@ adminRouter.delete(
 adminRouter.use(roleMiddleware(Role.ADMIN));
 
 // Site Content
-adminRouter.post(
-  "/site-contents",
-  upload.single("file"),
-  SiteContentController.create
-);
-adminRouter.get("/site-contents", SiteContentController.getAll);
-adminRouter.patch(
-  "/site-contents/:id",
-  upload.single("file"),
-  SiteContentController.update
-);
-adminRouter.delete("/site-contents/:id", SiteContentController.delete);
+// adminRouter.post(
+//   "/site-contents",
+//   upload.single("file"),
+//   SiteContentController.create
+// );
+// adminRouter.get("/site-contents", SiteContentController.getAll);
+// adminRouter.patch(
+//   "/site-contents/:id",
+//   upload.single("file"),
+//   SiteContentController.update
+// );
+// adminRouter.delete("/site-contents/:id", SiteContentController.delete);
 
 // Galeri
 adminRouter.post("/galeri", upload.single("image"), GaleriController.create);
@@ -147,6 +147,7 @@ adminRouter.delete(
   VillageWorkProgramController.delete
 );
 
+// Village Achievements
 adminRouter.post(
   "/village-achievements",
   upload.single("featured_image"),
@@ -162,13 +163,14 @@ adminRouter.delete(
   VillageAchievementController.delete
 );
 
-adminRouter.patch("/residents/:id", ResidentController.update);
 
+// Apb
 adminRouter.post("/apb", ApbController.create);
 adminRouter.patch("/apb/:id", ApbController.update);
 adminRouter.delete("/apb/:id", ApbController.delete);
 
 // Infografis
+adminRouter.patch("/residents/:id", ResidentController.update);
 adminRouter.post("/infografis/idm/", InfografisController.createIdm);
 adminRouter.patch("/infografis/idm/:idmId", InfografisController.updateIdm);
 adminRouter.delete("/infografis/idm/:idmId", InfografisController.deleteIdm);
