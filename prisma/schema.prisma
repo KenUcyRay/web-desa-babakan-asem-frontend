@@ -64,7 +64,6 @@ enum AgendaType {
   REGULAR
   PKK
   KARANG_TARUNA
-  DPD
   BPD
 }
 
@@ -87,7 +86,6 @@ enum Organization {
   PEMERINTAH
   PKK
   KARANG_TARUNA
-  DPD
   BPD
 }
 
