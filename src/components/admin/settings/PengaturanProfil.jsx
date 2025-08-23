@@ -92,6 +92,14 @@ export default function PengaturanProfil() {
     }
   };
 
+  const handleShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const handleShowConfirmPassword = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
+
   useEffect(() => {
     fetchProfile();
   }, [i18n.language]);
@@ -218,22 +226,25 @@ export default function PengaturanProfil() {
                     </div>
                     <span className="text-lg">Masukkan kata sandi baru</span>
                   </label>
-                  <div className="relative mt-2">
+                  <div className="relative w-full">
                     <input
                       type={showPassword ? "text" : "password"}
                       placeholder="Maksukkan kata sandi baru"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="border border-gray-200 rounded-xl w-full p-4 pr-12 focus:border-red-400 focus:ring-4 focus:ring-red-100 transition-all duration-300 bg-gradient-to-r from-white to-red-50/30"
+                      className="border border-gray-200 rounded-xl w-full p-4 pr-10 focus:border-red-400 focus:ring-4 focus:ring-red-100 transition-all duration-300 bg-gradient-to-r from-white to-red-50/30"
                     />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-red-500 transition-colors duration-200"
-                    >
-                      {showPassword ? <FaEyeSlash /> : <FaEye />}
-                    </button>
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent rounded-xl pointer-events-none"></div>
+                    {showPassword ? (
+                      <FaEye
+                        onClick={handleShowPassword}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
+                      />
+                    ) : (
+                      <FaEyeSlash
+                        onClick={handleShowPassword}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
+                      />
+                    )}
                   </div>
                 </div>
               </div>
@@ -250,7 +261,7 @@ export default function PengaturanProfil() {
                     </div>
                     <span className="text-lg">Konfirmasi kata sandi baru</span>
                   </label>
-                  <div className="relative mt-2">
+                  <div className="relative w-full">
                     <input
                       type={showConfirmPassword ? "text" : "password"}
                       placeholder="Konfirmasi kata sandi baru"
@@ -258,16 +269,17 @@ export default function PengaturanProfil() {
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       className="border border-gray-200 rounded-xl w-full p-4 pr-12 focus:border-orange-400 focus:ring-4 focus:ring-orange-100 transition-all duration-300 bg-gradient-to-r from-white to-orange-50/30"
                     />
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setShowConfirmPassword(!showConfirmPassword)
-                      }
-                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-orange-500 transition-colors duration-200"
-                    >
-                      {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
-                    </button>
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent rounded-xl pointer-events-none"></div>
+                    {showConfirmPassword ? (
+                      <FaEye
+                        onClick={handleShowConfirmPassword}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
+                      />
+                    ) : (
+                      <FaEyeSlash
+                        onClick={handleShowConfirmPassword}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
+                      />
+                    )}
                   </div>
                 </div>
               </div>

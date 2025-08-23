@@ -152,7 +152,6 @@ export default function Home() {
         const responseBody = await response.json();
         setWorkPrograms(responseBody.data || responseBody || []);
       } else {
-      
         setWorkPrograms([]);
       }
     } catch (error) {
@@ -277,6 +276,24 @@ export default function Home() {
     }
   };
 
+  const getStatusText = (status) => {
+    switch (status) {
+      case "PLANNED":
+        "Direncanakan";
+        return t("home.workprograms.status.planned");
+      case "IN_PROGRESS":
+        // "Dalam Pnegerjaan"
+        return t("home.workprograms.status.in_progress");
+      case "COMPLETED":
+        // "Selesai"
+        return t("home.workprograms.status.completed");
+      case "CANCELLED":
+        // Dibatalkan
+        return t("home.workprograms.status.cancelled");
+      default:
+        return "Unknown";
+    }
+  };
   // Format currency for very large numbers (billions)
   const formatRupiahBillion = (angka, language = "id") => {
     if (angka >= 1000000000000) {
@@ -551,9 +568,7 @@ export default function Home() {
                     {t("home.workprograms.dates")}
                   </th>
                   <th className="py-3 px-4 text-left">Budget</th>
-                  <th className="py-3 px-4 text-left">
-                    {t("home.workprograms.status")}
-                  </th>
+                  <th className="py-3 px-4 text-left">Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -593,7 +608,7 @@ export default function Home() {
                             program.status
                           )}`}
                         >
-                          {program.status || "Unknown"}
+                          {getStatusText(program.status)}
                         </span>
                       </div>
                     </td>

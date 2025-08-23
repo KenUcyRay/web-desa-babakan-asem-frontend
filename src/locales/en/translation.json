@@ -59,8 +59,7 @@
       "title": "Village Work Programs",
       "program": "Program",
       "dates": "Implementation Dates",
-      "status": "Status",
-      "statuses": {
+      "status": {
         "planned": "Planned",
         "in_progress": "In Progress",
         "completed": "Completed",

@@ -59,8 +59,7 @@
       "title": "Program Kerja Desa",
       "program": "Program",
       "dates": "Tanggal Pelaksanaan",
-      "status": "Status",
-      "statuses": {
+      "status": {
         "planned": "Direncanakan",
         "in_progress": "Sedang Berjalan",
         "completed": "Selesai",

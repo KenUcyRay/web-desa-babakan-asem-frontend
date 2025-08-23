@@ -6,12 +6,15 @@ import { useNavigate } from "react-router";
 import { Helper } from "../../utils/Helper";
 import { FiArrowLeft } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export default function Profile() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const { setProfile } = useAuth();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({
@@ -122,6 +125,14 @@ export default function Profile() {
       }
       document.body.removeChild(textArea);
     }
+  };
+
+  const handleShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const handleShowConfirmPassword = () => {
+    setShowConfirmPassword(!showConfirmPassword);
   };
 
   useEffect(() => {
@@ -268,32 +279,58 @@ export default function Profile() {
                 <label className="block text-sm font-medium text-gray-600">
                   Password Baru
                 </label>
-                <input
-                  type="password"
-                  value={formData.password}
-                  onChange={(e) =>
-                    setFormData({ ...formData, password: e.target.value })
-                  }
-                  className="w-full border rounded-lg p-2 mt-1"
-                  placeholder={t("profile.form.passwordPlaceholder")}
-                />
+                <div className="relative w-full">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={formData.password}
+                    onChange={(e) =>
+                      setFormData({ ...formData, password: e.target.value })
+                    }
+                    className="w-full border rounded-lg p-2 mt-1"
+                    placeholder={t("profile.form.passwordPlaceholder")}
+                  />
+                  {showPassword ? (
+                    <FaEye
+                      onClick={handleShowPassword}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
+                    />
+                  ) : (
+                    <FaEyeSlash
+                      onClick={handleShowPassword}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
+                    />
+                  )}
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-600">
                   Konfirmasi Password Baru
                 </label>
-                <input
-                  type="password"
-                  value={formData.confirm_password}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      confirm_password: e.target.value,
-                    })
-                  }
-                  className="w-full border rounded-lg p-2 mt-1"
-                  placeholder={t("profile.form.passwordPlaceholder")}
-                />
+                <div className="relative w-full">
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    value={formData.confirm_password}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        confirm_password: e.target.value,
+                      })
+                    }
+                    className="w-full border rounded-lg p-2 mt-1"
+                    placeholder={t("profile.form.passwordPlaceholder")}
+                  />
+                  {showConfirmPassword ? (
+                    <FaEye
+                      onClick={handleShowConfirmPassword}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
+                    />
+                  ) : (
+                    <FaEyeSlash
+                      onClick={handleShowConfirmPassword}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
+                    />
+                  )}
+                </div>
               </div>
 
               <div className="flex justify-between gap-3 mt-6">

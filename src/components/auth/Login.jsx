@@ -11,6 +11,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Helper } from "../../utils/Helper";
 import { useTranslation } from "react-i18next";
 import { useProfile } from "../../hook/useProfile";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ export default function Login() {
   const [reCaptchaToken, setReCaptchaToken] = useState("");
   const { profile, setProfile } = useAuth();
   const { isReady } = useProfile();
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     AOS.init({ duration: 700, once: true });
@@ -70,6 +72,10 @@ export default function Login() {
       navigate("/");
     }
   }, [isReady]);
+
+  const handleShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
 
   return (
     <div className="flex min-h-screen font-poppins">
@@ -179,13 +185,26 @@ export default function Login() {
               <label className="block text-gray-700 font-medium mb-1">
                 {t("login.password")}
               </label>
-              <input
-                type="password"
-                placeholder={t("login.placeholder.password")}
-                className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-300 outline-none"
-                onChange={(e) => setPassword(e.target.value)}
-                value={password}
-              />
+              <div className="relative w-full">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder={t("login.placeholder.password")}
+                  className="w-full p-3 pr-10 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-300 outline-none"
+                  onChange={(e) => setPassword(e.target.value)}
+                  value={password}
+                />
+                {showPassword ? (
+                  <FaEye
+                    onClick={handleShowPassword}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
+                  />
+                ) : (
+                  <FaEyeSlash
+                    onClick={handleShowPassword}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
+                  />
+                )}
+              </div>
             </div>
 
             <div className="flex items-center justify-between text-sm">
