@@ -83,6 +83,24 @@
     "errors": {
       "product": "Failed to fetch product data. Please try again later.",
       "news": "Failed to fetch news data. Please try again later."
+    },
+    "emergency": {
+      "title": "Help & Emergency Guide",
+      "callcenter": {
+        "title": "Village Call Center",
+        "description": "Contact the village call center for administrative assistance, service information, and general inquiries about the village.",
+        "admin": "Village Admin",
+        "hours": "Service Hours",
+        "services": "Services: Administration, Information, Complaints"
+      },
+      "emergency": {
+        "title": "Emergency Numbers",
+        "description": "For emergency situations, contact the following numbers. Make sure to use only for truly urgent situations.",
+        "police": "Police",
+        "medical": "Ambulance/Health Center",
+        "fire": "Fire Department",
+        "village": "Village Emergency"
+      }
     }
   },
   "detailAchievement": {
@@ -742,7 +760,41 @@
     "greeting": "👋 <strong>Need help?</strong>",
     "subGreeting": "Contact Admin, just click here",
     "whatsapp": "WhatsApp",
-    "phone": "Phone"
+    "phone": "Phone",
+    "emergency": "Emergency Help",
+    "sos": "SOS EMERGENCY",
+    "callCenter": "Call Center",
+    "puskesmas": "Health Center",
+    "police": "Police",
+    "timCakra": "Cakra Team",
+    "selectService": "Select the service you need",
+    "clickToCall": "Click to call directly",
+    "callModalTitle": "CALL CONFIRMATION",
+    "callModalSubtitle": "Emergency Service",
+    "callModalMessage": "You will contact this service",
+    "callModalDetail": "Make sure this is a situation that requires assistance.",
+    "callModalCancel": "Cancel",
+    "callModalConfirm": "CALL"
+  },
+  "sosButton": {
+    "label": "EMERGENCY",
+    "tooltip": "EMERGENCY BUTTON - For critical situations only! Will send location and call response team.",
+    "confirmMessage": "EMERGENCY: You will send emergency signal and location to response team. Continue?",
+    "emergencyMessage": "EMERGENCY!",
+    "location": "Location",
+    "locationError": "Cannot access location.",
+    "locationDenied": "Location access denied. Enable GPS and allow location access.",
+    "locationUnavailable": "Location unavailable.",
+    "locationTimeout": "Location access timeout.",
+    "callAnyway": "Emergency call will still be made.",
+    "noGeolocation": "Browser does not support GPS.",
+    "modalTitle": "EMERGENCY CONFIRMATION",
+    "modalSubtitle": "Critical Situation",
+    "modalMessage": "You will send emergency signal and GPS location to response team. System will automatically call emergency number 112.",
+    "modalWarning": "For real emergencies only!",
+    "modalWarningDetail": "Inappropriate use may disrupt emergency services.",
+    "modalCancel": "Cancel",
+    "modalConfirm": "SEND SOS"
   },
   "footer": {
     "village_name": "Babakan Asem Village",

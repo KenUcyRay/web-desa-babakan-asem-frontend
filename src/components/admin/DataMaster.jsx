@@ -18,9 +18,7 @@ import { GaleryApi } from "../../libs/api/GaleryApi";
 import { MessageApi } from "../../libs/api/MessageApi";
 import { VillageWorkProgramApi } from "../../libs/api/VillageWorkProgramApi";
 import { useTranslation } from "react-i18next";
-import DialogMap from "../../DialogMap";
-import { MapApi } from "../../libs/api/MapApi";
-import { Helper } from "../../utils/Helper";
+
 
 export default function DataMaster() {
   const { i18n } = useTranslation();
@@ -33,9 +31,7 @@ export default function DataMaster() {
     pesanCount: 0,
   });
 
-  // State untuk DialogMap
-  const [showDialogMap, setShowDialogMap] = useState(false);
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+
 
   // Fetch statistics for top cards
   const fetchStats = async () => {
@@ -86,16 +82,7 @@ export default function DataMaster() {
     }
   };
 
-  // Fungsi untuk menangani submit DialogMap
-  const handleDialogMapSubmit = async (payload) => {
-    const response = await MapApi.create(payload, i18n.language);
-    if (!response.ok) {
-      Helper.errorResponseHandler(await response.json());
-      return;
-    }
-    setShowDialogMap(false);
-    alertSuccess("Data peta berhasil ditambahkan!");
-  };
+
 
   useEffect(() => {
     fetchStats();
@@ -159,8 +146,8 @@ export default function DataMaster() {
       description: "Peta digital wilayah desa dan fasilitas umum",
       longDescription:
         "Kelola data spasial desa seperti batas wilayah, fasilitas umum, dan titik penting. Tambahkan data baru untuk memperkaya informasi geografis desa.",
-      buttonText: "Tambah Data",
-      onClick: () => setShowDialogMap(true), // Buka dialog tambah legenda
+      buttonText: "Kelola SIG",
+      link: "/admin/kelola-sig",
     },
   ];
 
@@ -303,15 +290,7 @@ export default function DataMaster() {
         </div>
       </div>
 
-      {/* Dialog Map yang Diperbaiki - Ukuran Besar untuk Desktop */}
-      {showDialogMap && (
-        <DialogMap
-          open={showDialogMap}
-          onClose={() => setShowDialogMap(false)}
-          onSubmit={handleDialogMapSubmit}
-          year={selectedYear}
-        />
-      )}
+
     </div>
   );
 }

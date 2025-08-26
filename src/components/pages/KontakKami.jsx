@@ -42,7 +42,7 @@ export default function KontakKami() {
   return (
     <div className="font-poppins">
       {/* - Banner */}
-      <div className="bg-gradient-to-r from-[#9BEC00] to-[#D2FF72] py-16 text-center">
+      <div className="bg-gradient-to-r from-green-400 to-[#B6F500] py-16 text-center">
         <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
           {t("contact.hero.title")}
         </h1>
@@ -58,48 +58,48 @@ export default function KontakKami() {
       <div className="max-w-6xl mx-auto mt-12 grid md:grid-cols-2 gap-10 px-4">
         {/* - Form Card */}
         <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
-          <div className="bg-gray-50 p-6 border-b text-center">
-            <h2 className="text-2xl font-bold text-gray-900">
+          <div className="bg-green-50 p-6 border-b text-center">
+            <h2 className="text-2xl font-bold text-green-800">
               {t("contact.form.title")}
             </h2>
-            <p className="text-gray-500 text-sm mt-1">
+            <p className="text-green-600 text-sm mt-1">
               {t("contact.form.description")}
             </p>
           </div>
-          <div className="p-6 bg-gradient-to-br from-[#9BEC00] to-[#D2FF72]">
+          <div className="p-6 bg-white">
             <form className="space-y-4" onSubmit={handleSubmit}>
               <div>
-                <label className="block text-gray-900 font-medium mb-1">
+                <label className="block text-gray-700 font-medium mb-1">
                   {t("contact.form.name")}
                 </label>
                 <input
                   type="text"
                   placeholder={t("contact.form.placeholder_name")}
-                  className="w-full rounded-lg p-3 bg-white shadow"
+                  className="w-full rounded-lg p-3 border border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-colors"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
               </div>
               <div>
-                <label className="block text-gray-900 font-medium mb-1">
+                <label className="block text-gray-700 font-medium mb-1">
                   {t("contact.form.email")}
                 </label>
                 <input
                   type="text"
                   placeholder={t("contact.form.placeholder_email")}
-                  className="w-full rounded-lg p-3 bg-white shadow"
+                  className="w-full rounded-lg p-3 border border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-colors"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
               <div>
-                <label className="block text-gray-900 font-medium mb-1">
+                <label className="block text-gray-700 font-medium mb-1">
                   {t("contact.form.message")}
                 </label>
                 <textarea
                   rows="4"
                   placeholder={t("contact.form.placeholder_message")}
-                  className="w-full rounded-lg p-3 bg-white shadow"
+                  className="w-full rounded-lg p-3 border border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-colors"
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                 />
@@ -107,7 +107,7 @@ export default function KontakKami() {
               <div className="text-center">
                 <button
                   type="submit"
-                  className="px-8 py-3 bg-gray-900 text-white font-semibold rounded-lg hover:scale-105 transition"
+                  className="px-8 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors"
                 >
                   {t("contact.form.submit")}
                 </button>
@@ -118,8 +118,8 @@ export default function KontakKami() {
 
         {/* - Info Kontak */}
         <div className="flex flex-col gap-6">
-          <div className="p-6 rounded-xl shadow-lg bg-white flex gap-4">
-            <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-[#9BEC00] to-[#D2FF72] text-gray-900">
+          <div className="p-6 rounded-xl shadow-lg bg-white flex gap-4 hover:shadow-xl hover:scale-105 transition-all duration-300">
+            <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-[#B6F500] text-gray-900">
               <FaMapMarkerAlt size={20} />
             </div>
             <div>
@@ -135,9 +135,9 @@ export default function KontakKami() {
           <div className="grid grid-cols-2 gap-4">
             <a
               href="tel:085330192025"
-              className="p-5 rounded-xl shadow-md bg-white flex flex-col gap-2"
+              className="p-5 rounded-xl shadow-md bg-white flex flex-col gap-2 hover:shadow-xl hover:scale-105 transition-all duration-300 hover:bg-green-50"
             >
-              <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-br from-[#9BEC00] to-[#D2FF72] text-gray-900">
+              <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-[#B6F500] text-gray-900">
                 <FaPhoneAlt />
               </div>
               <div>
@@ -152,9 +152,9 @@ export default function KontakKami() {
 
             <a
               href="https://wa.me/6285330192025"
-              className="p-5 rounded-xl shadow-md bg-white flex flex-col gap-2"
+              className="p-5 rounded-xl shadow-md bg-white flex flex-col gap-2 hover:shadow-xl hover:scale-105 transition-all duration-300 hover:bg-green-50"
             >
-              <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-br from-[#9BEC00] to-[#D2FF72] text-gray-900">
+              <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-[#B6F500] text-gray-900">
                 <FaWhatsapp />
               </div>
               <div>
@@ -170,9 +170,9 @@ export default function KontakKami() {
 
           <a
             href="mailto:babakanasem@gmail.com"
-            className="p-5 rounded-xl shadow-md bg-white flex items-center gap-4"
+            className="p-5 rounded-xl shadow-md bg-white flex items-center gap-4 hover:shadow-xl hover:scale-105 transition-all duration-300 hover:bg-green-50"
           >
-            <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-br from-[#9BEC00] to-[#D2FF72] text-gray-900">
+            <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-[#B6F500] text-gray-900">
               <FaEnvelope />
             </div>
             <div>

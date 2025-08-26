@@ -19,6 +19,7 @@ import {
   FaUser,
   FaTrash,
   FaDrawPolygon,
+  FaChild,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -29,7 +30,7 @@ import {
   Polygon,
   Marker,
   Popup,
-  Tooltip,
+  Tooltip as LeafletTooltip,
 } from "react-leaflet";
 import L from "leaflet";
 import { MapApi } from "../../libs/api/MapApi"; // Pastikan path sesuai
@@ -44,9 +45,24 @@ import { MemberApi } from "../../libs/api/MemberApi";
 import { alertError } from "../../libs/alert";
 import { VillageWorkProgramApi } from "../../libs/api/VillageWorkProgramApi";
 import { LogActivityApi } from "../../libs/api/LogActivityApi";
+import { InfografisApi } from "../../libs/api/InfografisApi";
 import { Helper } from "../../utils/Helper";
 import DialogMap from "../../DialogMap";
 import { alertConfirm, alertSuccess } from "../../libs/alert";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  Legend,
+  AreaChart,
+  Area,
+} from "recharts";
 
 // ==== ICON CUSTOM ====
 const createIcon = (iconUrl) => {
@@ -172,11 +188,20 @@ export default function AdminDashboard() {
   const [programCount, setProgramCount] = useState(0);
   const [galeriCount, setGaleriCount] = useState(0);
   const [bumdesPreview, setBumdesPreview] = useState([]);
+  const [bumdesTotal, setBumdesTotal] = useState(0);
   const [administrasiPreview, setAdministrasiPreview] = useState([]);
+  const [administrasiTotal, setAdministrasiTotal] = useState(0);
   const [galeriPreview, setGaleriPreview] = useState([]);
   const [strukturPreview, setStrukturPreview] = useState([]);
+  const [strukturTotal, setStrukturTotal] = useState(0);
   const [programKerjaPreview, setProgramKerjaPreview] = useState([]);
+  const [programKerjaTotal, setProgramKerjaTotal] = useState(0);
   const [activityLog, setActivityLog] = useState([]);
+  const [idmData, setIdmData] = useState([]);
+  const [idmStatus, setIdmStatus] = useState("-");
+  const [populationMainData, setPopulationMainData] = useState([]);
+  const [populationAgeData, setPopulationAgeData] = useState([]);
+
 
   // In the fetchMapData function, update the polygon coordinate processing:
   const fetchMapData = async () => {
@@ -285,11 +310,92 @@ export default function AdminDashboard() {
     setGaleriCount(data.total || 0);
   };
 
+  const fetchIdmData = async () => {
+    try {
+      // Fetch IDM data
+      const res = await InfografisApi.getIdm(i18n.language);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.idm && Array.isArray(data.idm) && data.idm.length > 0) {
+          setIdmData(data.idm.slice(-5).map(d => ({ year: d.year, skor: d.skor / 100 })));
+        }
+      }
+      
+      // Fetch Extra IDM data
+      try {
+        const resExtra = await InfografisApi.getExtraIdm(i18n.language);
+        if (resExtra.ok) {
+          const extraData = await resExtra.json();
+          if (extraData.extraIdm && Array.isArray(extraData.extraIdm) && extraData.extraIdm.length > 0) {
+            setIdmStatus(extraData.extraIdm[0].status_desa || '-');
+          }
+        }
+      } catch (extraError) {
+        console.log('Extra IDM fetch failed, using default status');
+        setIdmStatus('-');
+      }
+    } catch (error) {
+      console.log('IDM data fetch failed:', error);
+      // Set default values on error
+      setIdmData([]);
+      setIdmStatus('-');
+    }
+  };
+
+  const fetchPopulationData = async () => {
+    try {
+      const baseUrl = import.meta.env.VITE_NEW_BASE_URL || "http://localhost:4000/api";
+      
+      // Fetch main population data (gender, kepala keluarga, anak-anak)
+      const [genderRes, kkRes, anakRes] = await Promise.all([
+        fetch(`${baseUrl}/residents?type=GENDER`),
+        fetch(`${baseUrl}/residents?type=KEPALA_KELUARGA`),
+        fetch(`${baseUrl}/residents?type=ANAK_ANAK`)
+      ]);
+      
+      if (genderRes.ok && kkRes.ok && anakRes.ok) {
+        const [genderData, kkData, anakData] = await Promise.all([
+          genderRes.json(),
+          kkRes.json(),
+          anakRes.json()
+        ]);
+        
+        const mainData = [
+          ...(genderData.data || []),
+          ...(kkData.data || []),
+          ...(anakData.data || [])
+        ].map(item => ({ name: item.key, jumlah: item.value }));
+        
+        setPopulationMainData(mainData);
+      }
+      
+      // Fetch age group data
+      const ageRes = await fetch(`${baseUrl}/residents?type=USIA`);
+      if (ageRes.ok) {
+        const ageData = await ageRes.json();
+        const sortedAgeData = (ageData.data || []).sort((a, b) => {
+          const aMatch = a.key.match(/(\d+)/);
+          const bMatch = b.key.match(/(\d+)/);
+          return aMatch && bMatch ? parseInt(aMatch[1]) - parseInt(bMatch[1]) : a.key.localeCompare(b.key);
+        }).map(item => ({ name: item.key, value: item.value }));
+        
+        setPopulationAgeData(sortedAgeData);
+      }
+    } catch (error) {
+      console.log('Population data fetch failed:', error);
+    }
+  };
+
+
+
+
+
   const fetchBumdesPreview = async () => {
     const res = await ProductApi.getOwnProducts(1, 3, i18n.language);
     if (!res.ok) return;
     const data = await res.json();
     setBumdesPreview(data.products || []);
+    setBumdesTotal(data.total || 0);
   };
 
   const fetchAdministrasiPreview = async () => {
@@ -299,8 +405,10 @@ export default function AdminDashboard() {
     );
     if (!pengantar.ok) return;
 
-    const merge = [...(await pengantar.json()).data];
+    const pengantarData = await pengantar.json();
+    const merge = [...pengantarData.data];
     setAdministrasiPreview(merge);
+    setAdministrasiTotal(pengantarData.total || merge.length);
   };
 
   const fetchGaleriPreview = async () => {
@@ -312,11 +420,14 @@ export default function AdminDashboard() {
 
   const fetchProgramKerjaPreview = async () => {
     const res = await VillageWorkProgramApi.getVillageWorkPrograms(
+      1,
+      3,
       i18n.language
     );
     if (!res.ok) return;
     const data = await res.json();
-    setProgramKerjaPreview(data || []);
+    setProgramKerjaPreview(data.data || []);
+    setProgramKerjaTotal(data.total || 0);
   };
 
   const fetchStrukturPreview = async () => {
@@ -329,6 +440,7 @@ export default function AdminDashboard() {
     if (!res.ok) return;
     const data = await res.json();
     setStrukturPreview(data.members || []);
+    setStrukturTotal(data.total || 0);
   };
 
   const fetchLog = async () => {
@@ -355,6 +467,8 @@ export default function AdminDashboard() {
     fetchStrukturPreview();
     fetchLog();
     fetchMapData(); // Tambahkan fetch map data
+    fetchIdmData();
+    fetchPopulationData();
   }, [i18n.language]);
 
   // Mengambil data saat komponen dimuat atau tahun berubah
@@ -423,22 +537,26 @@ export default function AdminDashboard() {
 
   return (
     <div className="w-full font-[Poppins,sans-serif] bg-gray-50 min-h-screen p-4 md:p-6 overflow-x-hidden">
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
+      {/* HEADER DASHBOARD */}
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-8">
+        <div className="mb-4 md:mb-0">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-2">
             Admin Dashboard
           </h1>
-          <p className="text-gray-600 mt-1">
+          <p className="text-gray-600">
             Ringkasan aktivitas dan statistik terbaru
           </p>
         </div>
-        <div className="text-sm text-gray-500">
-          {new Date().toLocaleDateString("id-ID", {
-            weekday: "long",
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          })}
+        <div className="flex flex-col items-end">
+          <div className="text-sm text-gray-500 mb-2">
+            {new Date().toLocaleDateString("id-ID", {
+              weekday: "long",
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}
+          </div>
+          <CompactActivityLog activities={activityLog} />
         </div>
       </div>
 
@@ -507,9 +625,9 @@ export default function AdminDashboard() {
                           opacity: 0.9,
                         }}
                       >
-                        <Tooltip permanent={false} direction="center">
+                        <LeafletTooltip permanent={false} direction="center">
                           {item.name}
-                        </Tooltip>
+                        </LeafletTooltip>
                         <Popup>
                           <div className="text-center">
                             <strong className="text-base" style={{ color }}>
@@ -530,7 +648,7 @@ export default function AdminDashboard() {
                     position={item.coordinates[0]}
                     icon={createIcon(item.icon)}
                   >
-                    <Tooltip permanent={false}>{item.name}</Tooltip>
+                    <LeafletTooltip permanent={false}>{item.name}</LeafletTooltip>
                     <Popup>
                       <div className="text-center">
                         <strong className="text-base text-red-600">
@@ -676,95 +794,204 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* GRID STATISTIK DETAIL */}
-      <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8">
-        <DetailStatCard
-          icon={<FaComments className="text-2xl text-orange-500" />}
-          title={"Pesan"}
-          count={messageCount}
-          detail={"Pesan masuk"}
-          onClick={() => navigate("/admin/manage-pesan")}
-          color="bg-yellow-200"
-        />
-
-        <DetailStatCard
-          icon={<FaUsers className="text-2xl text-purple-500" />}
-          title={"Pengguna"}
-          count={userCount}
-          detail={"Pengguna terdaftar"}
-          onClick={() => navigate("/admin/manage-user")}
-          color="bg-purple-100"
-        />
-
-        <DetailStatCard
-          icon={<FaSitemap className="text-2xl text-red-500" />}
-          title={"Struktur Desa"}
-          count={strukturPreview.length}
-          detail={"Pengurus desa"}
-          onClick={() => navigate("/admin/manage-anggota")}
-          color="bg-red-100"
-        />
-
-        <DetailStatCard
-          icon={<FaStore className="text-2xl text-teal-500" />}
-          title={"BUMDes"}
-          count={bumdesPreview.length}
-          detail={"Produk unggulan"}
-          onClick={() => navigate("/admin/manage-bumdes")}
-          color="bg-teal-50"
-        />
-      </div>
-
-      {/* BARIS KOTAK BESAR */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
-        {/* Log Aktivitas */}
-        <div className="lg:col-span-2">
-          <ActivityLog activities={activityLog} />
+      {/* SECTION: STATISTIK & GRAFIK */}
+      <div className="mb-8">
+        <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+          <FaChartBar className="text-blue-600" />
+          Statistik & Analitik
+        </h2>
+        
+        {/* Grid Statistik Detail */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
+          <DetailStatCard
+            icon={<FaComments className="text-2xl text-orange-500" />}
+            title={"Pesan"}
+            count={messageCount}
+            detail={"Pesan masuk"}
+            onClick={() => navigate("/admin/manage-pesan")}
+            color="bg-orange-50"
+          />
+          <DetailStatCard
+            icon={<FaUsers className="text-2xl text-purple-500" />}
+            title={"Pengguna"}
+            count={userCount}
+            detail={"Pengguna terdaftar"}
+            onClick={() => navigate("/admin/manage-user")}
+            color="bg-purple-50"
+          />
+          <DetailStatCard
+            icon={<FaSitemap className="text-2xl text-red-500" />}
+            title={"Struktur Desa"}
+            count={strukturPreview.length}
+            detail={"Pengurus desa"}
+            onClick={() => navigate("/admin/manage-anggota")}
+            color="bg-red-50"
+          />
+          <DetailStatCard
+            icon={<FaStore className="text-2xl text-teal-500" />}
+            title={"BUMDes"}
+            count={bumdesPreview.length}
+            detail={"Produk unggulan"}
+            onClick={() => navigate("/admin/manage-bumdes")}
+            color="bg-teal-50"
+          />
         </div>
 
-        {/* Statistik Tambahan */}
-        <div className="bg-white rounded-xl shadow-md p-5">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-              <FaChartBar className="text-gray-500" />
-              Statistik Konten
-            </h3>
+        {/* Grafik IDM */}
+        <div className="bg-white rounded-xl shadow-lg p-6 cursor-pointer hover:shadow-xl transition-all duration-300" onClick={() => navigate("/admin/kelola-infografis/idm")}>
+          <div className="flex items-center justify-between mb-6">
+            <div className="w-full">
+              <h3 className="text-2xl font-bold text-gray-800 text-center mb-2">
+                Indeks Desa Membangun (IDM)
+              </h3>
+              <p className="text-sm text-gray-600 text-center">Status: <span className="font-medium text-green-600">{idmStatus}</span></p>
+            </div>
+            <button className="text-sm text-blue-600 hover:text-blue-800 font-medium ml-4 px-3 py-1 rounded-lg hover:bg-blue-50 transition-colors">
+              Kelola →
+            </button>
           </div>
+          
+          <div className="h-80">
+            {idmData.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={idmData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                  <XAxis dataKey="year" tick={{ fontSize: 14 }} />
+                  <YAxis domain={[0.6, 1]} tick={{ fontSize: 14 }} />
+                  <Tooltip 
+                    formatter={(value) => [value.toFixed(3), 'Skor IDM']}
+                    labelFormatter={(label) => `Tahun ${label}`}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="skor"
+                    stroke="#B6F500"
+                    strokeWidth={4}
+                    dot={{ r: 6, fill: "#B6F500", strokeWidth: 2, stroke: "#fff" }}
+                    activeDot={{ r: 8, fill: "#B6F500" }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="flex items-center justify-center h-full text-gray-500">
+                <div className="text-center">
+                  <FaChartBar className="mx-auto mb-2 text-4xl" />
+                  <p className="text-lg">Belum ada data IDM</p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
 
-          <div className="space-y-4">
-            <StatItem
-              icon={<FaNewspaper className="text-blue-500" />}
-              title={"Berita"}
-              value={newsCount}
-              onClick={() => navigate("/admin/manage-news")}
-            />
+        {/* Grafik Data Utama Penduduk */}
+        <div className="bg-white rounded-xl shadow-lg p-6 cursor-pointer hover:shadow-xl transition-all duration-300" onClick={() => navigate("/admin/kelola-infografis/penduduk")}>
+          <div className="flex items-center justify-between mb-6">
+            <div className="w-full">
+              <h3 className="text-2xl font-bold text-gray-800 text-center mb-2">
+                Data Utama Penduduk
+              </h3>
+              <p className="text-sm text-gray-600 text-center">Distribusi berdasarkan gender, kepala keluarga, dan anak-anak</p>
+            </div>
+            <button className="text-sm text-blue-600 hover:text-blue-800 font-medium ml-4 px-3 py-1 rounded-lg hover:bg-blue-50 transition-colors">
+              Kelola →
+            </button>
+          </div>
+          
+          <div className="h-80">
+            {populationMainData.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={populationMainData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                  <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                  <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
+                  <Tooltip 
+                    formatter={(value) => [`${value} Orang`, 'Jumlah']}
+                    labelFormatter={(label) => label}
+                  />
+                  <Legend />
+                  <Bar
+                    dataKey="jumlah"
+                    name="Jumlah Penduduk"
+                    fill="#B6F500"
+                    radius={[6, 6, 0, 0]}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="flex items-center justify-center h-full text-gray-500">
+                <div className="text-center">
+                  <FaUsers className="mx-auto mb-2 text-4xl" />
+                  <p className="text-lg">Belum ada data penduduk</p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
 
-            <StatItem
-              icon={<FaCalendarAlt className="text-green-500" />}
-              title={"Agenda"}
-              value={agendaCount}
-              onClick={() => navigate("/admin/manage-agenda")}
-            />
-
-            <StatItem
-              icon={<FaImage className="text-purple-500" />}
-              title={"Galeri"}
-              value={galeriCount}
-              onClick={() => navigate("/admin/manage-galery")}
-            />
-
-            <StatItem
-              icon={<FaTasks className="text-yellow-500" />}
-              title={"Program Kerja"}
-              value={programCount}
-              onClick={() => navigate("/admin/manage-program")}
-            />
+        {/* Grafik Kelompok Usia */}
+        <div className="bg-white rounded-xl shadow-lg p-6 cursor-pointer hover:shadow-xl transition-all duration-300" onClick={() => navigate("/admin/kelola-infografis/penduduk")}>
+          <div className="flex items-center justify-between mb-6">
+            <div className="w-full">
+              <h3 className="text-2xl font-bold text-gray-800 text-center mb-2">
+                Kelompok Usia Penduduk
+              </h3>
+              <p className="text-sm text-gray-600 text-center">Distribusi penduduk berdasarkan kelompok usia</p>
+            </div>
+            <button className="text-sm text-blue-600 hover:text-blue-800 font-medium ml-4 px-3 py-1 rounded-lg hover:bg-blue-50 transition-colors">
+              Kelola →
+            </button>
+          </div>
+          
+          <div className="h-80">
+            {populationAgeData.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={populationAgeData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="colorAge" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#82ca9d" stopOpacity={0.8} />
+                      <stop offset="95%" stopColor="#82ca9d" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                  <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                  <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
+                  <Tooltip 
+                    formatter={(value) => [`${value} Orang`, 'Jumlah']}
+                    labelFormatter={(label) => `Kelompok ${label}`}
+                  />
+                  <Legend />
+                  <Area
+                    type="monotone"
+                    dataKey="value"
+                    name="Jumlah Penduduk"
+                    stroke="#82ca9d"
+                    fillOpacity={1}
+                    fill="url(#colorAge)"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="flex items-center justify-center h-full text-gray-500">
+                <div className="text-center">
+                  <FaChild className="mx-auto mb-2 text-4xl" />
+                  <p className="text-lg">Belum ada data kelompok usia</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
-      {/* PREVIEW SECTIONS */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
+
+
+      {/* SECTION: MANAJEMEN KONTEN */}
+      <div className="mb-8">
+        <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+          <FaFolderOpen className="text-green-600" />
+          Manajemen Konten
+        </h2>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         <PreviewSection
           title={"Struktur Desa"}
           icon={<FaSitemap className="text-blue-500" />}
@@ -773,6 +1000,7 @@ export default function AdminDashboard() {
             desc: s.position || s.jabatan,
             rw: s.rw || "-",
           }))}
+          totalCount={strukturTotal}
           onClick={() => navigate("/admin/manage-anggota")}
           description={"Pengurus dan struktur organisasi desa"}
         />
@@ -785,22 +1013,23 @@ export default function AdminDashboard() {
             desc: p.description || p.deskripsi || p.desc,
             status: p.status || "Aktif",
           }))}
+          totalCount={programKerjaTotal}
           onClick={() => navigate("/admin/manage-program")}
           showStatus={true}
           description={"Program dan kegiatan desa"}
         />
 
         <PreviewSection
-          title={"Data Penduduk"}
-          icon={<FaUserAlt className="text-purple-500" />}
+          title={"Data Master"}
+          icon={<FaDatabase className="text-purple-500" />}
           data={[
-            { title: "Jumlah KK", value: "120 KK" },
-            { title: "Penduduk Laki-laki", value: "320 Jiwa" },
-            { title: "Penduduk Perempuan", value: "340 Jiwa" },
+            { title: "Infografis Desa", desc: "Kelola data kependudukan" },
+            { title: "Peta Digital", desc: "Sistem informasi geografis" },
+            { title: "Statistik Konten", desc: "Data berita, agenda, galeri" },
           ]}
-          onClick={() => navigate("/admin/kelola-infografis/penduduk")}
-          showValue={true}
-          description={"Statistik kependudukan terbaru"}
+          totalCount={5}
+          onClick={() => navigate("/admin/data-master")}
+          description={"Akses semua data master desa"}
         />
 
         <PreviewSection
@@ -813,6 +1042,7 @@ export default function AdminDashboard() {
               p.product.featured_image
             }`,
           }))}
+          totalCount={bumdesTotal}
           onClick={() => navigate("/admin/manage-bumdes")}
           description={"Produk unggulan BUMDes"}
         />
@@ -824,6 +1054,7 @@ export default function AdminDashboard() {
             title: a.name,
             desc: a.type,
           }))}
+          totalCount={administrasiTotal}
           onClick={() => navigate("/admin/manage-administrasi")}
           description={"Layanan administrasi warga"}
         />
@@ -837,87 +1068,46 @@ export default function AdminDashboard() {
               g.image
             }`,
           }))}
+          totalCount={galeriCount}
           onClick={() => navigate("/admin/manage-galery")}
           description={"Galeri kegiatan desa"}
         />
+        </div>
       </div>
     </div>
   );
 }
 
-// Komponen StatItem
-function StatItem({ icon, title, value, onClick }) {
-  return (
-    <div
-      className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg cursor-pointer transition"
-      onClick={onClick}
-    >
-      <div className="flex items-center gap-3">
-        <div className="p-2 bg-gray-100 rounded-lg">{icon}</div>
-        <span className="font-medium text-gray-700">{title}</span>
-      </div>
-      <span className="text-lg font-bold text-gray-800">{value}</span>
-    </div>
-  );
-}
 
-// Komponen ActivityLog
-function ActivityLog({ activities }) {
+
+// Komponen CompactActivityLog - Versi kecil untuk header
+function CompactActivityLog({ activities }) {
   return (
-    <div className="bg-white rounded-xl shadow-md p-5 h-full">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-          <FaClock className="text-gray-500" />
-          {"Log Aktivitas Terbaru"}
-        </h3>
-        <button className="text-sm text-blue-600 hover:text-blue-800 font-medium">
-          {"Lihat Semua"}
+    <div className="bg-white rounded-lg shadow-sm border p-3 min-w-[300px]">
+      <div className="flex items-center justify-between mb-2">
+        <h4 className="text-sm font-medium text-gray-700 flex items-center gap-1">
+          <FaClock className="text-xs text-gray-400" />
+          Aktivitas Terbaru
+        </h4>
+        <button className="text-xs text-blue-600 hover:text-blue-800">
+          Lihat Semua
         </button>
       </div>
 
-      <div className="space-y-4 max-h-[420px] overflow-y-auto pr-2">
-        {activities.map((activity) => {
-          const IconComponent = FaUser;
-          const actionColors = {
-            USER: "bg-green-100 text-green-800",
-            edit: "bg-yellow-100 text-yellow-800",
-            upload: "bg-blue-100 text-blue-800",
-            view: "bg-purple-100 text-purple-800",
-            delete: "bg-red-100 text-red-800",
-          };
-
-          return (
-            <div
-              key={activity.id}
-              className="flex gap-3 items-start p-3 rounded-lg border border-gray-100 hover:border-blue-200 transition"
-            >
-              <div
-                className={`p-2 rounded-lg ${
-                  actionColors[activity.location] || "bg-gray-100"
-                }`}
-              >
-                <IconComponent className="text-sm" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-800 leading-tight">
-                  {activity.action}
-                </p>
-                <div className="flex items-center gap-2 mt-1">
-                  <span className="text-xs px-2 py-1 bg-gray-100 rounded-md text-gray-600">
-                    {activity.location}
-                  </span>
-                  <span className="text-xs text-gray-500">
-                    {activity.user.name}
-                  </span>
-                </div>
-              </div>
-
-              <div className="text-xs text-gray-400 whitespace-nowrap">
-                {Helper.formatISODate(activity.created_at)}
-              </div>
-            </div>
-          );
-        })}
+      <div className="space-y-1">
+        {activities.slice(0, 3).map((activity) => (
+          <div
+            key={activity.id}
+            className="bg-gray-50 rounded px-2 py-1"
+          >
+            <p className="text-xs font-medium text-gray-800 truncate">
+              {activity.action}
+            </p>
+            <p className="text-xs text-gray-500 truncate">
+              {activity.user.name}
+            </p>
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -941,25 +1131,47 @@ function SmallMainCard({ icon, title, description, onClick }) {
 function DetailStatCard({ icon, title, count, detail, trend, onClick, color }) {
   return (
     <div
-      className={`p-5 rounded-xl shadow hover:shadow-lg transition cursor-pointer ${color} border-l-4 ${color.replace(
-        "bg-",
-        "border-"
-      )}`}
+      className={`group relative p-4 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer ${color} border border-gray-100 hover:border-gray-200 transform hover:-translate-y-1 hover:scale-[1.02] overflow-hidden`}
       onClick={onClick}
     >
-      <div className="flex items-start justify-between">
-        <div>
-          <div className="mb-3">{icon}</div>
-          <h2 className="text-lg font-semibold text-gray-700">{title}</h2>
+      {/* Background gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-white/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+      
+      {/* Content */}
+      <div className="relative z-10">
+        {/* Top section with icon and number */}
+        <div className="flex items-start justify-between mb-3">
+          <div className="p-2 rounded-lg bg-white/80 shadow-sm group-hover:shadow-md transition-all duration-300 group-hover:scale-110">
+            {icon}
+          </div>
+          <div className="text-right">
+            <p className="text-2xl font-black text-gray-900 group-hover:text-gray-800 transition-colors leading-none">{count}</p>
+          </div>
         </div>
-        <p className="text-3xl font-bold text-gray-900">{count}</p>
+        
+        {/* Bottom section with title and detail */}
+        <div className="mb-2">
+          <h2 className="text-base font-bold text-gray-800 group-hover:text-gray-900 transition-colors mb-1">{title}</h2>
+          <p className="text-xs text-gray-600 group-hover:text-gray-700 transition-colors">{detail}</p>
+        </div>
+        
+        {/* Trend and hover indicator */}
+        <div className="flex items-center justify-between">
+          {trend && (
+            <span className="text-xs bg-white/90 px-2 py-1 rounded-full text-gray-700 shadow-sm group-hover:bg-white group-hover:shadow-md transition-all duration-300">
+              {trend}
+            </span>
+          )}
+          <div className="flex items-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0 ml-auto">
+            <svg className="w-3 h-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </div>
+        </div>
       </div>
-      <div className="flex justify-between items-end mt-4">
-        <p className="text-sm text-gray-600">{detail}</p>
-        <span className="text-xs bg-white px-2 py-1 rounded-full text-gray-700 shadow-sm">
-          {trend}
-        </span>
-      </div>
+      
+      {/* Animated border */}
+      <div className={`absolute bottom-0 left-0 h-1 bg-gradient-to-r ${color.replace('bg-', 'from-').replace('-50', '-400')} to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left`}></div>
     </div>
   );
 }
@@ -974,41 +1186,46 @@ function PreviewSection({
   showStatus = false,
   showValue = false,
   description,
+  totalCount = 0,
 }) {
   return (
-    <div className="bg-white rounded-xl shadow-md p-5 h-full flex flex-col">
-      <div className="flex justify-between items-start mb-3">
-        <div>
-          <h2 className="text-xl font-semibold flex items-center gap-2 mb-1">
-            {icon} {title}
+    <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 p-6 h-full flex flex-col">
+      <div className="flex justify-between items-start mb-4">
+        <div className="flex-1">
+          <h2 className="text-lg font-semibold flex items-center gap-2 mb-2">
+            <span className="text-xl">{icon}</span>
+            <span>{title}</span>
           </h2>
           <p className="text-sm text-gray-600">{description}</p>
         </div>
         <button
           onClick={onClick}
-          className="text-blue-600 font-medium hover:text-blue-800 flex items-center text-sm"
+          className="ml-4 bg-blue-500 hover:bg-blue-600 text-white text-xs font-medium py-2 px-3 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-md flex items-center gap-1"
         >
-          Kelola<span className="ml-1">→</span>
+          <span>Kelola</span>
+          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
         </button>
       </div>
 
-      <div className="mt-4 flex-grow">
+      <div className="flex-grow">
         {data.length === 0 ? (
-          <div className="text-center py-6">
-            <p className="text-gray-500 italic">Belum ada data</p>
+          <div className="text-center py-8">
+            <p className="text-gray-500 italic mb-3">Belum ada data</p>
             <button
               onClick={onClick}
-              className="mt-2 text-blue-600 hover:underline text-sm"
+              className="bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm py-2 px-4 rounded-lg transition-colors duration-300"
             >
               Tambah data pertama
             </button>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-4">
             {data.slice(0, 3).map((item, idx) => (
               <div
                 key={idx}
-                className="flex gap-3 items-start border-b pb-3 last:border-0"
+                className="flex gap-3 items-start border-b pb-3 last:border-0 last:pb-0"
               >
                 {item.img && !showValue && (
                   <img
@@ -1055,7 +1272,6 @@ function PreviewSection({
                     </span>
                   )}
                 </div>
-1
                 {showLink && item.link && (
                   <a
                     href={item.link}
@@ -1072,13 +1288,15 @@ function PreviewSection({
         )}
       </div>
 
-      {data.length > 3 && (
-        <button
-          onClick={onClick}
-          className="mt-4 text-sm text-gray-600 hover:text-gray-800 w-full text-center"
-        >
-          + {data.length - 3} {"lainnya"}
-        </button>
+      {totalCount > 3 && (
+        <div className="mt-6 pt-4 border-t">
+          <button
+            onClick={onClick}
+            className="text-sm text-gray-600 hover:text-gray-800 w-full text-center py-2 hover:bg-gray-50 rounded-lg transition-colors duration-300"
+          >
+            + {totalCount - 3} lainnya
+          </button>
+        </div>
       )}
     </div>
   );

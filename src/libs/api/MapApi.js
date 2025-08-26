@@ -85,6 +85,34 @@ export class MapApi {
     });
   }
 
+  static async update(id, data, language) {
+    const formData = new FormData();
+    formData.append("type", data.type);
+    formData.append("name", data.name);
+    formData.append("description", data.description);
+    formData.append("year", data.year);
+    formData.append("coordinates", data.coordinates);
+    if (data.color) {
+      formData.append("color", data.color);
+    }
+    if (data.icon) {
+      formData.append("icon", data.icon);
+    }
+    formData.append("_method", "PUT");
+    return await fetch(
+      `${import.meta.env.VITE_NEW_BASE_URL}/admin/maps/${id}`,
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          Accept: "application/json",
+          "Accept-Language": language,
+        },
+        body: formData,
+      }
+    );
+  }
+
   static async delete(id, language) {
     return await fetch(
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/maps/${id}`,

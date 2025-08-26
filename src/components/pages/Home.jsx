@@ -14,6 +14,8 @@ import {
   FaSpinner,
   FaCalendarAlt,
   FaTimesCircle,
+  FaPhone,
+  FaExclamationTriangle,
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import {
@@ -394,12 +396,12 @@ export default function Home() {
           <Link
             key={idx}
             to={item.link}
-            className="bg-white shadow rounded-xl p-6 hover:shadow-2xl hover:scale-105 transition-transform"
+            className="group bg-white shadow-lg rounded-xl p-6 hover:shadow-2xl hover:scale-[1.08] hover:-translate-y-3 transition-all duration-500 border border-transparent hover:border-green-200 hover:bg-gradient-to-br hover:from-green-50 hover:to-white cursor-pointer"
             data-aos="fade-up"
           >
-            <div>{item.icon}</div>
-            <h3 className="font-bold mt-3">{item.title}</h3>
-            <p className="text-gray-600 mt-1">{item.desc}</p>
+            <div className="transform group-hover:scale-125 group-hover:rotate-6 transition-all duration-400 group-hover:drop-shadow-lg">{item.icon}</div>
+            <h3 className="font-bold mt-3 group-hover:text-green-700 transition-colors duration-300">{item.title}</h3>
+            <p className="text-gray-600 mt-1 group-hover:text-gray-700 transition-colors duration-300">{item.desc}</p>
           </Link>
         ))}
       </div>
@@ -436,7 +438,7 @@ export default function Home() {
           {news.map((item) => (
             <div
               key={item.news.id}
-              className="bg-white rounded-xl shadow hover:shadow-xl"
+              className="group bg-white rounded-xl shadow-lg hover:shadow-2xl hover:scale-[1.03] hover:-translate-y-2 transition-all duration-500 border border-transparent hover:border-blue-200 overflow-hidden"
               data-aos="fade-up"
             >
               <Link to={`/berita/${item.news.id}`}>
@@ -445,12 +447,12 @@ export default function Home() {
                     item.news.featured_image
                   }`}
                   alt={item.news.title}
-                  className="w-full h-48 object-cover rounded-t-xl"
+                  className="w-full h-48 object-cover rounded-t-xl group-hover:scale-110 transition-transform duration-500"
                 />
               </Link>
               <div className="p-4 flex flex-col">
                 <Link to={`/berita/${item.news.id}`}>
-                  <h3 className="font-semibold text-gray-800 hover:text-green-700">
+                  <h3 className="font-semibold text-gray-800 group-hover:text-blue-700 transition-colors duration-300">
                     {item.news.title}
                   </h3>
                 </Link>
@@ -481,7 +483,7 @@ export default function Home() {
             return (
               <div
                 key={item.product.id}
-                className="bg-white rounded-xl shadow hover:shadow-xl"
+                className="group bg-white rounded-xl shadow-lg hover:shadow-2xl hover:scale-[1.03] hover:-translate-y-2 transition-all duration-500 border border-transparent hover:border-green-200 overflow-hidden"
                 data-aos="fade-up"
               >
                 <Link to={`/bumdes/${item.product.id}`}>
@@ -490,12 +492,12 @@ export default function Home() {
                       item.product.featured_image
                     }`}
                     alt={item.product.title}
-                    className="w-full h-48 object-cover rounded-t-xl"
+                    className="w-full h-48 object-cover rounded-t-xl group-hover:scale-110 transition-transform duration-500"
                   />
                 </Link>
                 <div className="p-4 flex flex-col">
                   <Link to={`/bumdes/${item.product.id}`}>
-                    <h3 className="font-semibold text-gray-800 hover:text-green-700">
+                    <h3 className="font-semibold text-gray-800 group-hover:text-green-700 transition-colors duration-300">
                       {item.product.title}
                     </h3>
                   </Link>
@@ -526,7 +528,7 @@ export default function Home() {
                       href={item.product.link_whatsapp}
                       target="_blank"
                       rel="noreferrer"
-                      className="flex items-center gap-1 text-white bg-green-500 px-3 py-1.5 rounded-lg shadow text-sm"
+                      className="flex items-center gap-1 text-white bg-green-500 hover:bg-green-600 px-3 py-1.5 rounded-lg shadow hover:shadow-lg text-sm transition-all duration-300 group-hover:scale-105"
                     >
                       <FaWhatsapp />
                       {t("home.bumdes.order")}
@@ -540,217 +542,267 @@ export default function Home() {
       </div>
 
       {/* Work Programs */}
-      <div className="w-full px-[5%] py-10">
-        <h2
-          className="text-2xl font-bold text-center text-green-700 mb-8"
-          data-aos="fade-up"
-        >
-          {t("home.workprograms.title")}
-        </h2>
+      <div className="bg-gray-50 py-16 px-[5%]">
+        <div className="max-w-7xl mx-auto">
+          <h2
+            className="text-3xl font-bold text-center text-green-700 mb-12"
+            data-aos="fade-up"
+          >
+            {t("home.workprograms.title")}
+          </h2>
 
-        {isLoadingWorkPrograms ? (
-          <div className="flex justify-center items-center py-12">
-            <FaSpinner className="text-4xl text-green-600 animate-spin" />
-            <span className="ml-3 text-lg text-gray-600">
-              {t("home.workprograms.loading")}
-            </span>
-          </div>
-        ) : workPrograms.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="min-w-full bg-white rounded-lg overflow-hidden shadow-lg">
-              <thead className="bg-green-600 text-white">
-                <tr>
-                  <th className="py-3 px-4 text-left">No</th>
-                  <th className="py-3 px-4 text-left">
-                    {t("home.workprograms.program")}
-                  </th>
-                  <th className="py-3 px-4 text-left">
-                    {t("home.workprograms.dates")}
-                  </th>
-                  <th className="py-3 px-4 text-left">Budget</th>
-                  <th className="py-3 px-4 text-left">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {workPrograms.map((program, index) => (
-                  <tr key={program.id} className="hover:bg-gray-50">
-                    <td className="py-3 px-4">{index + 1}</td>
-                    <td className="py-3 px-4 font-medium">
-                      {program.description ||
-                        program.name ||
-                        t("home.workprograms.nodesc")}
-                    </td>
-                    <td className="py-3 px-4">
-                      <div className="flex items-center gap-2">
-                        <FaCalendarAlt className="text-green-500" />
-                        <span>
-                          {program.date
-                            ? Helper.formatTanggal(program.date)
-                            : program.created_at
-                            ? Helper.formatTanggal(program.created_at)
-                            : t("home.workprograms.nodate")}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="py-3 px-4 font-semibold text-green-700">
-                      {program.budget_amount
-                        ? Helper.formatRupiahMillion(
-                            program.budget_amount,
-                            i18n.language
-                          )
-                        : t("home.workprograms.nobudget")}
-                    </td>
-                    <td className="py-3 px-4">
-                      <div className="flex items-center gap-2">
-                        {getStatusIcon(program.status)}
-                        <span
-                          className={`px-2 py-1 rounded-full text-xs ${getStatusColor(
-                            program.status
-                          )}`}
-                        >
-                          {getStatusText(program.status)}
-                        </span>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <div className="text-center py-12">
-            <FaCalendarAlt className="text-6xl text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-600 mb-2">
-              {t("home.workprograms.nodata")}
-            </h3>
-            <p className="text-gray-500">{t("home.workprograms.nodata")}</p>
-          </div>
-        )}
+          {isLoadingWorkPrograms ? (
+            <div className="flex justify-center items-center py-16">
+              <FaSpinner className="text-4xl text-green-600 animate-spin" />
+              <span className="ml-3 text-lg text-gray-600">
+                {t("home.workprograms.loading")}
+              </span>
+            </div>
+          ) : workPrograms.length > 0 ? (
+            <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="min-w-full">
+                  <thead className="bg-gradient-to-r from-green-600 to-green-700 text-white">
+                    <tr>
+                      <th className="py-4 px-6 text-left font-semibold">No</th>
+                      <th className="py-4 px-6 text-left font-semibold">
+                        {t("home.workprograms.program")}
+                      </th>
+                      <th className="py-4 px-6 text-left font-semibold">
+                        {t("home.workprograms.dates")}
+                      </th>
+                      <th className="py-4 px-6 text-left font-semibold">Budget</th>
+                      <th className="py-4 px-6 text-left font-semibold">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {workPrograms.map((program, index) => (
+                      <tr key={program.id} className="hover:bg-green-50 transition-colors">
+                        <td className="py-4 px-6 text-gray-700 font-medium">{index + 1}</td>
+                        <td className="py-4 px-6">
+                          <div className="font-medium text-gray-900">
+                            {program.description ||
+                              program.name ||
+                              t("home.workprograms.nodesc")}
+                          </div>
+                        </td>
+                        <td className="py-4 px-6">
+                          <div className="flex items-center gap-2 text-gray-600">
+                            <FaCalendarAlt className="text-green-500" />
+                            <span className="text-sm">
+                              {program.date
+                                ? Helper.formatTanggal(program.date)
+                                : program.created_at
+                                ? Helper.formatTanggal(program.created_at)
+                                : t("home.workprograms.nodate")}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="py-4 px-6">
+                          <span className="font-semibold text-green-700">
+                            {program.budget_amount
+                              ? Helper.formatRupiahMillion(
+                                  program.budget_amount,
+                                  i18n.language
+                                )
+                              : t("home.workprograms.nobudget")}
+                          </span>
+                        </td>
+                        <td className="py-4 px-6">
+                          <div className="flex items-center gap-2">
+                            {getStatusIcon(program.status)}
+                            <span
+                              className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                                program.status
+                              )}`}
+                            >
+                              {getStatusText(program.status)}
+                            </span>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-16">
+              <FaCalendarAlt className="text-6xl text-gray-300 mx-auto mb-6" />
+              <h3 className="text-xl font-semibold text-gray-600 mb-3">
+                {t("home.workprograms.nodata")}
+              </h3>
+              <p className="text-gray-500">{t("home.workprograms.nodata")}</p>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* APB Chart */}
-      <div className="w-full px-[5%] py-10">
-        <h2
-          className="text-2xl font-bold text-center text-green-700 mb-8"
-          data-aos="fade-up"
-        >
-          {t("home.apb.title")}
-        </h2>
+      <div className="w-full px-[5%] py-16">
+        <div className="max-w-7xl mx-auto">
+          <h2
+            className="text-3xl font-bold text-center text-green-700 mb-12"
+            data-aos="fade-up"
+          >
+            {t("home.apb.title")}
+          </h2>
 
-        {isLoadingApb ? (
-          <div className="flex justify-center items-center py-12">
-            <FaSpinner className="text-4xl text-green-600 animate-spin" />
-            <span className="ml-3 text-lg text-gray-600">
-              {t("home.apbchart.loading")}
-            </span>
-          </div>
-        ) : (
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <ResponsiveContainer width="100%" height={350}>
-              <ComposedChart data={transformedApbData}>
-                <CartesianGrid stroke="#f5f5f5" />
-                <XAxis dataKey="bidang" />
-                <YAxis
-                  tickFormatter={(value) => {
-                    if (value >= 1000000000) {
-                      return `${(value / 1000000000).toFixed(0)}B`;
-                    }
-                    if (value >= 1000000) {
-                      return `${(value / 1000000).toFixed(0)}M`;
-                    }
-                    if (value >= 1000) {
-                      return `${(value / 1000).toFixed(0)}K`;
-                    }
-                    return value.toString();
-                  }}
-                  width={60}
-                  label={{
-                    value:
-                      i18n.language === "en"
-                        ? "Billion/Million"
-                        : "Miliar/Juta",
-                    angle: -90,
-                    position: "insideLeft",
-                    offset: 10,
-                    style: { textAnchor: "middle" },
-                  }}
-                />
-                <Tooltip
-                  formatter={(value, name) => [
-                    `${formatRupiahBillion(value, i18n.language)}`,
-                    name === "anggaran"
-                      ? t("home.apb.budget")
-                      : t("home.apb.realization"),
-                  ]}
-                  labelFormatter={(value) => t("home.apb.field") + ": " + value}
-                />
-                <Legend />
-                <Bar
-                  dataKey="anggaran"
-                  barSize={30}
-                  fill="#4ade80"
-                  name={t("home.apb.budget")}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="realisasi"
-                  stroke="#3b82f6"
-                  name={t("home.apb.realization")}
-                  strokeWidth={2}
-                  dot={{ r: 4 }}
-                />
-              </ComposedChart>
-            </ResponsiveContainer>
+          {isLoadingApb ? (
+            <div className="flex justify-center items-center py-16">
+              <FaSpinner className="text-4xl text-green-600 animate-spin" />
+              <span className="ml-3 text-lg text-gray-600">
+                {t("home.apbchart.loading")}
+              </span>
+            </div>
+          ) : (
+            <div className="bg-white rounded-2xl shadow-xl p-8">
+              <div className="mb-8">
+                <ResponsiveContainer width="100%" height={400}>
+                  <ComposedChart data={transformedApbData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+                    <CartesianGrid stroke="#f0f0f0" strokeDasharray="3 3" />
+                    <XAxis 
+                      dataKey="bidang" 
+                      tick={{ fontSize: 12 }}
+                      angle={-45}
+                      textAnchor="end"
+                      height={80}
+                    />
+                    <YAxis
+                      tickFormatter={(value) => {
+                        if (value >= 1000000000) {
+                          return `${(value / 1000000000).toFixed(0)}B`;
+                        }
+                        if (value >= 1000000) {
+                          return `${(value / 1000000).toFixed(0)}M`;
+                        }
+                        if (value >= 1000) {
+                          return `${(value / 1000).toFixed(0)}K`;
+                        }
+                        return value.toString();
+                      }}
+                      width={80}
+                      tick={{ fontSize: 12 }}
+                    />
+                    <Tooltip
+                      formatter={(value, name) => [
+                        `${formatRupiahBillion(value, i18n.language)}`,
+                        name === "anggaran"
+                          ? t("home.apb.budget")
+                          : t("home.apb.realization"),
+                      ]}
+                      labelFormatter={(value) => `${t("home.apb.field")}: ${value}`}
+                      contentStyle={{
+                        backgroundColor: '#fff',
+                        border: '1px solid #e5e7eb',
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                      }}
+                    />
+                    <Legend 
+                      wrapperStyle={{ paddingTop: '20px' }}
+                    />
+                    <Bar
+                      dataKey="anggaran"
+                      barSize={40}
+                      fill="#10b981"
+                      name={t("home.apb.budget")}
+                      radius={[4, 4, 0, 0]}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="realisasi"
+                      stroke="#3b82f6"
+                      name={t("home.apb.realization")}
+                      strokeWidth={3}
+                      dot={{ r: 6, fill: '#3b82f6' }}
+                      activeDot={{ r: 8, fill: '#1d4ed8' }}
+                    />
+                  </ComposedChart>
+                </ResponsiveContainer>
+              </div>
 
-            {/* Budget Summary */}
-            <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="bg-green-50 p-4 rounded-lg">
-                <p className="text-green-700 font-bold">
-                  {t("home.apb.totalbudget")}
-                </p>
-                <p className="text-xl font-bold">
-                  {formatRupiahBillion(apbSummary.totalBudget, i18n.language)}
-                </p>
+              {/* Budget Summary */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl border border-green-200">
+                  <p className="text-green-700 font-semibold text-sm mb-2">
+                    {t("home.apb.totalbudget")}
+                  </p>
+                  <p className="text-2xl font-bold text-green-800">
+                    {formatRupiahBillion(apbSummary.totalBudget, i18n.language)}
+                  </p>
+                </div>
+                <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl border border-blue-200">
+                  <p className="text-blue-700 font-semibold text-sm mb-2">
+                    {t("home.apb.totalrealization")}
+                  </p>
+                  <p className="text-2xl font-bold text-blue-800">
+                    {formatRupiahBillion(
+                      apbSummary.totalRealization,
+                      i18n.language
+                    )}
+                  </p>
+                </div>
+                <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 p-6 rounded-xl border border-yellow-200">
+                  <p className="text-yellow-700 font-semibold text-sm mb-2">
+                    {t("home.apb.remaining")}
+                  </p>
+                  <p className="text-2xl font-bold text-yellow-800">
+                    {formatRupiahBillion(apbSummary.remaining, i18n.language)}
+                  </p>
+                </div>
+                <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-xl border border-purple-200">
+                  <p className="text-purple-700 font-semibold text-sm mb-2">
+                    {t("home.apb.absorption")}
+                  </p>
+                  <p className="text-2xl font-bold text-purple-800">{apbSummary.absorption}%</p>
+                </div>
               </div>
-              <div className="bg-blue-50 p-4 rounded-lg">
-                <p className="text-blue-700 font-bold">
-                  {t("home.apb.totalrealization")}
-                </p>
-                <p className="text-xl font-bold">
-                  {formatRupiahBillion(
-                    apbSummary.totalRealization,
-                    i18n.language
-                  )}
-                </p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Emergency Guide */}
+      <div className="bg-green-600 py-12 px-[5%]" data-aos="fade-up">
+        <div className="max-w-4xl mx-auto text-white">
+          <h2 className="text-3xl font-bold text-center mb-8">
+            {t("home.emergency.title")}
+          </h2>
+          
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Call Center Guide */}
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <FaPhone className="text-2xl" />
+                <h3 className="text-xl font-bold">{t("home.emergency.callcenter.title")}</h3>
               </div>
-              <div className="bg-yellow-50 p-4 rounded-lg">
-                <p className="text-yellow-700 font-bold">
-                  {t("home.apb.remaining")}
-                </p>
-                <p className="text-xl font-bold">
-                  {formatRupiahBillion(apbSummary.remaining, i18n.language)}
-                </p>
+              <p className="mb-4 opacity-90">{t("home.emergency.callcenter.description")}</p>
+              <div className="space-y-2 text-sm">
+                <p>• {t("home.emergency.callcenter.admin")}: (022) 123-4567</p>
+                <p>• {t("home.emergency.callcenter.hours")}: 08:00 - 16:00 WIB</p>
+                <p>• {t("home.emergency.callcenter.services")}</p>
               </div>
-              <div className="bg-purple-50 p-4 rounded-lg">
-                <p className="text-purple-700 font-bold">
-                  {t("home.apb.absorption")}
-                </p>
-                <p className="text-xl font-bold">{apbSummary.absorption}%</p>
+            </div>
+
+            {/* Emergency Guide */}
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <FaExclamationTriangle className="text-2xl text-red-300" />
+                <h3 className="text-xl font-bold">{t("home.emergency.emergency.title")}</h3>
+              </div>
+              <p className="mb-4 opacity-90">{t("home.emergency.emergency.description")}</p>
+              <div className="space-y-2 text-sm">
+                <p>• {t("home.emergency.emergency.police")}: 110</p>
+                <p>• {t("home.emergency.emergency.medical")}: 119</p>
+                <p>• {t("home.emergency.emergency.fire")}: 113</p>
+                <p>• {t("home.emergency.emergency.village")}: (022) 123-4567</p>
               </div>
             </div>
           </div>
-        )}
+        </div>
       </div>
 
-      {/* Map */}
-      <div className="relative h-[30vh] md:h-[40vh] w-full">
-        <iframe
-          title={t("home.map.title")}
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d50846.83215472047!2d108.04488070198364!3d-6.7568080545342095!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e6f2aaf583cd373%3A0x997e0a8c838d37df!2sBabakan%20Asem%2C%20Kec.%20Conggeang%2C%20Kabupaten%20Sumedang%2C%20Jawa%20Barat!5e0!3m2!1sid!2sid!4v1753327873604!5m2!1sid!2sid"
-          className="absolute top-0 left-0 w-full h-full border-0"
-          loading="lazy"
-        ></iframe>
-      </div>
     </div>
   );
 }

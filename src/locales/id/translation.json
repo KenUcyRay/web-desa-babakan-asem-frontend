@@ -83,6 +83,24 @@
     "errors": {
       "product": "Gagal mengambil data produk. Silakan coba lagi nanti.",
       "news": "Gagal mengambil data berita. Silakan coba lagi nanti."
+    },
+    "emergency": {
+      "title": "Panduan Bantuan & Darurat",
+      "callcenter": {
+        "title": "Call Center Desa",
+        "description": "Hubungi call center desa untuk bantuan administrasi, informasi layanan, dan pertanyaan umum seputar desa.",
+        "admin": "Admin Desa",
+        "hours": "Jam Layanan",
+        "services": "Layanan: Administrasi, Informasi, Pengaduan"
+      },
+      "emergency": {
+        "title": "Nomor Darurat",
+        "description": "Untuk situasi darurat, hubungi nomor-nomor berikut. Pastikan hanya digunakan untuk keadaan yang benar-benar mendesak.",
+        "police": "Polisi",
+        "medical": "Ambulans/Puskesmas",
+        "fire": "Pemadam Kebakaran",
+        "village": "Darurat Desa"
+      }
     }
   },
   "detailAchievement": {
@@ -742,7 +760,41 @@
     "greeting": "👋 <strong>Butuh bantuan?</strong>",
     "subGreeting": "Hubungi Admin Cukup Klik di sini",
     "whatsapp": "WhatsApp",
-    "phone": "Telepon"
+    "phone": "Telepon",
+    "emergency": "Bantuan Darurat",
+    "sos": "SOS DARURAT",
+    "callCenter": "Call Center",
+    "puskesmas": "Puskesmas",
+    "police": "Polisi",
+    "timCakra": "Tim Cakra",
+    "selectService": "Pilih layanan yang dibutuhkan",
+    "clickToCall": "Klik untuk menelepon langsung",
+    "callModalTitle": "KONFIRMASI PANGGILAN",
+    "callModalSubtitle": "Layanan Darurat",
+    "callModalMessage": "Anda akan menghubungi layanan ini",
+    "callModalDetail": "Pastikan ini adalah situasi yang memerlukan bantuan.",
+    "callModalCancel": "Batal",
+    "callModalConfirm": "TELEPON"
+  },
+  "sosButton": {
+    "label": "DARURAT",
+    "tooltip": "TOMBOL DARURAT - Hanya untuk situasi kritis! Akan mengirim lokasi dan menelepon tim respons.",
+    "confirmMessage": "DARURAT: Anda akan mengirim sinyal darurat dan lokasi ke tim respons. Lanjutkan?",
+    "emergencyMessage": "DARURAT!",
+    "location": "Lokasi",
+    "locationError": "Tidak dapat mengakses lokasi.",
+    "locationDenied": "Akses lokasi ditolak. Aktifkan GPS dan izinkan akses lokasi.",
+    "locationUnavailable": "Lokasi tidak tersedia.",
+    "locationTimeout": "Waktu akses lokasi habis.",
+    "callAnyway": "Panggilan darurat tetap akan dilakukan.",
+    "noGeolocation": "Browser tidak mendukung GPS.",
+    "modalTitle": "KONFIRMASI DARURAT",
+    "modalSubtitle": "Situasi Kritis",
+    "modalMessage": "Anda akan mengirim sinyal darurat dan lokasi GPS ke tim respons. Sistem akan otomatis menelepon nomor darurat 112.",
+    "modalWarning": "Hanya untuk situasi darurat nyata!",
+    "modalWarningDetail": "Penggunaan yang tidak tepat dapat mengganggu layanan darurat.",
+    "modalCancel": "Batal",
+    "modalConfirm": "KIRIM SOS"
   },
   "footer": {
     "village_name": "Desa Babakan Asem",

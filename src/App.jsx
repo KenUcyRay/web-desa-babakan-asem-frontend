@@ -17,6 +17,7 @@ import Footer from "./components/layout/Footer";
 
 // - Floating Menu
 import FloatingMenu from "./components/layout/FloatingMenu";
+import SOSFloatingButton from "./components/layout/SOSFloatingButton";
 
 // - Halaman Umum
 import Home from "./components/pages/Home";
@@ -73,6 +74,7 @@ import DataMaster from "./components/admin/DataMaster";
 // import GisDesa from "./components/admin/GisDesa";
 import ManageProgram from "./components/admin/ManageProgram";
 import ManageApb from "./components/admin/ManageApb";
+import KelolaSIG from "./components/admin/KelolaSIG";
 
 // Pengaturan Admin Organisasi
 import DashboardKarang from "./components/admin/organisasi/DashboardKarang";
@@ -162,6 +164,9 @@ function LayoutUmum() {
 
         {/* ✅ Floating Menu tampil di semua halaman umum */}
         <FloatingMenu />
+        
+        {/* ✅ SOS Button selalu terlihat di semua halaman umum */}
+        <SOSFloatingButton />
 
         {/* ✅ Footer tetap di bawah */}
         <Footer />
@@ -192,6 +197,7 @@ function LayoutAdmin() {
         {/* <Route path="gis-desa" element={<GisDesa />} /> */}
         <Route path="manage-program" element={<ManageProgram />} />
         <Route path="manage-apb" element={<ManageApb />} />
+        <Route path="kelola-sig" element={<KelolaSIG />} />
 
         {/* - Kelola Infografis */}
         <Route path="kelola-infografis/penduduk" element={<ManagePenduduk />} />
