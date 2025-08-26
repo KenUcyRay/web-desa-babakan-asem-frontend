@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `maps` MODIFY `type` ENUM('POLYGON', 'MARKER', 'BENCANA') NOT NULL;

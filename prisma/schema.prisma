@@ -8,89 +8,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Enum
-
-enum ResidentType {
-  GENDER
-  PERNIKAHAN
-  AGAMA
-  USIA
-  KEPALA_KELUARGA
-  PERKERJAAN
-  PENDIDIKAN
-  WAJIB_PILIH
-  DUSUN
-  ANAK_ANAK
-}
-
-enum Role {
-  REGULAR // Regular user with basic access
-  ADMIN
-  PKK
-  KARANG_TARUNA
-  BPD
-  CONTRIBUTOR
-}
-
-enum MapType {
-  POLYGON
-  MARKER
-}
-
-enum ActivityLogLocation {
-  NEWS
-  AGENDA
-  GALLERY
-  MESSAGE
-  BUMDES
-  VILLAGEWORKPROGRAM
-  USER
-}
-
-enum VillageWorkProgramStatus {
-  PLANNED
-  IN_PROGRESS
-  COMPLETED
-  CANCELLED
-}
-
-enum TargetType {
-  NEWS
-  AGENDA
-  PRODUCT
-}
-
-enum AgendaType {
-  REGULAR
-  PKK
-  KARANG_TARUNA
-  BPD
-}
-
-enum StatusDesa {
-  MAJU
-  BERKEMBANG
-  MANDIRI
-  TERTINGGAL
-  SANGAT_TERTINGGAL
-}
-
-enum PengantarType {
-  KTP
-  KK
-  SKCK
-  LAINNYA
-}
-
-enum Organization {
-  PEMERINTAH
-  PKK
-  KARANG_TARUNA
-  BPD
-}
-
-//Rill Fix
-
 model SiteContent {
   id         String          @id @default(uuid())
   key        String          @unique @db.VarChar(255)
@@ -103,13 +20,6 @@ model SiteContent {
   @@map("site_contents")
 }
 
-enum SiteContentType {
-  TEXT
-  LINK
-  IMAGE
-  VIDEO
-}
-
 model Map {
   id          String   @id @default(uuid())
   type        MapType
@@ -117,6 +27,8 @@ model Map {
   description String
   year        Int
   coordinates Json
+  color       String?
+  radius      Int?     @default(500)
   icon        String?
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
@@ -130,25 +42,24 @@ model ActivityLog {
   action     String              @db.VarChar(255)
   location   ActivityLogLocation
   created_at DateTime            @default(now())
+  user       User                @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
-  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
-
+  @@index([user_id], map: "activity_logs_user_id_fkey")
   @@map("activity_logs")
 }
 
 model User {
-  id           String   @id @default(uuid())
-  name         String   @db.VarChar(255)
-  phone_number String?  @db.VarChar(20)
-  email        String?  @db.VarChar(255)
-  password     String   @db.VarChar(255)
+  id           String        @id @default(uuid())
+  name         String        @db.VarChar(255)
+  phone_number String?       @db.VarChar(20)
+  email        String?       @db.VarChar(255)
+  password     String        @db.VarChar(255)
   role         Role
-  reset_token  String?  @db.VarChar(500)
-  created_at   DateTime @default(now())
-  updated_at   DateTime @updatedAt
-
-  comments    Comment[]
-  ActivityLog ActivityLog[]
+  reset_token  String?       @db.VarChar(500)
+  created_at   DateTime      @default(now())
+  updated_at   DateTime      @updatedAt
+  ActivityLog  ActivityLog[]
+  comments     Comment[]
 
   @@map("users")
 }
@@ -158,15 +69,13 @@ model Message {
   name         String   @db.VarChar(255)
   email        String?  @db.VarChar(255)
   phone_number String?  @db.VarChar(20)
-  message      String   @db.Text()
+  message      String   @db.Text
   is_read      Boolean  @default(false)
   created_at   DateTime @default(now())
   updated_at   DateTime @updatedAt
 
   @@map("messages")
 }
-
-//fix i think
 
 model Pengantar {
   id         String        @id @default(uuid())
@@ -303,20 +212,19 @@ model Product {
   link_whatsapp  String   @db.VarChar(255)
   created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt
+  category       Category @relation(fields: [category_id], references: [id], onDelete: Cascade)
+  ratings        Rating[]
 
-  category Category @relation(fields: [category_id], references: [id], onDelete: Cascade)
-  ratings  Rating[]
-
+  @@index([category_id], map: "products_category_id_fkey")
   @@map("products")
 }
 
 model Category {
-  id         String   @id @default(uuid())
-  name       String   @db.VarChar(255)
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-
-  products Product[]
+  id         String    @id @default(uuid())
+  name       String    @db.VarChar(255)
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  products   Product[]
 
   @@map("categories")
 }
@@ -328,9 +236,9 @@ model Rating {
   rating     Int
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+  product    Product  @relation(fields: [product_id], references: [id], onDelete: Cascade)
 
-  product Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
-
+  @@index([product_id], map: "ratings_product_id_fkey")
   @@map("ratings")
 }
 
@@ -339,16 +247,14 @@ model Comment {
   user_id     String
   target_id   String
   target_type TargetType
-  content     String     @db.Text()
+  content     String     @db.Text
   created_at  DateTime   @default(now())
   updated_at  DateTime   @updatedAt
+  user        User       @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
-  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
-
+  @@index([user_id], map: "comments_user_id_fkey")
   @@map("comments")
 }
-
-// yang atas migrasi dari microservice
 
 model VillageWorkProgram {
   id            String                   @id @default(uuid())
@@ -378,7 +284,7 @@ model VillageAchievement {
 model Resident {
   id            String       @id @default(uuid())
   key           String       @unique @db.VarChar(255)
-  value         Int          @db.Int
+  value         Int
   resident_type ResidentType
   created_at    DateTime     @default(now())
   updated_at    DateTime     @updatedAt
@@ -396,4 +302,91 @@ model Apb {
   updatedAt DateTime @updatedAt
 
   @@map("apb")
+}
+
+enum ResidentType {
+  GENDER
+  PERNIKAHAN
+  AGAMA
+  USIA
+  KEPALA_KELUARGA
+  PERKERJAAN
+  PENDIDIKAN
+  WAJIB_PILIH
+  DUSUN
+  ANAK_ANAK
+}
+
+enum Role {
+  REGULAR
+  ADMIN
+  PKK
+  KARANG_TARUNA
+  BPD
+  CONTRIBUTOR
+}
+
+enum MapType {
+  POLYGON
+  MARKER
+  BENCANA
+}
+
+enum ActivityLogLocation {
+  NEWS
+  AGENDA
+  GALLERY
+  MESSAGE
+  BUMDES
+  VILLAGEWORKPROGRAM
+  USER
+}
+
+enum VillageWorkProgramStatus {
+  PLANNED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum TargetType {
+  NEWS
+  AGENDA
+  PRODUCT
+}
+
+enum AgendaType {
+  REGULAR
+  PKK
+  KARANG_TARUNA
+  BPD
+}
+
+enum StatusDesa {
+  MAJU
+  BERKEMBANG
+  MANDIRI
+  TERTINGGAL
+  SANGAT_TERTINGGAL
+}
+
+enum PengantarType {
+  KTP
+  KK
+  SKCK
+  LAINNYA
+}
+
+enum Organization {
+  PEMERINTAH
+  PKK
+  KARANG_TARUNA
+  BPD
+}
+
+enum SiteContentType {
+  TEXT
+  LINK
+  IMAGE
+  VIDEO
 }

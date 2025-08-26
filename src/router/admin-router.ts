@@ -115,6 +115,7 @@ adminRouter.delete("/galeri/:galeriId", GaleriController.delete);
 //Map
 adminRouter.post("/maps", upload.single("icon"), MapController.create);
 adminRouter.get("/maps", MapController.getAll);
+adminRouter.put("/maps/:id", upload.single("icon"), MapController.update);
 adminRouter.delete("/maps/:id", MapController.delete);
 
 // Activity Log

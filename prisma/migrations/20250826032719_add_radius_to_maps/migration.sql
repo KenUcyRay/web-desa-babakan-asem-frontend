@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `maps` ADD COLUMN `radius` INTEGER NULL DEFAULT 500;
