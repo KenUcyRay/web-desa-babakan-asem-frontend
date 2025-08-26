@@ -1,0 +1,139 @@
+import { alertError } from "../libs/alert";
+
+export class Helper {
+  static localToUTC(localDateTime) {
+    if (!localDateTime) return "";
+    return new Date(localDateTime).toISOString();
+  }
+
+  static utcToLocal(utcDateTime) {
+    if (!utcDateTime) return "";
+    const date = new Date(utcDateTime);
+    const tzOffset = date.getTimezoneOffset() * 60000; // offset dalam ms
+    const localISOTime = new Date(date - tzOffset).toISOString();
+    return localISOTime.slice(0, 16); // ambil "YYYY-MM-DDTHH:mm"
+  }
+  static formatTanggal(isoString) {
+    const date = new Date(isoString);
+    const day = date.getDate();
+    const month = date.getMonth() + 1; // Bulan dimulai dari 0
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+
+  static formatRupiah(angka) {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
+    }).format(angka);
+  }
+
+  static formatRupiahMillion(angka, language = "id") {
+    if (angka >= 1000000) {
+      const million = angka / 1000000;
+      const millionText = language === "en" ? "million" : "juta";
+      return `${
+        million % 1 === 0 ? million.toFixed(0) : million.toFixed(1)
+      } ${millionText}`;
+    }
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
+    }).format(angka);
+  }
+
+  static formatAgendaDateTime(startTime, endTime) {
+    const start = new Date(startTime);
+    const end = new Date(endTime);
+
+    const formatterTanggal = new Intl.DateTimeFormat("id-ID", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      timeZone: "Asia/Jakarta",
+    });
+
+    const formatterWaktu = new Intl.DateTimeFormat("id-ID", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+      timeZone: "Asia/Jakarta",
+    });
+
+    const tanggal = formatterTanggal.format(start);
+    const waktu = `${formatterWaktu.format(start)} - ${formatterWaktu.format(
+      end
+    )}`;
+
+    return { tanggal, waktu };
+  }
+  static truncateText = (text, maxLength = 100) => {
+    if (!text) return "";
+    return text.length > maxLength
+      ? text.substring(0, maxLength) + "..."
+      : text;
+  };
+  static formatText(text) {
+    if (!text) return "-";
+    return text
+      .toLowerCase()
+      .split("_")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  }
+
+  static async errorResponseHandler(responseBody) {
+    // Deteksi bahasa dari localStorage atau default ke Indonesia
+    const lang = localStorage.getItem("i18nextLng") || "id";
+    const isEnglish = lang.startsWith("en");
+
+    let errorMessage = isEnglish
+      ? "Failed to save changes."
+      : "Gagal menyimpan perubahan.";
+
+    if (
+      responseBody.errors?.name === "ZodError" &&
+      Array.isArray(responseBody.errors.issues)
+    ) {
+      const limit = 2; // Tampilkan maksimal 2 pesan
+      const totalErrors = responseBody.errors.issues.length;
+
+      const zodMessages = responseBody.errors.issues
+        .slice(0, limit)
+        .map((i) => `${i.path?.[0] ?? ""}: ${i.message}`);
+
+      if (totalErrors > limit) {
+        const moreText = isEnglish
+          ? `...and ${totalErrors - limit} more errors`
+          : `...dan ${totalErrors - limit} error lainnya`;
+        zodMessages.push(moreText);
+      }
+
+      errorMessage = zodMessages.join("<br>");
+    } else if (typeof responseBody.errors === "string") {
+      errorMessage = responseBody.errors;
+    }
+
+    await alertError(errorMessage);
+  }
+
+  static formatISODate(isoString, locale = "id-ID") {
+    const date = new Date(isoString);
+
+    // Opsi format tanggal dan waktu
+    const options = {
+      year: "numeric",
+      month: "long", // "Agustus"
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      timeZoneName: "short", // Menambahkan zona waktu
+    };
+
+    return date.toLocaleString(locale, options);
+  }
+}

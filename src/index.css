@@ -1,0 +1,5 @@
+@import 'tailwindcss';
+
+:root {
+  --warna-utama: #1e40af; /* biru dongker */
+}
