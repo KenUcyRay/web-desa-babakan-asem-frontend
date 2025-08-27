@@ -15,6 +15,7 @@ import { AgendaController } from "@/controller/agenda-controller";
 import { ProductController } from "@/controller/product-controller";
 import { CommentController } from "@/controller/comment-controller";
 import { SiteContentController } from "@/controller/site-content-controller";
+import { MapController } from "@/controller/map-controller";
 
 export const publicRouter = express.Router();
 
@@ -76,3 +77,6 @@ publicRouter.get("/agenda/:agendaId", AgendaController.getById);
 //Products
 publicRouter.get("/products", ProductController.getAll);
 publicRouter.get("/products/:userId", ProductController.getById);
+
+//Maps
+publicRouter.get("/maps", MapController.getAll);

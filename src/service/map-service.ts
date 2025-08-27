@@ -9,7 +9,13 @@ import { MapType } from "@prisma/client";
 
 export class MapService {
   static async create(body: CreateMapRequest, icon?: Express.Multer.File) {
+    console.log('=== MAP SERVICE CREATE ===');
+    console.log('Raw body:', body);
+    console.log('Icon file:', icon);
+    
     const bodyValidation = Validation.validate(MapValidation.createMap, body);
+    
+    console.log('Validated body:', bodyValidation);
 
     if (bodyValidation.type === MapType.POLYGON && icon) {
       throw new ResponseError(400, "Icon is not required for polygon maps");
@@ -21,9 +27,13 @@ export class MapService {
       bodyValidation.icon = undefined;
     }
 
+    console.log('Creating map with data:', bodyValidation);
+    
     const map = await prismaClient.map.create({
       data: bodyValidation,
     });
+    
+    console.log('Created map:', map);
 
     return { ok: true, data: { id: map.id } };
   }
@@ -38,7 +48,14 @@ export class MapService {
   }
 
   static async update(id: string, body: UpdateMapRequest, icon?: Express.Multer.File) {
+    console.log('=== MAP SERVICE UPDATE ===');
+    console.log('Map ID:', id);
+    console.log('Raw body:', body);
+    console.log('Icon file:', icon);
+    
     const bodyValidation = Validation.validate(MapValidation.updateMap, body);
+    
+    console.log('Validated body:', bodyValidation);
 
     const existingMap = await prismaClient.map.findUnique({
       where: { id },
@@ -90,16 +107,20 @@ export class MapService {
           // Ignore if file doesn't exist
         }
       }
-      bodyValidation.icon = null;
+      bodyValidation.icon = undefined;
     } else {
       // Keep existing icon
-      bodyValidation.icon = existingMap.icon;
+      bodyValidation.icon = existingMap.icon || undefined;
     }
 
+    console.log('Updating map with data:', bodyValidation);
+    
     const updatedMap = await prismaClient.map.update({
       where: { id },
       data: bodyValidation,
     });
+    
+    console.log('Updated map:', updatedMap);
 
     return {
       ok: true,

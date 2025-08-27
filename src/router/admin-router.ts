@@ -21,6 +21,7 @@ import { UserController } from "@/controller/user-controller";
 import { ActivityLogController } from "@/controller/activity-log-controller";
 import { MapController } from "@/controller/map-controller";
 import { SiteContentController } from "@/controller/site-content-controller";
+import { UserRequest } from "@/type/user-request";
 
 export const adminRouter = express.Router();
 
@@ -113,6 +114,24 @@ adminRouter.put(
 adminRouter.delete("/galeri/:galeriId", GaleriController.delete);
 
 //Map
+// Test endpoints for debugging (must be before parameterized routes)
+adminRouter.post("/maps/test", (req: UserRequest, res) => {
+  console.log('=== MAP TEST ENDPOINT ===');
+  console.log('User:', req.user);
+  console.log('Body:', req.body);
+  console.log('Headers:', req.headers);
+  res.json({ success: true, message: 'Test endpoint working', user: req.user });
+});
+
+adminRouter.put("/maps/test/:id", (req: UserRequest, res) => {
+  console.log('=== MAP PUT TEST ENDPOINT ===');
+  console.log('Map ID:', req.params.id);
+  console.log('User:', req.user);
+  console.log('Body:', req.body);
+  console.log('Headers:', req.headers);
+  res.json({ success: true, message: 'PUT test endpoint working', id: req.params.id, user: req.user });
+});
+
 adminRouter.post("/maps", upload.single("icon"), MapController.create);
 adminRouter.get("/maps", MapController.getAll);
 adminRouter.put("/maps/:id", upload.single("icon"), MapController.update);

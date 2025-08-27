@@ -2,6 +2,7 @@
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
+import methodOverride from "method-override";
 import { errorMiddleware } from "@/middleware/error-middleware";
 import { privateRouter } from "@/router/private-router";
 import { limiter } from "@/application/limiter";
@@ -31,6 +32,10 @@ web.use(
 );
 web.use(cookieParser());
 web.use(express.json());
+web.use(express.urlencoded({ extended: true }));
+
+// Method override untuk handling _method dalam FormData
+web.use(methodOverride('_method'));
 
 // Middleware untuk validasi bahasa dan i18n
 web.use(i18nMiddleware);

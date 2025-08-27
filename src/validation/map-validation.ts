@@ -26,8 +26,13 @@ export class MapValidation {
           return val;
         })
         .pipe(z.union([z.array(z.number()), z.array(z.array(z.number()))])),
-      color: z.string().optional(),
-      radius: z.coerce.number().min(100, { message: "zodErrors.min_value" }).max(5000, { message: "zodErrors.max_value" }).optional(),
+      color: z.string().optional().refine((val) => {
+        if (!val) return true;
+        const isValid = /^#[0-9A-Fa-f]{6}$/.test(val);
+        console.log('Color validation:', val, 'isValid:', isValid);
+        return isValid;
+      }, { message: "Color must be valid hex" }),
+      radius: z.coerce.number().min(100, { message: "Radius must be 100-5000" }).max(5000, { message: "Radius must be 100-5000" }).optional(),
     })
     .strict();
 
@@ -55,8 +60,13 @@ export class MapValidation {
           return val;
         })
         .pipe(z.union([z.array(z.number()), z.array(z.array(z.number()))])),
-      color: z.string().optional(),
-      radius: z.coerce.number().min(100, { message: "zodErrors.min_value" }).max(5000, { message: "zodErrors.max_value" }).optional(),
+      color: z.string().optional().refine((val) => {
+        if (!val) return true;
+        const isValid = /^#[0-9A-Fa-f]{6}$/.test(val);
+        console.log('Color validation:', val, 'isValid:', isValid);
+        return isValid;
+      }, { message: "Color must be valid hex" }),
+      radius: z.coerce.number().min(100, { message: "Radius must be 100-5000" }).max(5000, { message: "Radius must be 100-5000" }).optional(),
     })
     .strict();
 }
