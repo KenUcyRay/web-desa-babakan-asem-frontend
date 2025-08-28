@@ -1,0 +1,27 @@
+# ✅ Install React + Router
+npm install react react-dom react-router-dom
+
+# ✅ Tailwind CSS + Plugin Vite
+npm install -D tailwindcss postcss autoprefixer @tailwindcss/vite
+
+# ✅ Fonts Poppins
+npm install @fontsource/poppins
+
+# ✅ Icons
+npm install react-icons
+
+# ✅ Carousel
+npm install react-responsive-carousel
+
+# ✅ Vite plugin React SWC (sudah otomatis dari template)
+npm install -D @vitejs/plugin-react-swc
+
+# ✅ ESLint (buat linting)
+npm install -D eslint @eslint/js eslint-plugin-react-hooks eslint-plugin-react-refresh globals
+
+# ✅ Vite (sudah otomatis saat init)
+npm install vite
+
+npm install recharts
+
+npm install react-chartjs-2 chart.js
