@@ -67,41 +67,63 @@ export default function EditableMap({
     }
   }, [mode, editingItem]);
 
-  // Simple vertex icon
+  // Colorful vertex icon
   const getVertexIcon = () => {
     return L.divIcon({
       className: 'vertex-marker',
       html: `<div style="
-        background-color: white;
-        width: 12px;
-        height: 12px;
-        border: 2px solid #3B82F6;
+        background: radial-gradient(circle, #ffffff 0%, #f8fafc 100%);
+        width: 14px;
+        height: 14px;
+        border: 3px solid #3B82F6;
         border-radius: 50%;
         cursor: move;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        box-shadow: 0 3px 10px rgba(59, 130, 246, 0.4), 0 1px 3px rgba(0,0,0,0.2);
+        transition: all 0.2s ease;
       "></div>`,
-      iconSize: [12, 12],
-      iconAnchor: [6, 6],
+      iconSize: [14, 14],
+      iconAnchor: [7, 7],
     });
   };
 
-  // Simple clean marker icon
+  // Colorful marker icon
   const getLeafletIcon = (color = "#3B82F6", size = 30) => {
     return L.divIcon({
       className: 'custom-marker',
       html: `<div style="
-        background-color: ${color};
+        background: linear-gradient(135deg, ${color} 0%, ${darkenColor(color, 20)} 100%);
         width: ${size}px;
         height: ${size}px;
         border-radius: 50% 50% 50% 0;
         border: 3px solid white;
         transform: rotate(-45deg);
-        box-shadow: 0 3px 8px rgba(0,0,0,0.2);
-      "></div>`,
+        box-shadow: 0 4px 12px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.1);
+        position: relative;
+      "><div style="
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(45deg);
+        width: 8px;
+        height: 8px;
+        background: white;
+        border-radius: 50%;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+      "></div></div>`,
       iconSize: [size, size],
       iconAnchor: [size / 2, size],
       popupAnchor: [0, -size],
     });
+  };
+
+  // Helper function to darken color
+  const darkenColor = (hex, percent) => {
+    const num = parseInt(hex.replace('#', ''), 16);
+    const amt = Math.round(2.55 * percent);
+    const R = Math.max(0, (num >> 16) - amt);
+    const G = Math.max(0, (num >> 8 & 0x00FF) - amt);
+    const B = Math.max(0, (num & 0x0000FF) - amt);
+    return '#' + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
   };
 
   // Map event handler
@@ -276,13 +298,13 @@ export default function EditableMap({
           center={defaultCenter}
           zoom={zoom}
           style={{ height: "100%", width: "100%" }}
-          className="rounded-lg"
+          className="rounded-lg shadow-lg border border-gray-200"
           zoomControl={true}
         >
-          {/* Google Maps Style */}
+          {/* Colorful Map Style - OpenStreetMap with Bright Colors */}
           <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
           />
 
 
@@ -292,11 +314,13 @@ export default function EditableMap({
               positions={polygonPoints}
               pathOptions={{
                 color: selectedColor,
-                weight: 3,
-                opacity: 0.9,
+                weight: 4,
+                opacity: 1,
                 fillColor: selectedColor,
-                fillOpacity: mode === "edit" ? 0.25 : 0.35,
+                fillOpacity: mode === "edit" ? 0.3 : 0.4,
                 dashArray: mode === "edit" ? "10, 5" : null,
+                lineCap: "round",
+                lineJoin: "round",
               }}
             />
           )}
@@ -335,10 +359,12 @@ export default function EditableMap({
                   radius={bencanaRadius}
                   pathOptions={{
                     color: "#EF4444",
-                    weight: 2,
-                    opacity: 0.6,
+                    weight: 3,
+                    opacity: 0.8,
                     fillColor: "#EF4444",
-                    fillOpacity: 0.1,
+                    fillOpacity: 0.2,
+                    dashArray: "10, 5",
+                    lineCap: "round",
                   }}
                 />
               )}
@@ -373,10 +399,12 @@ export default function EditableMap({
                   positions={item.coordinates}
                   pathOptions={{
                     color: item.color || "#3B82F6",
-                    weight: 2.5,
-                    opacity: 0.8,
+                    weight: 3,
+                    opacity: 0.9,
                     fillColor: item.color || "#3B82F6",
-                    fillOpacity: 0.25,
+                    fillOpacity: 0.3,
+                    lineCap: "round",
+                    lineJoin: "round",
                   }}
                 />
               );
@@ -395,11 +423,12 @@ export default function EditableMap({
                       radius={item.radius}
                       pathOptions={{
                         color: item.color || "#EF4444",
-                        weight: 2.5,
-                        opacity: 0.7,
+                        weight: 3,
+                        opacity: 0.8,
                         fillColor: item.color || "#EF4444",
-                        fillOpacity: 0.15,
-                        dashArray: "8, 4",
+                        fillOpacity: 0.2,
+                        dashArray: "10, 5",
+                        lineCap: "round",
                       }}
                     />
                   )}
@@ -411,6 +440,8 @@ export default function EditableMap({
 
           <MapEventHandler />
         </MapContainer>
+        
+
         
 
       </div>

@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import {
   FaNewspaper,
   FaCalendarAlt,
@@ -31,6 +31,7 @@ import {
   Marker,
   Popup,
   Tooltip as LeafletTooltip,
+  Circle,
 } from "react-leaflet";
 import L from "leaflet";
 import { MapApi } from "../../libs/api/MapApi"; // Pastikan path sesuai
@@ -78,6 +79,46 @@ const createIcon = (iconUrl) => {
   });
 };
 
+// Colorful marker icon for dashboard
+const getLeafletIcon = (color = "#3B82F6", size = 30) => {
+  return L.divIcon({
+    className: 'custom-marker',
+    html: `<div style="
+      background: linear-gradient(135deg, ${color} 0%, ${darkenColor(color, 20)} 100%);
+      width: ${size}px;
+      height: ${size}px;
+      border-radius: 50% 50% 50% 0;
+      border: 3px solid white;
+      transform: rotate(-45deg);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.1);
+      position: relative;
+    "><div style="
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(45deg);
+      width: 8px;
+      height: 8px;
+      background: white;
+      border-radius: 50%;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    "></div></div>`,
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size],
+    popupAnchor: [0, -size],
+  });
+};
+
+// Helper function to darken color
+const darkenColor = (hex, percent) => {
+  const num = parseInt(hex.replace('#', ''), 16);
+  const amt = Math.round(2.55 * percent);
+  const R = Math.max(0, (num >> 16) - amt);
+  const G = Math.max(0, (num >> 8 & 0x00FF) - amt);
+  const B = Math.max(0, (num & 0x0000FF) - amt);
+  return '#' + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
+};
+
 // Palet warna untuk polygon (tidak boleh sama)
 const polygonColors = [
   "#dc2626", // merah
@@ -109,36 +150,56 @@ function tryParseJSON(value) {
 
 // Helper: normalize polygon coordinates to array of [lat, lng]
 function normalizePolygonCoordinates(input) {
-  // input may be: [[lng,lat],[lng,lat], ...]
-  // or GeoJSON style: [[[lng,lat],...]] (one more nesting)
+  console.log('Normalizing coordinates:', input); // Debug
+  
+  // Handle if input is already array (from backend)
+  if (Array.isArray(input)) {
+    // Check if it's already in [lat, lng] format
+    if (input.length > 0 && Array.isArray(input[0]) && input[0].length === 2) {
+      const firstPoint = input[0];
+      const lng = Number(firstPoint[0]);
+      const lat = Number(firstPoint[1]);
+      
+      // If first coordinate looks like longitude (between -180 to 180)
+      // and second looks like latitude (between -90 to 90), swap them
+      if (Math.abs(lng) <= 180 && Math.abs(lat) <= 90) {
+        if (Math.abs(lng) > Math.abs(lat)) {
+          // Likely [lng, lat] format, convert to [lat, lng]
+          return input.map(pt => [Number(pt[1]), Number(pt[0])]);
+        } else {
+          // Already [lat, lng] format
+          return input.map(pt => [Number(pt[0]), Number(pt[1])]);
+        }
+      }
+    }
+    return input;
+  }
+  
+  // Try to parse JSON string
   const parsed = tryParseJSON(input) ?? input;
   if (!Array.isArray(parsed) || parsed.length === 0) return null;
 
-  // If first element is an array and first element's first element is number -> e.g. [ [lng,lat], ... ]
-  if (typeof parsed[0] === "number") {
-    // single coordinate only -> invalid for polygon
-    return null;
-  }
-
-  // Detect extra nesting: parsed[0][0] is array -> take that
+  // Handle nested arrays
   let coordsArray = parsed;
   if (Array.isArray(parsed[0]) && Array.isArray(parsed[0][0])) {
-    // Could be [[[lng,lat],...]] -> use parsed[0]
-    // However sometimes parsed could be [ [ [lng,lat], ... ] , ... ] (multi-polygons) -> flatten first ring
     coordsArray = parsed[0];
   }
 
-  // Map to [lat, lng] and coerce to numbers
+  // Convert to [lat, lng] format
   const mapped = coordsArray
     .map((pt) => {
       if (!Array.isArray(pt) || pt.length < 2) return null;
       const lng = Number(pt[0]);
       const lat = Number(pt[1]);
-      if (Number.isFinite(lat) && Number.isFinite(lng)) return [lat, lng];
+      if (Number.isFinite(lat) && Number.isFinite(lng)) {
+        // Convert [lng, lat] to [lat, lng]
+        return [lat, lng];
+      }
       return null;
     })
     .filter(Boolean);
 
+  console.log('Normalized result:', mapped); // Debug
   return mapped.length ? mapped : null;
 }
 
@@ -201,6 +262,9 @@ export default function AdminDashboard() {
   const [idmStatus, setIdmStatus] = useState("-");
   const [populationMainData, setPopulationMainData] = useState([]);
   const [populationAgeData, setPopulationAgeData] = useState([]);
+  const [showPolygons, setShowPolygons] = useState(true);
+  const [showMarkers, setShowMarkers] = useState(true);
+  const [showBencana, setShowBencana] = useState(true);
 
 
   // In the fetchMapData function, update the polygon coordinate processing:
@@ -219,9 +283,10 @@ export default function AdminDashboard() {
         responseData.data.forEach((item) => {
           try {
             if (item.type === "POLYGON") {
+              console.log('Processing polygon in AdminDashboard:', item); // Debug
               const normalized = normalizePolygonCoordinates(item.coordinates);
               if (!normalized) {
-            
+                console.log('Failed to normalize polygon coordinates:', item.coordinates);
                 return;
               }
 
@@ -232,6 +297,7 @@ export default function AdminDashboard() {
                 type: "polygon",
                 year: item.year || 2025,
                 coordinates: normalized, // already [lat,lng]
+                color: item.color || null,
               });
             } else if (item.type === "MARKER") {
               const normalized = normalizeMarkerCoordinates(item.coordinates);
@@ -252,6 +318,8 @@ export default function AdminDashboard() {
                       item.icon
                     }`
                   : null,
+                radius: item.radius || null,
+                color: item.color || null,
               });
             }
           } catch (err) {
@@ -374,9 +442,9 @@ export default function AdminDashboard() {
       if (ageRes.ok) {
         const ageData = await ageRes.json();
         const sortedAgeData = (ageData.data || []).sort((a, b) => {
-          const aMatch = a.key.match(/(\d+)/);
-          const bMatch = b.key.match(/(\d+)/);
-          return aMatch && bMatch ? parseInt(aMatch[1]) - parseInt(bMatch[1]) : a.key.localeCompare(b.key);
+          const aMatch = a.key.match(/\d+/);
+          const bMatch = b.key.match(/\d+/);
+          return aMatch && bMatch ? parseInt(aMatch[0]) - parseInt(bMatch[0]) : a.key.localeCompare(b.key);
         }).map(item => ({ name: item.key, value: item.value }));
         
         setPopulationAgeData(sortedAgeData);
@@ -385,10 +453,6 @@ export default function AdminDashboard() {
       console.log('Population data fetch failed:', error);
     }
   };
-
-
-
-
 
   const fetchBumdesPreview = async () => {
     const res = await ProductApi.getOwnProducts(1, 3, i18n.language);
@@ -486,7 +550,7 @@ export default function AdminDashboard() {
       .map((region, idx) => ({
         id: region.id,
         name: region.name,
-        color: getPolygonColorByIndex(idx),
+        color: region.color || getPolygonColorByIndex(idx),
         label: `Batas ${region.name}`,
       }));
   }, [filteredData]);
@@ -571,7 +635,7 @@ export default function AdminDashboard() {
               Peta Digital Desa
             </h2>
 
-            {/* Filter Tahun - Dynamic based on available years */}
+            {/* Filter Tahun dan Toggle Polygon */}
             <div className="flex items-center gap-2 md:gap-4">
               <label className="text-black font-medium text-sm md:text-md">
                 Pilih Tahun:
@@ -587,6 +651,36 @@ export default function AdminDashboard() {
                   </option>
                 ))}
               </select>
+              <button
+                onClick={() => setShowPolygons(!showPolygons)}
+                className={`px-2 py-1 rounded-lg text-xs font-medium transition-all duration-300 transform hover:scale-105 ${
+                  showPolygons
+                    ? "bg-blue-500 text-white hover:bg-blue-600 shadow-md"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                }`}
+              >
+                {showPolygons ? "Area" : "Area"}
+              </button>
+              <button
+                onClick={() => setShowMarkers(!showMarkers)}
+                className={`px-2 py-1 rounded-lg text-xs font-medium transition-all duration-300 transform hover:scale-105 ${
+                  showMarkers
+                    ? "bg-green-500 text-white hover:bg-green-600 shadow-md"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                }`}
+              >
+                {showMarkers ? "Lokasi" : "Lokasi"}
+              </button>
+              <button
+                onClick={() => setShowBencana(!showBencana)}
+                className={`px-2 py-1 rounded-lg text-xs font-medium transition-all duration-300 transform hover:scale-105 ${
+                  showBencana
+                    ? "bg-red-500 text-white hover:bg-red-600 shadow-md"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                }`}
+              >
+                {showBencana ? "Bencana" : "Bencana"}
+              </button>
             </div>
           </div>
         </div>
@@ -600,71 +694,95 @@ export default function AdminDashboard() {
               className={"w-full h-[500px] z-0"}
             >
               <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
               />
 
               {/* Render POI dan Polygon dari API */}
-              {filteredData.map((item) =>
-                item.type === "polygon" ? (
-                  (() => {
-                    const polygonIdx = polygonLegendData.findIndex(
-                      (p) => p.id === item.id
-                    );
-                    const color =
-                      polygonLegendData[polygonIdx]?.color || "#2563eb";
-                    return (
-                      <Polygon
-                        key={item.id}
-                        positions={item.coordinates}
-                        pathOptions={{
-                          color,
-                          weight: 2,
-                          dashArray: "4, 4",
-                          fillColor: "transparent",
-                          opacity: 0.9,
-                        }}
+              {filteredData.map((item) => {
+                if (item.type === "polygon" && showPolygons) {
+                  const polygonIdx = polygonLegendData.findIndex(
+                    (p) => p.id === item.id
+                  );
+                  const color = item.color || getPolygonColorByIndex(polygonIdx);
+                  return (
+                    <Polygon
+                      key={item.id}
+                      positions={item.coordinates}
+                      pathOptions={{
+                        color,
+                        weight: 4,
+                        opacity: 1,
+                        fillColor: color,
+                        fillOpacity: 0.3,
+                        lineCap: "round",
+                        lineJoin: "round",
+                      }}
+                    >
+                      <LeafletTooltip permanent={false} direction="center">
+                        {item.name}
+                      </LeafletTooltip>
+                      <Popup>
+                        <div className="text-center">
+                          <strong className="text-base" style={{ color }}>
+                            {item.name}
+                          </strong>
+                          <p className="text-sm my-2">{item.description}</p>
+                          <p className="text-xs text-gray-600">
+                            Kecamatan: Congeang
+                          </p>
+                        </div>
+                      </Popup>
+                    </Polygon>
+                  );
+                } else if (item.type === "marker") {
+                  const isBencana = item.name && item.name.includes('[');
+                  const shouldShow = isBencana ? showBencana : showMarkers;
+                  
+                  if (!shouldShow) return null;
+                  
+                  return (
+                    <React.Fragment key={item.id}>
+                      <Marker
+                        position={item.coordinates[0]}
+                        icon={item.icon ? createIcon(item.icon) : getLeafletIcon(item.color || "#3B82F6", 30)}
                       >
-                        <LeafletTooltip permanent={false} direction="center">
-                          {item.name}
-                        </LeafletTooltip>
+                        <LeafletTooltip permanent={false}>{item.name}</LeafletTooltip>
                         <Popup>
                           <div className="text-center">
-                            <strong className="text-base" style={{ color }}>
+                            <strong className="text-base text-red-600">
                               {item.name}
                             </strong>
                             <p className="text-sm my-2">{item.description}</p>
                             <p className="text-xs text-gray-600">
-                              Kecamatan: Congeang
+                              Koordinat:{" "}
+                              {safeToFixedMaybe(item.coordinates[0][0], 6)},{" "}
+                              {safeToFixedMaybe(item.coordinates[0][1], 6)}
                             </p>
                           </div>
                         </Popup>
-                      </Polygon>
-                    );
-                  })()
-                ) : (
-                  <Marker
-                    key={item.id}
-                    position={item.coordinates[0]}
-                    icon={createIcon(item.icon)}
-                  >
-                    <LeafletTooltip permanent={false}>{item.name}</LeafletTooltip>
-                    <Popup>
-                      <div className="text-center">
-                        <strong className="text-base text-red-600">
-                          {item.name}
-                        </strong>
-                        <p className="text-sm my-2">{item.description}</p>
-                        <p className="text-xs text-gray-600">
-                          Koordinat:{" "}
-                          {safeToFixedMaybe(item.coordinates[0][0], 6)},{" "}
-                          {safeToFixedMaybe(item.coordinates[0][1], 6)}
-                        </p>
-                      </div>
-                    </Popup>
-                  </Marker>
-                )
-              )}
+                      </Marker>
+                      {/* Circle for bencana with radius */}
+                      {isBencana && (
+                        <Circle
+                          center={item.coordinates[0]}
+                          radius={item.radius || 500}
+                          pathOptions={{
+                            color: item.color || "#EF4444",
+                            weight: 3,
+                            opacity: 0.8,
+                            fillColor: item.color || "#EF4444",
+                            fillOpacity: 0.2,
+                            dashArray: "10, 5",
+                            lineCap: "round",
+                          }}
+                        />
+                      )}
+                    </React.Fragment>
+                  );
+                }
+                return null;
+              })}
             </MapContainer>
           </div>
         </div>
@@ -1082,20 +1200,38 @@ export default function AdminDashboard() {
 
 // Komponen CompactActivityLog - Versi kecil untuk header
 function CompactActivityLog({ activities }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  
+  const formatDateTime = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleString('id-ID', {
+      day: '2-digit',
+      month: '2-digit', 
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  const displayActivities = isExpanded ? activities : activities.slice(0, 3);
+
   return (
-    <div className="bg-white rounded-lg shadow-sm border p-3 min-w-[300px]">
+    <div className={`bg-white rounded-lg shadow-sm border p-3 transition-all duration-300 ${isExpanded ? 'min-w-[400px] max-w-[500px]' : 'min-w-[300px]'}`}>
       <div className="flex items-center justify-between mb-2">
         <h4 className="text-sm font-medium text-gray-700 flex items-center gap-1">
           <FaClock className="text-xs text-gray-400" />
           Aktivitas Terbaru
         </h4>
-        <button className="text-xs text-blue-600 hover:text-blue-800">
-          Lihat Semua
+        <button 
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="text-xs text-blue-600 hover:text-blue-800 transition-colors"
+        >
+          {isExpanded ? 'Perkecil' : 'Lihat Semua'}
         </button>
       </div>
 
-      <div className="space-y-1">
-        {activities.slice(0, 3).map((activity) => (
+      <div className={`space-y-1 transition-all duration-300 ${isExpanded ? 'max-h-96 overflow-y-auto' : ''}`}>
+        {displayActivities.map((activity) => (
           <div
             key={activity.id}
             className="bg-gray-50 rounded px-2 py-1"
@@ -1103,9 +1239,14 @@ function CompactActivityLog({ activities }) {
             <p className="text-xs font-medium text-gray-800 truncate">
               {activity.action}
             </p>
-            <p className="text-xs text-gray-500 truncate">
-              {activity.user.name}
-            </p>
+            <div className="flex justify-between items-center">
+              <p className="text-xs text-gray-500 truncate">
+                {activity.user.name}
+              </p>
+              <p className="text-xs text-gray-400 ml-2">
+                {formatDateTime(activity.created_at)}
+              </p>
+            </div>
           </div>
         ))}
       </div>

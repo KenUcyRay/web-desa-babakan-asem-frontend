@@ -71,6 +71,12 @@ export class MapApi {
     formData.append("description", data.description);
     formData.append("year", data.year);
     formData.append("coordinates", data.coordinates);
+    if (data.color) {
+      formData.append("color", data.color);
+    }
+    if (data.radius) {
+      formData.append("radius", data.radius);
+    }
     if (data.icon) {
       formData.append("icon", data.icon);
     }
@@ -95,22 +101,23 @@ export class MapApi {
     if (data.color) {
       formData.append("color", data.color);
     }
+    if (data.radius) {
+      formData.append("radius", data.radius);
+    }
     if (data.icon) {
       formData.append("icon", data.icon);
     }
     formData.append("_method", "PUT");
-    return await fetch(
-      `${import.meta.env.VITE_NEW_BASE_URL}/admin/maps/${id}`,
-      {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          Accept: "application/json",
-          "Accept-Language": language,
-        },
-        body: formData,
-      }
-    );
+    
+    return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/admin/maps/${id}`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        Accept: "application/json",
+        "Accept-Language": language,
+      },
+      body: formData,
+    });
   }
 
   static async delete(id, language) {
