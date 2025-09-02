@@ -1,20 +1,53 @@
+// mapApi.js - Fixed Version
+
+// Enum MapType
+export const MapType = {
+  POLYGON: 'POLYGON',
+  MARKER: 'MARKER',
+  BENCANA: 'BENCANA'
+};
+
+// Helper Validation
+const validateHexColor = (color) => /^#[0-9A-Fa-f]{6}$/.test(color);
+const validateRadius = (radius) => radius >= 100 && radius <= 5000;
+const validateCoordinates = (coordinates) => {
+  try {
+    const parsed = typeof coordinates === 'string' ? JSON.parse(coordinates) : coordinates;
+    return Array.isArray(parsed) && (Array.isArray(parsed[0]) || typeof parsed[0] === 'number');
+  } catch {
+    return false;
+  }
+};
+
+// Base URLs
+const MAPS_BASE_URL = `${import.meta.env.VITE_NEW_BASE_URL}/admin/maps`;
+const REGION_BASE_URL = `${import.meta.env.VITE_NEW_BASE_URL}/admin/regions`;
+const POI_BASE_URL = `${import.meta.env.VITE_NEW_BASE_URL}/admin/poi`;
+
 export class MapApi {
-  static async getMapData(language) {
-    return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/admin/map-data`, {
-      method: "GET",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "Accept-Language": language,
-      },
-    });
+  // Validation
+  static async validateMapData(data, isUpdate = false) {
+    if (!Object.values(MapType).includes(data.type)) throw new Error("zodErrors.invalid_value");
+    if (!data.name || data.name.trim().length === 0) throw new Error("zodErrors.required");
+    if (!data.description || data.description.trim().length === 0) throw new Error("zodErrors.required");
+    if (!data.year || data.year < 1900) throw new Error("zodErrors.min_value");
+    if (!data.coordinates || !validateCoordinates(data.coordinates)) throw new Error("zodErrors.invalid_coordinates_format");
+
+    if (data.type === MapType.POLYGON && data.color && !validateHexColor(data.color)) {
+      throw new Error("Color must be valid hex");
+    }
+    if (data.type === MapType.BENCANA && data.radius && !validateRadius(data.radius)) {
+      throw new Error("Radius must be 100-5000");
+    }
+    if (!isUpdate && (data.type === MapType.MARKER || data.type === MapType.BENCANA) && !data.icon) {
+      throw new Error("Icon is required for marker and bencana maps");
+    }
   }
 
-  static async getRegionDataById(id, language) {
-    return await fetch(
-      `${import.meta.env.VITE_NEW_BASE_URL}/admin/regions/${id}`,
-      {
+  // Get all map data
+  static async getMapData(language) {
+    try {
+      const response = await fetch(`${MAPS_BASE_URL}-data`, {
         method: "GET",
         credentials: "include",
         headers: {
@@ -22,108 +55,276 @@ export class MapApi {
           Accept: "application/json",
           "Accept-Language": language,
         },
-      }
-    );
+      });
+      if (!response.ok) throw new Error("Failed to fetch map data");
+      return await response.json();
+    } catch (err) {
+      console.error("getMapData error:", err);
+      throw err;
+    }
   }
 
+  // Get region by ID
+  static async getRegionDataById(id, language) {
+    try {
+      const response = await fetch(`${REGION_BASE_URL}/${id}`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "Accept-Language": language,
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch region data");
+      return await response.json();
+    } catch (err) {
+      console.error("getRegionDataById error:", err);
+      throw err;
+    }
+  }
+
+  // Create region
   static async createRegion(data, language) {
-    return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/admin/region`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "Accept-Language": language,
-      },
-      body: JSON.stringify(data),
-    });
+    try {
+      const response = await fetch(`${REGION_BASE_URL}`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "Accept-Language": language,
+        },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) throw new Error("Failed to create region");
+      return await response.json();
+    } catch (err) {
+      console.error("createRegion error:", err);
+      throw err;
+    }
   }
 
+  // Create POI
   static async createPoi(data, language) {
-    return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/admin/poi`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "Accept-Language": language,
-      },
-      body: JSON.stringify(data),
-    });
+    try {
+      const response = await fetch(POI_BASE_URL, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "Accept-Language": language,
+        },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) throw new Error("Failed to create POI");
+      return await response.json();
+    } catch (err) {
+      console.error("createPoi error:", err);
+      throw err;
+    }
   }
 
+  // Get all maps
   static async getAll(language) {
-    return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/admin/maps`, {
-      method: "GET",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "Accept-Language": language,
-      },
-    });
+    try {
+      const response = await fetch(MAPS_BASE_URL, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "Accept-Language": language,
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch maps");
+      return await response.json();
+    } catch (err) {
+      console.error("getAll error:", err);
+      throw err;
+    }
   }
 
+  // Get map by ID
+  static async getById(id, language) {
+    try {
+      const response = await fetch(`${MAPS_BASE_URL}/${id}`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "Accept-Language": language,
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch map by ID");
+      return await response.json();
+    } catch (err) {
+      console.error("getById error:", err);
+      throw err;
+    }
+  }
+
+  // Create new map - FIXED
   static async create(data, language) {
-    const formData = new FormData();
-    formData.append("type", data.type);
-    formData.append("name", data.name);
-    formData.append("description", data.description);
-    formData.append("year", data.year);
-    formData.append("coordinates", data.coordinates);
-    if (data.color) {
-      formData.append("color", data.color);
-    }
-    if (data.radius) {
-      formData.append("radius", data.radius);
-    }
-    if (data.icon) {
-      formData.append("icon", data.icon);
-    }
-    return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/admin/maps`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
+    try {
+      // Handle FormData yang sudah jadi atau object biasa
+      let requestBody;
+      let headers = {
         Accept: "application/json",
         "Accept-Language": language,
-      },
-      body: formData,
-    });
+      };
+
+      if (data instanceof FormData) {
+        // Jika sudah FormData, langsung gunakan
+        requestBody = data;
+      } else {
+        // Jika object biasa, buat FormData atau JSON sesuai tipe
+        if (data.icon && data.icon instanceof File) {
+          // Jika ada file icon, gunakan FormData
+          const formData = new FormData();
+          formData.append("type", data.type);
+          formData.append("name", data.name);
+          formData.append("description", data.description);
+          formData.append("year", data.year.toString());
+          formData.append("coordinates", typeof data.coordinates === "string" ? data.coordinates : JSON.stringify(data.coordinates));
+
+          if (data.type === MapType.POLYGON && data.color) {
+            formData.append("color", data.color);
+          }
+          if (data.icon instanceof File) {
+            formData.append("icon", data.icon);
+          }
+          if (data.type === MapType.BENCANA && data.radius) {
+            formData.append("radius", data.radius.toString());
+          }
+
+          requestBody = formData;
+        } else {
+          // Jika tidak ada file, gunakan JSON
+          headers["Content-Type"] = "application/json";
+          
+          const payload = {
+            type: data.type,
+            name: data.name,
+            description: data.description,
+            year: data.year,
+            coordinates: typeof data.coordinates === "string" ? data.coordinates : JSON.stringify(data.coordinates),
+          };
+
+          if (data.type === MapType.POLYGON && data.color) {
+            payload.color = data.color;
+          }
+          if (data.type === MapType.BENCANA && data.radius) {
+            payload.radius = data.radius;
+          }
+
+          requestBody = JSON.stringify(payload);
+        }
+      }
+
+      const response = await fetch(MAPS_BASE_URL, {
+        method: "POST",
+        credentials: "include",
+        headers,
+        body: requestBody,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: "Failed to create map" }));
+        throw new Error(errorData.message || "Failed to create map");
+      }
+      
+      return await response.json();
+    } catch (err) {
+      console.error("create error:", err);
+      throw err;
+    }
   }
 
+  // Update map - FIXED
   static async update(id, data, language) {
-    const formData = new FormData();
-    formData.append("type", data.type);
-    formData.append("name", data.name);
-    formData.append("description", data.description);
-    formData.append("year", data.year);
-    formData.append("coordinates", data.coordinates);
-    if (data.color) {
-      formData.append("color", data.color);
-    }
-    if (data.radius) {
-      formData.append("radius", data.radius);
-    }
-    if (data.icon) {
-      formData.append("icon", data.icon);
-    }
-    formData.append("_method", "PUT");
-    
-    return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/admin/maps/${id}`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
+    try {
+      let requestBody;
+      let headers = {
         Accept: "application/json",
         "Accept-Language": language,
-      },
-      body: formData,
-    });
+      };
+
+      if (data instanceof FormData) {
+        // Jika sudah FormData, tambahkan _method untuk Laravel style override
+        data.append("_method", "PUT");
+        requestBody = data;
+      } else {
+        // Jika object biasa, buat FormData atau JSON sesuai tipe
+        if (data.icon && data.icon instanceof File) {
+          // Jika ada file icon, gunakan FormData
+          const formData = new FormData();
+          formData.append("type", data.type);
+          formData.append("name", data.name);
+          formData.append("description", data.description);
+          formData.append("year", data.year.toString());
+          formData.append("coordinates", typeof data.coordinates === "string" ? data.coordinates : JSON.stringify(data.coordinates));
+          formData.append("_method", "PUT");
+
+          if (data.type === MapType.POLYGON && data.color) {
+            formData.append("color", data.color);
+          }
+          if (data.icon instanceof File) {
+            formData.append("icon", data.icon);
+          }
+          if (data.type === MapType.BENCANA && data.radius) {
+            formData.append("radius", data.radius.toString());
+          }
+
+          requestBody = formData;
+        } else {
+          // Jika tidak ada file, gunakan JSON dengan method PUT
+          headers["Content-Type"] = "application/json";
+          
+          const payload = {
+            type: data.type,
+            name: data.name,
+            description: data.description,
+            year: data.year,
+            coordinates: typeof data.coordinates === "string" ? data.coordinates : JSON.stringify(data.coordinates),
+          };
+
+          if (data.type === MapType.POLYGON && data.color) {
+            payload.color = data.color;
+          }
+          if (data.type === MapType.BENCANA && data.radius) {
+            payload.radius = data.radius;
+          }
+
+          requestBody = JSON.stringify(payload);
+        }
+      }
+
+      const response = await fetch(`${MAPS_BASE_URL}/${id}`, {
+        method: data instanceof FormData || (data.icon && data.icon instanceof File) ? "POST" : "PUT",
+        credentials: "include",
+        headers,
+        body: requestBody,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: "Failed to update map" }));
+        throw new Error(errorData.message || "Failed to update map");
+      }
+      
+      return await response.json();
+    } catch (err) {
+      console.error("update error:", err);
+      throw err;
+    }
   }
 
+  // Delete map
   static async delete(id, language) {
-    return await fetch(
-      `${import.meta.env.VITE_NEW_BASE_URL}/admin/maps/${id}`,
-      {
+    try {
+      const response = await fetch(`${MAPS_BASE_URL}/${id}`, {
         method: "DELETE",
         credentials: "include",
         headers: {
@@ -131,7 +332,15 @@ export class MapApi {
           Accept: "application/json",
           "Accept-Language": language,
         },
+      });
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: "Failed to delete map" }));
+        throw new Error(errorData.message || "Failed to delete map");
       }
-    );
+      return await response.json();
+    } catch (err) {
+      console.error("delete error:", err);
+      throw err;
+    }
   }
 }
