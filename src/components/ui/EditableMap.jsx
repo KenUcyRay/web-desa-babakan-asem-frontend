@@ -33,6 +33,7 @@ export default function EditableMap({
   bencanaRadius = 500,
   defaultCenter = [-6.75, 108.05861],
   zoom = 15,
+  lastUpdated = null,
 }) {
   const [markerPos, setMarkerPos] = useState(null);
   const [polygonPoints, setPolygonPoints] = useState([]);
@@ -293,7 +294,7 @@ export default function EditableMap({
       )}
 
       {/* Map Container */}
-      <div className="flex-1">
+      <div className="flex-1 relative">
         <MapContainer
           center={defaultCenter}
           zoom={zoom}
@@ -441,9 +442,12 @@ export default function EditableMap({
           <MapEventHandler />
         </MapContainer>
         
-
-        
-
+        {lastUpdated && (
+          <div className="absolute bottom-2 right-2 bg-white bg-opacity-80 p-2 rounded-md shadow-lg text-xs text-gray-700 z-[1000]">
+            <p className="font-semibold">Pembaruan Terakhir:</p>
+            <p>{new Date(lastUpdated).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })}</p>
+          </div>
+        )}
       </div>
 
       {/* Instructions */}

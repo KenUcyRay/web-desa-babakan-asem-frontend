@@ -37,6 +37,7 @@ import Pemerintahan from "./components/pages/Pemerintahan";
 import KontakKami from "./components/pages/KontakKami";
 import ProfilDesa from "./components/pages/ProfilDesa";
 import DetailPrestasi from "./components/pages/DetailPrestasi";
+import SigDesa from "./components/pages/SigDesa";
 
 // - Autentikasi
 import Login from "./components/auth/Login";
@@ -71,6 +72,7 @@ import ManageAdministrasi from "./components/admin/ManageAdministrasi";
 import ManagePkk from "./components/admin/ManagePkk";
 import ManagePrestasi from "./components/admin/ManagePrestasi";
 import DataMaster from "./components/admin/DataMaster";
+import EmergencyPage from "./components/admin/EmergencyPage";
 // import GisDesa from "./components/admin/GisDesa";
 import ManageProgram from "./components/admin/ManageProgram";
 import ManageApb from "./components/admin/ManageApb";
@@ -138,6 +140,7 @@ function LayoutUmum() {
           <Route path="/prestasi/:id" element={<DetailPrestasi />} />
           <Route path="/kontak" element={<KontakKami />} />
           <Route path="/pkk/struktur" element={<StPkk />} />
+          <Route path="/sigDesa" element={<SigDesa />} />
 
           {/* - Profil User */}
           <Route path="/profile" element={<Profile />} />
@@ -207,7 +210,7 @@ function LayoutAdmin() {
 
         {/* - Pengaturan Admin */}
         <Route path="pengaturan/profil" element={<PengaturanProfil />} />
-
+        <Route path="emergency-page" element={<EmergencyPage />} />
         {/* - Redirect default kalau salah path */}
         <Route path="*" element={<Navigate to="/admin" replace />} />
       </Route>

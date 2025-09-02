@@ -9,6 +9,7 @@ import {
   FaTrash,
   FaEye,
   FaPlus,
+  FaClock,
 } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 import { alertError, alertSuccess } from "../../libs/alert";
@@ -44,9 +45,8 @@ export default function KelolaSIG() {
     name: "",
     description: "",
     category: "",
-    icon: "default",
-    lat: 0,
-    lng: 0,
+    icon: null,
+    coordinates: [],
   });
 
   const [bencanaForm, setBencanaForm] = useState({
@@ -56,13 +56,8 @@ export default function KelolaSIG() {
     riskLevel: "rendah",
     coordinates: [],
     radius: 500,
+    icon: null,
   });
-
-  // File states
-  const [markerIconFile, setMarkerIconFile] = useState(null);
-  const [bencanaIconFile, setBencanaIconFile] = useState(null);
-  const [markerIconPreview, setMarkerIconPreview] = useState(null);
-  const [bencanaIconPreview, setBencanaIconPreview] = useState(null);
 
   // Data constants
   const bencanaTypes = ["Banjir", "Longsor", "Gempa", "Kebakaran", "Kekeringan", "Angin Kencang", "Lainnya"];
@@ -87,10 +82,8 @@ export default function KelolaSIG() {
 
   const loadMapData = async () => {
     try {
-      const response = await MapApi.getAll(i18n.language);
-      if (!response.ok) return;
+      const result = await MapApi.getAll(i18n.language);
       
-      const result = await response.json();
       if (result.data) {
         const data = result.data;
         
@@ -101,28 +94,63 @@ export default function KelolaSIG() {
           } catch (e) {
             coordinates = [];
           }
-          return { ...item, type: 'polygon', coordinates, color: item.color || '#3B82F6' };
+          return { 
+            ...item, 
+            type: 'polygon', 
+            coordinates, 
+            color: item.color || '#3B82F6',
+            updatedAt: item.updated_at || item.created_at || new Date().toISOString()
+          };
         });
         
         const markers = data.filter(item => item.type === 'MARKER' && !item.name.includes('[')).map(item => {
-          const coords = typeof item.coordinates === 'string' ? JSON.parse(item.coordinates) : item.coordinates;
-          return { ...item, type: 'marker', coordinates: Array.isArray(coords) ? coords[0] : coords, color: item.color || '#3B82F6' };
+          let coords = [];
+          try {
+            coords = typeof item.coordinates === 'string' ? JSON.parse(item.coordinates) : item.coordinates;
+          } catch (e) {
+            coords = [];
+          }
+          
+          let coordinate = Array.isArray(coords) && coords.length > 0 ? coords[0] : { lat: 0, lng: 0 };
+          if (Array.isArray(coordinate) && coordinate.length === 2) {
+            coordinate = { lat: coordinate[0], lng: coordinate[1] };
+          }
+          
+          return { 
+            ...item, 
+            type: 'marker', 
+            coordinates: coordinate, 
+            color: item.color || '#3B82F6',
+            updatedAt: item.updated_at || item.created_at || new Date().toISOString()
+          };
         });
         
-        const bencana = data.filter(item => item.type === 'MARKER' && item.name.includes('[')).map(item => {
+        const bencana = data.filter(item => item.type === 'BENCANA' || (item.type === 'MARKER' && item.name.includes('['))).map(item => {
           let color = '#10B981';
           if (item.description && item.description.includes('tinggi')) color = '#EF4444';
           else if (item.description && item.description.includes('sedang')) color = '#F59E0B';
           
-          const coords = typeof item.coordinates === 'string' ? JSON.parse(item.coordinates) : item.coordinates;
+          let coords = [];
+          try {
+            coords = typeof item.coordinates === 'string' ? JSON.parse(item.coordinates) : item.coordinates;
+          } catch (e) {
+            coords = [];
+          }
+          
+          let coordinate = Array.isArray(coords) && coords.length > 0 ? coords[0] : { lat: 0, lng: 0 };
+          if (Array.isArray(coordinate) && coordinate.length === 2) {
+            coordinate = { lat: coordinate[0], lng: coordinate[1] };
+          }
+          
           return {
             ...item,
-            type: 'marker',
-            coordinates: Array.isArray(coords) ? coords[0] : coords,
+            type: 'bencana',
+            coordinates: coordinate,
             color: item.color || color,
             radius: item.radius || 500,
             riskLevel: item.description && item.description.includes('tinggi') ? 'tinggi' : 
-                      item.description && item.description.includes('sedang') ? 'sedang' : 'rendah'
+                      item.description && item.description.includes('sedang') ? 'sedang' : 'rendah',
+            updatedAt: item.updated_at || item.created_at || new Date().toISOString()
           };
         });
         
@@ -132,6 +160,7 @@ export default function KelolaSIG() {
       }
     } catch (error) {
       console.error('Error loading map data:', error);
+      alertError('Gagal memuat data peta');
     }
   };
 
@@ -148,7 +177,7 @@ export default function KelolaSIG() {
 
   const handleMarkerPlace = (coordinates) => {
     setCurrentCoordinates(coordinates);
-    setMarkerForm(prev => ({ ...prev, lat: coordinates.lat, lng: coordinates.lng }));
+    setMarkerForm(prev => ({ ...prev, coordinates: [coordinates.lat, coordinates.lng] }));
     alertSuccess("Marker berhasil ditempatkan! Isi form untuk menyimpan.");
   };
 
@@ -170,6 +199,19 @@ export default function KelolaSIG() {
     return Math.abs(area / 2) * 111320 * 111320;
   };
 
+  // Format date for display
+  const formatDate = (dateString) => {
+    if (!dateString) return "Tidak diketahui";
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('id-ID', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }).format(date);
+  };
+
   // Edit handlers
   const handleEditPolygon = (polygon) => {
     setEditingItem(polygon);
@@ -184,6 +226,35 @@ export default function KelolaSIG() {
     });
   };
 
+  const handleEditMarker = (marker) => {
+    setEditingItem(marker);
+    setActiveTab("marker");
+    setMarkerForm({
+      name: marker.name,
+      description: marker.description,
+      category: marker.category || "",
+      icon: null,
+      coordinates: [marker.coordinates.lat, marker.coordinates.lng]
+    });
+  };
+
+  const handleEditBencana = (bencana) => {
+    setEditingItem(bencana);
+    setActiveTab("bencana");
+    
+    const cleanName = bencana.name.replace(/\[.*?\]/g, '').trim();
+    
+    setBencanaForm({
+      name: cleanName,
+      type: bencana.type || "",
+      description: bencana.description || "",
+      riskLevel: bencana.riskLevel || "rendah",
+      coordinates: [bencana.coordinates.lat, bencana.coordinates.lng],
+      radius: bencana.radius || 500,
+      icon: null
+    });
+  };
+
   const handlePolygonEdit = (updatedPolygon) => {
     setPolygonForm(prev => ({
       ...prev,
@@ -192,7 +263,7 @@ export default function KelolaSIG() {
     }));
   };
 
-  // Save handlers
+  // Save handlers - FIXED
   const handleSavePolygon = async () => {
     if (isSaving) return;
     if (!polygonForm.name || !polygonForm.description || !polygonForm.coordinates.length) {
@@ -202,19 +273,20 @@ export default function KelolaSIG() {
 
     try {
       setIsSaving(true);
+      
+      // FIXED: Kirim sebagai object biasa, bukan FormData
       const payload = {
         type: "POLYGON",
         name: polygonForm.name,
         description: polygonForm.description,
         year: new Date().getFullYear(),
-        coordinates: JSON.stringify(polygonForm.coordinates),
+        coordinates: polygonForm.coordinates,
         color: polygonForm.color
       };
       
-      const response = await MapApi.create(payload, i18n.language);
-      const result = await response.json();
+      const result = await MapApi.create(payload, i18n.language);
       
-      if (!response.ok) {
+      if (result.error) {
         throw new Error(result.message || "Gagal menyimpan polygon");
       }
 
@@ -225,12 +297,100 @@ export default function KelolaSIG() {
       await loadMapData();
       alertSuccess("Polygon berhasil disimpan!");
     } catch (error) {
+      console.error('Save polygon error:', error);
       alertError(error.message || 'Terjadi kesalahan saat menyimpan polygon');
     } finally {
       setIsSaving(false);
     }
   };
 
+  const handleSaveMarker = async () => {
+    if (isSaving) return;
+    if (!markerForm.name || !markerForm.category || !markerForm.coordinates.length || !markerForm.icon) {
+      alertError("Mohon lengkapi semua field, tempatkan marker di peta dan upload icon marker");
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+      
+      // FIXED: Kirim sebagai object dengan file icon
+      const payload = {
+        type: "MARKER",
+        name: markerForm.name,
+        description: markerForm.description,
+        year: new Date().getFullYear(),
+        coordinates: [markerForm.coordinates], // Array of coordinates
+        icon: markerForm.icon // File object
+      };
+      
+      const result = await MapApi.create(payload, i18n.language);
+      
+      if (result.error) {
+        throw new Error(result.message || "Gagal menyimpan marker");
+      }
+
+      setMarkerForm({ name: "", description: "", category: "", icon: null, coordinates: [] });
+      setCurrentCoordinates(null);
+      await loadMapData();
+      alertSuccess("Marker berhasil disimpan!");
+    } catch (error) {
+      console.error('Save marker error:', error);
+      alertError(error.message || 'Terjadi kesalahan saat menyimpan marker');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleSaveBencana = async () => {
+    if (isSaving) return;
+    if (!bencanaForm.name || !bencanaForm.type || !bencanaForm.coordinates.length || !bencanaForm.icon) {
+      alertError("Mohon lengkapi semua field, tempatkan lokasi bencana di peta dan upload icon bencana");
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+      const riskLabel = riskLevels.find(r => r.value === bencanaForm.riskLevel)?.label || "Rendah";
+      
+      // FIXED: Kirim sebagai object dengan file icon
+      const payload = {
+        type: "BENCANA",
+        name: `[${riskLabel}] ${bencanaForm.name}`,
+        description: bencanaForm.description,
+        year: new Date().getFullYear(),
+        coordinates: [bencanaForm.coordinates], // Array of coordinates
+        radius: bencanaForm.radius,
+        icon: bencanaForm.icon // File object
+      };
+      
+      const result = await MapApi.create(payload, i18n.language);
+      
+      if (result.error) {
+        throw new Error(result.message || "Gagal menyimpan data bencana");
+      }
+
+      setBencanaForm({ 
+        name: "", 
+        type: "", 
+        description: "", 
+        riskLevel: "rendah", 
+        coordinates: [], 
+        radius: 500,
+        icon: null 
+      });
+      setCurrentCoordinates(null);
+      await loadMapData();
+      alertSuccess("Data bencana berhasil disimpan!");
+    } catch (error) {
+      console.error('Save bencana error:', error);
+      alertError(error.message || 'Terjadi kesalahan saat menyimpan data bencana');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Update handlers - FIXED
   const handleUpdatePolygon = async () => {
     if (!editingItem || !polygonForm.name || !polygonForm.description || !polygonForm.coordinates.length) {
       alertError("Mohon lengkapi semua field");
@@ -245,32 +405,14 @@ export default function KelolaSIG() {
         name: polygonForm.name,
         description: polygonForm.description,
         year: editingItem.year || new Date().getFullYear(),
-        coordinates: JSON.stringify(polygonForm.coordinates),
+        coordinates: polygonForm.coordinates,
         color: polygonForm.color
       };
       
-      console.log('Attempting update for ID:', editingItem.id);
-      const response = await MapApi.update(editingItem.id, payload, i18n.language);
+      const result = await MapApi.update(editingItem.id, payload, i18n.language);
       
-      // Handle 404 - use delete + create fallback
-      if (response.status === 404) {
-        console.log('PUT endpoint not found, using delete + create fallback');
-        
-        // Delete old polygon
-        await MapApi.delete(editingItem.id, i18n.language);
-        
-        // Create new polygon with updated data
-        const createResponse = await MapApi.create(payload, i18n.language);
-        const createResult = await createResponse.json();
-        
-        if (!createResponse.ok) {
-          throw new Error(createResult.message || "Gagal mengupdate polygon");
-        }
-      } else {
-        const result = await response.json();
-        if (!response.ok) {
-          throw new Error(result.message || "Gagal mengupdate polygon");
-        }
+      if (result.error) {
+        throw new Error(result.message || "Gagal mengupdate polygon");
       }
 
       setPolygonForm({ name: "", description: "", color: "#3B82F6", coordinates: [], area: 0 });
@@ -288,22 +430,146 @@ export default function KelolaSIG() {
     }
   };
 
+  const handleUpdateMarker = async () => {
+    if (!editingItem || !markerForm.name || !markerForm.category) {
+      alertError("Mohon lengkapi semua field");
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+      
+      // FIXED: Kirim sebagai object, bukan FormData langsung
+      const payload = {
+        type: "MARKER",
+        name: markerForm.name,
+        description: markerForm.description,
+        year: editingItem.year || new Date().getFullYear(),
+        coordinates: [markerForm.coordinates], // Array of coordinates
+        icon: markerForm.icon instanceof File ? markerForm.icon : null
+      };
+      
+      const result = await MapApi.update(editingItem.id, payload, i18n.language);
+      
+      if (result.error) {
+        throw new Error(result.message || "Gagal mengupdate marker");
+      }
+
+      setMarkerForm({ name: "", description: "", category: "", icon: null, coordinates: [] });
+      setCurrentCoordinates(null);
+      setEditingItem(null);
+      await loadMapData();
+      alertSuccess("Marker berhasil diupdate!");
+    } catch (error) {
+      console.error('Update error:', error);
+      alertError(error.message || 'Terjadi kesalahan saat mengupdate marker');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleUpdateBencana = async () => {
+    if (!editingItem || !bencanaForm.name || !bencanaForm.type) {
+      alertError("Mohon lengkapi semua field");
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+      const riskLabel = riskLevels.find(r => r.value === bencanaForm.riskLevel)?.label || "Rendah";
+      
+      // FIXED: Kirim sebagai object, bukan FormData langsung
+      const payload = {
+        type: "BENCANA",
+        name: `[${riskLabel}] ${bencanaForm.name}`,
+        description: bencanaForm.description,
+        year: editingItem.year || new Date().getFullYear(),
+        coordinates: [bencanaForm.coordinates], // Array of coordinates
+        radius: bencanaForm.radius,
+        icon: bencanaForm.icon instanceof File ? bencanaForm.icon : null
+      };
+      
+      const result = await MapApi.update(editingItem.id, payload, i18n.language);
+      
+      if (result.error) {
+        throw new Error(result.message || "Gagal mengupdate data bencana");
+      }
+
+      setBencanaForm({ 
+        name: "", 
+        type: "", 
+        description: "", 
+        riskLevel: "rendah", 
+        coordinates: [], 
+        radius: 500,
+        icon: null 
+      });
+      setCurrentCoordinates(null);
+      setEditingItem(null);
+      await loadMapData();
+      alertSuccess("Data bencana berhasil diupdate!");
+    } catch (error) {
+      console.error('Update error:', error);
+      alertError(error.message || 'Terjadi kesalahan saat mengupdate data bencana');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   // Delete handlers
   const handleDeletePolygon = async (id) => {
     try {
-      const response = await MapApi.delete(id, i18n.language);
-      if (response.ok) {
-        if (editingItem && editingItem.id === id) {
-          setEditingItem(null);
-          setMapMode("view");
-          setPolygonForm({ name: "", description: "", color: "#3B82F6", coordinates: [], area: 0 });
-          setSelectedColor("#3B82F6");
-        }
-        await loadMapData();
-        alertSuccess("Polygon berhasil dihapus!");
+      const result = await MapApi.delete(id, i18n.language);
+      if (result.error) {
+        throw new Error(result.message || "Gagal menghapus polygon");
       }
+      
+      if (editingItem && editingItem.id === id) {
+        setEditingItem(null);
+        setMapMode("view");
+        setPolygonForm({ name: "", description: "", color: "#3B82F6", coordinates: [], area: 0 });
+        setSelectedColor("#3B82F6");
+      }
+      await loadMapData();
+      alertSuccess("Polygon berhasil dihapus!");
     } catch (error) {
-      alertError("Gagal menghapus polygon");
+      alertError(error.message || "Gagal menghapus polygon");
+    }
+  };
+
+  const handleDeleteMarker = async (id) => {
+    try {
+      const result = await MapApi.delete(id, i18n.language);
+      if (result.error) {
+        throw new Error(result.message || "Gagal menghapus marker");
+      }
+      
+      if (editingItem && editingItem.id === id) {
+        setEditingItem(null);
+        setMarkerForm({ name: "", description: "", category: "", icon: null, coordinates: [] });
+      }
+      await loadMapData();
+      alertSuccess("Marker berhasil dihapus!");
+    } catch (error) {
+      alertError(error.message || "Gagal menghapus marker");
+    }
+  };
+
+  const handleDeleteBencana = async (id) => {
+    try {
+      const result = await MapApi.delete(id, i18n.language);
+      if (result.error) {
+        throw new Error(result.message || "Gagal menghapus data bencana");
+      }
+      
+      if (editingItem && editingItem.id === id) {
+        setEditingItem(null);
+        setBencanaForm({ name: "", type: "", description: "", riskLevel: "rendah", coordinates: [], radius: 500, icon: null });
+      }
+      await loadMapData();
+      alertSuccess("Data bencana berhasil dihapus!");
+    } catch (error) {
+      alertError(error.message || "Gagal menghapus data bencana");
     }
   };
 
@@ -320,12 +586,507 @@ export default function KelolaSIG() {
     });
   };
 
+  const toggleMarkerVisibility = (id) => {
+    setHiddenMarkers(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(id)) {
+        newSet.delete(id);
+      } else {
+        newSet.add(id);
+      }
+      return newSet;
+    });
+  };
+
+  const toggleBencanaVisibility = (id) => {
+    setHiddenBencana(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(id)) {
+        newSet.delete(id);
+      } else {
+        newSet.add(id);
+      }
+      return newSet;
+    });
+  };
+
   const cancelEdit = () => {
     setEditingItem(null);
     setMapMode("view");
     setPolygonForm({ name: "", description: "", color: "#3B82F6", coordinates: [], area: 0 });
+    setMarkerForm({ name: "", description: "", category: "", icon: null, coordinates: [] });
+    setBencanaForm({ name: "", type: "", description: "", riskLevel: "rendah", coordinates: [], radius: 500, icon: null });
     setSelectedColor("#3B82F6");
   };
+
+  // Render function untuk tab Marker
+  const renderMarkerTab = () => (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-semibold">Kelola Marker</h3>
+        <button 
+          onClick={() => {
+            const newMode = mapMode === "marker" ? "view" : "marker";
+            setMapMode(newMode);
+            if (newMode === "view") {
+              setCurrentCoordinates(null);
+              setMarkerForm(prev => ({ ...prev, coordinates: [] }));
+            }
+          }}
+          className={`flex items-center px-3 py-1 text-sm rounded ${
+            mapMode === "marker" 
+              ? "bg-red-600 text-white hover:bg-red-700" 
+              : "bg-blue-600 text-white hover:bg-blue-700"
+          }`}
+        >
+          <FaPlus className="mr-1" />
+          {mapMode === "marker" ? "Batal" : "Tambah"}
+        </button>
+      </div>
+
+      {/* Marker Form */}
+      <div className="space-y-3">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Nama Marker
+          </label>
+          <input
+            type="text"
+            value={markerForm.name}
+            onChange={(e) => setMarkerForm({...markerForm, name: e.target.value})}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Masukkan nama marker"
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Kategori
+          </label>
+          <select
+            value={markerForm.category}
+            onChange={(e) => setMarkerForm({...markerForm, category: e.target.value})}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">Pilih Kategori</option>
+            {markerCategories.map((category, index) => (
+              <option key={index} value={category}>{category}</option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Icon Marker
+          </label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              const file = e.target.files[0];
+              if (file) {
+                setMarkerForm({...markerForm, icon: file});
+              }
+            }}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          {markerForm.icon instanceof File && (
+            <div className="mt-2">
+              <img 
+                src={URL.createObjectURL(markerForm.icon)} 
+                alt="Preview" 
+                className="h-20 w-20 object-cover rounded"
+              />
+            </div>
+          )}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Deskripsi
+          </label>
+          <textarea
+            value={markerForm.description}
+            onChange={(e) => setMarkerForm({...markerForm, description: e.target.value})}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            rows="2"
+            placeholder="Deskripsi marker"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Koordinat
+          </label>
+          <div className="grid grid-cols-2 gap-2">
+            <input
+              type="number"
+              step="any"
+              value={markerForm.coordinates[0] || ""}
+              onChange={(e) => setMarkerForm({...markerForm, coordinates: [parseFloat(e.target.value) || 0, markerForm.coordinates[1] || 0]})}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Latitude"
+            />
+            <input
+              type="number"
+              step="any"
+              value={markerForm.coordinates[1] || ""}
+              onChange={(e) => setMarkerForm({...markerForm, coordinates: [markerForm.coordinates[0] || 0, parseFloat(e.target.value) || 0]})}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Longitude"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="flex space-x-2">
+        {editingItem ? (
+          <>
+            <button 
+              onClick={handleUpdateMarker}
+              disabled={isSaving}
+              className={`flex-1 flex items-center justify-center px-4 py-2 rounded ${
+                isSaving 
+                  ? "bg-gray-400 text-white cursor-not-allowed" 
+                  : "bg-green-600 text-white hover:bg-green-700"
+              }`}
+            >
+              <FaSave className="mr-2" />
+              {isSaving ? "Mengupdate..." : "Update"}
+            </button>
+            <button 
+              onClick={cancelEdit}
+              className="flex items-center justify-center px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
+            >
+              Batal
+            </button>
+          </>
+        ) : (
+          <button 
+            onClick={handleSaveMarker}
+            disabled={isSaving || !markerForm.name || !markerForm.category || !markerForm.coordinates.length || !markerForm.icon}
+            className={`flex-1 flex items-center justify-center px-4 py-2 rounded ${
+              isSaving || !markerForm.name || !markerForm.category || !markerForm.coordinates.length || !markerForm.icon
+                ? "bg-gray-400 text-white cursor-not-allowed" 
+                : "bg-green-600 text-white hover:bg-green-700"
+            }`}
+          >
+            <FaSave className="mr-2" />
+            {isSaving ? "Menyimpan..." : "Simpan"}
+          </button>
+        )}
+      </div>
+
+      {/* Marker Data List */}
+      <div className="mt-6 border-t pt-4">
+        <h4 className="text-sm font-semibold text-gray-700 mb-3">Data Marker Tersimpan</h4>
+        <div className="space-y-2 max-h-40 overflow-y-auto">
+          {markerData.length === 0 ? (
+            <p className="text-sm text-gray-500 italic">Belum ada marker tersimpan</p>
+          ) : (
+            markerData.map((marker, index) => (
+              <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded text-sm">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center space-x-2 mb-1">
+                    <FaMapPin className="text-blue-600" />
+                    <span className="font-medium truncate">{marker.name}</span>
+                    <span className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded-full">{marker.category}</span>
+                  </div>
+                  <div className="flex items-center text-xs text-gray-500">
+                    <FaClock className="mr-1" />
+                    <span>{formatDate(marker.updatedAt)}</span>
+                  </div>
+                </div>
+                <div className="flex space-x-1">
+                  <button 
+                    onClick={() => toggleMarkerVisibility(marker.id)}
+                    className={`p-1 rounded ${
+                      hiddenMarkers.has(marker.id) 
+                        ? "text-gray-400 hover:bg-gray-100" 
+                        : "text-blue-600 hover:bg-blue-100"
+                    }`}
+                    title={hiddenMarkers.has(marker.id) ? "Tampilkan" : "Sembunyikan"}
+                  >
+                    <FaEye className="text-xs" />
+                  </button>
+                  <button 
+                    onClick={() => handleEditMarker(marker)}
+                    className="p-1 text-yellow-600 hover:bg-yellow-100 rounded"
+                    title="Edit"
+                  >
+                    <FaEdit className="text-xs" />
+                  </button>
+                  <button 
+                    onClick={() => handleDeleteMarker(marker.id)}
+                    className="p-1 text-red-600 hover:bg-red-100 rounded"
+                    title="Hapus"
+                  >
+                    <FaTrash className="text-xs" />
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
+  // Render function untuk tab Bencana
+  const renderBencanaTab = () => (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-semibold">Kelola Sumber Bencana</h3>
+        <button 
+          onClick={() => {
+            const newMode = mapMode === "bencana" ? "view" : "bencana";
+            setMapMode(newMode);
+            if (newMode === "view") {
+              setCurrentCoordinates(null);
+              setBencanaForm(prev => ({ ...prev, coordinates: [] }));
+            }
+          }}
+          className={`flex items-center px-3 py-1 text-sm rounded ${
+            mapMode === "bencana" 
+              ? "bg-red-600 text-white hover:bg-red-700" 
+              : "bg-blue-600 text-white hover:bg-blue-700"
+          }`}
+        >
+          <FaPlus className="mr-1" />
+          {mapMode === "bencana" ? "Batal" : "Tambah"}
+        </button>
+      </div>
+
+      {/* Bencana Form */}
+      <div className="space-y-3">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Nama Lokasi Bencana
+          </label>
+          <input
+            type="text"
+            value={bencanaForm.name}
+            onChange={(e) => setBencanaForm({...bencanaForm, name: e.target.value})}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Masukkan nama lokasi"
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Jenis Bencana
+          </label>
+          <select
+            value={bencanaForm.type}
+            onChange={(e) => setBencanaForm({...bencanaForm, type: e.target.value})}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">Pilih Jenis Bencana</option>
+            {bencanaTypes.map((type, index) => (
+              <option key={index} value={type}>{type}</option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Icon Bencana
+          </label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              const file = e.target.files[0];
+              if (file) {
+                setBencanaForm({...bencanaForm, icon: file});
+              }
+            }}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          {bencanaForm.icon instanceof File && (
+            <div className="mt-2">
+              <img 
+                src={URL.createObjectURL(bencanaForm.icon)} 
+                alt="Preview" 
+                className="h-20 w-20 object-cover rounded"
+              />
+            </div>
+          )}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Tingkat Risiko
+          </label>
+          <div className="grid grid-cols-3 gap-2">
+            {riskLevels.map((level) => (
+              <button
+                key={level.value}
+                type="button"
+                onClick={() => setBencanaForm({...bencanaForm, riskLevel: level.value})}
+                className={`px-3 py-2 text-sm rounded border ${
+                  bencanaForm.riskLevel === level.value
+                    ? `bg-${level.color}-100 border-${level.color}-500 text-${level.color}-800 font-medium`
+                    : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
+                }`}
+              >
+                {level.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Radius (meter)
+          </label>
+          <input
+            type="number"
+            value={bencanaForm.radius}
+            onChange={(e) => setBencanaForm({...bencanaForm, radius: parseInt(e.target.value) || 500})}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            min="100"
+            max="5000"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Deskripsi
+          </label>
+          <textarea
+            value={bencanaForm.description}
+            onChange={(e) => setBencanaForm({...bencanaForm, description: e.target.value})}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            rows="2"
+            placeholder="Deskripsi dan dampak potensial"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Koordinat
+          </label>
+          <div className="grid grid-cols-2 gap-2">
+            <input
+              type="number"
+              step="any"
+              value={bencanaForm.coordinates[0] || ""}
+              onChange={(e) => setBencanaForm({...bencanaForm, coordinates: [parseFloat(e.target.value) || 0, bencanaForm.coordinates[1] || 0]})}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Latitude"
+            />
+            <input
+              type="number"
+              step="any"
+              value={bencanaForm.coordinates[1] || ""}
+              onChange={(e) => setBencanaForm({...bencanaForm, coordinates: [bencanaForm.coordinates[0] || 0, parseFloat(e.target.value) || 0]})}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Longitude"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="flex space-x-2">
+        {editingItem ? (
+          <>
+            <button 
+              onClick={handleUpdateBencana}
+              disabled={isSaving}
+              className={`flex-1 flex items-center justify-center px-4 py-2 rounded ${
+                isSaving 
+                  ? "bg-gray-400 text-white cursor-not-allowed" 
+                  : "bg-green-600 text-white hover:bg-green-700"
+              }`}
+            >
+              <FaSave className="mr-2" />
+              {isSaving ? "Mengupdate..." : "Update"}
+            </button>
+            <button 
+              onClick={cancelEdit}
+              className="flex items-center justify-center px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
+            >
+              Batal
+            </button>
+          </>
+        ) : (
+          <button 
+            onClick={handleSaveBencana}
+            disabled={isSaving || !bencanaForm.name || !bencanaForm.type || !bencanaForm.coordinates.length || !bencanaForm.icon}
+            className={`flex-1 flex items-center justify-center px-4 py-2 rounded ${
+              isSaving || !bencanaForm.name || !bencanaForm.type || !bencanaForm.coordinates.length || !bencanaForm.icon
+                ? "bg-gray-400 text-white cursor-not-allowed" 
+                : "bg-green-600 text-white hover:bg-green-700"
+            }`}
+          >
+            <FaSave className="mr-2" />
+            {isSaving ? "Menyimpan..." : "Simpan"}
+          </button>
+        )}
+      </div>
+
+      {/* Bencana Data List */}
+      <div className="mt-6 border-t pt-4">
+        <h4 className="text-sm font-semibold text-gray-700 mb-3">Data Bencana Tersimpan</h4>
+        <div className="space-y-2 max-h-40 overflow-y-auto">
+          {bencanaData.length === 0 ? (
+            <p className="text-sm text-gray-500 italic">Belum ada data bencana tersimpan</p>
+          ) : (
+            bencanaData.map((bencana, index) => {
+              const riskColor = riskLevels.find(r => r.value === bencana.riskLevel)?.color || "green";
+              return (
+                <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded text-sm">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center space-x-2 mb-1">
+                      <FaExclamationTriangle className={`text-${riskColor}-600`} />
+                      <span className="font-medium truncate">{bencana.name.replace(/\[.*?\]/g, '').trim()}</span>
+                      <span className="text-xs px-2 py-1 bg-gray-100 text-gray-800 rounded-full">{bencana.type}</span>
+                    </div>
+                    <div className="flex items-center text-xs text-gray-500">
+                      <span className="mr-2">Radius: {bencana.radius}m</span>
+                      <span className="mr-2">Risiko: {bencana.riskLevel}</span>
+                      <FaClock className="mr-1" />
+                      <span>{formatDate(bencana.updatedAt)}</span>
+                    </div>
+                  </div>
+                  <div className="flex space-x-1">
+                    <button 
+                      onClick={() => toggleBencanaVisibility(bencana.id)}
+                      className={`p-1 rounded ${
+                        hiddenBencana.has(bencana.id) 
+                          ? "text-gray-400 hover:bg-gray-100" 
+                          : "text-blue-600 hover:bg-blue-100"
+                      }`}
+                      title={hiddenBencana.has(bencana.id) ? "Tampilkan" : "Sembunyikan"}
+                    >
+                      <FaEye className="text-xs" />
+                    </button>
+                    <button 
+                      onClick={() => handleEditBencana(bencana)}
+                      className="p-1 text-yellow-600 hover:bg-yellow-100 rounded"
+                      title="Edit"
+                    >
+                      <FaEdit className="text-xs" />
+                    </button>
+                    <button 
+                      onClick={() => handleDeleteBencana(bencana.id)}
+                      className="p-1 text-red-600 hover:bg-red-100 rounded"
+                      title="Hapus"
+                    >
+                      <FaTrash className="text-xs" />
+                    </button>
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -541,12 +1302,18 @@ export default function KelolaSIG() {
                         ) : (
                           polygonData.map((polygon, index) => (
                             <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded text-sm">
-                              <div className="flex items-center space-x-2">
-                                <div 
-                                  className="w-4 h-4 rounded border"
-                                  style={{ backgroundColor: polygon.color }}
-                                />
-                                <span className="font-medium">{polygon.name}</span>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center space-x-2 mb-1">
+                                  <div 
+                                    className="w-4 h-4 rounded border"
+                                    style={{ backgroundColor: polygon.color }}
+                                  />
+                                  <span className="font-medium truncate">{polygon.name}</span>
+                                </div>
+                                <div className="flex items-center text-xs text-gray-500">
+                                  <FaClock className="mr-1" />
+                                  <span>{formatDate(polygon.updatedAt)}</span>
+                                </div>
                               </div>
                               <div className="flex space-x-1">
                                 <button 
@@ -583,21 +1350,11 @@ export default function KelolaSIG() {
                   </div>
                 )}
 
-                {/* Marker Tab - Placeholder */}
-                {activeTab === "marker" && (
-                  <div className="text-center py-8">
-                    <FaMapPin className="mx-auto text-4xl text-gray-400 mb-4" />
-                    <p className="text-gray-500">Fitur Marker akan segera tersedia</p>
-                  </div>
-                )}
+                {/* Marker Tab */}
+                {activeTab === "marker" && renderMarkerTab()}
 
-                {/* Bencana Tab - Placeholder */}
-                {activeTab === "bencana" && (
-                  <div className="text-center py-8">
-                    <FaExclamationTriangle className="mx-auto text-4xl text-gray-400 mb-4" />
-                    <p className="text-gray-500">Fitur Sumber Bencana akan segera tersedia</p>
-                  </div>
-                )}
+                {/* Bencana Tab */}
+                {activeTab === "bencana" && renderBencanaTab()}
 
               </div>
             </div>

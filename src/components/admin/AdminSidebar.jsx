@@ -21,6 +21,7 @@ import {
   FaTasks,
   FaMoneyCheckAlt,
   FaMapMarkerAlt,
+  FaExclamationTriangle // Ikon baru untuk informasi darurat
 } from "react-icons/fa";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 import { BsDatabaseFillLock } from "react-icons/bs";
@@ -97,6 +98,13 @@ export default function AdminSidebar({ isOpen, onClose }) {
       to: "/admin",
       label: "Dashboard",
       icon: <FaTachometerAlt />,
+    },
+    // Menu Informasi Darurat - DITAMBAHKAN DI SINI
+    {
+      to: "/admin/emergency-page",
+      label: "Informasi Darurat",
+      icon: <FaExclamationTriangle />,
+      isEmergency: true // Flag khusus untuk menu darurat
     },
     // TOMBOL DATA MASTER SATUAN
     {
@@ -241,6 +249,29 @@ export default function AdminSidebar({ isOpen, onClose }) {
       <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
         {menu.map((item) => {
           const isActive = location.pathname === item.to;
+          // Styling khusus untuk menu darurat
+          if (item.isEmergency) {
+            return (
+              <Link
+                key={item.to}
+                to={item.to}
+                onClick={onClose}
+                className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-all duration-200 ${
+                  isActive
+                    ? "bg-gradient-to-r from-red-600 to-red-800 text-white font-semibold shadow-md animate-pulse"
+                    : "bg-red-500 text-white hover:bg-red-600 font-semibold"
+                }`}
+              >
+                {item.icon}
+                <span>{item.label}</span>
+                {/* Badge peringatan */}
+                <span className="ml-auto bg-white text-red-600 text-xs font-bold px-2 py-1 rounded-full animate-pulse">
+                  Penting!
+                </span>
+              </Link>
+            );
+          }
+          
           return (
             <Link
               key={item.to}
