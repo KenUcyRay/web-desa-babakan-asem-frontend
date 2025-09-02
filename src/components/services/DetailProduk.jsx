@@ -8,7 +8,6 @@ import { Helper } from "../../utils/Helper";
 import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 import { CommentApi } from "../../libs/api/CommentApi";
 import { ProductApi } from "../../libs/api/ProductApi";
-import { useAuth } from "../../contexts/AuthContext";
 import { useProfile } from "../../hook/useProfile";
 
 export default function DetailProduk() {
@@ -181,8 +180,7 @@ export default function DetailProduk() {
 
   useEffect(() => {
     fetchDetailProduct();
-    const interval = setInterval(fetchComment, 5000);
-    return () => clearInterval(interval);
+    fetchComment();
   }, [id, i18n.language]);
 
   useEffect(() => {

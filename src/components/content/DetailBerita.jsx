@@ -110,8 +110,7 @@ export default function DetailBerita() {
 
   useEffect(() => {
     fetchDetailBerita();
-    const interval = setInterval(fetchComment, 5000);
-    return () => clearInterval(interval);
+    fetchComment();
   }, [id, i18n.language]);
 
   return (

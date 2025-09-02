@@ -108,8 +108,7 @@ export default function DetailAgenda() {
 
   useEffect(() => {
     fetchDetailAgenda();
-    const interval = setInterval(fetchComments, 5000);
-    return () => clearInterval(interval);
+    fetchComments();
   }, [id, i18n.language]);
 
   return (

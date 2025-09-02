@@ -49,12 +49,6 @@ export default function FloatingMenu() {
       icon: <FaShieldAlt size={14} />,
       color: 'text-blue-600'
     },
-    {
-      name: t('floatingMenu.timCakra'),
-      number: '+6281234567892',
-      icon: <FaAmbulance size={14} />,
-      color: 'text-orange-500'
-    }
   ];
 
   useEffect(() => {

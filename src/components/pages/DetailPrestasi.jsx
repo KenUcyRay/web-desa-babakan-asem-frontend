@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import SidebarInfo from "../layout/SidebarInfo";
-import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 import { Helper } from "../../utils/Helper";
-import { CommentApi } from "../../libs/api/CommentApi";
 import { HiArrowLeft } from "react-icons/hi";
 import { UserApi } from "../../libs/api/UserApi";
 import { useTranslation } from "react-i18next";
