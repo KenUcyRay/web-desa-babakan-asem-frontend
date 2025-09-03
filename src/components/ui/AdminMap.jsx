@@ -152,7 +152,6 @@ export default function AdminMap({ onDataChange }) {
               });
             }
           } catch (err) {
-            console.log("Error processing item:", err);
           }
         });
       }
@@ -162,7 +161,6 @@ export default function AdminMap({ onDataChange }) {
         onDataChange(formattedData);
       }
     } catch (error) {
-      console.log("Error fetching map data:", error);
     }
   };
 

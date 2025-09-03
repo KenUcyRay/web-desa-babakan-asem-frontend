@@ -283,7 +283,6 @@ export default function AdminDashboard() {
               if (!normalized) {
                 return;
               }
-              console.log(item);
               formattedData.push({
                 id: item.id,
                 name: item.name,

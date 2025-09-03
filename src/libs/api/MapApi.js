@@ -274,7 +274,6 @@ export class MapApi {
       );
 
       if (!response.ok) {
-        console.log(await response.json());
         const errorData = await response
           .json()
           .catch(() => ({ message: "Failed to update map" }));

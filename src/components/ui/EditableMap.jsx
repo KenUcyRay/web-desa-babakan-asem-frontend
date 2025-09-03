@@ -316,31 +316,33 @@ export default function EditableMap({
                     )}
                   </>
                 )}
-                
+
                 {/* Setelah selesai gambar - 3 pilihan */}
-                {polygonCompleted && !isAdjusting && polygonPoints.length >= 3 && (
-                  <>
-                    <button
-                      onClick={togglePolygonDrawing}
-                      className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
-                    >
-                      Gambar Ulang
-                    </button>
-                    <button
-                      onClick={handleAdjustMode}
-                      className="px-2 py-1 text-xs bg-orange-500 text-white rounded hover:bg-orange-600"
-                    >
-                      Sesuaikan Sudut
-                    </button>
-                    <button
-                      onClick={finishPolygon}
-                      className="px-2 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600"
-                    >
-                      Selesai
-                    </button>
-                  </>
-                )}
-                
+                {polygonCompleted &&
+                  !isAdjusting &&
+                  polygonPoints.length >= 3 && (
+                    <>
+                      <button
+                        onClick={togglePolygonDrawing}
+                        className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+                      >
+                        Gambar Ulang
+                      </button>
+                      <button
+                        onClick={handleAdjustMode}
+                        className="px-2 py-1 text-xs bg-orange-500 text-white rounded hover:bg-orange-600"
+                      >
+                        Sesuaikan Sudut
+                      </button>
+                      <button
+                        onClick={finishPolygon}
+                        className="px-2 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600"
+                      >
+                        Selesai
+                      </button>
+                    </>
+                  )}
+
                 {/* Saat sedang menyesuaikan sudut */}
                 {isAdjusting && (
                   <>
@@ -358,16 +360,18 @@ export default function EditableMap({
                     </button>
                   </>
                 )}
-                
+
                 {/* Tombol mulai jika belum ada polygon */}
-                {!isDrawing && !polygonCompleted && polygonPoints.length === 0 && (
-                  <button
-                    onClick={togglePolygonDrawing}
-                    className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
-                  >
-                    Mulai Gambar
-                  </button>
-                )}
+                {!isDrawing &&
+                  !polygonCompleted &&
+                  polygonPoints.length === 0 && (
+                    <button
+                      onClick={togglePolygonDrawing}
+                      className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+                    >
+                      Mulai Gambar
+                    </button>
+                  )}
               </>
             )}
             {(mode === "marker" || mode === "bencana") && markerPos && (
@@ -434,11 +438,16 @@ export default function EditableMap({
               <Polygon
                 positions={polygonPoints}
                 pathOptions={{
-                  color: mode === "edit" && editingItem ? editingItem.color : selectedColor,
+                  color:
+                    mode === "edit" && editingItem
+                      ? editingItem.color
+                      : selectedColor,
                   weight: 4,
                   opacity: 1,
                   fillColor:
-                    mode === "edit" && editingItem ? editingItem.color : selectedColor,
+                    mode === "edit" && editingItem
+                      ? editingItem.color
+                      : selectedColor,
                   fillOpacity: mode === "edit" ? 0.3 : 0.4,
                   dashArray: mode === "edit" ? "10, 5" : null,
                   lineCap: "round",
@@ -448,24 +457,28 @@ export default function EditableMap({
             )}
 
           {/* Current Polygon being created (from form) */}
-          {currentPolygon && currentPolygon.coordinates.length > 0 && mode === "edit" && (
-            <Polygon
-              positions={currentPolygon.coordinates}
-              pathOptions={{
-                color: currentPolygon.color || selectedColor,
-                weight: 4,
-                opacity: 1,
-                fillColor: currentPolygon.color || selectedColor,
-                fillOpacity: 0.4,
-                dashArray: "10, 5",
-                lineCap: "round",
-                lineJoin: "round",
-              }}
-            />
-          )}
+          {currentPolygon &&
+            currentPolygon.coordinates.length > 0 &&
+            mode === "edit" && (
+              <Polygon
+                positions={currentPolygon.coordinates}
+                pathOptions={{
+                  color: currentPolygon.color || selectedColor,
+                  weight: 4,
+                  opacity: 1,
+                  fillColor: currentPolygon.color || selectedColor,
+                  fillOpacity: 0.4,
+                  dashArray: "10, 5",
+                  lineCap: "round",
+                  lineJoin: "round",
+                }}
+              />
+            )}
 
           {/* Editing Vertices for current polygon */}
-          {currentPolygon && currentPolygon.coordinates.length > 0 && mode === "edit" &&
+          {currentPolygon &&
+            currentPolygon.coordinates.length > 0 &&
+            mode === "edit" &&
             currentPolygon.coordinates.map((coord, index) => (
               <Marker
                 key={`current-vertex-${index}`}
@@ -486,26 +499,28 @@ export default function EditableMap({
             ))}
 
           {/* Adjusting Vertices for new polygon */}
-          {mode === "polygon" && isAdjusting && editingVertices.map((vertex, index) => (
-            <Marker
-              key={`adjust-vertex-${index}`}
-              position={vertex.position}
-              icon={getVertexIcon()}
-              draggable={true}
-              eventHandlers={{
-                dragend: (e) => {
-                  const { lat, lng } = e.target.getLatLng();
-                  const newPoints = [...polygonPoints];
-                  newPoints[index] = [lat, lng];
-                  setPolygonPoints(newPoints);
-                  
-                  const newVertices = [...editingVertices];
-                  newVertices[index].position = [lat, lng];
-                  setEditingVertices(newVertices);
-                },
-              }}
-            />
-          ))}
+          {mode === "polygon" &&
+            isAdjusting &&
+            editingVertices.map((vertex, index) => (
+              <Marker
+                key={`adjust-vertex-${index}`}
+                position={vertex.position}
+                icon={getVertexIcon()}
+                draggable={true}
+                eventHandlers={{
+                  dragend: (e) => {
+                    const { lat, lng } = e.target.getLatLng();
+                    const newPoints = [...polygonPoints];
+                    newPoints[index] = [lat, lng];
+                    setPolygonPoints(newPoints);
+
+                    const newVertices = [...editingVertices];
+                    newVertices[index].position = [lat, lng];
+                    setEditingVertices(newVertices);
+                  },
+                }}
+              />
+            ))}
 
           {/* Editing Vertices for existing polygon */}
           {mode === "edit" &&
@@ -640,7 +655,6 @@ export default function EditableMap({
                 </Polygon>
               );
             } else if (item.type === "marker") {
-              console.log(item.coordinates);
               return (
                 <React.Fragment key={`marker-${index}`}>
                   <Marker
