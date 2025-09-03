@@ -8,18 +8,22 @@ const EmergencyButton = () => {
   const { t } = useTranslation();
   const { profile } = useAuth();
   const [showEmergencyModal, setShowEmergencyModal] = useState(false);
-  const [location, setLocation] = useState(null);
-  const [isGettingLocation, setIsGettingLocation] = useState(false);
   const [cancelCount, setCancelCount] = useState(0);
   const [showWarning, setShowWarning] = useState(false);
   const [isBlocked, setIsBlocked] = useState(false);
 
-  // Check if user is logged in
+  // Check if user is logged in and has regular role
   const isLoggedIn = !!profile;
+  const isRegularUser = !profile?.role || profile?.role === 'REGULAR';
 
   const handleEmergencyClick = () => {
     if (!isLoggedIn) {
       alert('Anda harus login terlebih dahulu untuk menggunakan fitur SOS!');
+      return;
+    }
+    
+    if (!isRegularUser) {
+      alert('Fitur SOS hanya tersedia untuk user biasa!');
       return;
     }
     
@@ -29,48 +33,43 @@ const EmergencyButton = () => {
     }
     
     setShowEmergencyModal(true);
-    getCurrentLocation();
-  };
-
-  const getCurrentLocation = () => {
-    setIsGettingLocation(true);
-    
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setLocation({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          });
-          setIsGettingLocation(false);
-        },
-        (error) => {
-          console.error('Error getting location:', error);
-          setIsGettingLocation(false);
-        }
-      );
-    } else {
-      setIsGettingLocation(false);
-    }
   };
 
   const handleConfirmEmergency = () => {
-    // Demo emergency alert
-    const emergencyData = {
-      userId: profile?.id || 'demo-user',
-      userName: profile?.name || 'Demo User',
-      location: location,
-      timestamp: new Date().toISOString(),
-      type: 'EMERGENCY_SOS'
-    };
-    
-    console.log('🚨 EMERGENCY ALERT SENT:', emergencyData);
-    alert(`🚨 DARURAT! Sinyal SOS dari ${profile?.name || 'User'} telah dikirim ke tim respons!`);
-    
-    // Call emergency number
-    window.location.href = 'tel:112';
-    
-    setShowEmergencyModal(false);
+    // Minta permission lokasi saat konfirmasi
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          // Jika user izinkan permission, kirim data emergency
+          const emergencyData = {
+            userId: profile?.id || 'demo-user',
+            userName: profile?.name || 'Demo User',
+            location: {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            },
+            timestamp: new Date().toISOString(),
+            type: 'EMERGENCY_SOS'
+          };
+          
+          console.log('🚨 EMERGENCY ALERT SENT:', emergencyData);
+          alert(`🚨 DARURAT! Sinyal SOS dari ${profile?.name || 'User'} telah dikirim ke tim respons!`);
+          
+          // Call emergency number
+          window.location.href = 'tel:112';
+          
+          setShowEmergencyModal(false);
+        },
+        (error) => {
+          // Jika user tolak permission, tutup modal tanpa kirim data
+          console.log('Location permission denied:', error);
+          setShowEmergencyModal(false);
+        }
+      );
+    } else {
+      alert('Browser tidak mendukung geolokasi!');
+      setShowEmergencyModal(false);
+    }
   };
 
   const handleCancelEmergency = () => {
@@ -89,8 +88,8 @@ const EmergencyButton = () => {
     setShowEmergencyModal(false);
   };
 
-  // Don't show if not logged in
-  if (!isLoggedIn) {
+  // Don't show if not logged in or not regular user
+  if (!isLoggedIn || !isRegularUser) {
     return null;
   }
 
@@ -180,20 +179,14 @@ const EmergencyButton = () => {
                 </div>
 
                 {/* Location Info */}
-                <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
                   <div className="flex items-start gap-2">
-                    <FaMapMarkerAlt className="text-red-500 mt-0.5" size={14} />
+                    <FaMapMarkerAlt className="text-blue-500 mt-0.5" size={14} />
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-red-800 mb-1">{t('emergency.yourLocation')}:</p>
-                      {isGettingLocation ? (
-                        <p className="text-xs text-red-600">📍 {t('emergency.gettingLocation')}...</p>
-                      ) : location ? (
-                        <p className="text-xs text-red-600 font-mono">
-                          📍 {location.lat.toFixed(4)}, {location.lng.toFixed(4)}
-                        </p>
-                      ) : (
-                        <p className="text-xs text-red-600">📍 {t('emergency.locationNotAvailable')}</p>
-                      )}
+                      <p className="text-sm font-medium text-blue-800 mb-1">📍 Informasi Lokasi:</p>
+                      <p className="text-xs text-blue-600">
+                        Lokasi Anda akan diminta saat Anda mengkonfirmasi SOS untuk membantu tim respons menemukan Anda dengan cepat.
+                      </p>
                     </div>
                   </div>
                 </div>
