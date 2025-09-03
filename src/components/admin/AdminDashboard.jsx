@@ -20,6 +20,7 @@ import {
   FaTrash,
   FaDrawPolygon,
   FaChild,
+  FaMapMarkerAlt,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -64,6 +65,7 @@ import {
   AreaChart,
   Area,
 } from "recharts";
+import { area } from "framer-motion/client";
 
 // ==== ICON CUSTOM ====
 const createIcon = (iconUrl) => {
@@ -281,7 +283,7 @@ export default function AdminDashboard() {
               if (!normalized) {
                 return;
               }
-
+              console.log(item);
               formattedData.push({
                 id: item.id,
                 name: item.name,
@@ -290,6 +292,8 @@ export default function AdminDashboard() {
                 year: item.year || 2025,
                 coordinates: normalized, // already [lat,lng]
                 color: item.color || null,
+                area: item.area,
+                updated_at: item.updated_at,
               });
             } else if (item.type === "MARKER") {
               const normalized = normalizeMarkerCoordinates(item.coordinates);
@@ -311,6 +315,7 @@ export default function AdminDashboard() {
                   : null,
                 radius: item.radius || null,
                 color: item.color || null,
+                updated_at: item.updated_at,
               });
             }
           } catch (err) {}
@@ -543,14 +548,7 @@ export default function AdminDashboard() {
 
   // Buat array poligon legend yang sinkron dengan warna di peta
   const polygonLegendData = useMemo(() => {
-    return filteredData
-      .filter((item) => item.type === "polygon")
-      .map((region, idx) => ({
-        id: region.id,
-        name: region.name,
-        color: region.color || getPolygonColorByIndex(idx),
-        label: `Batas ${region.name}`,
-      }));
+    return filteredData.filter((item) => item.type === "polygon");
   }, [filteredData]);
 
   // After fetching map data, extract unique years and keep them sorted
@@ -595,6 +593,49 @@ export default function AdminDashboard() {
         type === "polygon" ? "wilayah" : "titik"
       } "${name}".`
     );
+  };
+
+  // Fungsi format tanggal untuk Indonesia
+  const formatDate = (dateString) => {
+    try {
+      const date = new Date(dateString);
+
+      // Opsi format tanggal untuk Indonesia
+      const options = {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      };
+
+      return date.toLocaleDateString("id-ID", options) + " WIB";
+    } catch (e) {
+      return dateString;
+    }
+  };
+
+  // Fungsi format tanggal lengkap dengan detik
+  const formatDateToIndonesian = (dateString) => {
+    try {
+      const date = new Date(dateString);
+
+      // Opsi format tanggal lengkap untuk Indonesia
+      const options = {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      };
+
+      return (
+        date.toLocaleDateString("id-ID", options).replace(",", "") + " WIB"
+      );
+    } catch (e) {
+      return dateString;
+    }
   };
 
   return (
@@ -679,7 +720,7 @@ export default function AdminDashboard() {
               center={[-6.75, 108.05861]}
               zoom={15}
               scrollWheelZoom={true}
-              className={"w-full h-[500px] z-0"}
+              className={"w-full h-[750px] 2xl:h-[1000px] z-0"}
             >
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -787,19 +828,18 @@ export default function AdminDashboard() {
               Legenda Peta
             </h3>
           </div>
-
           {/* Dynamic legend cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-            {/* Polygon Legend Card - Enhanced */}
+            {/* Kartu Legenda Poligon */}
             {polygonLegendData.length > 0 && (
               <div className="bg-white rounded-xl shadow-lg border-2 border-green-100 p-6 hover:shadow-xl transition-all duration-300">
                 <h4 className="font-semibold text-xl text-gray-800 mb-4 flex items-center border-b border-green-100 pb-3">
                   <div className="w-8 h-8 mr-2 border-2 border-dashed rounded-md border-blue-500 flex items-center justify-center">
                     <FaDrawPolygon className="text-blue-500" />
                   </div>
-                  Wilayah & Batas
+                  Area Poligon
                 </h4>
-                <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2">
+                <div className="space-y-4 max-h-[750px] overflow-y-auto pr-2">
                   {polygonLegendData.map((poly) => (
                     <div
                       key={`legend-poly-${poly.id}`}
@@ -807,90 +847,117 @@ export default function AdminDashboard() {
                     >
                       <div className="flex items-center gap-3">
                         <div
-                          className="w-12 h-0 border-t-3 border-dashed"
+                          className="w-12 h-12 rounded-md"
                           style={{
-                            borderColor: poly.color,
-                            borderWidth: "2px",
+                            backgroundColor: poly.color,
                           }}
                         ></div>
-                        <span className="text-base text-gray-700 font-medium">
-                          {poly.label}
-                        </span>
+                        <div className="flex flex-col">
+                          <span className="text-base text-gray-700 font-medium">
+                            {poly.name}
+                          </span>
+                          {poly.description && (
+                            <span className="text-sm text-gray-500">
+                              {poly.description}
+                            </span>
+                          )}
+                          {poly.updated_at && (
+                            <span className="text-xs text-gray-400 mt-1">
+                              Diperbarui: {formatDate(poly.updated_at)}
+                            </span>
+                          )}
+                        </div>
                       </div>
-                      <button
-                        type="button"
-                        className="text-gray-400 hover:text-red-500 p-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                        onClick={() =>
-                          handleDeleteMapItem(poly.id, poly.name, "polygon")
-                        }
-                        title="Hapus"
-                      >
-                        <FaTrash size={16} />
-                      </button>
+                      <div className="flex items-center gap-2 text-sm text-gray-500">
+                        {poly.area && (
+                          <span className="bg-gray-100 px-2 py-1 rounded-md flex items-center">
+                            <span className="font-medium">
+                              {Number(poly.area).toLocaleString("id-ID")}
+                            </span>
+                            <span className="ml-1">
+                              m<sup>2</sup>
+                            </span>
+                          </span>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>
               </div>
             )}
 
-            {/* Individual Markers Cards - Each marker gets its own card */}
-            <div className="grid grid-cols-1 gap-4">
-              {filteredData
-                .filter((item) => item.type === "marker")
-                .map((marker, index) => (
-                  <div
-                    key={`marker-card-${marker.id || index}`}
-                    className="bg-white rounded-xl shadow-md border border-blue-100 p-4 hover:shadow-lg transition-all duration-300"
-                  >
-                    <div className="flex items-start gap-3">
-                      <div
-                        className="w-12 h-12 bg-contain bg-center bg-no-repeat rounded-md border border-gray-200 flex-shrink-0"
-                        style={{
-                          backgroundImage: `url('${marker.icon}')`,
-                          backgroundSize: "contain",
-                        }}
-                      ></div>
-
-                      <div className="flex-1 min-w-0">
-                        <h5 className="font-medium text-gray-800 mb-1 text-base">
-                          {marker.name}
-                        </h5>
-                        <p className="text-xs text-gray-500 line-clamp-2">
-                          {marker.description}
-                        </p>
-                        <div className="mt-1 flex items-center gap-1 text-xs text-gray-400">
-                          <span>Koordinat:</span>
-                          <code className="bg-gray-50 px-1 py-0.5 rounded">
-                            {safeToFixedMaybe(marker.coordinates[0][0], 4)},{" "}
-                            {safeToFixedMaybe(marker.coordinates[0][1], 4)}
-                          </code>
-                        </div>
-                      </div>
-
-                      <button
-                        type="button"
-                        className="text-gray-400 hover:text-red-500 p-2 transition-colors"
-                        onClick={() =>
-                          handleDeleteMapItem(marker.id, marker.name, "marker")
-                        }
-                        title="Hapus"
-                      >
-                        <FaTrash size={14} />
-                      </button>
-                    </div>
+            {/* Kartu Marker */}
+            {filteredData.length > 0 && (
+              <div className="bg-white rounded-xl shadow-lg border-2 border-green-100 p-6 hover:shadow-xl transition-all duration-300">
+                <h4 className="font-semibold text-xl text-gray-800 mb-4 flex items-center border-b border-green-100 pb-3">
+                  <div className="w-8 h-8 mr-2 border-2 border-dashed rounded-md border-blue-500 flex items-center justify-center">
+                    <FaMapMarkerAlt className="text-blue-500" />
                   </div>
-                ))}
-            </div>
-
-            {/* No data state - Enhanced */}
-            {filteredData.length === 0 && (
-              <div className="bg-white rounded-xl shadow-lg border-2 border-dashed border-gray-200 p-8 col-span-full flex flex-col items-center justify-center">
-                <div className="text-gray-400 mb-3">
-                  <FaMapMarkedAlt size={48} />
+                  Titik Lokasi
+                </h4>
+                <div className="space-y-4 max-h-[750px] overflow-y-auto pr-2">
+                  {filteredData.map(
+                    (marker) =>
+                      marker.type === "marker" && (
+                        <div
+                          key={marker.id}
+                          className="flex items-center justify-between pl-3 pr-2 py-3 hover:bg-gray-50 rounded-lg group transition-colors border border-gray-100"
+                        >
+                          <div className="flex items-center gap-3">
+                            <img
+                              src={marker.icon}
+                              alt={marker.name}
+                              className="w-12 h-12 object-cover rounded-md"
+                            />
+                            <div className="flex flex-col">
+                              <span className="text-base text-gray-700 font-medium">
+                                {marker.name}
+                              </span>
+                              {marker.description && (
+                                <span className="text-sm text-gray-500">
+                                  {marker.description}
+                                </span>
+                              )}
+                              {marker.updated_at && (
+                                <span className="text-xs text-gray-400 mt-1">
+                                  Diperbarui: {formatDate(marker.updated_at)}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2 text-sm text-gray-500">
+                            {marker.radius && (
+                              <span className="bg-gray-100 px-2 py-1 rounded-md flex items-center">
+                                <span className="font-medium">
+                                  {Number(marker.radius).toLocaleString(
+                                    "id-ID"
+                                  )}
+                                </span>
+                                <span className="ml-1">m</span>
+                              </span>
+                            )}
+                            {marker.color && (
+                              <div
+                                className="w-4 h-4 rounded-full border border-gray-200"
+                                style={{ backgroundColor: marker.color }}
+                                title="Warna marker"
+                              ></div>
+                            )}
+                          </div>
+                        </div>
+                      )
+                  )}
                 </div>
-                <span className="text-lg text-gray-600 text-center mb-4">
-                  Belum ada data legenda untuk ditampilkan
-                </span>
+                <div className="mt-4 pt-3 border-t border-green-100 flex justify-between items-center text-sm">
+                  <span className="text-gray-500">Jumlah Titik:</span>
+                  <span className="font-semibold text-gray-700 bg-green-50 px-3 py-1 rounded-md">
+                    {
+                      filteredData.filter((marker) => marker.type === "marker")
+                        .length
+                    }{" "}
+                    Lokasi
+                  </span>
+                </div>
               </div>
             )}
           </div>
