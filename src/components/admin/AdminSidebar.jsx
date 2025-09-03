@@ -46,6 +46,17 @@ export default function AdminSidebar({ isOpen, onClose }) {
   // State untuk waktu saat ini
   const [currentTime, setCurrentTime] = useState(new Date());
 
+  // State untuk data emergency (dummy data)
+  const [emergencyData, setEmergencyData] = useState([
+    { id: 1, status: 'handled', message: 'Bantuan bencana banjir' },
+    { id: 2, status: 'handled', message: 'Bantuan kesehatan' },
+    { id: 3, status: 'handled', message: 'Bantuan pangan' }
+  ]);
+
+  // Hitung data yang belum tertangani
+  const pendingEmergencies = emergencyData.filter(item => item.status === 'pending');
+  const hasEmergency = pendingEmergencies.length > 0;
+
   // - supaya sidebar mobile gak langsung hilang
   const [isVisible, setIsVisible] = useState(false);
 
@@ -58,7 +69,21 @@ export default function AdminSidebar({ isOpen, onClose }) {
       setCurrentTime(new Date());
     }, 1000);
 
-    return () => clearInterval(timer);
+    // Simulasi perubahan status emergency setiap 10 detik (untuk testing)
+    const emergencyTimer = setInterval(() => {
+      setEmergencyData(prev => {
+        const newData = [...prev];
+        // Randomly change status of one item
+        const randomIndex = Math.floor(Math.random() * newData.length);
+        newData[randomIndex].status = newData[randomIndex].status === 'pending' ? 'handled' : 'pending';
+        return newData;
+      });
+    }, 10000);
+
+    return () => {
+      clearInterval(timer);
+      clearInterval(emergencyTimer);
+    };
   }, [isOpen]);
 
   // Format waktu menjadi string: "HH:MM:SS"
@@ -91,6 +116,16 @@ export default function AdminSidebar({ isOpen, onClose }) {
     setProfile(null);
     await alertSuccess("Anda telah keluar.");
     navigate("/login");
+  };
+
+  // Fungsi untuk testing - ubah status emergency manual
+  const toggleEmergencyStatus = () => {
+    setEmergencyData(prev => 
+      prev.map(item => ({
+        ...item,
+        status: item.status === 'pending' ? 'handled' : 'pending'
+      }))
+    );
   };
 
   const menu = [
@@ -242,6 +277,13 @@ export default function AdminSidebar({ isOpen, onClose }) {
           <div className="text-xs text-white font-medium">
             {formatTime(currentTime)}
           </div>
+          {/* Button untuk testing (hapus di production) */}
+          <button 
+            onClick={toggleEmergencyStatus}
+            className="mt-1 text-xs bg-white text-green-600 px-2 py-1 rounded opacity-70 hover:opacity-100"
+          >
+            Toggle Emergency
+          </button>
         </div>
       </div>
 
@@ -251,25 +293,49 @@ export default function AdminSidebar({ isOpen, onClose }) {
           const isActive = location.pathname === item.to;
           // Styling khusus untuk menu darurat
           if (item.isEmergency) {
-            return (
-              <Link
-                key={item.to}
-                to={item.to}
-                onClick={onClose}
-                className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-all duration-200 ${
-                  isActive
-                    ? "bg-gradient-to-r from-red-600 to-red-800 text-white font-semibold shadow-md animate-pulse"
-                    : "bg-red-500 text-white hover:bg-red-600 font-semibold"
-                }`}
-              >
-                {item.icon}
-                <span>{item.label}</span>
-                {/* Badge peringatan */}
-                <span className="ml-auto bg-white text-red-600 text-xs font-bold px-2 py-1 rounded-full animate-pulse">
-                  Penting!
-                </span>
-              </Link>
-            );
+            // Jika ada emergency yang belum tertangani, tampilkan merah berkedip
+            if (hasEmergency) {
+              return (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  onClick={onClose}
+                  className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-all duration-200 ${
+                    isActive
+                      ? "bg-gradient-to-r from-red-600 to-red-800 text-white font-semibold shadow-md animate-pulse"
+                      : "bg-red-500 text-white hover:bg-red-600 font-semibold animate-pulse"
+                  }`}
+                >
+                  {item.icon}
+                  <span>{item.label}</span>
+                  {/* Badge dengan jumlah emergency */}
+                  <span className="ml-auto bg-white text-red-600 text-xs font-bold px-2 py-1 rounded-full animate-pulse">
+                    {pendingEmergencies.length}
+                  </span>
+                </Link>
+              );
+            } else {
+              // Jika semua sudah tertangani, tampilkan normal seperti menu lain
+              return (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  onClick={onClose}
+                  className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-all duration-200 ${
+                    isActive
+                      ? "bg-gradient-to-r from-green-400 to-[#B6F500] text-white font-semibold shadow-md"
+                      : "text-gray-700 hover:bg-gradient-to-r hover:from-green-50 hover:to-lime-50 hover:text-green-700"
+                  }`}
+                >
+                  {item.icon}
+                  <span>{item.label}</span>
+                  {/* Badge hijau untuk menunjukkan semua tertangani */}
+                  <span className="ml-auto bg-green-100 text-green-600 text-xs font-medium px-2 py-1 rounded-full">
+                    ✓
+                  </span>
+                </Link>
+              );
+            }
           }
           
           return (
