@@ -796,6 +796,27 @@
     "modalCancel": "Batal",
     "modalConfirm": "KIRIM SOS"
   },
+  "emergency": {
+    "buttonTitle": "🚨 TOMBOL DARURAT - Hanya untuk keadaan darurat!",
+    "confirmTitle": "Konfirmasi Panggilan Darurat",
+    "confirmMessage": "Apakah benar-benar DARURAT?",
+    "yourLocation": "Lokasi Anda",
+    "gettingLocation": "Mendapatkan lokasi",
+    "locationNotAvailable": "Lokasi tidak tersedia",
+    "systemWarning": "PERINGATAN SISTEM",
+    "rule1": "3x Batal",
+    "rule1Description": "Peringatan muncul",
+    "rule2": "5x Batal",
+    "rule2Description": "Akun diblokir permanen",
+    "rule3": "Gunakan hanya untuk darurat sesungguhnya!",
+    "cancelledTimes": "Anda sudah membatalkan {{count}} kali",
+    "warningActive": "STATUS: PERINGATAN AKTIF!",
+    "warningTitle": "Peringatan SOS",
+    "warningMessage": "Halo {{name}}, Anda sudah batal {{count}} kali. Jika batal {{remaining}} kali lagi, akun diblokir!",
+    "understood": "Saya Mengerti",
+    "cancel": "Batal",
+    "emergency": "DARURAT"
+  },
   "footer": {
     "village_name": "Desa Babakan Asem",
     "address": "Jalan Babakan Asem No. 142 Desa Babakan Asem,\nKecamatan Conggeang, Kabupaten Sumedang,\nJawa Barat 45391",
