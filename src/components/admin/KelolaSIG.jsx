@@ -29,6 +29,7 @@ export default function KelolaSIG() {
   const [hiddenPolygons, setHiddenPolygons] = useState(new Set());
   const [hiddenMarkers, setHiddenMarkers] = useState(new Set());
   const [isSaving, setIsSaving] = useState(false);
+  const [resetPolygon, setResetPolygon] = useState(false);
   const markerIconRef = useRef(null);
 
   // Form states
@@ -235,6 +236,8 @@ export default function KelolaSIG() {
   };
 
   const handlePolygonEdit = (updatedPolygon) => {
+    // Update koordinat dan area saat polygon di-drag
+    setCurrentCoordinates(updatedPolygon.coordinates);
     setPolygonForm((prev) => ({
       ...prev,
       coordinates: updatedPolygon.coordinates,
@@ -283,6 +286,9 @@ export default function KelolaSIG() {
       });
       setSelectedColor("#3B82F6");
       setCurrentCoordinates(null);
+      setEditingItem(null);
+      setResetPolygon(true);
+      setTimeout(() => setResetPolygon(false), 100);
       setMapMode("view");
       await loadMapData();
       alertSuccess("Polygon berhasil disimpan!");
@@ -843,6 +849,8 @@ export default function KelolaSIG() {
                         ? setMarkerForm
                         : setEditingItem
                     }
+                    currentPolygon={polygonForm.coordinates.length > 0 ? polygonForm : null}
+                    resetPolygon={resetPolygon}
                     defaultCenter={[-6.75, 108.05861]}
                     zoom={15}
                   />
@@ -883,26 +891,30 @@ export default function KelolaSIG() {
                       <h3 className="text-lg font-semibold">Kelola Polygon</h3>
                       <button
                         onClick={() => {
-                          const newMode =
-                            mapMode === "polygon" ? "view" : "polygon";
-                          setMapMode(newMode);
-                          if (newMode === "view") {
+                          if (mapMode === "polygon" || mapMode === "edit") {
+                            // Reset semua state saat batal
+                            setMapMode("view");
                             setCurrentCoordinates(null);
-                            setPolygonForm((prev) => ({
-                              ...prev,
+                            setPolygonForm({
+                              name: "",
+                              description: "",
+                              color: "#3B82F6",
                               coordinates: [],
                               area: 0,
-                            }));
+                            });
+                            setEditingItem(null);
+                          } else {
+                            setMapMode("polygon");
                           }
                         }}
                         className={`flex items-center px-3 py-1 text-sm rounded ${
-                          mapMode === "polygon"
+                          mapMode === "polygon" || mapMode === "edit"
                             ? "bg-red-600 text-white hover:bg-red-700"
                             : "bg-blue-600 text-white hover:bg-blue-700"
                         }`}
                       >
                         <FaPlus className="mr-1" />
-                        {mapMode === "polygon" ? "Batal" : "Gambar"}
+                        {mapMode === "polygon" || mapMode === "edit" ? "Batal" : "Gambar"}
                       </button>
                     </div>
 
