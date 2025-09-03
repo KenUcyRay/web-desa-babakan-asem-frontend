@@ -200,12 +200,12 @@ export class MapApi {
           ? data.coordinates
           : JSON.stringify(data.coordinates)
       );
+      formData.append("color", data.color);
 
       if (data.type === MapType.POLYGON) {
-        formData.append("color", data.color);
         formData.append("area", data.area);
       } else {
-        formData.append("icon", data.icon);
+        formData.append("icon", data.icon === null ? undefined : data.icon);
         formData.append("radius", data.radius.toString());
       }
 
@@ -238,81 +238,43 @@ export class MapApi {
   // Update map - FIXED
   static async update(id, data, language) {
     try {
-      let requestBody;
-      let headers = {
-        Accept: "application/json",
-        "Accept-Language": language,
-      };
+      const formData = new FormData();
+      formData.append("type", data.type);
+      formData.append("name", data.name);
+      formData.append("description", data.description);
+      formData.append("year", data.year.toString());
+      formData.append(
+        "coordinates",
+        typeof data.coordinates === "string"
+          ? data.coordinates
+          : JSON.stringify(data.coordinates)
+      );
+      formData.append("color", data.color);
 
-      if (data instanceof FormData) {
-        // Jika sudah FormData, tambahkan _method untuk Laravel style override
-        data.append("_method", "PUT");
-        requestBody = data;
+      if (data.type === MapType.POLYGON) {
+        formData.append("area", data.area);
       } else {
-        // Jika object biasa, buat FormData atau JSON sesuai tipe
-        if (data.icon && data.icon instanceof File) {
-          // Jika ada file icon, gunakan FormData
-          const formData = new FormData();
-          formData.append("type", data.type);
-          formData.append("name", data.name);
-          formData.append("description", data.description);
-          formData.append("year", data.year.toString());
-          formData.append(
-            "coordinates",
-            typeof data.coordinates === "string"
-              ? data.coordinates
-              : JSON.stringify(data.coordinates)
-          );
-          formData.append("_method", "PUT");
-
-          if (data.type === MapType.POLYGON && data.color) {
-            formData.append("color", data.color);
-          }
-          if (data.icon instanceof File) {
-            formData.append("icon", data.icon);
-          }
-          if (data.type === MapType.BENCANA && data.radius) {
-            formData.append("radius", data.radius.toString());
-          }
-
-          requestBody = formData;
-        } else {
-          // Jika tidak ada file, gunakan JSON dengan method PUT
-          headers["Content-Type"] = "application/json";
-
-          const payload = {
-            type: data.type,
-            name: data.name,
-            description: data.description,
-            year: data.year,
-            coordinates:
-              typeof data.coordinates === "string"
-                ? data.coordinates
-                : JSON.stringify(data.coordinates),
-          };
-
-          if (data.type === MapType.POLYGON && data.color) {
-            payload.color = data.color;
-          }
-          if (data.type === MapType.BENCANA && data.radius) {
-            payload.radius = data.radius;
-          }
-
-          requestBody = JSON.stringify(payload);
+        if (data.icon instanceof File) {
+          formData.append("icon", data.icon);
         }
+        formData.append("radius", data.radius.toString());
       }
 
-      const response = await fetch(`${MAPS_BASE_URL}/${id}`, {
-        method:
-          data instanceof FormData || (data.icon && data.icon instanceof File)
-            ? "POST"
-            : "PUT",
-        credentials: "include",
-        headers,
-        body: requestBody,
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_NEW_BASE_URL}/admin/maps/${id}`,
+        {
+          method: "PATCH",
+          credentials: "include",
+          headers: {
+            Accept: "application/json",
+            "Accept-Language": language,
+          },
+          body: formData,
+        }
+      );
 
       if (!response.ok) {
+        console.log(await response.json());
         const errorData = await response
           .json()
           .catch(() => ({ message: "Failed to update map" }));

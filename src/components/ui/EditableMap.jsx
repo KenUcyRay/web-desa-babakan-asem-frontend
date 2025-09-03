@@ -7,6 +7,7 @@ import {
   useMapEvents,
   Circle,
   Popup,
+  Tooltip,
 } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -26,11 +27,11 @@ export default function EditableMap({
   mode = "view", // "polygon", "marker", "view", "edit"
   onPolygonComplete,
   onMarkerPlace,
-  onBencanaPlace,
   onPolygonEdit,
   existingData = [],
   selectedColor = "#3B82F6",
   editingItem = null,
+  setEditingItem = null,
   radius = 10,
   defaultCenter = [-6.75, 108.05861],
   zoom = 15,
@@ -333,10 +334,11 @@ export default function EditableMap({
               <Polygon
                 positions={polygonPoints}
                 pathOptions={{
-                  color: editingItem.color,
+                  color: mode === "edit" ? editingItem.color : selectedColor,
                   weight: 4,
                   opacity: 1,
-                  fillColor: editingItem.color,
+                  fillColor:
+                    mode === "edit" ? editingItem.color : selectedColor,
                   fillOpacity: mode === "edit" ? 0.3 : 0.4,
                   dashArray: mode === "edit" ? "10, 5" : null,
                   lineCap: "round",
@@ -360,8 +362,49 @@ export default function EditableMap({
               />
             ))}
 
+          {mode === "edit" && editingItem?.type === "marker" && (
+            <React.Fragment key={`marker-${editingItem.id}`}>
+              <Marker
+                position={editingItem.coordinates}
+                draggable={true} // 👉 bikin marker bisa digeser
+                icon={createDynamicIcon(
+                  editingItem.icon ||
+                    "https://cdn-icons-png.flaticon.com/512/252/252025.png",
+                  30
+                )}
+                eventHandlers={{
+                  dragend: (e) => {
+                    const newLatLng = e.target.getLatLng();
+                    // update state koordinat editingItem
+                    setEditingItem((prev) => ({
+                      ...prev,
+                      coordinates: [newLatLng.lat, newLatLng.lng],
+                    }));
+                  },
+                }}
+              >
+                <Popup>{editingItem.name}</Popup>
+              </Marker>
+
+              {/* Circle ikut gerak */}
+              <Circle
+                center={editingItem.coordinates}
+                radius={editingItem.radius}
+                pathOptions={{
+                  color: editingItem.color || "#EF4444",
+                  weight: 3,
+                  opacity: 0.8,
+                  fillColor: editingItem.color || "#EF4444",
+                  fillOpacity: 0.2,
+                  dashArray: "10, 5",
+                  lineCap: "round",
+                }}
+              />
+            </React.Fragment>
+          )}
+
           {/* Current Drawing - Marker */}
-          {markerPos && (mode === "marker" || mode === "edit") && (
+          {markerPos && mode === "marker" && (
             <React.Fragment>
               <Marker
                 position={[markerPos.lat, markerPos.lng]}
@@ -415,7 +458,8 @@ export default function EditableMap({
             if (mode === "edit" && editingItem && item.id === editingItem.id) {
               return null;
             }
-            if (item.type === "polygon" && item.coordinates) {
+
+            if (item.type === "polygon") {
               return (
                 <Polygon
                   key={`polygon-${index}`}
@@ -429,9 +473,12 @@ export default function EditableMap({
                     lineCap: "round",
                     lineJoin: "round",
                   }}
-                />
+                >
+                  <Popup>{item.description}</Popup>
+                  <Tooltip>{item.name}</Tooltip>
+                </Polygon>
               );
-            } else if (item.type === "marker" && item.coordinates) {
+            } else if (item.type === "marker") {
               return (
                 <React.Fragment key={`marker-${index}`}>
                   <Marker
@@ -442,7 +489,7 @@ export default function EditableMap({
                       30
                     )}
                   >
-                    <Popup>{item.name}</Popup>
+                    <Popup>{item.description}</Popup>
                   </Marker>
                   <Circle
                     center={item.coordinates}
@@ -456,7 +503,9 @@ export default function EditableMap({
                       dashArray: "10, 5",
                       lineCap: "round",
                     }}
-                  />
+                  >
+                    <Tooltip>{item.name}</Tooltip>
+                  </Circle>
                 </React.Fragment>
               );
             }

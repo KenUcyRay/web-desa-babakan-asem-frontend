@@ -1,4 +1,4 @@
-import { useState, useEffect, act } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   FaMapMarkedAlt,
   FaDrawPolygon,
@@ -16,7 +16,6 @@ import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 import ColorPicker from "../ui/ColorPicker";
 import EditableMap from "../ui/EditableMap";
 import { MapApi } from "../../libs/api/MapApi";
-import { th } from "framer-motion/client";
 
 export default function KelolaSIG() {
   const { i18n } = useTranslation();
@@ -30,6 +29,7 @@ export default function KelolaSIG() {
   const [hiddenPolygons, setHiddenPolygons] = useState(new Set());
   const [hiddenMarkers, setHiddenMarkers] = useState(new Set());
   const [isSaving, setIsSaving] = useState(false);
+  const markerIconRef = useRef(null);
 
   // Form states
   const [polygonForm, setPolygonForm] = useState({
@@ -217,6 +217,23 @@ export default function KelolaSIG() {
     });
   };
 
+  const handleEditMarker = (marker) => {
+    setEditingItem(marker);
+    setMapMode("edit");
+    setActiveTab("marker");
+    setMarkerForm({
+      id: marker.id,
+      type: marker.type,
+      name: marker.name,
+      description: marker.description,
+      coordinates: marker.coordinates,
+      radius: marker.radius,
+      icon: marker.icon,
+      color: marker.color,
+      year: marker.year,
+    });
+  };
+
   const handlePolygonEdit = (updatedPolygon) => {
     setPolygonForm((prev) => ({
       ...prev,
@@ -296,6 +313,7 @@ export default function KelolaSIG() {
       setIsSaving(true);
 
       // FIXED: Kirim sebagai object dengan file icon
+
       const payload = {
         type: "MARKER",
         name: markerForm.name,
@@ -304,6 +322,7 @@ export default function KelolaSIG() {
         coordinates: [markerForm.coordinates], // Array of coordinates
         radius: markerForm.radius,
         icon: markerForm.icon, // File object
+        color: markerForm.color,
       };
 
       const result = await MapApi.create(payload, i18n.language);
@@ -318,7 +337,11 @@ export default function KelolaSIG() {
         coordinates: [],
         radius: 10,
         icon: null,
+        color: "#3B82F6",
       });
+
+      markerIconRef.current.value = "";
+
       setCurrentCoordinates(null);
       await loadMapData();
       alertSuccess("Data bencana berhasil disimpan!");
@@ -387,7 +410,7 @@ export default function KelolaSIG() {
     }
   };
 
-  const handleUpdateBencana = async () => {
+  const handleUpdateMarker = async () => {
     if (!editingItem || !markerForm.name || !markerForm.type) {
       alertError("Mohon lengkapi semua field");
       return;
@@ -396,15 +419,20 @@ export default function KelolaSIG() {
     try {
       setIsSaving(true);
 
-      // FIXED: Kirim sebagai object, bukan FormData langsung
+      let coordinates = markerForm.coordinates;
+      if (!Array.isArray(coordinates)) {
+        coordinates = [coordinates.lat, coordinates.lng];
+      }
+
       const payload = {
-        type: "BENCANA",
+        type: "MARKER",
         name: markerForm.name,
         description: markerForm.description,
         year: editingItem.year || new Date().getFullYear(),
-        coordinates: [markerForm.coordinates], // Array of coordinates
+        coordinates: [coordinates], // Array of coordinates
         radius: markerForm.radius,
         icon: markerForm.icon instanceof File ? markerForm.icon : null,
+        color: markerForm.color,
       };
 
       const result = await MapApi.update(
@@ -424,6 +452,7 @@ export default function KelolaSIG() {
         coordinates: [],
         radius: 10,
         icon: null,
+        color: "#3B82F6",
       });
       setCurrentCoordinates(null);
       setEditingItem(null);
@@ -471,8 +500,13 @@ export default function KelolaSIG() {
     }
   };
 
-  const handleDeleteBencana = async (id) => {
+  const handleDeleteMarker = async (id) => {
     try {
+      const confirmation = await alertConfirm(
+        "Apakah anda yakin ingin menghapus marker ini?"
+      );
+      if (!confirmation) return;
+
       const result = await MapApi.delete(id, i18n.language);
       if (result.error) {
         throw new Error(result.message || "Gagal menghapus data bencana");
@@ -484,10 +518,10 @@ export default function KelolaSIG() {
           name: "",
           type: "",
           description: "",
-          riskLevel: "rendah",
           coordinates: [],
           radius: 10,
           icon: null,
+          color: "#3B82F6",
         });
       }
       await loadMapData();
@@ -539,6 +573,7 @@ export default function KelolaSIG() {
       coordinates: [],
       radius: 10,
       icon: null,
+      color: "#3B82F6",
     });
     setSelectedColor("#3B82F6");
   };
@@ -592,6 +627,7 @@ export default function KelolaSIG() {
           <input
             type="file"
             accept="image/*"
+            ref={markerIconRef}
             onChange={(e) => {
               const file = e.target.files[0];
               if (file) {
@@ -705,7 +741,7 @@ export default function KelolaSIG() {
         {editingItem ? (
           <>
             <button
-              onClick={handleUpdateBencana}
+              onClick={handleUpdateMarker}
               disabled={isSaving}
               className={`flex-1 flex items-center justify-center px-4 py-2 rounded ${
                 isSaving
@@ -799,7 +835,14 @@ export default function KelolaSIG() {
                     ]}
                     radius={markerForm.radius}
                     selectedColor={selectedColor}
-                    editingItem={editingItem}
+                    editingItem={
+                      editingItem?.type === "marker" ? markerForm : editingItem
+                    }
+                    setEditingItem={
+                      editingItem?.type === "marker"
+                        ? setMarkerForm
+                        : setEditingItem
+                    }
                     defaultCenter={[-6.75, 108.05861]}
                     zoom={15}
                   />
@@ -1038,7 +1081,9 @@ export default function KelolaSIG() {
                             style={{ backgroundColor: polygon.color }}
                           ></span>
                         </td>
-                        <td className="px-4 py-3">{polygon.area}</td>
+                        <td className="px-4 py-3">
+                          {polygon.area} m<sup>2</sup>
+                        </td>
                         {/* Aksi Buttons */}
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-2">
@@ -1118,7 +1163,7 @@ export default function KelolaSIG() {
                         </td>
 
                         {/* Radius */}
-                        <td className="px-4 py-3">{marker.radius}</td>
+                        <td className="px-4 py-3">{marker.radius} m</td>
 
                         {/* Aksi Buttons */}
                         <td className="px-4 py-3">
@@ -1141,13 +1186,19 @@ export default function KelolaSIG() {
                             </button>
 
                             {/* Edit */}
-                            <button className="flex items-center gap-1 px-3 py-1 text-xs font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition">
+                            <button
+                              onClick={() => handleEditMarker(marker)}
+                              className="flex items-center gap-1 px-3 py-1 text-xs font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition"
+                            >
                               <FaEdit className="text-xs" />
                               Edit
                             </button>
 
                             {/* Delete */}
-                            <button className="flex items-center gap-1 px-3 py-1 text-xs font-medium text-white bg-red-600 rounded-md hover:bg-red-700 transition">
+                            <button
+                              onClick={() => handleDeleteMarker(marker.id)}
+                              className="flex items-center gap-1 px-3 py-1 text-xs font-medium text-white bg-red-600 rounded-md hover:bg-red-700 transition"
+                            >
                               <FaTrash className="text-xs" />
                               Hapus
                             </button>
