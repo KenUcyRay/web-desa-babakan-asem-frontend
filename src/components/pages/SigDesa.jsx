@@ -113,26 +113,20 @@ export default function SigDesa() {
     {
       id: "all",
       name: "Semua",
-      icon: <FaMapMarkedAlt className="text-blue-500" />,
-      color: "bg-blue-100 text-blue-800"
+      icon: <FaMapMarkedAlt className="text-green-500" />,
+      color: "bg-green-100 text-green-800"
     },
     {
       id: "polygon",
       name: "Area",
-      icon: <div className="w-4 h-4 rounded border-2 border-blue-500 bg-blue-200"></div>,
-      color: "bg-blue-100 text-blue-800"
+      icon: <div className="w-4 h-4 rounded border-2 border-green-500 bg-green-200"></div>,
+      color: "bg-green-100 text-green-800"
     },
     {
       id: "marker",
       name: "Lokasi",
       icon: <FaMapMarkerAlt className="text-green-500" />,
       color: "bg-green-100 text-green-800"
-    },
-    {
-      id: "bencana",
-      name: "Bencana",
-      icon: <FaExclamationTriangle className="text-red-500" />,
-      color: "bg-red-100 text-red-800"
     }
   ];
 
@@ -144,14 +138,14 @@ export default function SigDesa() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 py-8 px-4">
+    <div className="min-h-screen bg-green-50 py-8 px-4">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-2">
-            <span className="text-blue-600">🗺️ Peta Desa</span> Babakan Asem
+          <h1 className="text-3xl md:text-4xl font-bold text-green-700 mb-2">
+            <span className="text-green-600">🗺️ Peta Desa</span> Babakan Asem
           </h1>
-          <p className="text-gray-600 max-w-2xl mx-auto">
+          <p className="text-green-600 max-w-2xl mx-auto">
             Lihat informasi geografis desa kami, termasuk area penting, fasilitas umum, dan zona rawan bencana
           </p>
         </div>
@@ -161,7 +155,7 @@ export default function SigDesa() {
           <div className="w-full lg:w-2/3">
             <div className="bg-white rounded-xl shadow-lg overflow-hidden">
               <div className="p-4 border-b flex justify-between items-center">
-                <h2 className="text-lg font-semibold text-gray-800">Peta Interaktif Desa</h2>
+                <h2 className="text-lg font-semibold text-green-700">Peta Interaktif Desa</h2>
                 <div className="flex items-center text-sm text-gray-500">
                   <FaInfoCircle className="mr-1" />
                   <span>Zoom dan geser untuk menjelajahi</span>
@@ -196,10 +190,7 @@ export default function SigDesa() {
                       <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
                       <span className="text-sm font-medium">{mapData.markers.length} Lokasi</span>
                     </div>
-                    <div className="flex items-center mt-1">
-                      <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
-                      <span className="text-sm font-medium">{mapData.bencana.length} Titik Bencana</span>
-                    </div>
+
                   </div>
                 </div>
               )}
@@ -210,13 +201,13 @@ export default function SigDesa() {
           <div className="w-full lg:w-1/3">
             <div className="bg-white rounded-xl shadow-lg sticky top-6">
               <div className="p-4 border-b">
-                <h2 className="text-lg font-semibold text-gray-800">Legenda Peta</h2>
-                <p className="text-sm text-gray-600">Filter informasi yang ditampilkan</p>
+                <h2 className="text-lg font-semibold text-green-700">Legenda Peta</h2>
+                <p className="text-sm text-green-600">Filter informasi yang ditampilkan</p>
               </div>
               
               <div className="p-4">
                 {/* Filter buttons */}
-                <div className="grid grid-cols-2 gap-2 mb-6">
+                <div className="grid grid-cols-3 gap-2 mb-6">
                   {legendCategories.map(category => (
                     <button
                       key={category.id}
@@ -235,8 +226,8 @@ export default function SigDesa() {
                 
                 {/* Polygon Legend */}
                 <div className="mb-6">
-                  <h3 className="font-medium text-gray-800 mb-3 flex items-center">
-                    <div className="w-4 h-4 rounded border-2 border-blue-500 bg-blue-200 mr-2"></div>
+                  <h3 className="font-medium text-green-700 mb-3 flex items-center">
+                    <div className="w-4 h-4 rounded border-2 border-green-500 bg-green-200 mr-2"></div>
                     Area dan Zona
                   </h3>
                   <div className="space-y-2">
@@ -262,7 +253,7 @@ export default function SigDesa() {
                 
                 {/* Marker Legend */}
                 <div className="mb-6">
-                  <h3 className="font-medium text-gray-800 mb-3 flex items-center">
+                  <h3 className="font-medium text-green-700 mb-3 flex items-center">
                     <FaMapMarkerAlt className="text-green-500 mr-2" />
                     Lokasi Penting
                   </h3>
@@ -284,47 +275,12 @@ export default function SigDesa() {
                   </div>
                 </div>
                 
-                {/* Bencana Legend */}
-                <div>
-                  <h3 className="font-medium text-gray-800 mb-3 flex items-center">
-                    <FaExclamationTriangle className="text-red-500 mr-2" />
-                    Titik Rawan Bencana
-                  </h3>
-                  
-                  <div className="grid grid-cols-3 gap-2 mb-3">
-                    {riskLevels.map(level => (
-                      <div key={level.value} className="flex flex-col items-center">
-                        <div className={`w-3 h-3 rounded-full ${level.color}`}></div>
-                        <span className="text-xs mt-1">{level.label}</span>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  <div className="space-y-2">
-                    {mapData.bencana.slice(0, 3).map((bencana, index) => {
-                      const riskColor = riskLevels.find(r => r.value === bencana.riskLevel)?.color || "bg-green-500";
-                      return (
-                        <div key={index} className="flex items-center text-sm">
-                          <div className={`w-3 h-3 rounded-full ${riskColor} mr-2`}></div>
-                          <span className="truncate">{bencana.name.replace(/\[.*?\]/g, '').trim()}</span>
-                        </div>
-                      );
-                    })}
-                    {mapData.bencana.length > 3 && (
-                      <div className="text-xs text-gray-500 mt-1">
-                        +{mapData.bencana.length - 3} titik lainnya
-                      </div>
-                    )}
-                    {mapData.bencana.length === 0 && (
-                      <div className="text-sm text-gray-500">Tidak ada titik bencana terdaftar</div>
-                    )}
-                  </div>
-                </div>
+
               </div>
               
               {/* Footer */}
-              <div className="p-4 border-t bg-gray-50 rounded-b-xl">
-                <div className="text-xs text-gray-500">
+              <div className="p-4 border-t bg-green-50 rounded-b-xl">
+                <div className="text-xs text-green-600">
                   <p>Peta ini diperbarui secara berkala</p>
                   <p>© {new Date().getFullYear()} Desa Babakan Asem</p>
                 </div>
@@ -335,15 +291,15 @@ export default function SigDesa() {
         
         {/* Information Section */}
         <div className="mt-8 bg-white rounded-xl shadow-lg p-6">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">Informasi Peta Desa</h2>
+          <h2 className="text-xl font-bold text-green-700 mb-4">Informasi Peta Desa</h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             <div className="text-center">
-              <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
-                <FaMapMarkedAlt className="text-blue-600 text-2xl" />
+              <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
+                <FaMapMarkedAlt className="text-green-600 text-2xl" />
               </div>
-              <h3 className="font-semibold text-gray-800 mb-2">Zona dan Area</h3>
-              <p className="text-sm text-gray-600">
+              <h3 className="font-semibold text-green-700 mb-2">Zona dan Area</h3>
+              <p className="text-sm text-green-600">
                 Tampilkan pembagian wilayah desa, area pertanian, pemukiman, dan zona khusus lainnya.
               </p>
             </div>
@@ -352,19 +308,9 @@ export default function SigDesa() {
               <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
                 <FaMapMarkerAlt className="text-green-600 text-2xl" />
               </div>
-              <h3 className="font-semibold text-gray-800 mb-2">Fasilitas Umum</h3>
-              <p className="text-sm text-gray-600">
+              <h3 className="font-semibold text-green-700 mb-2">Fasilitas Umum</h3>
+              <p className="text-sm text-green-600">
                 Temukan lokasi fasilitas penting seperti sekolah, puskesmas, pasar, dan tempat ibadah.
-              </p>
-            </div>
-            
-            <div className="text-center">
-              <div className="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
-                <FaExclamationTriangle className="text-red-600 text-2xl" />
-              </div>
-              <h3 className="font-semibold text-gray-800 mb-2">Peringatan Bencana</h3>
-              <p className="text-sm text-gray-600">
-                Informasi titik rawan bencana untuk meningkatkan kewaspadaan masyarakat.
               </p>
             </div>
           </div>
