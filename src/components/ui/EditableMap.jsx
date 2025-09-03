@@ -479,6 +479,7 @@ export default function EditableMap({
                 </Polygon>
               );
             } else if (item.type === "marker") {
+              console.log(item.coordinates);
               return (
                 <React.Fragment key={`marker-${index}`}>
                   <Marker

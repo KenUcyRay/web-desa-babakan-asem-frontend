@@ -153,8 +153,6 @@ function tryParseJSON(value) {
 
 // Helper: normalize polygon coordinates to array of [lat, lng]
 function normalizePolygonCoordinates(input) {
-  console.log("Normalizing coordinates:", input); // Debug
-
   // Handle if input is already array (from backend)
   if (Array.isArray(input)) {
     // Check if it's already in [lat, lng] format
@@ -202,7 +200,6 @@ function normalizePolygonCoordinates(input) {
     })
     .filter(Boolean);
 
-  console.log("Normalized result:", mapped); // Debug
   return mapped.length ? mapped : null;
 }
 
@@ -272,33 +269,23 @@ export default function AdminDashboard() {
   // In the fetchMapData function, update the polygon coordinate processing:
   const fetchMapData = async () => {
     try {
-      const response = await MapApi.getAll(i18n.language);
+      const responseData = await MapApi.getAll(i18n.language);
 
-      if (!response.ok) {
-        throw new Error("Gagal mengambil data peta");
-      }
-
-      const responseData = await response.json();
       const formattedData = [];
 
       if (responseData.data && Array.isArray(responseData.data)) {
         responseData.data.forEach((item) => {
           try {
             if (item.type === "POLYGON") {
-              console.log("Processing polygon in AdminDashboard:", item); // Debug
               const normalized = normalizePolygonCoordinates(item.coordinates);
               if (!normalized) {
-                console.log(
-                  "Failed to normalize polygon coordinates:",
-                  item.coordinates
-                );
                 return;
               }
 
               formattedData.push({
                 id: item.id,
                 name: item.name,
-                description: item.description || "Wilayah Desa",
+                description: item.description,
                 type: "polygon",
                 year: item.year || 2025,
                 coordinates: normalized, // already [lat,lng]
@@ -313,10 +300,10 @@ export default function AdminDashboard() {
               formattedData.push({
                 id: item.id,
                 name: item.name,
-                description: item.description || "Point of Interest",
+                description: item.description,
                 type: "marker",
                 year: item.year || 2025,
-                coordinates: normalized, // [[lat,lng]]
+                coordinates: item.coordinates, // [[lat,lng]]
                 icon: item.icon
                   ? `${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
                       item.icon
@@ -409,11 +396,9 @@ export default function AdminDashboard() {
           }
         }
       } catch (extraError) {
-        console.log("Extra IDM fetch failed, using default status");
         setIdmStatus("-");
       }
     } catch (error) {
-      console.log("IDM data fetch failed:", error);
       // Set default values on error
       setIdmData([]);
       setIdmStatus("-");
@@ -464,9 +449,7 @@ export default function AdminDashboard() {
 
         setPopulationAgeData(sortedAgeData);
       }
-    } catch (error) {
-      console.log("Population data fetch failed:", error);
-    }
+    } catch (error) {}
   };
 
   const fetchBumdesPreview = async () => {
@@ -774,22 +757,19 @@ export default function AdminDashboard() {
                           </div>
                         </Popup>
                       </Marker>
-                      {/* Circle for bencana with radius */}
-                      {isBencana && (
-                        <Circle
-                          center={item.coordinates[0]}
-                          radius={item.radius || 500}
-                          pathOptions={{
-                            color: item.color || "#EF4444",
-                            weight: 3,
-                            opacity: 0.8,
-                            fillColor: item.color || "#EF4444",
-                            fillOpacity: 0.2,
-                            dashArray: "10, 5",
-                            lineCap: "round",
-                          }}
-                        />
-                      )}
+                      <Circle
+                        center={item.coordinates[0]}
+                        radius={item.radius || 500}
+                        pathOptions={{
+                          color: item.color || "#EF4444",
+                          weight: 3,
+                          opacity: 0.8,
+                          fillColor: item.color || "#EF4444",
+                          fillOpacity: 0.2,
+                          dashArray: "10, 5",
+                          lineCap: "round",
+                        }}
+                      />
                     </React.Fragment>
                   );
                 }
