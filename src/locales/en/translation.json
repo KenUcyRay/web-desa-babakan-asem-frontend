@@ -796,6 +796,27 @@
     "modalCancel": "Cancel",
     "modalConfirm": "SEND SOS"
   },
+  "emergency": {
+    "buttonTitle": "🚨 EMERGENCY BUTTON - For emergency situations only!",
+    "confirmTitle": "Emergency Call Confirmation",
+    "confirmMessage": "Is this really an EMERGENCY?",
+    "yourLocation": "Your Location",
+    "gettingLocation": "Getting location",
+    "locationNotAvailable": "Location not available",
+    "systemWarning": "SYSTEM WARNING",
+    "rule1": "3x Cancel",
+    "rule1Description": "Warning appears",
+    "rule2": "5x Cancel",
+    "rule2Description": "Account blocked permanently",
+    "rule3": "Use only for real emergencies!",
+    "cancelledTimes": "You have cancelled {{count}} times",
+    "warningActive": "STATUS: WARNING ACTIVE!",
+    "warningTitle": "SOS Warning",
+    "warningMessage": "Hello {{name}}, you have cancelled {{count}} times. If you cancel {{remaining}} more times, account will be blocked!",
+    "understood": "I Understand",
+    "cancel": "Cancel",
+    "emergency": "EMERGENCY"
+  },
   "footer": {
     "village_name": "Babakan Asem Village",
     "address": "Jalan Babakan Asem No. 142 Babakan Asem Village,\nConggeang District, Sumedang Regency,\nWest Java 45391",

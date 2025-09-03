@@ -17,7 +17,7 @@ import Footer from "./components/layout/Footer";
 
 // - Floating Menu
 import FloatingMenu from "./components/layout/FloatingMenu";
-import SOSFloatingButton from "./components/layout/SOSFloatingButton";
+import EmergencyButton from "./components/ui/EmergencyButton";
 
 // - Halaman Umum
 import Home from "./components/pages/Home";
@@ -168,8 +168,8 @@ function LayoutUmum() {
         {/* ✅ Floating Menu tampil di semua halaman umum */}
         <FloatingMenu />
         
-        {/* ✅ SOS Button selalu terlihat di semua halaman umum */}
-        <SOSFloatingButton />
+        {/* ✅ Emergency SOS Button - Hanya untuk user login */}
+        <EmergencyButton />
 
         {/* ✅ Footer tetap di bawah */}
         <Footer />
