@@ -82,9 +82,12 @@ const createIcon = (iconUrl) => {
 // Colorful marker icon for dashboard
 const getLeafletIcon = (color = "#3B82F6", size = 30) => {
   return L.divIcon({
-    className: 'custom-marker',
+    className: "custom-marker",
     html: `<div style="
-      background: linear-gradient(135deg, ${color} 0%, ${darkenColor(color, 20)} 100%);
+      background: linear-gradient(135deg, ${color} 0%, ${darkenColor(
+      color,
+      20
+    )} 100%);
       width: ${size}px;
       height: ${size}px;
       border-radius: 50% 50% 50% 0;
@@ -111,12 +114,12 @@ const getLeafletIcon = (color = "#3B82F6", size = 30) => {
 
 // Helper function to darken color
 const darkenColor = (hex, percent) => {
-  const num = parseInt(hex.replace('#', ''), 16);
+  const num = parseInt(hex.replace("#", ""), 16);
   const amt = Math.round(2.55 * percent);
   const R = Math.max(0, (num >> 16) - amt);
-  const G = Math.max(0, (num >> 8 & 0x00FF) - amt);
-  const B = Math.max(0, (num & 0x0000FF) - amt);
-  return '#' + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
+  const G = Math.max(0, ((num >> 8) & 0x00ff) - amt);
+  const B = Math.max(0, (num & 0x0000ff) - amt);
+  return "#" + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
 };
 
 // Palet warna untuk polygon (tidak boleh sama)
@@ -150,8 +153,8 @@ function tryParseJSON(value) {
 
 // Helper: normalize polygon coordinates to array of [lat, lng]
 function normalizePolygonCoordinates(input) {
-  console.log('Normalizing coordinates:', input); // Debug
-  
+  console.log("Normalizing coordinates:", input); // Debug
+
   // Handle if input is already array (from backend)
   if (Array.isArray(input)) {
     // Check if it's already in [lat, lng] format
@@ -159,22 +162,22 @@ function normalizePolygonCoordinates(input) {
       const firstPoint = input[0];
       const lng = Number(firstPoint[0]);
       const lat = Number(firstPoint[1]);
-      
+
       // If first coordinate looks like longitude (between -180 to 180)
       // and second looks like latitude (between -90 to 90), swap them
       if (Math.abs(lng) <= 180 && Math.abs(lat) <= 90) {
         if (Math.abs(lng) > Math.abs(lat)) {
           // Likely [lng, lat] format, convert to [lat, lng]
-          return input.map(pt => [Number(pt[1]), Number(pt[0])]);
+          return input.map((pt) => [Number(pt[1]), Number(pt[0])]);
         } else {
           // Already [lat, lng] format
-          return input.map(pt => [Number(pt[0]), Number(pt[1])]);
+          return input.map((pt) => [Number(pt[0]), Number(pt[1])]);
         }
       }
     }
     return input;
   }
-  
+
   // Try to parse JSON string
   const parsed = tryParseJSON(input) ?? input;
   if (!Array.isArray(parsed) || parsed.length === 0) return null;
@@ -199,7 +202,7 @@ function normalizePolygonCoordinates(input) {
     })
     .filter(Boolean);
 
-  console.log('Normalized result:', mapped); // Debug
+  console.log("Normalized result:", mapped); // Debug
   return mapped.length ? mapped : null;
 }
 
@@ -266,7 +269,6 @@ export default function AdminDashboard() {
   const [showMarkers, setShowMarkers] = useState(true);
   const [showBencana, setShowBencana] = useState(true);
 
-
   // In the fetchMapData function, update the polygon coordinate processing:
   const fetchMapData = async () => {
     try {
@@ -283,10 +285,13 @@ export default function AdminDashboard() {
         responseData.data.forEach((item) => {
           try {
             if (item.type === "POLYGON") {
-              console.log('Processing polygon in AdminDashboard:', item); // Debug
+              console.log("Processing polygon in AdminDashboard:", item); // Debug
               const normalized = normalizePolygonCoordinates(item.coordinates);
               if (!normalized) {
-                console.log('Failed to normalize polygon coordinates:', item.coordinates);
+                console.log(
+                  "Failed to normalize polygon coordinates:",
+                  item.coordinates
+                );
                 return;
               }
 
@@ -302,7 +307,6 @@ export default function AdminDashboard() {
             } else if (item.type === "MARKER") {
               const normalized = normalizeMarkerCoordinates(item.coordinates);
               if (!normalized) {
-            
                 return;
               }
 
@@ -322,14 +326,12 @@ export default function AdminDashboard() {
                 color: item.color || null,
               });
             }
-          } catch (err) {
-          }
+          } catch (err) {}
         });
       }
 
       setMapData(formattedData);
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   const fetchNews = async () => {
@@ -385,72 +387,85 @@ export default function AdminDashboard() {
       if (res.ok) {
         const data = await res.json();
         if (data.idm && Array.isArray(data.idm) && data.idm.length > 0) {
-          setIdmData(data.idm.slice(-5).map(d => ({ year: d.year, skor: d.skor / 100 })));
+          setIdmData(
+            data.idm
+              .slice(-5)
+              .map((d) => ({ year: d.year, skor: d.skor / 100 }))
+          );
         }
       }
-      
+
       // Fetch Extra IDM data
       try {
         const resExtra = await InfografisApi.getExtraIdm(i18n.language);
         if (resExtra.ok) {
           const extraData = await resExtra.json();
-          if (extraData.extraIdm && Array.isArray(extraData.extraIdm) && extraData.extraIdm.length > 0) {
-            setIdmStatus(extraData.extraIdm[0].status_desa || '-');
+          if (
+            extraData.extraIdm &&
+            Array.isArray(extraData.extraIdm) &&
+            extraData.extraIdm.length > 0
+          ) {
+            setIdmStatus(extraData.extraIdm[0].status_desa || "-");
           }
         }
       } catch (extraError) {
-        console.log('Extra IDM fetch failed, using default status');
-        setIdmStatus('-');
+        console.log("Extra IDM fetch failed, using default status");
+        setIdmStatus("-");
       }
     } catch (error) {
-      console.log('IDM data fetch failed:', error);
+      console.log("IDM data fetch failed:", error);
       // Set default values on error
       setIdmData([]);
-      setIdmStatus('-');
+      setIdmStatus("-");
     }
   };
 
   const fetchPopulationData = async () => {
     try {
-      const baseUrl = import.meta.env.VITE_NEW_BASE_URL || "http://localhost:4000/api";
-      
+      const baseUrl =
+        import.meta.env.VITE_NEW_BASE_URL || "http://localhost:4000/api";
+
       // Fetch main population data (gender, kepala keluarga, anak-anak)
       const [genderRes, kkRes, anakRes] = await Promise.all([
         fetch(`${baseUrl}/residents?type=GENDER`),
         fetch(`${baseUrl}/residents?type=KEPALA_KELUARGA`),
-        fetch(`${baseUrl}/residents?type=ANAK_ANAK`)
+        fetch(`${baseUrl}/residents?type=ANAK_ANAK`),
       ]);
-      
+
       if (genderRes.ok && kkRes.ok && anakRes.ok) {
         const [genderData, kkData, anakData] = await Promise.all([
           genderRes.json(),
           kkRes.json(),
-          anakRes.json()
+          anakRes.json(),
         ]);
-        
+
         const mainData = [
           ...(genderData.data || []),
           ...(kkData.data || []),
-          ...(anakData.data || [])
-        ].map(item => ({ name: item.key, jumlah: item.value }));
-        
+          ...(anakData.data || []),
+        ].map((item) => ({ name: item.key, jumlah: item.value }));
+
         setPopulationMainData(mainData);
       }
-      
+
       // Fetch age group data
       const ageRes = await fetch(`${baseUrl}/residents?type=USIA`);
       if (ageRes.ok) {
         const ageData = await ageRes.json();
-        const sortedAgeData = (ageData.data || []).sort((a, b) => {
-          const aMatch = a.key.match(/\d+/);
-          const bMatch = b.key.match(/\d+/);
-          return aMatch && bMatch ? parseInt(aMatch[0]) - parseInt(bMatch[0]) : a.key.localeCompare(b.key);
-        }).map(item => ({ name: item.key, value: item.value }));
-        
+        const sortedAgeData = (ageData.data || [])
+          .sort((a, b) => {
+            const aMatch = a.key.match(/\d+/);
+            const bMatch = b.key.match(/\d+/);
+            return aMatch && bMatch
+              ? parseInt(aMatch[0]) - parseInt(bMatch[0])
+              : a.key.localeCompare(b.key);
+          })
+          .map((item) => ({ name: item.key, value: item.value }));
+
         setPopulationAgeData(sortedAgeData);
       }
     } catch (error) {
-      console.log('Population data fetch failed:', error);
+      console.log("Population data fetch failed:", error);
     }
   };
 
@@ -671,16 +686,6 @@ export default function AdminDashboard() {
               >
                 {showMarkers ? "Lokasi" : "Lokasi"}
               </button>
-              <button
-                onClick={() => setShowBencana(!showBencana)}
-                className={`px-2 py-1 rounded-lg text-xs font-medium transition-all duration-300 transform hover:scale-105 ${
-                  showBencana
-                    ? "bg-red-500 text-white hover:bg-red-600 shadow-md"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                }`}
-              >
-                {showBencana ? "Bencana" : "Bencana"}
-              </button>
             </div>
           </div>
         </div>
@@ -704,7 +709,8 @@ export default function AdminDashboard() {
                   const polygonIdx = polygonLegendData.findIndex(
                     (p) => p.id === item.id
                   );
-                  const color = item.color || getPolygonColorByIndex(polygonIdx);
+                  const color =
+                    item.color || getPolygonColorByIndex(polygonIdx);
                   return (
                     <Polygon
                       key={item.id}
@@ -736,18 +742,24 @@ export default function AdminDashboard() {
                     </Polygon>
                   );
                 } else if (item.type === "marker") {
-                  const isBencana = item.name && item.name.includes('[');
+                  const isBencana = item.name && item.name.includes("[");
                   const shouldShow = isBencana ? showBencana : showMarkers;
-                  
+
                   if (!shouldShow) return null;
-                  
+
                   return (
                     <React.Fragment key={item.id}>
                       <Marker
                         position={item.coordinates[0]}
-                        icon={item.icon ? createIcon(item.icon) : getLeafletIcon(item.color || "#3B82F6", 30)}
+                        icon={
+                          item.icon
+                            ? createIcon(item.icon)
+                            : getLeafletIcon(item.color || "#3B82F6", 30)
+                        }
                       >
-                        <LeafletTooltip permanent={false}>{item.name}</LeafletTooltip>
+                        <LeafletTooltip permanent={false}>
+                          {item.name}
+                        </LeafletTooltip>
                         <Popup>
                           <div className="text-center">
                             <strong className="text-base text-red-600">
@@ -918,7 +930,7 @@ export default function AdminDashboard() {
           <FaChartBar className="text-blue-600" />
           Statistik & Analitik
         </h2>
-        
+
         {/* Grid Statistik Detail */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
           <DetailStatCard
@@ -956,19 +968,25 @@ export default function AdminDashboard() {
         </div>
 
         {/* Grafik IDM */}
-        <div className="bg-white rounded-xl shadow-lg p-6 cursor-pointer hover:shadow-xl transition-all duration-300" onClick={() => navigate("/admin/kelola-infografis/idm")}>
+        <div
+          className="bg-white rounded-xl shadow-lg p-6 cursor-pointer hover:shadow-xl transition-all duration-300"
+          onClick={() => navigate("/admin/kelola-infografis/idm")}
+        >
           <div className="flex items-center justify-between mb-6">
             <div className="w-full">
               <h3 className="text-2xl font-bold text-gray-800 text-center mb-2">
                 Indeks Desa Membangun (IDM)
               </h3>
-              <p className="text-sm text-gray-600 text-center">Status: <span className="font-medium text-green-600">{idmStatus}</span></p>
+              <p className="text-sm text-gray-600 text-center">
+                Status:{" "}
+                <span className="font-medium text-green-600">{idmStatus}</span>
+              </p>
             </div>
             <button className="text-sm text-blue-600 hover:text-blue-800 font-medium ml-4 px-3 py-1 rounded-lg hover:bg-blue-50 transition-colors">
               Kelola →
             </button>
           </div>
-          
+
           <div className="h-80">
             {idmData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
@@ -976,8 +994,8 @@ export default function AdminDashboard() {
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                   <XAxis dataKey="year" tick={{ fontSize: 14 }} />
                   <YAxis domain={[0.6, 1]} tick={{ fontSize: 14 }} />
-                  <Tooltip 
-                    formatter={(value) => [value.toFixed(3), 'Skor IDM']}
+                  <Tooltip
+                    formatter={(value) => [value.toFixed(3), "Skor IDM"]}
                     labelFormatter={(label) => `Tahun ${label}`}
                   />
                   <Line
@@ -985,7 +1003,12 @@ export default function AdminDashboard() {
                     dataKey="skor"
                     stroke="#B6F500"
                     strokeWidth={4}
-                    dot={{ r: 6, fill: "#B6F500", strokeWidth: 2, stroke: "#fff" }}
+                    dot={{
+                      r: 6,
+                      fill: "#B6F500",
+                      strokeWidth: 2,
+                      stroke: "#fff",
+                    }}
                     activeDot={{ r: 8, fill: "#B6F500" }}
                   />
                 </LineChart>
@@ -1002,19 +1025,24 @@ export default function AdminDashboard() {
         </div>
 
         {/* Grafik Data Utama Penduduk */}
-        <div className="bg-white rounded-xl shadow-lg p-6 cursor-pointer hover:shadow-xl transition-all duration-300" onClick={() => navigate("/admin/kelola-infografis/penduduk")}>
+        <div
+          className="bg-white rounded-xl shadow-lg p-6 cursor-pointer hover:shadow-xl transition-all duration-300"
+          onClick={() => navigate("/admin/kelola-infografis/penduduk")}
+        >
           <div className="flex items-center justify-between mb-6">
             <div className="w-full">
               <h3 className="text-2xl font-bold text-gray-800 text-center mb-2">
                 Data Utama Penduduk
               </h3>
-              <p className="text-sm text-gray-600 text-center">Distribusi berdasarkan gender, kepala keluarga, dan anak-anak</p>
+              <p className="text-sm text-gray-600 text-center">
+                Distribusi berdasarkan gender, kepala keluarga, dan anak-anak
+              </p>
             </div>
             <button className="text-sm text-blue-600 hover:text-blue-800 font-medium ml-4 px-3 py-1 rounded-lg hover:bg-blue-50 transition-colors">
               Kelola →
             </button>
           </div>
-          
+
           <div className="h-80">
             {populationMainData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
@@ -1022,8 +1050,8 @@ export default function AdminDashboard() {
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                   <XAxis dataKey="name" tick={{ fontSize: 12 }} />
                   <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
-                  <Tooltip 
-                    formatter={(value) => [`${value} Orang`, 'Jumlah']}
+                  <Tooltip
+                    formatter={(value) => [`${value} Orang`, "Jumlah"]}
                     labelFormatter={(label) => label}
                   />
                   <Legend />
@@ -1047,23 +1075,31 @@ export default function AdminDashboard() {
         </div>
 
         {/* Grafik Kelompok Usia */}
-        <div className="bg-white rounded-xl shadow-lg p-6 cursor-pointer hover:shadow-xl transition-all duration-300" onClick={() => navigate("/admin/kelola-infografis/penduduk")}>
+        <div
+          className="bg-white rounded-xl shadow-lg p-6 cursor-pointer hover:shadow-xl transition-all duration-300"
+          onClick={() => navigate("/admin/kelola-infografis/penduduk")}
+        >
           <div className="flex items-center justify-between mb-6">
             <div className="w-full">
               <h3 className="text-2xl font-bold text-gray-800 text-center mb-2">
                 Kelompok Usia Penduduk
               </h3>
-              <p className="text-sm text-gray-600 text-center">Distribusi penduduk berdasarkan kelompok usia</p>
+              <p className="text-sm text-gray-600 text-center">
+                Distribusi penduduk berdasarkan kelompok usia
+              </p>
             </div>
             <button className="text-sm text-blue-600 hover:text-blue-800 font-medium ml-4 px-3 py-1 rounded-lg hover:bg-blue-50 transition-colors">
               Kelola →
             </button>
           </div>
-          
+
           <div className="h-80">
             {populationAgeData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={populationAgeData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                <AreaChart
+                  data={populationAgeData}
+                  margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                >
                   <defs>
                     <linearGradient id="colorAge" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#82ca9d" stopOpacity={0.8} />
@@ -1073,8 +1109,8 @@ export default function AdminDashboard() {
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                   <XAxis dataKey="name" tick={{ fontSize: 12 }} />
                   <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
-                  <Tooltip 
-                    formatter={(value) => [`${value} Orang`, 'Jumlah']}
+                  <Tooltip
+                    formatter={(value) => [`${value} Orang`, "Jumlah"]}
                     labelFormatter={(label) => `Kelompok ${label}`}
                   />
                   <Legend />
@@ -1100,142 +1136,146 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-
-
       {/* SECTION: MANAJEMEN KONTEN */}
       <div className="mb-8">
         <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
           <FaFolderOpen className="text-green-600" />
           Manajemen Konten
         </h2>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-        <PreviewSection
-          title={"Struktur Desa"}
-          icon={<FaSitemap className="text-blue-500" />}
-          data={strukturPreview.map((s) => ({
-            title: s.name || s.nama,
-            desc: s.position || s.jabatan,
-            rw: s.rw || "-",
-          }))}
-          totalCount={strukturTotal}
-          onClick={() => navigate("/admin/manage-anggota")}
-          description={"Pengurus dan struktur organisasi desa"}
-        />
+          <PreviewSection
+            title={"Struktur Desa"}
+            icon={<FaSitemap className="text-blue-500" />}
+            data={strukturPreview.map((s) => ({
+              title: s.name || s.nama,
+              desc: s.position || s.jabatan,
+              rw: s.rw || "-",
+            }))}
+            totalCount={strukturTotal}
+            onClick={() => navigate("/admin/manage-anggota")}
+            description={"Pengurus dan struktur organisasi desa"}
+          />
 
-        <PreviewSection
-          title={"Program Kerja Desa"}
-          icon={<FaTasks className="text-green-500" />}
-          data={programKerjaPreview.map((p) => ({
-            title: p.title || p.judul || p.name,
-            desc: p.description || p.deskripsi || p.desc,
-            status: p.status || "Aktif",
-          }))}
-          totalCount={programKerjaTotal}
-          onClick={() => navigate("/admin/manage-program")}
-          showStatus={true}
-          description={"Program dan kegiatan desa"}
-        />
+          <PreviewSection
+            title={"Program Kerja Desa"}
+            icon={<FaTasks className="text-green-500" />}
+            data={programKerjaPreview.map((p) => ({
+              title: p.title || p.judul || p.name,
+              desc: p.description || p.deskripsi || p.desc,
+              status: p.status || "Aktif",
+            }))}
+            totalCount={programKerjaTotal}
+            onClick={() => navigate("/admin/manage-program")}
+            showStatus={true}
+            description={"Program dan kegiatan desa"}
+          />
 
-        <PreviewSection
-          title={"Data Master"}
-          icon={<FaDatabase className="text-purple-500" />}
-          data={[
-            { title: "Infografis Desa", desc: "Kelola data kependudukan" },
-            { title: "Peta Digital", desc: "Sistem informasi geografis" },
-            { title: "Statistik Konten", desc: "Data berita, agenda, galeri" },
-          ]}
-          totalCount={5}
-          onClick={() => navigate("/admin/data-master")}
-          description={"Akses semua data master desa"}
-        />
+          <PreviewSection
+            title={"Data Master"}
+            icon={<FaDatabase className="text-purple-500" />}
+            data={[
+              { title: "Infografis Desa", desc: "Kelola data kependudukan" },
+              { title: "Peta Digital", desc: "Sistem informasi geografis" },
+              {
+                title: "Statistik Konten",
+                desc: "Data berita, agenda, galeri",
+              },
+            ]}
+            totalCount={5}
+            onClick={() => navigate("/admin/data-master")}
+            description={"Akses semua data master desa"}
+          />
 
-        <PreviewSection
-          title={"Produk BUMDes"}
-          icon={<FaStore className="text-yellow-500" />}
-          data={bumdesPreview.map((p) => ({
-            title: p.product.title,
-            desc: p.product.description,
-            img: `${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
-              p.product.featured_image
-            }`,
-          }))}
-          totalCount={bumdesTotal}
-          onClick={() => navigate("/admin/manage-bumdes")}
-          description={"Produk unggulan BUMDes"}
-        />
+          <PreviewSection
+            title={"Produk BUMDes"}
+            icon={<FaStore className="text-yellow-500" />}
+            data={bumdesPreview.map((p) => ({
+              title: p.product.title,
+              desc: p.product.description,
+              img: `${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
+                p.product.featured_image
+              }`,
+            }))}
+            totalCount={bumdesTotal}
+            onClick={() => navigate("/admin/manage-bumdes")}
+            description={"Produk unggulan BUMDes"}
+          />
 
-        <PreviewSection
-          title={"Administrasi"}
-          icon={<FaClipboardList className="text-red-500" />}
-          data={administrasiPreview.map((a) => ({
-            title: a.name,
-            desc: a.type,
-          }))}
-          totalCount={administrasiTotal}
-          onClick={() => navigate("/admin/manage-administrasi")}
-          description={"Layanan administrasi warga"}
-        />
+          <PreviewSection
+            title={"Administrasi"}
+            icon={<FaClipboardList className="text-red-500" />}
+            data={administrasiPreview.map((a) => ({
+              title: a.name,
+              desc: a.type,
+            }))}
+            totalCount={administrasiTotal}
+            onClick={() => navigate("/admin/manage-administrasi")}
+            description={"Layanan administrasi warga"}
+          />
 
-        <PreviewSection
-          title={"Galeri"}
-          icon={<FaImage className="text-teal-500" />}
-          data={galeriPreview.map((g) => ({
-            title: g.title,
-            img: `${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
-              g.image
-            }`,
-          }))}
-          totalCount={galeriCount}
-          onClick={() => navigate("/admin/manage-galery")}
-          description={"Galeri kegiatan desa"}
-        />
+          <PreviewSection
+            title={"Galeri"}
+            icon={<FaImage className="text-teal-500" />}
+            data={galeriPreview.map((g) => ({
+              title: g.title,
+              img: `${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
+                g.image
+              }`,
+            }))}
+            totalCount={galeriCount}
+            onClick={() => navigate("/admin/manage-galery")}
+            description={"Galeri kegiatan desa"}
+          />
         </div>
       </div>
     </div>
   );
 }
 
-
-
 // Komponen CompactActivityLog - Versi kecil untuk header
 function CompactActivityLog({ activities }) {
   const [isExpanded, setIsExpanded] = useState(false);
-  
+
   const formatDateTime = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleString('id-ID', {
-      day: '2-digit',
-      month: '2-digit', 
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+    return date.toLocaleString("id-ID", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
   const displayActivities = isExpanded ? activities : activities.slice(0, 3);
 
   return (
-    <div className={`bg-white rounded-lg shadow-sm border p-3 transition-all duration-300 ${isExpanded ? 'min-w-[400px] max-w-[500px]' : 'min-w-[300px]'}`}>
+    <div
+      className={`bg-white rounded-lg shadow-sm border p-3 transition-all duration-300 ${
+        isExpanded ? "min-w-[400px] max-w-[500px]" : "min-w-[300px]"
+      }`}
+    >
       <div className="flex items-center justify-between mb-2">
         <h4 className="text-sm font-medium text-gray-700 flex items-center gap-1">
           <FaClock className="text-xs text-gray-400" />
           Aktivitas Terbaru
         </h4>
-        <button 
+        <button
           onClick={() => setIsExpanded(!isExpanded)}
           className="text-xs text-blue-600 hover:text-blue-800 transition-colors"
         >
-          {isExpanded ? 'Perkecil' : 'Lihat Semua'}
+          {isExpanded ? "Perkecil" : "Lihat Semua"}
         </button>
       </div>
 
-      <div className={`space-y-1 transition-all duration-300 ${isExpanded ? 'max-h-96 overflow-y-auto' : ''}`}>
+      <div
+        className={`space-y-1 transition-all duration-300 ${
+          isExpanded ? "max-h-96 overflow-y-auto" : ""
+        }`}
+      >
         {displayActivities.map((activity) => (
-          <div
-            key={activity.id}
-            className="bg-gray-50 rounded px-2 py-1"
-          >
+          <div key={activity.id} className="bg-gray-50 rounded px-2 py-1">
             <p className="text-xs font-medium text-gray-800 truncate">
               {activity.action}
             </p>
@@ -1277,7 +1317,7 @@ function DetailStatCard({ icon, title, count, detail, trend, onClick, color }) {
     >
       {/* Background gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-white/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-      
+
       {/* Content */}
       <div className="relative z-10">
         {/* Top section with icon and number */}
@@ -1286,16 +1326,22 @@ function DetailStatCard({ icon, title, count, detail, trend, onClick, color }) {
             {icon}
           </div>
           <div className="text-right">
-            <p className="text-2xl font-black text-gray-900 group-hover:text-gray-800 transition-colors leading-none">{count}</p>
+            <p className="text-2xl font-black text-gray-900 group-hover:text-gray-800 transition-colors leading-none">
+              {count}
+            </p>
           </div>
         </div>
-        
+
         {/* Bottom section with title and detail */}
         <div className="mb-2">
-          <h2 className="text-base font-bold text-gray-800 group-hover:text-gray-900 transition-colors mb-1">{title}</h2>
-          <p className="text-xs text-gray-600 group-hover:text-gray-700 transition-colors">{detail}</p>
+          <h2 className="text-base font-bold text-gray-800 group-hover:text-gray-900 transition-colors mb-1">
+            {title}
+          </h2>
+          <p className="text-xs text-gray-600 group-hover:text-gray-700 transition-colors">
+            {detail}
+          </p>
         </div>
-        
+
         {/* Trend and hover indicator */}
         <div className="flex items-center justify-between">
           {trend && (
@@ -1304,15 +1350,32 @@ function DetailStatCard({ icon, title, count, detail, trend, onClick, color }) {
             </span>
           )}
           <div className="flex items-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0 ml-auto">
-            <svg className="w-3 h-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            <svg
+              className="w-3 h-3 text-gray-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5l7 7-7 7"
+              />
             </svg>
           </div>
         </div>
       </div>
-      
+
       {/* Animated border */}
-      <div className={`absolute bottom-0 left-0 h-1 bg-gradient-to-r ${color.replace('bg-', 'from-').replace('-50', '-400')} to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left`}></div>
+      <div
+        className={`absolute bottom-0 left-0 h-1 bg-gradient-to-r ${color
+          .replace("bg-", "from-")
+          .replace(
+            "-50",
+            "-400"
+          )} to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left`}
+      ></div>
     </div>
   );
 }
@@ -1344,8 +1407,18 @@ function PreviewSection({
           className="ml-4 bg-blue-500 hover:bg-blue-600 text-white text-xs font-medium py-2 px-3 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-md flex items-center gap-1"
         >
           <span>Kelola</span>
-          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          <svg
+            className="w-3 h-3"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 5l7 7-7 7"
+            />
           </svg>
         </button>
       </div>

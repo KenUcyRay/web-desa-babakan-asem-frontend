@@ -30,7 +30,7 @@ export default function EditableMap({
   existingData = [],
   selectedColor = "#3B82F6",
   editingItem = null,
-  bencanaRadius = 500,
+  bencanaRadius = 100,
   defaultCenter = [-6.75, 108.05861],
   zoom = 15,
   lastUpdated = null,
@@ -55,14 +55,16 @@ export default function EditableMap({
     if (mode === "edit" && editingItem) {
       if (editingItem.type === "polygon" && editingItem.coordinates) {
         setPolygonPoints(editingItem.coordinates);
-        setEditingVertices(editingItem.coordinates.map((coord, index) => ({ 
-          id: index, 
-          position: coord 
-        })));
+        setEditingVertices(
+          editingItem.coordinates.map((coord, index) => ({
+            id: index,
+            position: coord,
+          }))
+        );
       } else if (editingItem.type === "marker" && editingItem.coordinates) {
-        setMarkerPos({ 
-          lat: editingItem.coordinates[0], 
-          lng: editingItem.coordinates[1] 
+        setMarkerPos({
+          lat: editingItem.coordinates[0],
+          lng: editingItem.coordinates[1],
         });
       }
     }
@@ -71,7 +73,7 @@ export default function EditableMap({
   // Colorful vertex icon
   const getVertexIcon = () => {
     return L.divIcon({
-      className: 'vertex-marker',
+      className: "vertex-marker",
       html: `<div style="
         background: radial-gradient(circle, #ffffff 0%, #f8fafc 100%);
         width: 14px;
@@ -90,9 +92,12 @@ export default function EditableMap({
   // Colorful marker icon
   const getLeafletIcon = (color = "#3B82F6", size = 30) => {
     return L.divIcon({
-      className: 'custom-marker',
+      className: "custom-marker",
       html: `<div style="
-        background: linear-gradient(135deg, ${color} 0%, ${darkenColor(color, 20)} 100%);
+        background: linear-gradient(135deg, ${color} 0%, ${darkenColor(
+        color,
+        20
+      )} 100%);
         width: ${size}px;
         height: ${size}px;
         border-radius: 50% 50% 50% 0;
@@ -119,12 +124,14 @@ export default function EditableMap({
 
   // Helper function to darken color
   const darkenColor = (hex, percent) => {
-    const num = parseInt(hex.replace('#', ''), 16);
+    const num = parseInt(hex.replace("#", ""), 16);
     const amt = Math.round(2.55 * percent);
     const R = Math.max(0, (num >> 16) - amt);
-    const G = Math.max(0, (num >> 8 & 0x00FF) - amt);
-    const B = Math.max(0, (num & 0x0000FF) - amt);
-    return '#' + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
+    const G = Math.max(0, ((num >> 8) & 0x00ff) - amt);
+    const B = Math.max(0, (num & 0x0000ff) - amt);
+    return (
+      "#" + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1)
+    );
   };
 
   // Map event handler
@@ -172,7 +179,7 @@ export default function EditableMap({
     const newPoints = [...polygonPoints];
     newPoints[vertexIndex] = [lat, lng];
     setPolygonPoints(newPoints);
-    
+
     const newVertices = [...editingVertices];
     newVertices[vertexIndex].position = [lat, lng];
     setEditingVertices(newVertices);
@@ -200,7 +207,7 @@ export default function EditableMap({
 
   // Undo last polygon point
   const undoLastPoint = () => {
-    setPolygonPoints(prev => prev.slice(0, -1));
+    setPolygonPoints((prev) => prev.slice(0, -1));
   };
 
   // Clear current drawing
@@ -214,7 +221,7 @@ export default function EditableMap({
   // Calculate polygon area
   const calculateArea = (points) => {
     if (points.length < 3) return 0;
-    
+
     let area = 0;
     for (let i = 0; i < points.length; i++) {
       const j = (i + 1) % points.length;
@@ -227,7 +234,7 @@ export default function EditableMap({
   return (
     <div className="h-full flex flex-col">
       {/* Map Controls */}
-      {(mode !== "view" && mode !== "edit") && (
+      {mode !== "view" && mode !== "edit" && (
         <div className="p-3 bg-white border-b flex items-center justify-between">
           <div className="flex items-center space-x-2">
             {mode === "polygon" && (
@@ -259,7 +266,8 @@ export default function EditableMap({
             )}
             {mode === "polygon" && polygonPoints.length > 0 && (
               <span className="text-sm text-blue-600 font-medium">
-                Titik: {polygonPoints.length} | Luas: ~{Math.round(calculateArea(polygonPoints))} m²
+                Titik: {polygonPoints.length} | Luas: ~
+                {Math.round(calculateArea(polygonPoints))} m²
               </span>
             )}
           </div>
@@ -282,7 +290,8 @@ export default function EditableMap({
               </span>
               {editingItem?.type === "polygon" && polygonPoints.length > 0 && (
                 <span className="text-sm text-blue-600">
-                  Titik: {polygonPoints.length} | Luas: ~{Math.round(calculateArea(polygonPoints))} m²
+                  Titik: {polygonPoints.length} | Luas: ~
+                  {Math.round(calculateArea(polygonPoints))} m²
                 </span>
               )}
             </div>
@@ -308,83 +317,88 @@ export default function EditableMap({
             url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
           />
 
-
           {/* Current Drawing - Polygon */}
-          {polygonPoints.length > 0 && (mode === "polygon" || mode === "edit") && (
-            <Polygon
-              positions={polygonPoints}
-              pathOptions={{
-                color: selectedColor,
-                weight: 4,
-                opacity: 1,
-                fillColor: selectedColor,
-                fillOpacity: mode === "edit" ? 0.3 : 0.4,
-                dashArray: mode === "edit" ? "10, 5" : null,
-                lineCap: "round",
-                lineJoin: "round",
-              }}
-            />
-          )}
-
-          {/* Editing Vertices */}
-          {mode === "edit" && editingItem?.type === "polygon" && editingVertices.map((vertex, index) => (
-            <Marker
-              key={`vertex-${index}`}
-              position={vertex.position}
-              icon={getVertexIcon()}
-              draggable={true}
-              eventHandlers={{
-                dragend: (e) => onVertexDragEnd(index, e),
-              }}
-            />
-          ))}
-
-          {/* Current Drawing - Marker */}
-          {markerPos && (mode === "marker" || mode === "bencana" || mode === "edit") && (
-            <React.Fragment>
-              <Marker
-                position={[markerPos.lat, markerPos.lng]}
-                icon={getLeafletIcon(
-                  mode === "bencana" ? "#EF4444" : selectedColor,
-                  36
-                )}
-                draggable={true}
-                eventHandlers={{
-                  dragend: onMarkerDragEnd,
+          {polygonPoints.length > 0 &&
+            (mode === "polygon" || mode === "edit") && (
+              <Polygon
+                positions={polygonPoints}
+                pathOptions={{
+                  color: selectedColor,
+                  weight: 4,
+                  opacity: 1,
+                  fillColor: selectedColor,
+                  fillOpacity: mode === "edit" ? 0.3 : 0.4,
+                  dashArray: mode === "edit" ? "10, 5" : null,
+                  lineCap: "round",
+                  lineJoin: "round",
                 }}
               />
-              {/* Circle for bencana mode */}
-              {mode === "bencana" && bencanaRadius && bencanaRadius > 0 && (
-                <Circle
-                  center={[markerPos.lat, markerPos.lng]}
-                  radius={bencanaRadius}
-                  pathOptions={{
-                    color: "#EF4444",
-                    weight: 3,
-                    opacity: 0.8,
-                    fillColor: "#EF4444",
-                    fillOpacity: 0.2,
-                    dashArray: "10, 5",
-                    lineCap: "round",
+            )}
+
+          {/* Editing Vertices */}
+          {mode === "edit" &&
+            editingItem?.type === "polygon" &&
+            editingVertices.map((vertex, index) => (
+              <Marker
+                key={`vertex-${index}`}
+                position={vertex.position}
+                icon={getVertexIcon()}
+                draggable={true}
+                eventHandlers={{
+                  dragend: (e) => onVertexDragEnd(index, e),
+                }}
+              />
+            ))}
+
+          {/* Current Drawing - Marker */}
+          {markerPos &&
+            (mode === "marker" || mode === "bencana" || mode === "edit") && (
+              <React.Fragment>
+                <Marker
+                  position={[markerPos.lat, markerPos.lng]}
+                  icon={getLeafletIcon(
+                    mode === "bencana" ? "#EF4444" : selectedColor,
+                    36
+                  )}
+                  draggable={true}
+                  eventHandlers={{
+                    dragend: onMarkerDragEnd,
                   }}
                 />
-              )}
-              {/* Circle for edit mode bencana */}
-              {mode === "edit" && editingItem?.type === "marker" && editingItem?.name?.includes('[') && (
-                <Circle
-                  center={[markerPos.lat, markerPos.lng]}
-                  radius={editingItem.radius || 500}
-                  pathOptions={{
-                    color: "#EF4444",
-                    weight: 2,
-                    opacity: 0.6,
-                    fillColor: "#EF4444",
-                    fillOpacity: 0.1,
-                  }}
-                />
-              )}
-            </React.Fragment>
-          )}
+                {/* Circle for bencana mode */}
+                {mode === "bencana" && bencanaRadius && bencanaRadius > 0 && (
+                  <Circle
+                    center={[markerPos.lat, markerPos.lng]}
+                    radius={bencanaRadius}
+                    pathOptions={{
+                      color: "#EF4444",
+                      weight: 3,
+                      opacity: 0.8,
+                      fillColor: "#EF4444",
+                      fillOpacity: 0.2,
+                      dashArray: "10, 5",
+                      lineCap: "round",
+                    }}
+                  />
+                )}
+                {/* Circle for edit mode bencana */}
+                {mode === "edit" &&
+                  editingItem?.type === "marker" &&
+                  editingItem?.name?.includes("[") && (
+                    <Circle
+                      center={[markerPos.lat, markerPos.lng]}
+                      radius={editingItem.radius || 500}
+                      pathOptions={{
+                        color: "#EF4444",
+                        weight: 2,
+                        opacity: 0.6,
+                        fillColor: "#EF4444",
+                        fillOpacity: 0.1,
+                      }}
+                    />
+                  )}
+              </React.Fragment>
+            )}
 
           {/* Existing Data */}
           {existingData.map((item, index) => {
@@ -410,7 +424,7 @@ export default function EditableMap({
                 />
               );
             } else if (item.type === "marker" && item.coordinates) {
-              const isBencana = item.name && item.name.includes('[');
+              const isBencana = item.name && item.name.includes("[");
               return (
                 <React.Fragment key={`marker-${index}`}>
                   <Marker
@@ -441,11 +455,16 @@ export default function EditableMap({
 
           <MapEventHandler />
         </MapContainer>
-        
+
         {lastUpdated && (
           <div className="absolute bottom-2 right-2 bg-white bg-opacity-80 p-2 rounded-md shadow-lg text-xs text-gray-700 z-[1000]">
             <p className="font-semibold">Pembaruan Terakhir:</p>
-            <p>{new Date(lastUpdated).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })}</p>
+            <p>
+              {new Date(lastUpdated).toLocaleString("id-ID", {
+                dateStyle: "medium",
+                timeStyle: "short",
+              })}
+            </p>
           </div>
         )}
       </div>
@@ -457,7 +476,8 @@ export default function EditableMap({
             <div>
               {isDrawing ? (
                 <span className="text-blue-600 font-medium">
-                  Klik di peta untuk menambah titik polygon. Minimal 3 titik diperlukan.
+                  Klik di peta untuk menambah titik polygon. Minimal 3 titik
+                  diperlukan.
                 </span>
               ) : (
                 <span>Klik "Mulai Gambar" untuk membuat polygon baru.</span>
@@ -465,7 +485,10 @@ export default function EditableMap({
             </div>
           )}
           {mode === "marker" && (
-            <span>Klik di peta untuk menempatkan marker. Drag untuk menyesuaikan posisi.</span>
+            <span>
+              Klik di peta untuk menempatkan marker. Drag untuk menyesuaikan
+              posisi.
+            </span>
           )}
           {mode === "bencana" && (
             <span>Klik di peta untuk menandai lokasi sumber bencana.</span>
@@ -477,9 +500,15 @@ export default function EditableMap({
       {mode === "edit" && (
         <div className="p-3 bg-blue-50 border-t text-sm text-blue-700">
           {editingItem?.type === "polygon" ? (
-            <span>Drag titik-titik biru untuk mengubah bentuk polygon. Perubahan akan tersimpan otomatis.</span>
+            <span>
+              Drag titik-titik biru untuk mengubah bentuk polygon. Perubahan
+              akan tersimpan otomatis.
+            </span>
           ) : (
-            <span>Drag marker untuk mengubah posisi. Perubahan akan tersimpan otomatis.</span>
+            <span>
+              Drag marker untuk mengubah posisi. Perubahan akan tersimpan
+              otomatis.
+            </span>
           )}
         </div>
       )}
