@@ -46,12 +46,8 @@ export default function AdminSidebar({ isOpen, onClose }) {
   // State untuk waktu saat ini
   const [currentTime, setCurrentTime] = useState(new Date());
 
-  // State untuk data emergency (dummy data)
-  const [emergencyData, setEmergencyData] = useState([
-    { id: 1, status: 'handled', message: 'Bantuan bencana banjir' },
-    { id: 2, status: 'handled', message: 'Bantuan kesehatan' },
-    { id: 3, status: 'handled', message: 'Bantuan pangan' }
-  ]);
+  // State untuk data emergency
+  const [emergencyData, setEmergencyData] = useState([]);
 
   // Hitung data yang belum tertangani
   const pendingEmergencies = emergencyData.filter(item => item.status === 'pending');
@@ -69,20 +65,20 @@ export default function AdminSidebar({ isOpen, onClose }) {
       setCurrentTime(new Date());
     }, 1000);
 
-    // Simulasi perubahan status emergency setiap 10 detik (untuk testing)
-    const emergencyTimer = setInterval(() => {
-      setEmergencyData(prev => {
-        const newData = [...prev];
-        // Randomly change status of one item
-        const randomIndex = Math.floor(Math.random() * newData.length);
-        newData[randomIndex].status = newData[randomIndex].status === 'pending' ? 'handled' : 'pending';
-        return newData;
-      });
-    }, 10000);
+    // TODO: Fetch emergency data dari API
+    // const fetchEmergencyData = async () => {
+    //   try {
+    //     const response = await fetch('/api/emergencies');
+    //     const data = await response.json();
+    //     setEmergencyData(data);
+    //   } catch (error) {
+    //     console.error('Error fetching emergency data:', error);
+    //   }
+    // };
+    // fetchEmergencyData();
 
     return () => {
       clearInterval(timer);
-      clearInterval(emergencyTimer);
     };
   }, [isOpen]);
 
@@ -118,15 +114,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
     navigate("/login");
   };
 
-  // Fungsi untuk testing - ubah status emergency manual
-  const toggleEmergencyStatus = () => {
-    setEmergencyData(prev => 
-      prev.map(item => ({
-        ...item,
-        status: item.status === 'pending' ? 'handled' : 'pending'
-      }))
-    );
-  };
+
 
   const menu = [
     {

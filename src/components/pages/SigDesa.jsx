@@ -3,6 +3,7 @@ import { FaMapMarkedAlt, FaExclamationTriangle, FaMapMarkerAlt, FaInfoCircle } f
 import { useTranslation } from "react-i18next";
 import { alertError } from "../../libs/alert";
 import { MapApi } from "../../libs/api/MapApi";
+import UserMap from "../ui/UserMap";
 
 export default function SigDesa() {
   const { i18n } = useTranslation();
@@ -162,38 +163,21 @@ export default function SigDesa() {
                 </div>
               </div>
               
-              {isLoading ? (
-                <div className="h-96 flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-                    <p className="mt-3 text-gray-600">Memuat peta...</p>
+              <div className="relative">
+                <UserMap />
+                
+                {/* Map overlay info */}
+                <div className="absolute top-4 left-4 bg-white bg-opacity-90 rounded-lg shadow px-3 py-2 z-10">
+                  <div className="flex items-center">
+                    <div className="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
+                    <span className="text-sm font-medium">{mapData.polygons.length} Area</span>
+                  </div>
+                  <div className="flex items-center mt-1">
+                    <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+                    <span className="text-sm font-medium">{mapData.markers.length} Lokasi</span>
                   </div>
                 </div>
-              ) : (
-                <div className="h-96 relative">
-                  {/* Placeholder for map component */}
-                  <div className="h-full w-full bg-gray-200 flex items-center justify-center">
-                    <div className="text-center text-gray-500">
-                      <FaMapMarkedAlt className="text-4xl mx-auto mb-2" />
-                      <p>Peta akan ditampilkan di sini</p>
-                      <p className="text-sm mt-1">Koordinat default: -6.75, 108.05861</p>
-                    </div>
-                  </div>
-                  
-                  {/* Map overlay info */}
-                  <div className="absolute top-4 left-4 bg-white bg-opacity-90 rounded-lg shadow px-3 py-2">
-                    <div className="flex items-center">
-                      <div className="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
-                      <span className="text-sm font-medium">{mapData.polygons.length} Area</span>
-                    </div>
-                    <div className="flex items-center mt-1">
-                      <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-                      <span className="text-sm font-medium">{mapData.markers.length} Lokasi</span>
-                    </div>
-
-                  </div>
-                </div>
-              )}
+              </div>
             </div>
           </div>
 
