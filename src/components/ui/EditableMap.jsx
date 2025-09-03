@@ -6,6 +6,7 @@ import {
   Polygon,
   useMapEvents,
   Circle,
+  Popup,
 } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -22,7 +23,7 @@ L.Icon.Default.mergeOptions({
 });
 
 export default function EditableMap({
-  mode = "view", // "polygon", "marker", "bencana", "view", "edit"
+  mode = "view", // "polygon", "marker", "view", "edit"
   onPolygonComplete,
   onMarkerPlace,
   onBencanaPlace,
@@ -30,7 +31,7 @@ export default function EditableMap({
   existingData = [],
   selectedColor = "#3B82F6",
   editingItem = null,
-  bencanaRadius = 100,
+  radius = 10,
   defaultCenter = [-6.75, 108.05861],
   zoom = 15,
   lastUpdated = null,
@@ -116,6 +117,15 @@ export default function EditableMap({
         border-radius: 50%;
         box-shadow: 0 1px 2px rgba(0,0,0,0.2);
       "></div></div>`,
+      iconSize: [size, size],
+      iconAnchor: [size / 2, size],
+      popupAnchor: [0, -size],
+    });
+  };
+
+  const createDynamicIcon = (iconUrl, size = 30) => {
+    return L.icon({
+      iconUrl: `${import.meta.env.VITE_NEW_BASE_URL}/public/images/${iconUrl}`,
       iconSize: [size, size],
       iconAnchor: [size / 2, size],
       popupAnchor: [0, -size],
@@ -323,10 +333,10 @@ export default function EditableMap({
               <Polygon
                 positions={polygonPoints}
                 pathOptions={{
-                  color: selectedColor,
+                  color: editingItem.color,
                   weight: 4,
                   opacity: 1,
-                  fillColor: selectedColor,
+                  fillColor: editingItem.color,
                   fillOpacity: mode === "edit" ? 0.3 : 0.4,
                   dashArray: mode === "edit" ? "10, 5" : null,
                   lineCap: "round",
@@ -351,54 +361,53 @@ export default function EditableMap({
             ))}
 
           {/* Current Drawing - Marker */}
-          {markerPos &&
-            (mode === "marker" || mode === "bencana" || mode === "edit") && (
-              <React.Fragment>
-                <Marker
-                  position={[markerPos.lat, markerPos.lng]}
-                  icon={getLeafletIcon(
-                    mode === "bencana" ? "#EF4444" : selectedColor,
-                    36
-                  )}
-                  draggable={true}
-                  eventHandlers={{
-                    dragend: onMarkerDragEnd,
+          {markerPos && (mode === "marker" || mode === "edit") && (
+            <React.Fragment>
+              <Marker
+                position={[markerPos.lat, markerPos.lng]}
+                icon={getLeafletIcon(
+                  mode === "bencana" ? "#EF4444" : selectedColor,
+                  36
+                )}
+                draggable={true}
+                eventHandlers={{
+                  dragend: onMarkerDragEnd,
+                }}
+              />
+              {/* Circle for bencana mode */}
+              {mode === "marker" && radius && radius > 0 && (
+                <Circle
+                  center={[markerPos.lat, markerPos.lng]}
+                  radius={radius}
+                  pathOptions={{
+                    color: selectedColor,
+                    weight: 3,
+                    opacity: 0.8,
+                    fillColor: selectedColor,
+                    fillOpacity: 0.2,
+                    dashArray: "10, 5",
+                    lineCap: "round",
                   }}
                 />
-                {/* Circle for bencana mode */}
-                {mode === "bencana" && bencanaRadius && bencanaRadius > 0 && (
+              )}
+              {/* Circle for edit mode bencana */}
+              {mode === "edit" &&
+                editingItem?.type === "marker" &&
+                editingItem?.name?.includes("[") && (
                   <Circle
                     center={[markerPos.lat, markerPos.lng]}
-                    radius={bencanaRadius}
+                    radius={editingItem.radius || 500}
                     pathOptions={{
                       color: "#EF4444",
-                      weight: 3,
-                      opacity: 0.8,
+                      weight: 2,
+                      opacity: 0.6,
                       fillColor: "#EF4444",
-                      fillOpacity: 0.2,
-                      dashArray: "10, 5",
-                      lineCap: "round",
+                      fillOpacity: 0.1,
                     }}
                   />
                 )}
-                {/* Circle for edit mode bencana */}
-                {mode === "edit" &&
-                  editingItem?.type === "marker" &&
-                  editingItem?.name?.includes("[") && (
-                    <Circle
-                      center={[markerPos.lat, markerPos.lng]}
-                      radius={editingItem.radius || 500}
-                      pathOptions={{
-                        color: "#EF4444",
-                        weight: 2,
-                        opacity: 0.6,
-                        fillColor: "#EF4444",
-                        fillOpacity: 0.1,
-                      }}
-                    />
-                  )}
-              </React.Fragment>
-            )}
+            </React.Fragment>
+          )}
 
           {/* Existing Data */}
           {existingData.map((item, index) => {
@@ -406,7 +415,6 @@ export default function EditableMap({
             if (mode === "edit" && editingItem && item.id === editingItem.id) {
               return null;
             }
-
             if (item.type === "polygon" && item.coordinates) {
               return (
                 <Polygon
@@ -424,29 +432,31 @@ export default function EditableMap({
                 />
               );
             } else if (item.type === "marker" && item.coordinates) {
-              const isBencana = item.name && item.name.includes("[");
               return (
                 <React.Fragment key={`marker-${index}`}>
                   <Marker
                     position={item.coordinates}
-                    icon={getLeafletIcon(item.color || "#3B82F6", 30)}
+                    icon={createDynamicIcon(
+                      item.icon ||
+                        "https://cdn-icons-png.flaticon.com/512/252/252025.png",
+                      30
+                    )}
+                  >
+                    <Popup>{item.name}</Popup>
+                  </Marker>
+                  <Circle
+                    center={item.coordinates}
+                    radius={item.radius}
+                    pathOptions={{
+                      color: item.color || "#EF4444",
+                      weight: 3,
+                      opacity: 0.8,
+                      fillColor: item.color || "#EF4444",
+                      fillOpacity: 0.2,
+                      dashArray: "10, 5",
+                      lineCap: "round",
+                    }}
                   />
-                  {/* Circle for bencana with radius */}
-                  {isBencana && item.radius && (
-                    <Circle
-                      center={item.coordinates}
-                      radius={item.radius}
-                      pathOptions={{
-                        color: item.color || "#EF4444",
-                        weight: 3,
-                        opacity: 0.8,
-                        fillColor: item.color || "#EF4444",
-                        fillOpacity: 0.2,
-                        dashArray: "10, 5",
-                        lineCap: "round",
-                      }}
-                    />
-                  )}
                 </React.Fragment>
               );
             }

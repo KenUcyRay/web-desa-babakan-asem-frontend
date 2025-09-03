@@ -344,7 +344,7 @@ export class MapApi {
           .catch(() => ({ message: "Failed to delete map" }));
         throw new Error(errorData.message || "Failed to delete map");
       }
-      return await response.json();
+      return true;
     } catch (err) {
       console.error("delete error:", err);
       throw err;

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, act } from "react";
 import {
   FaMapMarkedAlt,
   FaDrawPolygon,
@@ -12,10 +12,11 @@ import {
   FaClock,
 } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
-import { alertError, alertSuccess } from "../../libs/alert";
+import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 import ColorPicker from "../ui/ColorPicker";
 import EditableMap from "../ui/EditableMap";
 import { MapApi } from "../../libs/api/MapApi";
+import { th } from "framer-motion/client";
 
 export default function KelolaSIG() {
   const { i18n } = useTranslation();
@@ -28,7 +29,6 @@ export default function KelolaSIG() {
   const [editingItem, setEditingItem] = useState(null);
   const [hiddenPolygons, setHiddenPolygons] = useState(new Set());
   const [hiddenMarkers, setHiddenMarkers] = useState(new Set());
-  const [hiddenBencana, setHiddenBencana] = useState(new Set());
   const [isSaving, setIsSaving] = useState(false);
 
   // Form states
@@ -40,21 +40,16 @@ export default function KelolaSIG() {
     area: 0,
   });
 
-  const [bencanaForm, setBencanaForm] = useState({
+  const [markerForm, setMarkerForm] = useState({
     name: "",
     type: "",
     description: "",
     coordinates: [],
     radius: 10,
+    color: "#3B82F6",
     icon: null,
   });
 
-  // Data constants
-  const riskLevels = [
-    { value: "rendah", label: "Rendah", color: "green" },
-    { value: "sedang", label: "Sedang", color: "yellow" },
-    { value: "tinggi", label: "Tinggi", color: "red" },
-  ];
   const colorPresets = [
     "#3B82F6",
     "#EF4444",
@@ -181,15 +176,6 @@ export default function KelolaSIG() {
       ...prev,
       coordinates: [coordinates.lat, coordinates.lng],
     }));
-    alertSuccess("Marker berhasil ditempatkan! Isi form untuk menyimpan.");
-  };
-
-  const handleBencanaPlace = (coordinates) => {
-    setCurrentCoordinates(coordinates);
-    setBencanaForm((prev) => ({
-      ...prev,
-      coordinates: [coordinates.lat, coordinates.lng],
-    }));
   };
 
   // Calculate polygon area
@@ -228,23 +214,6 @@ export default function KelolaSIG() {
       color: polygon.color,
       coordinates: polygon.coordinates,
       area: calculatePolygonArea(polygon.coordinates),
-    });
-  };
-
-  const handleEditBencana = (bencana) => {
-    setEditingItem(bencana);
-    setActiveTab("bencana");
-
-    const cleanName = bencana.name.replace(/\[.*?\]/g, "").trim();
-
-    setBencanaForm({
-      name: cleanName,
-      type: bencana.type || "",
-      description: bencana.description || "",
-      riskLevel: bencana.riskLevel || "rendah",
-      coordinates: [bencana.coordinates.lat, bencana.coordinates.lng],
-      radius: bencana.radius || 10,
-      icon: null,
     });
   };
 
@@ -308,14 +277,14 @@ export default function KelolaSIG() {
     }
   };
 
-  const handleSaveBencana = async () => {
+  const handleSaveMarker = async () => {
     if (isSaving) return;
     if (
-      !bencanaForm.name ||
-      !bencanaForm.coordinates.length ||
-      !bencanaForm.description ||
-      !bencanaForm.radius ||
-      !bencanaForm.icon
+      !markerForm.name ||
+      !markerForm.coordinates.length ||
+      !markerForm.description ||
+      !markerForm.radius ||
+      !markerForm.icon
     ) {
       alertError(
         "Mohon lengkapi semua field, tempatkan lokasi bencana di peta dan upload icon bencana"
@@ -329,12 +298,12 @@ export default function KelolaSIG() {
       // FIXED: Kirim sebagai object dengan file icon
       const payload = {
         type: "MARKER",
-        name: bencanaForm.name,
-        description: bencanaForm.description,
+        name: markerForm.name,
+        description: markerForm.description,
         year: new Date().getFullYear(),
-        coordinates: [bencanaForm.coordinates], // Array of coordinates
-        radius: bencanaForm.radius,
-        icon: bencanaForm.icon, // File object
+        coordinates: [markerForm.coordinates], // Array of coordinates
+        radius: markerForm.radius,
+        icon: markerForm.icon, // File object
       };
 
       const result = await MapApi.create(payload, i18n.language);
@@ -343,7 +312,7 @@ export default function KelolaSIG() {
         throw new Error(result.message || "Gagal menyimpan data bencana");
       }
 
-      setBencanaForm({
+      setMarkerForm({
         name: "",
         description: "",
         coordinates: [],
@@ -419,26 +388,23 @@ export default function KelolaSIG() {
   };
 
   const handleUpdateBencana = async () => {
-    if (!editingItem || !bencanaForm.name || !bencanaForm.type) {
+    if (!editingItem || !markerForm.name || !markerForm.type) {
       alertError("Mohon lengkapi semua field");
       return;
     }
 
     try {
       setIsSaving(true);
-      const riskLabel =
-        riskLevels.find((r) => r.value === bencanaForm.riskLevel)?.label ||
-        "Rendah";
 
       // FIXED: Kirim sebagai object, bukan FormData langsung
       const payload = {
         type: "BENCANA",
-        name: `[${riskLabel}] ${bencanaForm.name}`,
-        description: bencanaForm.description,
+        name: markerForm.name,
+        description: markerForm.description,
         year: editingItem.year || new Date().getFullYear(),
-        coordinates: [bencanaForm.coordinates], // Array of coordinates
-        radius: bencanaForm.radius,
-        icon: bencanaForm.icon instanceof File ? bencanaForm.icon : null,
+        coordinates: [markerForm.coordinates], // Array of coordinates
+        radius: markerForm.radius,
+        icon: markerForm.icon instanceof File ? markerForm.icon : null,
       };
 
       const result = await MapApi.update(
@@ -451,7 +417,7 @@ export default function KelolaSIG() {
         throw new Error(result.message || "Gagal mengupdate data bencana");
       }
 
-      setBencanaForm({
+      setMarkerForm({
         name: "",
         type: "",
         description: "",
@@ -476,7 +442,12 @@ export default function KelolaSIG() {
   // Delete handlers
   const handleDeletePolygon = async (id) => {
     try {
+      const confirmation = await alertConfirm(
+        "Apakah anda yakin ingin menghapus polygon ini?"
+      );
+      if (!confirmation) return;
       const result = await MapApi.delete(id, i18n.language);
+
       if (result.error) {
         throw new Error(result.message || "Gagal menghapus polygon");
       }
@@ -509,7 +480,7 @@ export default function KelolaSIG() {
 
       if (editingItem && editingItem.id === id) {
         setEditingItem(null);
-        setBencanaForm({
+        setMarkerForm({
           name: "",
           type: "",
           description: "",
@@ -551,18 +522,6 @@ export default function KelolaSIG() {
     });
   };
 
-  const toggleBencanaVisibility = (id) => {
-    setHiddenBencana((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(id)) {
-        newSet.delete(id);
-      } else {
-        newSet.add(id);
-      }
-      return newSet;
-    });
-  };
-
   const cancelEdit = () => {
     setEditingItem(null);
     setMapMode("view");
@@ -573,7 +532,7 @@ export default function KelolaSIG() {
       coordinates: [],
       area: 0,
     });
-    setBencanaForm({
+    setMarkerForm({
       name: "",
       type: "",
       description: "",
@@ -588,38 +547,38 @@ export default function KelolaSIG() {
   const renderMarkerTab = () => (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">Kelola Sumber Bencana</h3>
+        <h3 className="text-lg font-semibold">Kelola Marker</h3>
         <button
           onClick={() => {
-            const newMode = mapMode === "bencana" ? "view" : "bencana";
+            const newMode = mapMode === "marker" ? "view" : "marker";
             setMapMode(newMode);
             if (newMode === "view") {
               setCurrentCoordinates(null);
-              setBencanaForm((prev) => ({ ...prev, coordinates: [] }));
+              setMarkerForm((prev) => ({ ...prev, coordinates: [] }));
             }
           }}
           className={`flex items-center px-3 py-1 text-sm rounded ${
-            mapMode === "bencana"
+            mapMode === "marker"
               ? "bg-red-600 text-white hover:bg-red-700"
               : "bg-blue-600 text-white hover:bg-blue-700"
           }`}
         >
           <FaPlus className="mr-1" />
-          {mapMode === "bencana" ? "Batal" : "Tambah"}
+          {mapMode === "marker" ? "Batal" : "Tambah"}
         </button>
       </div>
 
-      {/* Bencana Form */}
+      {/* Marker Form */}
       <div className="space-y-3">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Nama Lokasi Bencana
+            Nama Lokasi
           </label>
           <input
             type="text"
-            value={bencanaForm.name}
+            value={markerForm.name}
             onChange={(e) =>
-              setBencanaForm({ ...bencanaForm, name: e.target.value })
+              setMarkerForm({ ...markerForm, name: e.target.value })
             }
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Masukkan nama lokasi"
@@ -628,7 +587,7 @@ export default function KelolaSIG() {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Icon Bencana
+            Icon
           </label>
           <input
             type="file"
@@ -636,15 +595,15 @@ export default function KelolaSIG() {
             onChange={(e) => {
               const file = e.target.files[0];
               if (file) {
-                setBencanaForm({ ...bencanaForm, icon: file });
+                setMarkerForm({ ...markerForm, icon: file });
               }
             }}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          {bencanaForm.icon instanceof File && (
+          {markerForm.icon instanceof File && (
             <div className="mt-2">
               <img
-                src={URL.createObjectURL(bencanaForm.icon)}
+                src={URL.createObjectURL(markerForm.icon)}
                 alt="Preview"
                 className="h-20 w-20 object-cover rounded"
               />
@@ -653,19 +612,34 @@ export default function KelolaSIG() {
         </div>
 
         <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Warna Radius
+          </label>
+          <ColorPicker
+            value={markerForm.color}
+            onChange={(color) => {
+              setMarkerForm({ ...markerForm, color });
+              setSelectedColor(color);
+            }}
+            presets={colorPresets}
+          />
+        </div>
+
+        <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Radius (meter)
           </label>
           <input
             type="number"
-            value={bencanaForm.radius}
+            value={markerForm.radius}
             onChange={(e) =>
-              setBencanaForm({
-                ...bencanaForm,
+              setMarkerForm({
+                ...markerForm,
                 radius: parseInt(e.target.value) || 10,
               })
             }
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            min="1"
             max="5000"
           />
         </div>
@@ -675,9 +649,9 @@ export default function KelolaSIG() {
             Deskripsi
           </label>
           <textarea
-            value={bencanaForm.description}
+            value={markerForm.description}
             onChange={(e) =>
-              setBencanaForm({ ...bencanaForm, description: e.target.value })
+              setMarkerForm({ ...markerForm, description: e.target.value })
             }
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             rows="2"
@@ -693,13 +667,13 @@ export default function KelolaSIG() {
             <input
               type="number"
               step="any"
-              value={bencanaForm.coordinates[0] || ""}
+              value={markerForm.coordinates[0] || ""}
               onChange={(e) =>
-                setBencanaForm({
-                  ...bencanaForm,
+                setMarkerForm({
+                  ...markerForm,
                   coordinates: [
                     parseFloat(e.target.value) || 0,
-                    bencanaForm.coordinates[1] || 0,
+                    markerForm.coordinates[1] || 0,
                   ],
                 })
               }
@@ -709,12 +683,12 @@ export default function KelolaSIG() {
             <input
               type="number"
               step="any"
-              value={bencanaForm.coordinates[1] || ""}
+              value={markerForm.coordinates[1] || ""}
               onChange={(e) =>
-                setBencanaForm({
-                  ...bencanaForm,
+                setMarkerForm({
+                  ...markerForm,
                   coordinates: [
-                    bencanaForm.coordinates[0] || 0,
+                    markerForm.coordinates[0] || 0,
                     parseFloat(e.target.value) || 0,
                   ],
                 })
@@ -751,20 +725,20 @@ export default function KelolaSIG() {
           </>
         ) : (
           <button
-            onClick={handleSaveBencana}
+            onClick={handleSaveMarker}
             disabled={
               isSaving ||
-              !bencanaForm.name ||
-              !bencanaForm.coordinates.length ||
-              !bencanaForm.description ||
-              !bencanaForm.icon
+              !markerForm.name ||
+              !markerForm.coordinates.length ||
+              !markerForm.description ||
+              !markerForm.icon
             }
             className={`flex-1 flex items-center justify-center px-4 py-2 rounded ${
               isSaving ||
-              !bencanaForm.name ||
-              !bencanaForm.coordinates.length ||
-              !bencanaForm.description ||
-              !bencanaForm.icon
+              !markerForm.name ||
+              !markerForm.coordinates.length ||
+              !markerForm.description ||
+              !markerForm.icon
                 ? "bg-gray-400 text-white cursor-not-allowed"
                 : "bg-green-600 text-white hover:bg-green-700"
             }`}
@@ -774,83 +748,6 @@ export default function KelolaSIG() {
           </button>
         )}
       </div>
-
-      {/* Maker Data List */}
-      {/* <div className="mt-6 border-t pt-4">
-        <h4 className="text-sm font-semibold text-gray-700 mb-3">
-          Data Marker Tersimpan
-        </h4>
-        <div className="space-y-2 max-h-40 overflow-y-auto">
-          {markerData.length === 0 ? (
-            <p className="text-sm text-gray-500 italic">
-              Belum ada data bencana tersimpan
-            </p>
-          ) : (
-            markerData.map((bencana, index) => {
-              const riskColor =
-                riskLevels.find((r) => r.value === bencana.riskLevel)?.color ||
-                "green";
-              return (
-                <div
-                  key={index}
-                  className="flex items-center justify-between p-2 bg-gray-50 rounded text-sm"
-                >
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center space-x-2 mb-1">
-                      <FaExclamationTriangle
-                        className={`text-${riskColor}-600`}
-                      />
-                      <span className="font-medium truncate">
-                        {bencana.name.replace(/\[.*?\]/g, "").trim()}
-                      </span>
-                      <span className="text-xs px-2 py-1 bg-gray-100 text-gray-800 rounded-full">
-                        {bencana.type}
-                      </span>
-                    </div>
-                    <div className="flex items-center text-xs text-gray-500">
-                      <span className="mr-2">Radius: {bencana.radius}m</span>
-                      <span className="mr-2">Risiko: {bencana.riskLevel}</span>
-                      <FaClock className="mr-1" />
-                      <span>{formatDate(bencana.updatedAt)}</span>
-                    </div>
-                  </div>
-                  <div className="flex space-x-1">
-                    <button
-                      onClick={() => toggleBencanaVisibility(bencana.id)}
-                      className={`p-1 rounded ${
-                        hiddenBencana.has(bencana.id)
-                          ? "text-gray-400 hover:bg-gray-100"
-                          : "text-blue-600 hover:bg-blue-100"
-                      }`}
-                      title={
-                        hiddenBencana.has(bencana.id)
-                          ? "Tampilkan"
-                          : "Sembunyikan"
-                      }
-                    >
-                      <FaEye className="text-xs" />
-                    </button>
-                    <button
-                      onClick={() => handleEditBencana(bencana)}
-                      className="p-1 text-yellow-600 hover:bg-yellow-100 rounded"
-                      title="Edit"
-                    >
-                      <FaEdit className="text-xs" />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteBencana(bencana.id)}
-                      className="p-1 text-red-600 hover:bg-red-100 rounded"
-                      title="Hapus"
-                    >
-                      <FaTrash className="text-xs" />
-                    </button>
-                  </div>
-                </div>
-              );
-            })
-          )}
-        </div>
-      </div> */}
     </div>
   );
 
@@ -895,16 +792,14 @@ export default function KelolaSIG() {
                     mode={mapMode}
                     onPolygonComplete={handlePolygonComplete}
                     onMarkerPlace={handleMarkerPlace}
-                    onBencanaPlace={handleBencanaPlace}
                     onPolygonEdit={handlePolygonEdit}
                     existingData={[
                       ...polygonData.filter((p) => !hiddenPolygons.has(p.id)),
                       ...markerData.filter((m) => !hiddenMarkers.has(m.id)),
-                      ...markerData.filter((b) => !hiddenBencana.has(b.id)),
                     ]}
+                    radius={markerForm.radius}
                     selectedColor={selectedColor}
                     editingItem={editingItem}
-                    bencanaRadius={bencanaForm.radius}
                     defaultCenter={[-6.75, 108.05861]}
                     zoom={15}
                   />
@@ -1084,78 +979,6 @@ export default function KelolaSIG() {
                         </button>
                       )}
                     </div>
-
-                    {/* Polygon Data List */}
-                    <div className="mt-6 border-t pt-4">
-                      <h4 className="text-sm font-semibold text-gray-700 mb-3">
-                        Data Polygon Tersimpan
-                      </h4>
-                      <div className="space-y-2 max-h-40 overflow-y-auto">
-                        {polygonData.length === 0 ? (
-                          <p className="text-sm text-gray-500 italic">
-                            Belum ada polygon tersimpan
-                          </p>
-                        ) : (
-                          polygonData.map((polygon, index) => (
-                            <div
-                              key={index}
-                              className="flex items-center justify-between p-2 bg-gray-50 rounded text-sm"
-                            >
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center space-x-2 mb-1">
-                                  <div
-                                    className="w-4 h-4 rounded border"
-                                    style={{ backgroundColor: polygon.color }}
-                                  />
-                                  <span className="font-medium truncate">
-                                    {polygon.name}
-                                  </span>
-                                </div>
-                                <div className="flex items-center text-xs text-gray-500">
-                                  <FaClock className="mr-1" />
-                                  <span>{formatDate(polygon.updatedAt)}</span>
-                                </div>
-                              </div>
-                              <div className="flex space-x-1">
-                                <button
-                                  onClick={() =>
-                                    togglePolygonVisibility(polygon.id)
-                                  }
-                                  className={`p-1 rounded ${
-                                    hiddenPolygons.has(polygon.id)
-                                      ? "text-gray-400 hover:bg-gray-100"
-                                      : "text-blue-600 hover:bg-blue-100"
-                                  }`}
-                                  title={
-                                    hiddenPolygons.has(polygon.id)
-                                      ? "Tampilkan"
-                                      : "Sembunyikan"
-                                  }
-                                >
-                                  <FaEye className="text-xs" />
-                                </button>
-                                <button
-                                  onClick={() => handleEditPolygon(polygon)}
-                                  className="p-1 text-yellow-600 hover:bg-yellow-100 rounded"
-                                  title="Edit"
-                                >
-                                  <FaEdit className="text-xs" />
-                                </button>
-                                <button
-                                  onClick={() =>
-                                    handleDeletePolygon(polygon.id)
-                                  }
-                                  className="p-1 text-red-600 hover:bg-red-100 rounded"
-                                  title="Hapus"
-                                >
-                                  <FaTrash className="text-xs" />
-                                </button>
-                              </div>
-                            </div>
-                          ))
-                        )}
-                      </div>
-                    </div>
                   </div>
                 )}
 
@@ -1166,11 +989,174 @@ export default function KelolaSIG() {
           </div>
         </div>
 
-        <div className="w-full rounded-lg shadow bg-white">
+        <div className="w-full rounded-lg shadow bg-white overflow-hidden">
           <div className="p-3 border-b">
             <h2 className="text-lg font-semibold text-gray-900">
-              Data Polygon dan Marker Tersimpan
+              Data {activeTab === "polygon" ? "Polygon" : "Marker"} Tersimpan
             </h2>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm text-left text-gray-600">
+              <thead className="text-xs uppercase bg-gray-100 text-gray-700">
+                <tr>
+                  <th className="px-4 py-3">No</th>
+                  <th className="px-4 py-3">Nama</th>
+                  <th className="px-4 py-3">Deskripsi</th>
+                  <th className="px-4 py-3">Tahun</th>
+                  <th className="px-4 py-3">
+                    Warna {activeTab === "polygon" ? "" : "Radius"}
+                  </th>
+                  {activeTab === "polygon" ? (
+                    <>
+                      <th className="px-4 py-3">Luas</th>
+                    </>
+                  ) : (
+                    <>
+                      <th className="px-4 py-3">Icon</th>
+                      <th className="px-4 py-3">Radius</th>
+                    </>
+                  )}
+                  <th className="px-4 py-3">Aksi</th>
+                </tr>
+              </thead>
+
+              <tbody className="divide-y divide-gray-200">
+                {activeTab === "polygon"
+                  ? polygonData.map((polygon, index) => (
+                      <tr
+                        key={polygon.id}
+                        className="bg-white hover:bg-gray-50 transition"
+                      >
+                        <td className="px-4 py-3">{index + 1}</td>
+                        <td className="px-4 py-3">{polygon.name}</td>
+                        <td className="px-4 py-3">{polygon.description}</td>
+                        <td className="px-4 py-3">{polygon.year}</td>
+                        <td className="px-4 py-3">
+                          <span
+                            className={`inline-block w-4 h-4 rounded-full border`}
+                            style={{ backgroundColor: polygon.color }}
+                          ></span>
+                        </td>
+                        <td className="px-4 py-3">{polygon.area}</td>
+                        {/* Aksi Buttons */}
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-2">
+                            {/* Toggle Visibility */}
+                            <button
+                              onClick={() =>
+                                togglePolygonVisibility(polygon.id)
+                              }
+                              className={`p-2 rounded transition ${
+                                hiddenPolygons.has(polygon.id)
+                                  ? "text-gray-400 hover:bg-gray-100"
+                                  : "text-blue-600 hover:bg-blue-100"
+                              }`}
+                              title={
+                                hiddenPolygons.has(polygon.id)
+                                  ? "Tampilkan"
+                                  : "Sembunyikan"
+                              }
+                            >
+                              <FaEye className="text-sm" />
+                            </button>
+
+                            {/* Edit */}
+                            <button
+                              onClick={() => handleEditPolygon(polygon)}
+                              className="flex items-center gap-1 px-3 py-1 text-xs font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition"
+                            >
+                              <FaEdit className="text-xs" />
+                              Edit
+                            </button>
+
+                            {/* Delete */}
+                            <button
+                              onClick={() => handleDeletePolygon(polygon.id)}
+                              className="flex items-center gap-1 px-3 py-1 text-xs font-medium text-white bg-red-600 rounded-md hover:bg-red-700 transition"
+                            >
+                              <FaTrash className="text-xs" />
+                              Hapus
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  : markerData.map((marker, index) => (
+                      <tr
+                        key={marker.id}
+                        className="bg-white hover:bg-gray-50 transition"
+                      >
+                        <td className="px-4 py-3">{index + 1}</td>
+                        <td className="px-4 py-3">{marker.name}</td>
+                        <td className="px-4 py-3">{marker.description}</td>
+                        <td className="px-4 py-3">{marker.year}</td>
+
+                        {/* Warna */}
+                        <td className="px-4 py-3">
+                          <span
+                            className="inline-block w-4 h-4 rounded-full border"
+                            style={{ backgroundColor: marker.color }}
+                          ></span>
+                        </td>
+
+                        {/* Icon (pakai img) */}
+                        <td className="px-4 py-3">
+                          {marker.icon ? (
+                            <img
+                              src={`${
+                                import.meta.env.VITE_NEW_BASE_URL
+                              }/public/images/${marker.icon}`}
+                              alt={marker.name}
+                              className="w-6 h-6 object-contain"
+                            />
+                          ) : (
+                            <span className="text-gray-400 italic">
+                              No Icon
+                            </span>
+                          )}
+                        </td>
+
+                        {/* Radius */}
+                        <td className="px-4 py-3">{marker.radius}</td>
+
+                        {/* Aksi Buttons */}
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-2">
+                            {/* Toggle Visibility */}
+                            <button
+                              onClick={() => toggleMarkerVisibility(marker.id)}
+                              className={`p-2 rounded transition ${
+                                hiddenMarkers.has(marker.id)
+                                  ? "text-gray-400 hover:bg-gray-100"
+                                  : "text-blue-600 hover:bg-blue-100"
+                              }`}
+                              title={
+                                hiddenMarkers.has(marker.id)
+                                  ? "Tampilkan"
+                                  : "Sembunyikan"
+                              }
+                            >
+                              <FaEye className="text-sm" />
+                            </button>
+
+                            {/* Edit */}
+                            <button className="flex items-center gap-1 px-3 py-1 text-xs font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition">
+                              <FaEdit className="text-xs" />
+                              Edit
+                            </button>
+
+                            {/* Delete */}
+                            <button className="flex items-center gap-1 px-3 py-1 text-xs font-medium text-white bg-red-600 rounded-md hover:bg-red-700 transition">
+                              <FaTrash className="text-xs" />
+                              Hapus
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
