@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaExclamationTriangle, FaTimes, FaPhone, FaMapMarkerAlt } from 'react-icons/fa';
+import { FaExclamationTriangle, FaTimes, FaPhone, FaMapMarkerAlt, FaUser, FaEdit } from 'react-icons/fa';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 
@@ -8,9 +8,16 @@ const EmergencyButton = () => {
   const { t } = useTranslation();
   const { profile } = useAuth();
   const [showEmergencyModal, setShowEmergencyModal] = useState(false);
+  const [showFormModal, setShowFormModal] = useState(false);
   const [cancelCount, setCancelCount] = useState(0);
   const [showWarning, setShowWarning] = useState(false);
   const [isBlocked, setIsBlocked] = useState(false);
+  const [emergencyForm, setEmergencyForm] = useState({
+    phone: '',
+    description: '',
+    location: null
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Check if user is logged in and has regular role
   const isLoggedIn = !!profile;
@@ -36,39 +43,66 @@ const EmergencyButton = () => {
   };
 
   const handleConfirmEmergency = () => {
-    // Minta permission lokasi saat konfirmasi
+    // Minta izin lokasi dan tampilkan form
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          // Jika user izinkan permission, kirim data emergency
-          const emergencyData = {
-            userId: profile?.id || 'demo-user',
-            userName: profile?.name || 'Demo User',
+          setEmergencyForm(prev => ({
+            ...prev,
+            phone: profile?.phone_number || '',
             location: {
-              lat: position.coords.latitude,
-              lng: position.coords.longitude
-            },
-            timestamp: new Date().toISOString(),
-            type: 'EMERGENCY_SOS'
-          };
-          
-          console.log('🚨 EMERGENCY ALERT SENT:', emergencyData);
-          alert(`🚨 DARURAT! Sinyal SOS dari ${profile?.name || 'User'} telah dikirim ke tim respons!`);
-          
-          // Call emergency number
-          window.location.href = 'tel:112';
-          
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude
+            }
+          }));
           setShowEmergencyModal(false);
+          setShowFormModal(true);
         },
         (error) => {
-          // Jika user tolak permission, tutup modal tanpa kirim data
-          console.log('Location permission denied:', error);
-          setShowEmergencyModal(false);
+          alert('Gagal mendapatkan lokasi. Silakan aktifkan GPS dan coba lagi.');
         }
       );
     } else {
-      alert('Browser tidak mendukung geolokasi!');
-      setShowEmergencyModal(false);
+      alert('Browser Anda tidak mendukung geolokasi.');
+    }
+  };
+
+  const handleSubmitEmergency = async () => {
+    if (!emergencyForm.description.trim()) {
+      alert('Mohon lengkapi deskripsi darurat.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    
+    try {
+      // Simulasi mengirim data ke admin (dummy nomor admin)
+      const emergencyData = {
+        id: Date.now(),
+        userName: profile?.name || 'User',
+        userPhone: emergencyForm.phone || profile?.phone_number || '',
+        adminPhone: '+62 812-9999-0001', // Dummy nomor admin
+        location: emergencyForm.location,
+        timestamp: new Date(),
+        message: emergencyForm.description,
+        status: 'active'
+      };
+
+      // Simulasi API call
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      alert(`🚨 SOS berhasil dikirim!\n\nData Anda:\nNama: ${profile?.name || 'User'}\nNomor: ${emergencyForm.phone || profile?.phone_number || 'Tidak ada'}\nDeskripsi: ${emergencyForm.description}\nLokasi: ${emergencyForm.location.latitude.toFixed(6)}, ${emergencyForm.location.longitude.toFixed(6)}\n\nMenghubungi admin sekarang...`);
+      
+      // Reset form
+      setEmergencyForm({ phone: '', description: '', location: null });
+      setShowFormModal(false);
+      
+      // Langsung telepon admin
+      window.location.href = 'tel:+6281299990001';
+    } catch (error) {
+      alert('Gagal mengirim SOS. Silakan coba lagi.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -86,6 +120,11 @@ const EmergencyButton = () => {
     }
     
     setShowEmergencyModal(false);
+  };
+
+  const handleCancelForm = () => {
+    setEmergencyForm({ phone: '', description: '', location: null });
+    setShowFormModal(false);
   };
 
   // Don't show if not logged in or not regular user
@@ -272,6 +311,145 @@ const EmergencyButton = () => {
                 >
                   {t('emergency.understood')}
                 </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Form Modal */}
+      <AnimatePresence>
+        {showFormModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4"
+            style={{ backgroundColor: 'rgba(0, 0, 0, 0.9)' }}
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0, y: 50 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.8, opacity: 0, y: 50 }}
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              className="bg-white rounded-xl shadow-2xl max-w-md w-full mx-3 sm:mx-4 overflow-hidden"
+            >
+              {/* Header */}
+              <div className="bg-gradient-to-r from-red-500 to-red-600 px-4 sm:px-6 py-3 sm:py-4 text-white">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <div className="p-1.5 sm:p-2 bg-white/20 rounded-full">
+                      <FaEdit size={16} className="sm:w-5 sm:h-5" />
+                    </div>
+                    <div>
+                      <h2 className="text-base sm:text-lg font-bold">Detail Darurat</h2>
+                      <p className="text-red-100 text-xs sm:text-sm">Lengkapi informasi</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={handleCancelForm}
+                    className="p-1 hover:bg-white/20 rounded-full transition-colors"
+                  >
+                    <FaTimes size={16} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Form Content */}
+              <div className="px-4 py-4">
+                <div className="space-y-4">
+                  {/* Info User */}
+                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <FaUser className="text-gray-500" size={14} />
+                      <p className="text-sm font-medium text-gray-700">Informasi Pengirim:</p>
+                    </div>
+                    <p className="text-sm text-gray-800 font-semibold">{profile?.name || 'User'}</p>
+                  </div>
+
+                  {/* Nomor Telepon */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <FaPhone className="inline mr-2" />Nomor Telepon
+                    </label>
+                    <input
+                      type="text"
+                      value={emergencyForm.phone}
+                      onChange={(e) => setEmergencyForm(prev => ({ ...prev, phone: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                      placeholder={profile?.phone_number || "Masukkan nomor telepon Anda"}
+                    />
+                  </div>
+
+                  {/* Deskripsi Darurat */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <FaExclamationTriangle className="inline mr-2" />Deskripsi Darurat
+                    </label>
+                    <textarea
+                      value={emergencyForm.description}
+                      onChange={(e) => setEmergencyForm(prev => ({ ...prev, description: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 h-24 resize-none"
+                      placeholder="Jelaskan situasi darurat yang Anda alami..."
+                    />
+                  </div>
+
+                  {/* Lokasi Info */}
+                  {emergencyForm.location && (
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                      <div className="flex items-start gap-2">
+                        <FaMapMarkerAlt className="text-blue-500 mt-0.5" size={14} />
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-blue-800 mb-1">📍 Lokasi Terdeteksi:</p>
+                          <p className="text-xs text-blue-600">
+                            {emergencyForm.location.latitude.toFixed(6)}, {emergencyForm.location.longitude.toFixed(6)}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Info Admin */}
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                    <div className="flex items-start gap-2">
+                      <FaPhone className="text-green-500 mt-0.5" size={14} />
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-green-800 mb-1">📞 Kontak Admin:</p>
+                        <p className="text-xs text-green-600">
+                          Admin akan menghubungi Anda di: +62 812-9999-0001
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex gap-3 mt-6">
+                  <button
+                    onClick={handleCancelForm}
+                    className="flex-1 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors text-sm"
+                    disabled={isSubmitting}
+                  >
+                    Batal
+                  </button>
+                  <button
+                    onClick={handleSubmitEmergency}
+                    disabled={isSubmitting || !emergencyForm.description.trim()}
+                    className="flex-1 px-4 py-2.5 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold rounded-lg transition-all shadow-lg flex items-center justify-center gap-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></div>
+                        Mengirim...
+                      </>
+                    ) : (
+                      <>
+                        <FaExclamationTriangle size={12} />
+                        🚨 Kirim SOS!
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
             </motion.div>
           </motion.div>

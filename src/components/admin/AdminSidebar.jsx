@@ -277,13 +277,6 @@ export default function AdminSidebar({ isOpen, onClose }) {
           <div className="text-xs text-white font-medium">
             {formatTime(currentTime)}
           </div>
-          {/* Button untuk testing (hapus di production) */}
-          <button 
-            onClick={toggleEmergencyStatus}
-            className="mt-1 text-xs bg-white text-green-600 px-2 py-1 rounded opacity-70 hover:opacity-100"
-          >
-            Toggle Emergency
-          </button>
         </div>
       </div>
 
