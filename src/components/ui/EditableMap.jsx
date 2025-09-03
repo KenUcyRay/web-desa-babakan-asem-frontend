@@ -36,21 +36,37 @@ export default function EditableMap({
   defaultCenter = [-6.75, 108.05861],
   zoom = 15,
   lastUpdated = null,
+  currentPolygon = null, // Polygon yang sedang dibuat
+  resetPolygon = false, // Flag untuk reset polygon
 }) {
   const [markerPos, setMarkerPos] = useState(null);
   const [polygonPoints, setPolygonPoints] = useState([]);
   const [isDrawing, setIsDrawing] = useState(false);
   const [editingVertices, setEditingVertices] = useState([]);
+  const [isAdjusting, setIsAdjusting] = useState(false);
+  const [polygonCompleted, setPolygonCompleted] = useState(false);
 
   // Reset states when mode changes
   useEffect(() => {
-    if (mode !== "edit") {
+    if (mode === "view") {
       setMarkerPos(null);
-      setPolygonPoints([]);
       setIsDrawing(false);
+      setIsAdjusting(false);
       setEditingVertices([]);
+      // Jangan reset polygonPoints di sini
     }
   }, [mode]);
+
+  // Reset polygon when parent requests it
+  useEffect(() => {
+    if (resetPolygon) {
+      setPolygonPoints([]);
+      setIsDrawing(false);
+      setIsAdjusting(false);
+      setPolygonCompleted(false);
+      setEditingVertices([]);
+    }
+  }, [resetPolygon]);
 
   // Set editing data when editingItem changes
   useEffect(() => {
@@ -203,17 +219,46 @@ export default function EditableMap({
   // Start/stop polygon drawing
   const togglePolygonDrawing = () => {
     if (isDrawing) {
-      // Complete polygon
-      if (polygonPoints.length >= 3) {
-        if (onPolygonComplete) {
-          onPolygonComplete(polygonPoints);
-        }
-      }
+      // Complete polygon drawing
       setIsDrawing(false);
+      setPolygonCompleted(true);
     } else {
+      // Start new drawing (Gambar Ulang)
       setPolygonPoints([]);
       setIsDrawing(true);
+      setIsAdjusting(false);
+      setPolygonCompleted(false);
+      setEditingVertices([]);
     }
+  };
+
+  // Handle adjust mode
+  const handleAdjustMode = () => {
+    setIsAdjusting(true);
+    setEditingVertices(
+      polygonPoints.map((coord, index) => ({
+        id: index,
+        position: coord,
+      }))
+    );
+  };
+
+  // Finish adjusting (back to completed state)
+  const finishAdjusting = () => {
+    setIsAdjusting(false);
+    setEditingVertices([]);
+  };
+
+  // Finish polygon creation completely
+  const finishPolygon = () => {
+    if (polygonPoints.length >= 3 && onPolygonComplete) {
+      onPolygonComplete(polygonPoints);
+    }
+    // Polygon tetap terlihat untuk preview saat isi form
+    setIsDrawing(false);
+    setIsAdjusting(false);
+    setPolygonCompleted(false);
+    setEditingVertices([]);
   };
 
   // Undo last polygon point
@@ -226,6 +271,8 @@ export default function EditableMap({
     setMarkerPos(null);
     setPolygonPoints([]);
     setIsDrawing(false);
+    setIsAdjusting(false);
+    setPolygonCompleted(false);
     setEditingVertices([]);
   };
 
@@ -250,22 +297,75 @@ export default function EditableMap({
           <div className="flex items-center space-x-2">
             {mode === "polygon" && (
               <>
-                <button
-                  onClick={togglePolygonDrawing}
-                  className={`px-3 py-1 text-sm rounded ${
-                    isDrawing
-                      ? "bg-red-500 text-white hover:bg-red-600"
-                      : "bg-blue-500 text-white hover:bg-blue-600"
-                  }`}
-                >
-                  {isDrawing ? "Selesai Gambar" : "Mulai Gambar"}
-                </button>
-                {polygonPoints.length > 0 && (
+                {/* Saat sedang menggambar */}
+                {isDrawing && (
+                  <>
+                    <button
+                      onClick={togglePolygonDrawing}
+                      className="px-2 py-1 text-xs rounded bg-red-500 text-white hover:bg-red-600"
+                    >
+                      Selesai Gambar
+                    </button>
+                    {polygonPoints.length > 0 && (
+                      <button
+                        onClick={undoLastPoint}
+                        className="px-2 py-1 text-xs bg-yellow-500 text-white rounded hover:bg-yellow-600"
+                      >
+                        Undo ({polygonPoints.length})
+                      </button>
+                    )}
+                  </>
+                )}
+                
+                {/* Setelah selesai gambar - 3 pilihan */}
+                {polygonCompleted && !isAdjusting && polygonPoints.length >= 3 && (
+                  <>
+                    <button
+                      onClick={togglePolygonDrawing}
+                      className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+                    >
+                      Gambar Ulang
+                    </button>
+                    <button
+                      onClick={handleAdjustMode}
+                      className="px-2 py-1 text-xs bg-orange-500 text-white rounded hover:bg-orange-600"
+                    >
+                      Sesuaikan Sudut
+                    </button>
+                    <button
+                      onClick={finishPolygon}
+                      className="px-2 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600"
+                    >
+                      Selesai
+                    </button>
+                  </>
+                )}
+                
+                {/* Saat sedang menyesuaikan sudut */}
+                {isAdjusting && (
+                  <>
+                    <button
+                      onClick={handleAdjustMode}
+                      className="px-2 py-1 text-xs bg-orange-500 text-white rounded hover:bg-orange-600"
+                    >
+                      Sesuaikan Sudut
+                    </button>
+                    <button
+                      onClick={finishAdjusting}
+                      className="px-2 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600"
+                    >
+                      Selesai
+                    </button>
+                  </>
+                )}
+                
+                {/* Tombol mulai jika belum ada polygon */}
+                {!isDrawing && !polygonCompleted && polygonPoints.length === 0 && (
                   <button
-                    onClick={undoLastPoint}
-                    className="px-3 py-1 text-sm bg-yellow-500 text-white rounded hover:bg-yellow-600"
+                    onClick={togglePolygonDrawing}
+                    className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
                   >
-                    Undo ({polygonPoints.length})
+                    Mulai Gambar
                   </button>
                 )}
               </>
@@ -330,15 +430,15 @@ export default function EditableMap({
 
           {/* Current Drawing - Polygon */}
           {polygonPoints.length > 0 &&
-            (mode === "polygon" || mode === "edit") && (
+            (mode === "polygon" || mode === "edit" || mode === "view") && (
               <Polygon
                 positions={polygonPoints}
                 pathOptions={{
-                  color: mode === "edit" ? editingItem.color : selectedColor,
+                  color: mode === "edit" && editingItem ? editingItem.color : selectedColor,
                   weight: 4,
                   opacity: 1,
                   fillColor:
-                    mode === "edit" ? editingItem.color : selectedColor,
+                    mode === "edit" && editingItem ? editingItem.color : selectedColor,
                   fillOpacity: mode === "edit" ? 0.3 : 0.4,
                   dashArray: mode === "edit" ? "10, 5" : null,
                   lineCap: "round",
@@ -347,9 +447,70 @@ export default function EditableMap({
               />
             )}
 
-          {/* Editing Vertices */}
+          {/* Current Polygon being created (from form) */}
+          {currentPolygon && currentPolygon.coordinates.length > 0 && mode === "edit" && (
+            <Polygon
+              positions={currentPolygon.coordinates}
+              pathOptions={{
+                color: currentPolygon.color || selectedColor,
+                weight: 4,
+                opacity: 1,
+                fillColor: currentPolygon.color || selectedColor,
+                fillOpacity: 0.4,
+                dashArray: "10, 5",
+                lineCap: "round",
+                lineJoin: "round",
+              }}
+            />
+          )}
+
+          {/* Editing Vertices for current polygon */}
+          {currentPolygon && currentPolygon.coordinates.length > 0 && mode === "edit" &&
+            currentPolygon.coordinates.map((coord, index) => (
+              <Marker
+                key={`current-vertex-${index}`}
+                position={coord}
+                icon={getVertexIcon()}
+                draggable={true}
+                eventHandlers={{
+                  dragend: (e) => {
+                    const { lat, lng } = e.target.getLatLng();
+                    const newCoords = [...currentPolygon.coordinates];
+                    newCoords[index] = [lat, lng];
+                    if (onPolygonEdit) {
+                      onPolygonEdit({ coordinates: newCoords });
+                    }
+                  },
+                }}
+              />
+            ))}
+
+          {/* Adjusting Vertices for new polygon */}
+          {mode === "polygon" && isAdjusting && editingVertices.map((vertex, index) => (
+            <Marker
+              key={`adjust-vertex-${index}`}
+              position={vertex.position}
+              icon={getVertexIcon()}
+              draggable={true}
+              eventHandlers={{
+                dragend: (e) => {
+                  const { lat, lng } = e.target.getLatLng();
+                  const newPoints = [...polygonPoints];
+                  newPoints[index] = [lat, lng];
+                  setPolygonPoints(newPoints);
+                  
+                  const newVertices = [...editingVertices];
+                  newVertices[index].position = [lat, lng];
+                  setEditingVertices(newVertices);
+                },
+              }}
+            />
+          ))}
+
+          {/* Editing Vertices for existing polygon */}
           {mode === "edit" &&
             editingItem?.type === "polygon" &&
+            editingItem?.id && // Only for existing polygons with ID
             editingVertices.map((vertex, index) => (
               <Marker
                 key={`vertex-${index}`}
