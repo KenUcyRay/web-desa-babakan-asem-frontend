@@ -6,6 +6,7 @@ import {
   Marker,
   Popup,
   Tooltip as LeafletTooltip,
+  Circle,
 } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -49,12 +50,25 @@ function tryParseJSON(value) {
 }
 
 function normalizePolygonCoordinates(input) {
+  if (Array.isArray(input)) {
+    if (input.length > 0 && Array.isArray(input[0]) && input[0].length === 2) {
+      const firstPoint = input[0];
+      const lng = Number(firstPoint[0]);
+      const lat = Number(firstPoint[1]);
+
+      if (Math.abs(lng) <= 180 && Math.abs(lat) <= 90) {
+        if (Math.abs(lng) > Math.abs(lat)) {
+          return input.map((pt) => [Number(pt[1]), Number(pt[0])]);
+        } else {
+          return input.map((pt) => [Number(pt[0]), Number(pt[1])]);
+        }
+      }
+    }
+    return input;
+  }
+
   const parsed = tryParseJSON(input) ?? input;
   if (!Array.isArray(parsed) || parsed.length === 0) return null;
-
-  if (typeof parsed[0] === "number") {
-    return null;
-  }
 
   let coordsArray = parsed;
   if (Array.isArray(parsed[0]) && Array.isArray(parsed[0][0])) {
@@ -66,7 +80,9 @@ function normalizePolygonCoordinates(input) {
       if (!Array.isArray(pt) || pt.length < 2) return null;
       const lng = Number(pt[0]);
       const lat = Number(pt[1]);
-      if (Number.isFinite(lat) && Number.isFinite(lng)) return [lat, lng];
+      if (Number.isFinite(lat) && Number.isFinite(lng)) {
+        return [lat, lng];
+      }
       return null;
     })
     .filter(Boolean);
@@ -96,7 +112,7 @@ function normalizeMarkerCoordinates(input) {
   return null;
 }
 
-export default function UserMap() {
+export default function UserMap({ showPolygons = true, showMarkers = true }) {
   const { i18n } = useTranslation();
   const [mapData, setMapData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -104,13 +120,7 @@ export default function UserMap() {
   const fetchMapData = async () => {
     try {
       setIsLoading(true);
-      const response = await MapApi.getAll(i18n.language);
-
-      if (!response.ok) {
-        throw new Error("Gagal mengambil data peta");
-      }
-
-      const responseData = await response.json();
+      const responseData = await MapApi.getAll(i18n.language);
       const formattedData = [];
 
       if (responseData.data && Array.isArray(responseData.data)) {
@@ -126,6 +136,7 @@ export default function UserMap() {
                 description: item.description || "Wilayah Desa",
                 type: "polygon",
                 coordinates: normalized,
+                color: item.color || null,
               });
             } else if (item.type === "MARKER") {
               const normalized = normalizeMarkerCoordinates(item.coordinates);
@@ -136,10 +147,13 @@ export default function UserMap() {
                 name: item.name,
                 description: item.description || "Point of Interest",
                 type: "marker",
-                coordinates: normalized,
+                coordinates: item.coordinates,
                 icon: item.icon
                   ? `${import.meta.env.VITE_NEW_BASE_URL}/public/images/${item.icon}`
                   : null,
+                radius: item.radius || null,
+                color: item.color || null,
+                updated_at: item.updated_at,
               });
             }
           } catch (err) {
@@ -192,64 +206,88 @@ export default function UserMap() {
         className="w-full h-96 z-0"
       >
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
         />
 
-        {mapData.map((item) =>
-          item.type === "polygon" ? (
-            (() => {
-              const polygonIdx = polygonLegendData.findIndex(
-                (p) => p.id === item.id
-              );
-              const color = polygonLegendData[polygonIdx]?.color || "#2563eb";
-              return (
-                <Polygon
-                  key={item.id}
-                  positions={item.coordinates}
-                  pathOptions={{
-                    color,
-                    weight: 2,
-                    dashArray: "4, 4",
-                    fillColor: "transparent",
-                    opacity: 0.9,
-                  }}
+        {mapData.map((item) => {
+          if (item.type === "polygon" && showPolygons) {
+            const polygonIdx = polygonLegendData.findIndex(
+              (p) => p.id === item.id
+            );
+            const color = item.color || getPolygonColorByIndex(polygonIdx);
+            return (
+              <Polygon
+                key={item.id}
+                positions={item.coordinates}
+                pathOptions={{
+                  color,
+                  weight: 4,
+                  opacity: 1,
+                  fillColor: color,
+                  fillOpacity: 0.3,
+                  lineCap: "round",
+                  lineJoin: "round",
+                }}
+              >
+                <LeafletTooltip permanent={false} direction="center">
+                  {item.name}
+                </LeafletTooltip>
+                <Popup>
+                  <div className="text-center">
+                    <strong className="text-base" style={{ color }}>
+                      {item.name}
+                    </strong>
+                    <p className="text-sm my-2">{item.description}</p>
+                    <p className="text-xs text-gray-600">
+                      Kecamatan: Congeang
+                    </p>
+                  </div>
+                </Popup>
+              </Polygon>
+            );
+          } else if (item.type === "marker") {
+            return (
+              <React.Fragment key={item.id}>
+                <Marker
+                  position={item.coordinates[0]}
+                  icon={createIcon(item.icon)}
                 >
-                  <LeafletTooltip permanent={false} direction="center">
-                    {item.name}
-                  </LeafletTooltip>
+                  <LeafletTooltip permanent={false}>{item.name}</LeafletTooltip>
                   <Popup>
                     <div className="text-center">
-                      <strong className="text-base" style={{ color }}>
+                      <strong className="text-base text-red-600">
                         {item.name}
                       </strong>
                       <p className="text-sm my-2">{item.description}</p>
                       <p className="text-xs text-gray-600">
-                        Kecamatan: Congeang
+                        Koordinat:{" "}
+                        {Number(item.coordinates[0][0]).toFixed(6)},{" "}
+                        {Number(item.coordinates[0][1]).toFixed(6)}
                       </p>
                     </div>
                   </Popup>
-                </Polygon>
-              );
-            })()
-          ) : (
-            <Marker
-              key={item.id}
-              position={item.coordinates[0]}
-              icon={createIcon(item.icon)}
-            >
-              <LeafletTooltip permanent={false}>{item.name}</LeafletTooltip>
-              <Popup>
-                <div className="text-center">
-                  <strong className="text-base text-green-600">
-                    {item.name}
-                  </strong>
-                  <p className="text-sm my-2">{item.description}</p>
-                </div>
-              </Popup>
-            </Marker>
-          )
-        )}
+                </Marker>
+                {item.radius && (
+                  <Circle
+                    center={item.coordinates[0]}
+                    radius={item.radius}
+                    pathOptions={{
+                      color: item.color || "#EF4444",
+                      weight: 3,
+                      opacity: 0.8,
+                      fillColor: item.color || "#EF4444",
+                      fillOpacity: 0.2,
+                      dashArray: "10, 5",
+                      lineCap: "round",
+                    }}
+                  />
+                )}
+              </React.Fragment>
+            );
+          }
+          return null;
+        })}
       </MapContainer>
     </div>
   );

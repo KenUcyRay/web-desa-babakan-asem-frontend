@@ -14,6 +14,8 @@ export default function SigDesa() {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [activeLegend, setActiveLegend] = useState("all");
+  const [showPolygons, setShowPolygons] = useState(true);
+  const [showMarkers, setShowMarkers] = useState(true);
 
   // Load data from API
   useEffect(() => {
@@ -164,7 +166,7 @@ export default function SigDesa() {
               </div>
               
               <div className="relative">
-                <UserMap />
+                <UserMap showPolygons={showPolygons} showMarkers={showMarkers} />
                 
                 {/* Map overlay info */}
                 <div className="absolute top-4 left-4 bg-white bg-opacity-90 rounded-lg shadow px-3 py-2 z-10">
@@ -195,7 +197,19 @@ export default function SigDesa() {
                   {legendCategories.map(category => (
                     <button
                       key={category.id}
-                      onClick={() => setActiveLegend(category.id)}
+                      onClick={() => {
+                        setActiveLegend(category.id);
+                        if (category.id === "all") {
+                          setShowPolygons(true);
+                          setShowMarkers(true);
+                        } else if (category.id === "polygon") {
+                          setShowPolygons(true);
+                          setShowMarkers(false);
+                        } else if (category.id === "marker") {
+                          setShowPolygons(false);
+                          setShowMarkers(true);
+                        }
+                      }}
                       className={`flex items-center justify-center p-2 rounded-lg border transition-colors ${
                         activeLegend === category.id
                           ? `${category.color} border-transparent font-medium`
