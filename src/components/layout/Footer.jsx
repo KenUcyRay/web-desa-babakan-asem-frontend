@@ -36,6 +36,30 @@ export default function Footer() {
             <p className="mt-2 text-[14px] leading-relaxed text-gray-400 hover:text-white transition duration-200">
               {t("footer.address")}
             </p>
+            
+            {/* Sponsor dipindah ke sini */}
+            <div className="mt-6">
+              <p className="mb-3 text-gray-300 font-medium text-xs uppercase tracking-wide">
+                {t("footer.supported_by")}
+              </p>
+              <div className="flex gap-4 flex-wrap justify-center md:justify-start">
+                {[foto1, foto2, foto3].map((foto, idx) => (
+                  <a
+                    key={idx}
+                    href="#"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group relative"
+                  >
+                    <img
+                      src={foto}
+                      alt={`Sponsor ${idx + 1}`}
+                      className="h-12 opacity-75 group-hover:opacity-100 group-hover:scale-105 transition duration-300"
+                    />
+                  </a>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
 
@@ -103,48 +127,29 @@ export default function Footer() {
               </div>
             </a>
           </div>
+          
+          {/* Social Media Icons dipindah ke sini */}
+          <div className="mt-8">
+            <div className="flex gap-4 justify-center md:justify-start">
+              {[FaFacebookF, FaYoutube, FaGoogle, FaTwitter, FaTiktok].map(
+                (Icon, i) => (
+                  <a
+                    key={i}
+                    href="#"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[18px] opacity-75 hover:opacity-100 transition-transform duration-300 hover:scale-110"
+                  >
+                    <Icon />
+                  </a>
+                )
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="border-t border-gray-700 py-8 flex flex-col items-center">
-        <p className="mb-5 text-gray-300 font-medium text-sm uppercase tracking-wide">
-          {t("footer.supported_by")}
-        </p>
-        <div className="flex gap-16 flex-wrap justify-center">
-          {[foto1, foto2, foto3].map((foto, idx) => (
-            <a
-              key={idx}
-              href="#"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group relative"
-            >
-              <img
-                src={foto}
-                alt={`Sponsor ${idx + 1}`}
-                className="h-20 opacity-75 group-hover:opacity-100 group-hover:scale-105 transition duration-300"
-              />
-            </a>
-          ))}
-        </div>
-      </div>
-
-      <div className="border-t border-gray-600 mt-8 pt-6 flex flex-col items-center">
-        <div className="flex gap-7 mb-5 flex-wrap justify-center">
-          {[FaFacebookF, FaYoutube, FaGoogle, FaTwitter, FaTiktok].map(
-            (Icon, i) => (
-              <a
-                key={i}
-                href="#"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[26px] opacity-75 hover:opacity-100 transition-transform duration-300 hover:scale-110"
-              >
-                <Icon />
-              </a>
-            )
-          )}
-        </div>
+      <div className="border-t border-gray-600 pt-4 pb-2 flex justify-center">
         <p className="text-[13px] opacity-80 text-center tracking-wide">
           {t("footer.copyright")}
         </p>

@@ -11,6 +11,7 @@ export default function FloatingMenu() {
   const [showCallCenterDropdown, setShowCallCenterDropdown] = useState(false);
   const [showCallCenterModal, setShowCallCenterModal] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
+  const [bottomPosition, setBottomPosition] = useState(24); // 24px = bottom-6
 
   const handleCallCenterClick = (e) => {
     e.preventDefault();
@@ -54,6 +55,41 @@ export default function FloatingMenu() {
   useEffect(() => {
     const timer = setTimeout(() => setShowGreeting(false), 4000);
     return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const footer = document.querySelector('footer');
+      if (footer) {
+        const footerRect = footer.getBoundingClientRect();
+        const windowHeight = window.innerHeight;
+        
+        // Jika footer mulai terlihat di layar
+        if (footerRect.top < windowHeight) {
+          // Hitung jarak yang tersisa dari bottom viewport ke footer
+          const spaceAboveFooter = footerRect.top;
+          const newBottomPosition = windowHeight - spaceAboveFooter + 20; // 20px margin dari footer
+          
+          // Pastikan tidak kurang dari 24px (posisi normal)
+          if (newBottomPosition > 24) {
+            setBottomPosition(newBottomPosition);
+          } else {
+            setBottomPosition(24);
+          }
+        } else {
+          setBottomPosition(24);
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('resize', handleScroll);
+    handleScroll(); // Check initial position
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
+    };
   }, []);
 
   return (
@@ -140,7 +176,10 @@ export default function FloatingMenu() {
         )}
       </AnimatePresence>
 
-      <div className="fixed bottom-6 right-6 z-[999] flex flex-col items-end">
+      <div 
+        className="fixed right-6 z-[30] flex flex-col items-end transition-all duration-300"
+        style={{ bottom: `${bottomPosition}px` }}
+      >
       {/* ✅ Sapaan kecil */}
       <AnimatePresence>
         {showGreeting && !open && (

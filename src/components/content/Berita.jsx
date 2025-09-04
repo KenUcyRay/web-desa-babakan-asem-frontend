@@ -1,7 +1,6 @@
 import SidebarInfo from "../layout/SidebarInfo";
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
-import Pagination from "../ui/Pagination";
+import { useEffect, useState, useCallback } from "react";
 import { NewsApi } from "../../libs/api/NewsApi";
 import { Helper } from "../../utils/Helper";
 import AOS from "aos";
@@ -12,15 +11,31 @@ export default function Berita() {
   const { t, i18n } = useTranslation();
   const [news, setNews] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [loading, setLoading] = useState(false);
 
-  const fetchNews = async () => {
-    const response = await NewsApi.getNews(currentPage, 10, i18n.language);
-    if (!response.ok) return;
+  const fetchNews = async (page = 1, reset = false) => {
+    if (loading) return;
+    setLoading(true);
+    
+    const response = await NewsApi.getNews(page, 10, i18n.language);
+    if (!response.ok) {
+      setLoading(false);
+      return;
+    }
+    
     const responseBody = await response.json();
-    setTotalPages(responseBody.total_page);
-    setCurrentPage(responseBody.page);
-    setNews(responseBody.news);
+    const newNews = responseBody.news;
+    
+    if (reset) {
+      setNews(newNews);
+      setCurrentPage(1);
+    } else {
+      setNews(prev => [...prev, ...newNews]);
+    }
+    
+    setHasMore(page < responseBody.total_page);
+    setLoading(false);
   };
 
   const truncateText = (text, maxLength = 100) => {
@@ -30,14 +45,29 @@ export default function Berita() {
       : text;
   };
 
+  const handleScroll = useCallback(() => {
+    if (window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight - 1000) {
+      if (hasMore && !loading) {
+        const nextPage = currentPage + 1;
+        setCurrentPage(nextPage);
+        fetchNews(nextPage);
+      }
+    }
+  }, [hasMore, loading, currentPage]);
+
   useEffect(() => {
-    fetchNews();
+    fetchNews(1, true);
     AOS.init({
       duration: 800,
       easing: "ease-in-out",
       once: true,
     });
-  }, [currentPage, i18n.language]);
+  }, [i18n.language]);
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [handleScroll]);
 
   return (
     <div className="bg-[#F8F8F8] w-full py-10">
@@ -87,16 +117,22 @@ export default function Berita() {
             ))}
           </div>
 
-          {/* Pagination */}
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-          />
+          {/* Loading indicator */}
+          {loading && (
+            <div className="text-center py-4">
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+            </div>
+          )}
+          
+          {!hasMore && news.length > 0 && (
+            <div className="text-center py-4 text-gray-500">
+              {t("news.noMoreNews")}
+            </div>
+          )}
         </div>
 
         {/* SIDEBAR */}
-        <aside>
+        <aside className="md:sticky md:top-4 md:h-fit">
           <SidebarInfo />
         </aside>
       </div>
