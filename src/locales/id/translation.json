@@ -805,7 +805,7 @@
     "locationNotAvailable": "Lokasi tidak tersedia",
     "systemWarning": "PERINGATAN SISTEM",
     "rule1": "3x Batal",
-    "rule1Description": "Peringatan muncul",
+    "rule1Description": "Anda tidak bisa menggunakan fitur emergency",
     "rule2": "5x Batal",
     "rule2Description": "Akun diblokir permanen",
     "rule3": "Gunakan hanya untuk darurat sesungguhnya!",

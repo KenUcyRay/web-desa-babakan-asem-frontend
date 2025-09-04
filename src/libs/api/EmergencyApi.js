@@ -1,7 +1,7 @@
 export class EmergencyApi {
   static async create(data) {
     const response = await fetch(
-      `${import.meta.env.VITE_NEW_BASE_URL}/emergencies`,
+      `${import.meta.env.VITE_NEW_BASE_URL}/private/emergencies`,
       {
         method: "POST",
         credentials: "include",
@@ -16,6 +16,7 @@ export class EmergencyApi {
     const body = await response.json();
 
     if (!response.ok) {
+      console.log(body);
       throw new Error(body || "Failed to create emergency");
     }
 
@@ -25,7 +26,7 @@ export class EmergencyApi {
     const response = await fetch(
       `${
         import.meta.env.VITE_NEW_BASE_URL
-      }/admin/emergencies?page=${page}&limit=${limit}&isHandled=${isHandled}`,
+      }/admin/emergencies?page=${page}&limit=${limit}&is_handled=${isHandled}`,
       {
         method: "GET",
         credentials: "include",

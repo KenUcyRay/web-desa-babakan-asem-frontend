@@ -7,9 +7,12 @@ import {
   FaPhone,
   FaArrowLeft,
   FaCheckCircle,
+  FaTrash,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import Pagination from "../ui/Pagination";
+import { EmergencyApi } from "../../libs/api/EmergencyApi";
+import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 
 export default function EmergencyPage() {
   const navigate = useNavigate();
@@ -18,37 +21,34 @@ export default function EmergencyPage() {
   const [activeTab, setActiveTab] = useState("active"); // "active" atau "resolved"
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
+  const [totalPages, setTotalPages] = useState(1);
+  const [count, setCount] = useState(0);
 
-  useEffect(() => {
-    // TODO: Ganti dengan API call ke backend
-    const fetchEmergencies = async () => {
-      try {
-        // const response = await fetch('/api/emergencies');
-        // const data = await response.json();
-        // setEmergencies(data);
-        
-        // Sementara kosongkan data
-        setEmergencies([]);
-        setIsLoading(false);
-      } catch (error) {
-        console.error('Error fetching emergencies:', error);
-        setEmergencies([]);
-        setIsLoading(false);
-      }
-    };
+  const fetchEmergencies = async () => {
+    try {
+      const isHandled = activeTab === "resolved" ? true : false;
+      const response = await EmergencyApi.get(
+        currentPage,
+        itemsPerPage,
+        isHandled
+      );
 
-    fetchEmergencies();
-  }, []);
+      const countResponse = await EmergencyApi.count();
 
-  // Auto switch tab berdasarkan ada tidaknya emergency aktif
-  useEffect(() => {
-    const activeEmergencies = emergencies.filter(e => e.status === "active");
-    if (activeEmergencies.length > 0) {
-      setActiveTab("active");
-    } else {
-      setActiveTab("resolved");
+      setEmergencies(response.data);
+      setTotalPages(response.total_page);
+      setCount(countResponse.data);
+
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error fetching emergencies:", error);
+      setIsLoading(false);
     }
-  }, [emergencies]);
+  };
+
+  useEffect(() => {
+    fetchEmergencies();
+  }, [currentPage, activeTab]);
 
   const formatTime = (date) => {
     return new Date(date).toLocaleTimeString("id-ID", {
@@ -68,50 +68,52 @@ export default function EmergencyPage() {
   const getTimeAgo = (date) => {
     const now = new Date();
     const diffInMinutes = Math.floor((now - new Date(date)) / 60000);
-    
+
     if (diffInMinutes < 1) return "Baru saja";
     if (diffInMinutes < 60) return `${diffInMinutes} menit yang lalu`;
-    
+
     const diffInHours = Math.floor(diffInMinutes / 60);
     if (diffInHours < 24) return `${diffInHours} jam yang lalu`;
-    
+
     const diffInDays = Math.floor(diffInHours / 24);
     return `${diffInDays} hari yang lalu`;
   };
 
   const handleResolve = async (id) => {
     try {
+      const confirm = await alertConfirm(
+        "Apakah Anda yakin menandai tertangani?"
+      );
+      if (!confirm) return;
       // TODO: API call untuk update status
-      // await fetch(`/api/emergencies/${id}/resolve`, { method: 'PUT' });
-      
-      setEmergencies(emergencies.map(emergency => 
-        emergency.id === id ? {...emergency, status: "resolved"} : emergency
-      ));
+      await EmergencyApi.update(id);
+
+      fetchEmergencies();
     } catch (error) {
-      console.error('Error resolving emergency:', error);
+      await alertError("Error resolving emergency:", error);
     }
   };
 
-  const filteredEmergencies = emergencies.filter(emergency => 
-    activeTab === "active" ? emergency.status === "active" : emergency.status === "resolved"
-  );
+  const handleDelete = async (id) => {
+    try {
+      const confirm = await alertConfirm("Apakah Anda yakin menghapus?");
+      if (!confirm) return;
+      // TODO: API call untuk update status
+      await EmergencyApi.delete(id);
 
-  // Pagination logic
-  const totalPages = Math.ceil(filteredEmergencies.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedEmergencies = filteredEmergencies.slice(startIndex, startIndex + itemsPerPage);
-
-  // Reset to page 1 when switching tabs
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [activeTab]);
+      fetchEmergencies();
+      await alertSuccess("Emergency berhasil dihapus");
+    } catch (error) {
+      await alertError("Error deleting emergency:", error);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-50 p-4 md:p-8">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex items-center mb-6">
-          <button 
+          <button
             onClick={() => navigate(-1)}
             className="flex items-center text-blue-600 hover:text-blue-800 mr-4"
           >
@@ -130,7 +132,10 @@ export default function EmergencyPage() {
         {/* Tab Navigation */}
         <div className="flex mb-6 bg-white rounded-lg shadow p-1">
           <button
-            onClick={() => setActiveTab("active")}
+            onClick={() => {
+              setActiveTab("active");
+              setCurrentPage(1);
+            }}
             className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-md transition-all ${
               activeTab === "active"
                 ? "bg-red-500 text-white shadow-md"
@@ -139,15 +144,16 @@ export default function EmergencyPage() {
           >
             <FaExclamationTriangle />
             <span>Butuh Bantuan</span>
-            {emergencies.filter(e => e.status === "active").length > 0 && (
-              <span className="bg-white text-red-500 text-xs font-bold px-2 py-1 rounded-full">
-                {emergencies.filter(e => e.status === "active").length}
-              </span>
-            )}
+            <span className="bg-white text-red-500 text-xs font-bold px-2 py-1 rounded-full">
+              {count.is_not_handled}
+            </span>
           </button>
-          
+
           <button
-            onClick={() => setActiveTab("resolved")}
+            onClick={() => {
+              setActiveTab("resolved");
+              setCurrentPage(1);
+            }}
             className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-md transition-all ${
               activeTab === "resolved"
                 ? "bg-green-500 text-white shadow-md"
@@ -156,11 +162,9 @@ export default function EmergencyPage() {
           >
             <FaCheckCircle />
             <span>Tertangani</span>
-            {emergencies.filter(e => e.status === "resolved").length > 0 && (
-              <span className="bg-white text-green-500 text-xs font-bold px-2 py-1 rounded-full">
-                {emergencies.filter(e => e.status === "resolved").length}
-              </span>
-            )}
+            <span className="bg-white text-green-500 text-xs font-bold px-2 py-1 rounded-full">
+              {count.is_handled}
+            </span>
           </button>
         </div>
 
@@ -168,97 +172,150 @@ export default function EmergencyPage() {
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-200">
             <h2 className="text-xl font-bold text-gray-800">
-              {activeTab === "active" ? "Laporan Darurat - Butuh Bantuan" : "Laporan Darurat - Tertangani"}
+              {activeTab === "active"
+                ? "Laporan Darurat - Butuh Bantuan"
+                : "Laporan Darurat - Tertangani"}
             </h2>
           </div>
-          
+
           {isLoading ? (
             <div className="p-6 text-center">
               <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-red-500"></div>
               <p className="mt-2 text-gray-600">Memuat data darurat...</p>
             </div>
-          ) : filteredEmergencies.length === 0 ? (
+          ) : emergencies.length === 0 ? (
             <div className="p-6 text-center">
               {activeTab === "active" ? (
                 <>
                   <FaCheckCircle className="mx-auto text-green-400 text-4xl mb-3" />
-                  <h3 className="text-lg font-medium text-gray-800">Tidak ada laporan darurat aktif</h3>
-                  <p className="text-gray-600">Semua keadaan aman dan terkendali</p>
+                  <h3 className="text-lg font-medium text-gray-800">
+                    Tidak ada laporan darurat aktif
+                  </h3>
+                  <p className="text-gray-600">
+                    Semua keadaan aman dan terkendali
+                  </p>
                 </>
               ) : (
                 <>
                   <FaExclamationTriangle className="mx-auto text-gray-400 text-4xl mb-3" />
-                  <h3 className="text-lg font-medium text-gray-800">Belum ada laporan yang tertangani</h3>
-                  <p className="text-gray-600">Riwayat laporan yang sudah diselesaikan akan muncul di sini</p>
+                  <h3 className="text-lg font-medium text-gray-800">
+                    Belum ada laporan yang tertangani
+                  </h3>
+                  <p className="text-gray-600">
+                    Riwayat laporan yang sudah diselesaikan akan muncul di sini
+                  </p>
                 </>
               )}
             </div>
           ) : (
-            <div className="divide-y divide-gray-200">
-              {paginatedEmergencies.map(emergency => (
-                <div 
-                  key={emergency.id} 
-                  className={`p-6 transition-all ${emergency.status === "resolved" ? "bg-green-50" : "bg-red-50"} hover:bg-opacity-70`}
+            <div className="space-y-6">
+              {emergencies.map((emergency) => (
+                <div
+                  key={emergency.id}
+                  className={`rounded-2xl shadow-md p-6 border transition-all duration-300 ${
+                    emergency.is_handled
+                      ? "bg-green-50 border-green-200 hover:shadow-lg"
+                      : "bg-red-50 border-red-200 hover:shadow-lg"
+                  }`}
                 >
-                  <div className="flex flex-col md:flex-row md:items-start justify-between">
+                  <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
+                    {/* Left Content */}
                     <div className="flex-1">
-                      <div className="flex items-start mb-3">
-                        <div className={`p-2 rounded-full mr-4 ${emergency.status === "resolved" ? "bg-green-100" : "bg-red-100"}`}>
-                          <FaUser className={emergency.status === "resolved" ? "text-green-500" : "text-red-500"} />
+                      {/* User Info */}
+                      <div className="flex items-start mb-4">
+                        <div
+                          className={`p-3 rounded-full mr-4 shadow-inner ${
+                            emergency.is_handled ? "bg-green-100" : "bg-red-100"
+                          }`}
+                        >
+                          <FaUser
+                            className={`text-xl ${
+                              emergency.is_handled
+                                ? "text-green-500"
+                                : "text-red-500"
+                            }`}
+                          />
                         </div>
                         <div>
-                          <h3 className="text-lg font-bold text-gray-800">{emergency.userName}</h3>
+                          <h3 className="text-lg font-semibold text-gray-800">
+                            {emergency.user.name}
+                          </h3>
                           <div className="flex items-center text-gray-600 mt-1">
                             <FaPhone className="text-sm mr-2" />
-                            <span className="text-sm">{emergency.phone}</span>
+                            <span className="text-sm">
+                              {emergency.phone_number}
+                            </span>
                           </div>
                         </div>
                       </div>
-                      
-                      <div className="ml-10 mb-4">
-                        <p className="text-gray-800">{emergency.message}</p>
+
+                      {/* Message */}
+                      <div className="ml-12 mb-4">
+                        <p className="text-gray-700 leading-relaxed">
+                          {emergency.message}
+                        </p>
                       </div>
-                      
-                      <div className="ml-10 grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="flex items-center">
+
+                      {/* Location & Time */}
+                      <div className="ml-12 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                        <div className="flex items-center text-gray-700">
                           <FaMapMarkerAlt className="text-red-500 mr-2" />
-                          <span className="text-sm text-gray-700">
-                            {emergency.location.latitude.toFixed(6)}, {emergency.location.longitude.toFixed(6)}
+                          <span>
+                            {emergency.latitude}, {emergency.longitude}
                           </span>
                         </div>
-                        
-                        <div className="flex items-center">
+                        <div className="flex items-center text-gray-700">
                           <FaClock className="text-gray-500 mr-2" />
-                          <span className="text-sm text-gray-700">
-                            {formatTime(emergency.timestamp)} - {formatDate(emergency.timestamp)}
-                            <span className="ml-2 text-xs bg-gray-200 px-2 py-1 rounded">
-                              {getTimeAgo(emergency.timestamp)}
-                            </span>
+                          <span>
+                            {formatTime(emergency.created_at)} -{" "}
+                            {formatDate(emergency.created_at)}
+                          </span>
+                          <span className="ml-2 text-xs bg-gray-200 px-2 py-0.5 rounded-full">
+                            {getTimeAgo(emergency.created_at)}
                           </span>
                         </div>
                       </div>
                     </div>
-                    
-                    {emergency.status === "active" && (
-                      <div className="mt-4 md:mt-0 md:ml-4 flex flex-col items-end">
+
+                    {/* Actions */}
+                    <div className="flex flex-col gap-3 items-end">
+                      <a
+                        href={`https://maps.google.com/?q=${emergency.latitude},${emergency.longitude}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center text-blue-600 hover:text-blue-800 text-sm font-medium"
+                      >
+                        <FaMapMarkerAlt className="mr-2" />
+                        Lihat di Google Maps
+                      </a>
+
+                      {!emergency.is_handled && (
                         <button
                           onClick={() => handleResolve(emergency.id)}
-                          className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
+                          className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg shadow flex items-center gap-2 transition-colors"
                         >
                           <FaCheckCircle />
                           Tandai Tertangani
                         </button>
-                      </div>
-                    )}
+                      )}
+
+                      <button
+                        onClick={() => handleDelete(emergency.id)}
+                        className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg shadow flex items-center gap-2 transition-colors"
+                      >
+                        <FaTrash />
+                        Hapus
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
           )}
         </div>
-        
+
         {/* Pagination */}
-        {filteredEmergencies.length > itemsPerPage && (
+        {totalPages > 1 && (
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}

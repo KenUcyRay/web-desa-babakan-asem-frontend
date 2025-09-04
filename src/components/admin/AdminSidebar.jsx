@@ -21,7 +21,7 @@ import {
   FaTasks,
   FaMoneyCheckAlt,
   FaMapMarkerAlt,
-  FaExclamationTriangle // Ikon baru untuk informasi darurat
+  FaExclamationTriangle, // Ikon baru untuk informasi darurat
 } from "react-icons/fa";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 import { BsDatabaseFillLock } from "react-icons/bs";
@@ -32,6 +32,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { alertConfirm, alertSuccess, alertError } from "../../libs/alert";
 import { UserApi } from "../../libs/api/UserApi";
 import { Helper } from "../../utils/Helper";
+import { EmergencyApi } from "../../libs/api/EmergencyApi";
 
 export default function AdminSidebar({ isOpen, onClose }) {
   const navigate = useNavigate();
@@ -47,11 +48,10 @@ export default function AdminSidebar({ isOpen, onClose }) {
   const [currentTime, setCurrentTime] = useState(new Date());
 
   // State untuk data emergency
-  const [emergencyData, setEmergencyData] = useState([]);
-
-  // Hitung data yang belum tertangani
-  const pendingEmergencies = emergencyData.filter(item => item.status === 'pending');
-  const hasEmergency = pendingEmergencies.length > 0;
+  const [emergencyCount, setEmergencyCount] = useState({
+    is_handled: 0,
+    is_not_handled: 0,
+  });
 
   // - supaya sidebar mobile gak langsung hilang
   const [isVisible, setIsVisible] = useState(false);
@@ -66,16 +66,15 @@ export default function AdminSidebar({ isOpen, onClose }) {
     }, 1000);
 
     // TODO: Fetch emergency data dari API
-    // const fetchEmergencyData = async () => {
-    //   try {
-    //     const response = await fetch('/api/emergencies');
-    //     const data = await response.json();
-    //     setEmergencyData(data);
-    //   } catch (error) {
-    //     console.error('Error fetching emergency data:', error);
-    //   }
-    // };
-    // fetchEmergencyData();
+    const fetchEmergencyData = async () => {
+      try {
+        const response = await EmergencyApi.count();
+        setEmergencyCount(response.data);
+      } catch (error) {
+        console.error("Error fetching emergency data:", error);
+      }
+    };
+    fetchEmergencyData();
 
     return () => {
       clearInterval(timer);
@@ -114,8 +113,6 @@ export default function AdminSidebar({ isOpen, onClose }) {
     navigate("/login");
   };
 
-
-
   const menu = [
     {
       to: "/admin",
@@ -127,7 +124,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
       to: "/admin/emergency-page",
       label: "Informasi Darurat",
       icon: <FaExclamationTriangle />,
-      isEmergency: true // Flag khusus untuk menu darurat
+      isEmergency: true, // Flag khusus untuk menu darurat
     },
     // TOMBOL DATA MASTER SATUAN
     {
@@ -275,7 +272,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
           // Styling khusus untuk menu darurat
           if (item.isEmergency) {
             // Jika ada emergency yang belum tertangani, tampilkan merah berkedip
-            if (hasEmergency) {
+            if (emergencyCount.is_not_handled > 0) {
               return (
                 <Link
                   key={item.to}
@@ -291,7 +288,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
                   <span>{item.label}</span>
                   {/* Badge dengan jumlah emergency */}
                   <span className="ml-auto bg-white text-red-600 text-xs font-bold px-2 py-1 rounded-full animate-pulse">
-                    {pendingEmergencies.length}
+                    {emergencyCount.is_not_handled}
                   </span>
                 </Link>
               );
@@ -318,7 +315,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
               );
             }
           }
-          
+
           return (
             <Link
               key={item.to}

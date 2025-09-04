@@ -805,7 +805,7 @@
     "locationNotAvailable": "Location not available",
     "systemWarning": "SYSTEM WARNING",
     "rule1": "3x Cancel",
-    "rule1Description": "Warning appears",
+    "rule1Description": "You cannot use the emergency feature.",
     "rule2": "5x Cancel",
     "rule2Description": "Account blocked permanently",
     "rule3": "Use only for real emergencies!",
