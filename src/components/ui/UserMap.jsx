@@ -6,6 +6,7 @@ import {
   Marker,
   Popup,
   Tooltip as LeafletTooltip,
+  Circle,
 } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -267,6 +268,21 @@ export default function UserMap({ showPolygons = true, showMarkers = true }) {
                     </div>
                   </Popup>
                 </Marker>
+                {item.radius && (
+                  <Circle
+                    center={item.coordinates[0]}
+                    radius={item.radius}
+                    pathOptions={{
+                      color: item.color || "#EF4444",
+                      weight: 3,
+                      opacity: 0.8,
+                      fillColor: item.color || "#EF4444",
+                      fillOpacity: 0.2,
+                      dashArray: "10, 5",
+                      lineCap: "round",
+                    }}
+                  />
+                )}
               </React.Fragment>
             );
           }
