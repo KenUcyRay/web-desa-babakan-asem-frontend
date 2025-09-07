@@ -194,7 +194,7 @@ export default function KarangTaruna() {
           ))}
         </div>
 
-        <div className="mt-12 flex justify-center" data-aos="fade-up">
+        <div className="mt-12 flex justify-end" data-aos="fade-up">
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}

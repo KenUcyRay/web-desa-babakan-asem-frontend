@@ -90,7 +90,7 @@
         "title": "Call Center Desa",
         "description": "Hubungi call center desa untuk bantuan administrasi, informasi layanan, dan pertanyaan umum seputar desa.",
         "admin": "Admin Desa",
-        "hours": "Jam Layanan",
+        "hours": "Jam Layanan: Senin - Jumat, 08:00 - 15:00 WIB",
         "services": "Layanan: Administrasi, Informasi, Pengaduan"
       },
       "emergency": {

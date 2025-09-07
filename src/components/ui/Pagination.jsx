@@ -18,7 +18,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
   };
 
   return (
-    <div className="flex justify-center mt-6">
+    <div className="flex justify-end mt-6">
       <div className="flex items-center gap-1 bg-white p-2 rounded-xl shadow-md">
         {/* Prev Button */}
         <button

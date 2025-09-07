@@ -130,7 +130,7 @@ export default function Bumdes() {
         )}
 
         {products.length > 0 && (
-          <div className="mt-10 flex justify-center" data-aos="fade-up">
+          <div className="mt-10 flex justify-end" data-aos="fade-up">
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}

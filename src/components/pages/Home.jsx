@@ -281,19 +281,15 @@ export default function Home() {
   const getStatusText = (status) => {
     switch (status) {
       case "PLANNED":
-        "Direncanakan";
         return t("home.workprograms.status.planned");
       case "IN_PROGRESS":
-        // "Dalam Pnegerjaan"
         return t("home.workprograms.status.in_progress");
       case "COMPLETED":
-        // "Selesai"
         return t("home.workprograms.status.completed");
       case "CANCELLED":
-        // Dibatalkan
         return t("home.workprograms.status.cancelled");
       default:
-        return "Unknown";
+        return t("home.workprograms.status.planned");
     }
   };
   // Format currency for very large numbers (billions)
@@ -571,7 +567,7 @@ export default function Home() {
                       <th className="py-4 px-6 text-left font-semibold">
                         {t("home.workprograms.dates")}
                       </th>
-                      <th className="py-4 px-6 text-left font-semibold">Budget</th>
+                      <th className="py-4 px-6 text-left font-semibold">{t("home.apb.budget")}</th>
                       <th className="py-4 px-6 text-left font-semibold">Status</th>
                     </tr>
                   </thead>
@@ -659,14 +655,15 @@ export default function Home() {
             <div className="bg-white rounded-2xl shadow-xl p-8">
               <div className="mb-8">
                 <ResponsiveContainer width="100%" height={400}>
-                  <ComposedChart data={transformedApbData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+                  <ComposedChart data={transformedApbData} margin={{ top: 20, right: 30, left: 20, bottom: 80 }}>
                     <CartesianGrid stroke="#f0f0f0" strokeDasharray="3 3" />
                     <XAxis 
                       dataKey="bidang" 
-                      tick={{ fontSize: 12 }}
+                      tick={{ fontSize: 10 }}
                       angle={-45}
                       textAnchor="end"
-                      height={80}
+                      height={100}
+                      interval={0}
                     />
                     <YAxis
                       tickFormatter={(value) => {
@@ -780,7 +777,7 @@ export default function Home() {
               <p className="mb-4 opacity-90">{t("home.emergency.callcenter.description")}</p>
               <div className="space-y-2 text-sm">
                 <p>• {t("home.emergency.callcenter.admin")}: (022) 123-4567</p>
-                <p>• {t("home.emergency.callcenter.hours")}: 08:00 - 16:00 WIB</p>
+                <p>• {t("home.emergency.callcenter.hours")}</p>
                 <p>• {t("home.emergency.callcenter.services")}</p>
               </div>
             </div>

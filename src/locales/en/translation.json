@@ -90,7 +90,7 @@
         "title": "Village Call Center",
         "description": "Contact the village call center for administrative assistance, service information, and general inquiries about the village.",
         "admin": "Village Admin",
-        "hours": "Service Hours",
+        "hours": "Service Hours: Monday - Friday, 01:00 - 08:00 UTC",
         "services": "Services: Administration, Information, Complaints"
       },
       "emergency": {
@@ -374,7 +374,7 @@
       "Small Business (UMKM) Application",
       "Population Data Request"
     ],
-    "note": "<strong>Note:</strong> Services are only available on weekdays (Monday - Friday) from 08.00 to 15.00 WIB. Please bring original and photocopy documents."
+    "note": "<strong>Note:</strong> Services are only available on weekdays (Monday - Friday) from 01:00 to 08:00 UTC. Please bring original and photocopy documents."
   },
   "administrasi": {
     "title": "Village Administration Services",
