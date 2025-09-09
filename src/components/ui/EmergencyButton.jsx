@@ -35,17 +35,17 @@ const EmergencyButton = () => {
 
   const handleEmergencyClick = async () => {
     if (!isLoggedIn) {
-      alert("Anda harus login terlebih dahulu untuk menggunakan fitur SOS!");
+      alert(t("emergency.loginRequired"));
       return;
     }
 
     if (!isRegularUser) {
-      alert("Fitur SOS hanya tersedia untuk user biasa!");
+      alert(t("emergency.regularUserOnly"));
       return;
     }
 
     if (isBlocked) {
-      alert("Akun Anda diblokir karena penyalahgunaan fitur SOS!");
+      alert(t("emergency.accountBlocked"));
       return;
     }
 
@@ -69,20 +69,18 @@ const EmergencyButton = () => {
           setShowFormModal(true);
         },
         (error) => {
-          alert(
-            "Gagal mendapatkan lokasi. Silakan aktifkan GPS dan coba lagi."
-          );
+          alert(t("emergency.locationError"));
         }
       );
     } else {
-      alert("Browser Anda tidak mendukung geolokasi.");
+      alert(t("emergency.geolocationNotSupported"));
     }
   };
 
   const handleSubmitEmergency = async () => {
     const response = await UserApi.profile();
     if (!response.ok) {
-      await alertError("Gagal mendapatkan data user. Silakan coba lagi.");
+      await alertError(t("emergency.failedGetUserData"));
       setIsSubmitting(false);
       return;
     }
@@ -91,15 +89,13 @@ const EmergencyButton = () => {
     const profile = body.data;
 
     if (profile.emergency_change <= 0) {
-      await alertError(
-        "Anda tidak dapat mengirim SOS karena telah dibatasi oleh admin."
-      );
+      await alertError(t("emergency.sosLimitedByAdmin"));
       setIsSubmitting(false);
       return;
     }
 
     if (!emergencyForm.description.trim()) {
-      alert("Mohon lengkapi deskripsi darurat.");
+      alert(t("emergency.descriptionRequired"));
       return;
     }
 
@@ -118,7 +114,7 @@ const EmergencyButton = () => {
       // Simulasi API call
       await EmergencyApi.create(emergencyData);
 
-      await alertSuccess("🚨 SOS berhasil dikirim!");
+      await alertSuccess(t("emergency.sosSuccessSent"));
 
       // Reset form
       setEmergencyForm({ phone: "", description: "", location: null });
@@ -127,7 +123,7 @@ const EmergencyButton = () => {
       // Langsung telepon admin
       window.location.href = "tel:+6281299990001";
     } catch (error) {
-      await alertError("Gagal mengirim SOS. Silakan coba lagi.");
+      await alertError(t("emergency.sosFailedSend"));
     } finally {
       setIsSubmitting(false);
     }
@@ -143,7 +139,7 @@ const EmergencyButton = () => {
     } else if (newCount >= 5) {
       // Blokir setelah 5x cancel
       setIsBlocked(true);
-      alert("Akun Anda diblokir karena terlalu sering membatalkan SOS!");
+      alert(t("emergency.blockedForCancelling"));
     }
 
     setShowEmergencyModal(false);
@@ -163,7 +159,7 @@ const EmergencyButton = () => {
   if (isBlocked) {
     return (
       <div className="fixed bottom-6 left-6 z-[998] w-14 h-14 rounded-full bg-gray-400 flex items-center justify-center text-white text-xs font-bold">
-        BLOCKED
+        {t("emergency.blocked")}
       </div>
     );
   }
@@ -220,8 +216,8 @@ const EmergencyButton = () => {
                       />
                     </div>
                     <div>
-                      <h2 className="text-base sm:text-lg font-bold">🚨 SOS</h2>
-                      <p className="text-red-100 text-xs sm:text-sm">Darurat</p>
+                      <h2 className="text-base sm:text-lg font-bold">🚨 {t("emergency.sos")}</h2>
+                      <p className="text-red-100 text-xs sm:text-sm">{t("emergency.emergency")}</p>
                     </div>
                   </div>
                   <button
@@ -256,11 +252,10 @@ const EmergencyButton = () => {
                     />
                     <div className="flex-1">
                       <p className="text-sm font-medium text-blue-800 mb-1">
-                        📍 Informasi Lokasi:
+                        📍 {t("emergency.locationInfo")}:
                       </p>
                       <p className="text-xs text-blue-600">
-                        Lokasi Anda akan diminta saat Anda mengkonfirmasi SOS
-                        untuk membantu tim respons menemukan Anda dengan cepat.
+                        {t("emergency.locationDescription")}
                       </p>
                     </div>
                   </div>
@@ -396,10 +391,10 @@ const EmergencyButton = () => {
                     </div>
                     <div>
                       <h2 className="text-base sm:text-lg font-bold">
-                        Detail Darurat
+                        {t("emergency.emergencyDetails")}
                       </h2>
                       <p className="text-red-100 text-xs sm:text-sm">
-                        Lengkapi informasi
+                        {t("emergency.completeInfo")}
                       </p>
                     </div>
                   </div>
@@ -420,7 +415,7 @@ const EmergencyButton = () => {
                     <div className="flex items-center gap-2 mb-2">
                       <FaUser className="text-gray-500" size={14} />
                       <p className="text-sm font-medium text-gray-700">
-                        Informasi Pengirim:
+                        {t("emergency.senderInfo")}:
                       </p>
                     </div>
                     <p className="text-sm text-gray-800 font-semibold">
@@ -432,7 +427,7 @@ const EmergencyButton = () => {
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       <FaPhone className="inline mr-2" />
-                      Nomor Telepon
+                      {t("emergency.phoneNumber")}
                     </label>
                     <input
                       type="text"
@@ -445,7 +440,7 @@ const EmergencyButton = () => {
                       }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
                       placeholder={
-                        profile?.phone_number || "Masukkan nomor telepon Anda"
+                        profile?.phone_number || t("emergency.enterPhoneNumber")
                       }
                     />
                   </div>
@@ -454,7 +449,7 @@ const EmergencyButton = () => {
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       <FaExclamationTriangle className="inline mr-2" />
-                      Deskripsi Darurat
+                      {t("emergency.emergencyDescription")}
                     </label>
                     <textarea
                       value={emergencyForm.description}
@@ -465,7 +460,7 @@ const EmergencyButton = () => {
                         }))
                       }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 h-24 resize-none"
-                      placeholder="Jelaskan situasi darurat yang Anda alami..."
+                      placeholder={t("emergency.describeSituation")}
                     />
                   </div>
 
@@ -479,7 +474,7 @@ const EmergencyButton = () => {
                         />
                         <div className="flex-1">
                           <p className="text-sm font-medium text-blue-800 mb-1">
-                            📍 Lokasi Terdeteksi:
+                            📍 {t("emergency.detectedLocation")}:
                           </p>
                           <p className="text-xs text-blue-600">
                             {emergencyForm.location.latitude.toFixed(6)},{" "}
@@ -496,10 +491,10 @@ const EmergencyButton = () => {
                       <FaPhone className="text-green-500 mt-0.5" size={14} />
                       <div className="flex-1">
                         <p className="text-sm font-medium text-green-800 mb-1">
-                          📞 Kontak Admin:
+                          📞 {t("emergency.adminContact")}:
                         </p>
                         <p className="text-xs text-green-600">
-                          Admin akan menghubungi Anda di: +62 812-9999-0001
+                          {t("emergency.adminWillContact")}: +62 812-9999-0001
                         </p>
                       </div>
                     </div>
@@ -513,7 +508,7 @@ const EmergencyButton = () => {
                     className="flex-1 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors text-sm"
                     disabled={isSubmitting}
                   >
-                    Batal
+                    {t("emergency.cancel")}
                   </button>
                   <button
                     onClick={handleSubmitEmergency}
@@ -523,12 +518,12 @@ const EmergencyButton = () => {
                     {isSubmitting ? (
                       <>
                         <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></div>
-                        Mengirim...
+                        {t("emergency.sending")}...
                       </>
                     ) : (
                       <>
                         <FaExclamationTriangle size={12} />
-                        🚨 Kirim SOS!
+                        🚨 {t("emergency.sendSOS")}!
                       </>
                     )}
                   </button>
