@@ -57,7 +57,7 @@ export default function Pemerintahan() {
   }, [i18n.language]);
 
   return (
-    <div className="font-poppins bg-gray-50 pt-[60px] lg:pt-[40px] animate-fade overflow-x-hidden">
+    <div className="font-poppins bg-gray-50 pt-[60px] lg:pt-[40px] animate-fade">
       {/* Header Section */}
       <section className="bg-white py-8 sm:py-12 md:py-16" data-aos="fade-up">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">

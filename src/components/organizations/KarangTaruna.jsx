@@ -2,6 +2,7 @@
 // Gunakan hook useTranslation dan struktur key `karangTaruna.*`
 
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import Pagination from "../ui/Pagination";
 import { AgendaApi } from "../../libs/api/AgendaApi";
 import { Helper } from "../../utils/Helper";
@@ -73,13 +74,13 @@ export default function KarangTaruna() {
         <img
           src="https://picsum.photos/1200/500?random=12"
           alt="Karang Taruna"
-          className="w-full object-cover hover:scale-105 transition-transform duration-500"
+          className="w-full object-cover"
         />
       </div>
 
       <div className="grid md:grid-cols-2 gap-8 mb-20">
         <div
-          className="p-8 rounded-2xl bg-gradient-to-r from-[#9BEC00] to-[#D2FF72] shadow-md text-center hover:shadow-xl transition"
+          className="p-8 rounded-2xl bg-gradient-to-r from-[#9BEC00] to-[#D2FF72] shadow-md text-center"
           data-aos="fade-right"
         >
           <h2 className="text-2xl font-bold text-gray-900 mb-3">
@@ -88,7 +89,7 @@ export default function KarangTaruna() {
           <p className="text-gray-800 text-lg">{t("karangTaruna.vision")}</p>
         </div>
         <div
-          className="p-8 rounded-2xl bg-white shadow-md hover:shadow-xl transition"
+          className="p-8 rounded-2xl bg-white shadow-md"
           data-aos="fade-left"
         >
           <h2 className="text-2xl font-bold text-green-800 mb-3 text-center">
@@ -150,47 +151,52 @@ export default function KarangTaruna() {
 
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {agenda.map((item, idx) => (
-            <div
+            <Link
+              to={`/agenda/${item.agenda.id}`}
               key={item.agenda.id}
-              className="bg-white shadow-md rounded-xl overflow-hidden hover:shadow-xl transition group"
-              data-aos="fade-up"
-              data-aos-delay={idx * 80}
+              className="block"
             >
-              <div className="relative w-full aspect-[4/3] overflow-hidden">
-                <img
-                  src={`${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
-                    item.agenda.featured_image
-                  }`}
-                  alt={item.agenda.title}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex justify-center items-center">
-                  <span className="text-white font-semibold">
-                    📸 {t("karangTaruna.galleryLabel")}
-                  </span>
+              <div
+                className="bg-white shadow-md rounded-xl overflow-hidden hover:shadow-xl transition group"
+                data-aos="fade-up"
+                data-aos-delay={idx * 80}
+              >
+                <div className="relative w-full aspect-[4/3] overflow-hidden">
+                  <img
+                    src={`${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
+                      item.agenda.featured_image
+                    }`}
+                    alt={item.agenda.title}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex justify-center items-center">
+                    <span className="text-white font-semibold">
+                      📸 {t("karangTaruna.galleryLabel")}
+                    </span>
+                  </div>
+                </div>
+                <div className="p-5">
+                  <h3 className="font-bold text-lg text-gray-800">
+                    {item.agenda.title}
+                  </h3>
+                  {(() => {
+                    const { tanggal, waktu } = Helper.formatAgendaDateTime(
+                      item.agenda.start_time,
+                      item.agenda.end_time
+                    );
+                    return (
+                      <p className="text-sm text-gray-500 mt-2">
+                        📍 {item.agenda.location} <br />
+                        📅 {tanggal} | ⏰ {waktu}
+                      </p>
+                    );
+                  })()}
+                  <p className="text-gray-600 text-sm mt-3">
+                    {truncateText(item.agenda.content, 100)}
+                  </p>
                 </div>
               </div>
-              <div className="p-5">
-                <h3 className="font-bold text-lg text-gray-800">
-                  {item.agenda.title}
-                </h3>
-                {(() => {
-                  const { tanggal, waktu } = Helper.formatAgendaDateTime(
-                    item.agenda.start_time,
-                    item.agenda.end_time
-                  );
-                  return (
-                    <p className="text-sm text-gray-500 mt-2">
-                      📍 {item.agenda.location} <br />
-                      📅 {tanggal} | ⏰ {waktu}
-                    </p>
-                  );
-                })()}
-                <p className="text-gray-600 text-sm mt-3">
-                  {truncateText(item.agenda.content, 100)}
-                </p>
-              </div>
-            </div>
+            </Link>
           ))}
         </div>
 

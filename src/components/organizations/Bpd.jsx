@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { useTranslation } from "react-i18next";
@@ -80,7 +81,7 @@ export default function Bpd() {
           {[1, 2, 3].map((num, i) => (
             <div
               key={i}
-              className="border border-green-200 rounded-xl p-6 shadow-sm hover:shadow-md transition"
+              className="border border-green-200 rounded-xl p-6 shadow-sm"
               data-aos="zoom-in"
               data-aos-delay={i * 150}
             >
@@ -107,7 +108,7 @@ export default function Bpd() {
           {members.map((member, idx) => (
             <div
               key={member.id}
-              className="flex flex-col items-center bg-white border border-green-100 rounded-xl p-4 shadow-sm hover:shadow-md transition"
+              className="flex flex-col items-center bg-white border border-green-100 rounded-xl p-4 shadow-sm"
               data-aos="fade-up"
               data-aos-delay={idx * 100}
             >
@@ -143,37 +144,42 @@ export default function Bpd() {
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {agenda.map((item, idx) => (
-            <div
+            <Link
+              to={`/agenda/${item.agenda.id}`}
               key={item.agenda.id}
-              className="bg-white border border-green-100 rounded-xl shadow-sm hover:shadow-md transition overflow-hidden"
-              data-aos="fade-right"
-              data-aos-delay={idx * 150}
+              className="block"
             >
-              <img
-                src={
-                  item.agenda.featured_image
-                    ? `${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
-                        item.agenda.featured_image
-                      }`
-                    : "/default-agenda.jpg"
-                }
-                alt={item.agenda.title}
-                className="w-full h-40 md:h-48 object-cover"
-              />
-              <div className="p-4">
-                <h3 className="font-semibold text-gray-800 text-sm md:text-base">
-                  {item.agenda.title}
-                </h3>
-                <p className="text-xs md:text-sm text-gray-500 mt-1">
-                  {
-                    Helper.formatAgendaDateTime(
-                      item.agenda.start_time,
-                      item.agenda.end_time
-                    ).tanggal
+              <div
+                className="bg-white border border-green-100 rounded-xl shadow-sm hover:shadow-md transition overflow-hidden"
+                data-aos="fade-right"
+                data-aos-delay={idx * 150}
+              >
+                <img
+                  src={
+                    item.agenda.featured_image
+                      ? `${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
+                          item.agenda.featured_image
+                        }`
+                      : "/default-agenda.jpg"
                   }
-                </p>
+                  alt={item.agenda.title}
+                  className="w-full h-40 md:h-48 object-cover"
+                />
+                <div className="p-4">
+                  <h3 className="font-semibold text-gray-800 text-sm md:text-base">
+                    {item.agenda.title}
+                  </h3>
+                  <p className="text-xs md:text-sm text-gray-500 mt-1">
+                    {
+                      Helper.formatAgendaDateTime(
+                        item.agenda.start_time,
+                        item.agenda.end_time
+                      ).tanggal
+                    }
+                  </p>
+                </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </section>

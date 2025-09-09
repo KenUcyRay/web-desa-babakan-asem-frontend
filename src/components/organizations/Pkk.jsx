@@ -54,7 +54,7 @@ export default function Pkk() {
 
       <section className="max-w-6xl mx-auto px-6 py-12 grid md:grid-cols-2 gap-8">
         <div
-          className="bg-yellow-50 p-8 rounded-2xl shadow-md hover:shadow-xl hover:scale-105 transition text-center"
+          className="bg-yellow-50 p-8 rounded-2xl shadow-md text-center"
           data-aos="zoom-in"
         >
           <h2 className="text-3xl font-bold text-yellow-800 mb-4">
@@ -65,7 +65,7 @@ export default function Pkk() {
           </p>
         </div>
         <div
-          className="bg-green-50 p-8 rounded-2xl shadow-md hover:shadow-xl hover:scale-105 transition"
+          className="bg-green-50 p-8 rounded-2xl shadow-md"
           data-aos="zoom-in"
         >
           <h2 className="text-3xl font-bold text-green-800 mb-4 text-center">
@@ -87,7 +87,7 @@ export default function Pkk() {
           {programs.map((item, idx) => (
             <div
               key={item.id}
-              className="bg-white rounded-2xl shadow hover:shadow-2xl hover:-translate-y-1 transition overflow-hidden"
+              className="bg-white rounded-2xl shadow overflow-hidden"
               data-aos="fade-up"
               data-aos-delay={idx * 100}
             >
@@ -117,28 +117,33 @@ export default function Pkk() {
         </h2>
         <div className="grid gap-8 grid-cols-[repeat(auto-fit,minmax(280px,1fr))]">
           {agenda.map((item, idx) => (
-            <div
+            <Link
+              to={`/agenda/${item.agenda.id}`}
               key={item.agenda.id}
-              className="bg-white rounded-2xl shadow hover:shadow-2xl hover:-translate-y-1 transition overflow-hidden"
-              data-aos="fade-up"
-              data-aos-delay={idx * 120}
+              className="block"
             >
-              <img
-                src={`${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
-                  item.agenda.featured_image
-                }`}
-                alt={item.agenda.title}
-                className="h-48 w-full object-cover"
-              />
-              <div className="p-5">
-                <h3 className="font-bold text-green-700 text-lg flex items-center gap-2">
-                  <FaUsers /> {item.agenda.title}
-                </h3>
-                <p className="text-sm text-gray-600 mt-2 leading-relaxed">
-                  {Helper.truncateText(item.agenda.content)}
-                </p>
+              <div
+                className="bg-white rounded-2xl shadow hover:shadow-2xl hover:-translate-y-1 transition overflow-hidden"
+                data-aos="fade-up"
+                data-aos-delay={idx * 120}
+              >
+                <img
+                  src={`${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
+                    item.agenda.featured_image
+                  }`}
+                  alt={item.agenda.title}
+                  className="h-48 w-full object-cover"
+                />
+                <div className="p-5">
+                  <h3 className="font-bold text-green-700 text-lg flex items-center gap-2">
+                    <FaUsers /> {item.agenda.title}
+                  </h3>
+                  <p className="text-sm text-gray-600 mt-2 leading-relaxed">
+                    {Helper.truncateText(item.agenda.content)}
+                  </p>
+                </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </section>

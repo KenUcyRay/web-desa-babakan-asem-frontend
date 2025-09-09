@@ -75,34 +75,32 @@ export default function Agenda() {
       <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-6">
         {/* KONTEN UTAMA */}
         <div className="md:col-span-3 space-y-6">
-          {/* Header judul + kategori */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <h1 className="text-3xl font-bold text-gray-800 flex-shrink-0">
+          {/* Header judul */}
+          <div className="text-center sm:text-left">
+            <h1 className="text-3xl font-bold text-gray-800">
               {t("agenda.title")}
             </h1>
+          </div>
 
-            {/* Filter Kategori - dibuat scroll horizontal di mobile */}
-            <div className="overflow-x-auto w-full sm:w-auto">
-              <div className="flex gap-3 min-w-max">
-                {kategoriList.map((kategori) => (
-                  <button
-                    key={kategori}
-                    onClick={() => {
-                      setSelectedCategory(kategori);
-                      setCurrentPage(1);
-                      fetchAgenda(1, 10, kategori);
-                    }}
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 whitespace-nowrap ${
-                      selectedCategory === kategori
-                        ? "bg-gradient-to-r from-[#9BEC00] to-[#D2FF72] text-gray-800 shadow-md"
-                        : "bg-white text-gray-700 border hover:bg-green-100"
-                    }`}
-                  >
-                    {t(`agenda.category.${kategori}`)}
-                  </button>
-                ))}
-              </div>
-            </div>
+          {/* Filter Kategori */}
+          <div className="flex flex-wrap justify-center sm:justify-start gap-1.5 sm:gap-2">
+            {kategoriList.map((kategori) => (
+              <button
+                key={kategori}
+                onClick={() => {
+                  setSelectedCategory(kategori);
+                  setCurrentPage(1);
+                  fetchAgenda(1, 10, kategori);
+                }}
+                className={`px-2.5 py-1.5 rounded-full text-xs font-medium transition-all duration-300 ${
+                  selectedCategory === kategori
+                    ? "bg-gradient-to-r from-[#9BEC00] to-[#D2FF72] text-gray-800 shadow-md"
+                    : "bg-white text-gray-600 border hover:bg-green-50"
+                }`}
+              >
+                {t(`agenda.category.${kategori}`)}
+              </button>
+            ))}
           </div>
 
           {/* List Agenda */}
