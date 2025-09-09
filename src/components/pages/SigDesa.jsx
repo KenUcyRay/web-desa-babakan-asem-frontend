@@ -6,7 +6,7 @@ import { MapApi } from "../../libs/api/MapApi";
 import UserMap from "../ui/UserMap";
 
 export default function SigDesa() {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [mapData, setMapData] = useState({
     polygons: [],
     markers: [],
@@ -115,19 +115,19 @@ export default function SigDesa() {
   const legendCategories = [
     {
       id: "all",
-      name: "Semua",
+      name: t("sigDesa.categories.all"),
       icon: <FaMapMarkedAlt className="text-green-500" />,
       color: "bg-green-100 text-green-800"
     },
     {
       id: "polygon",
-      name: "Area",
+      name: t("sigDesa.categories.area"),
       icon: <div className="w-4 h-4 rounded border-2 border-green-500 bg-green-200"></div>,
       color: "bg-green-100 text-green-800"
     },
     {
       id: "marker",
-      name: "Lokasi",
+      name: t("sigDesa.categories.location"),
       icon: <FaMapMarkerAlt className="text-green-500" />,
       color: "bg-green-100 text-green-800"
     }
@@ -146,10 +146,10 @@ export default function SigDesa() {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-3xl md:text-4xl font-bold text-green-700 mb-2">
-            <span className="text-green-600">🗺️ Peta Desa</span> Babakan Asem
+            <span className="text-green-600">🗺️ {t("sigDesa.title")}</span> Babakan Asem
           </h1>
           <p className="text-green-600 max-w-2xl mx-auto">
-            Lihat informasi geografis desa kami, termasuk area penting, fasilitas umum, dan zona rawan bencana
+            {t("sigDesa.subtitle")}
           </p>
         </div>
 
@@ -158,10 +158,10 @@ export default function SigDesa() {
           <div className="w-full lg:w-2/3">
             <div className="bg-white rounded-xl shadow-lg overflow-hidden">
               <div className="p-4 border-b flex justify-between items-center">
-                <h2 className="text-lg font-semibold text-green-700">Peta Interaktif Desa</h2>
+                <h2 className="text-lg font-semibold text-green-700">{t("sigDesa.interactiveMap")}</h2>
                 <div className="flex items-center text-sm text-gray-500">
                   <FaInfoCircle className="mr-1" />
-                  <span>Zoom dan geser untuk menjelajahi</span>
+                  <span>{t("sigDesa.zoomInfo")}</span>
                 </div>
               </div>
               
@@ -172,11 +172,11 @@ export default function SigDesa() {
                 <div className="absolute top-4 left-4 bg-white bg-opacity-90 rounded-lg shadow px-3 py-2 z-10">
                   <div className="flex items-center">
                     <div className="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
-                    <span className="text-sm font-medium">{mapData.polygons.length} Area</span>
+                    <span className="text-sm font-medium">{mapData.polygons.length} {t("sigDesa.mapOverlay.areas")}</span>
                   </div>
                   <div className="flex items-center mt-1">
                     <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-                    <span className="text-sm font-medium">{mapData.markers.length} Lokasi</span>
+                    <span className="text-sm font-medium">{mapData.markers.length} {t("sigDesa.mapOverlay.locations")}</span>
                   </div>
                 </div>
               </div>
@@ -187,8 +187,8 @@ export default function SigDesa() {
           <div className="w-full lg:w-1/3">
             <div className="bg-white rounded-xl shadow-lg sticky top-6">
               <div className="p-4 border-b">
-                <h2 className="text-lg font-semibold text-green-700">Legenda Peta</h2>
-                <p className="text-sm text-green-600">Filter informasi yang ditampilkan</p>
+                <h2 className="text-lg font-semibold text-green-700">{t("sigDesa.mapLegend")}</h2>
+                <p className="text-sm text-green-600">{t("sigDesa.filterInfo")}</p>
               </div>
               
               <div className="p-4">
@@ -226,7 +226,7 @@ export default function SigDesa() {
                 <div className="mb-6">
                   <h3 className="font-medium text-green-700 mb-3 flex items-center">
                     <div className="w-4 h-4 rounded border-2 border-green-500 bg-green-200 mr-2"></div>
-                    Area dan Zona
+                    {t("sigDesa.areaZone")}
                   </h3>
                   <div className="space-y-2">
                     {mapData.polygons.slice(0, 5).map((polygon, index) => (
@@ -240,11 +240,11 @@ export default function SigDesa() {
                     ))}
                     {mapData.polygons.length > 5 && (
                       <div className="text-xs text-gray-500 mt-1">
-                        +{mapData.polygons.length - 5} area lainnya
+                        +{mapData.polygons.length - 5} {t("sigDesa.moreAreas")}
                       </div>
                     )}
                     {mapData.polygons.length === 0 && (
-                      <div className="text-sm text-gray-500">Tidak ada area terdaftar</div>
+                      <div className="text-sm text-gray-500">{t("sigDesa.noAreaRegistered")}</div>
                     )}
                   </div>
                 </div>
@@ -253,7 +253,7 @@ export default function SigDesa() {
                 <div className="mb-6">
                   <h3 className="font-medium text-green-700 mb-3 flex items-center">
                     <FaMapMarkerAlt className="text-green-500 mr-2" />
-                    Lokasi Penting
+                    {t("sigDesa.importantLocation")}
                   </h3>
                   <div className="space-y-2">
                     {mapData.markers.slice(0, 5).map((marker, index) => (
@@ -264,11 +264,11 @@ export default function SigDesa() {
                     ))}
                     {mapData.markers.length > 5 && (
                       <div className="text-xs text-gray-500 mt-1">
-                        +{mapData.markers.length - 5} lokasi lainnya
+                        +{mapData.markers.length - 5} {t("sigDesa.moreLocations")}
                       </div>
                     )}
                     {mapData.markers.length === 0 && (
-                      <div className="text-sm text-gray-500">Tidak ada lokasi terdaftar</div>
+                      <div className="text-sm text-gray-500">{t("sigDesa.noLocationRegistered")}</div>
                     )}
                   </div>
                 </div>
@@ -279,8 +279,8 @@ export default function SigDesa() {
               {/* Footer */}
               <div className="p-4 border-t bg-green-50 rounded-b-xl">
                 <div className="text-xs text-green-600">
-                  <p>Peta ini diperbarui secara berkala</p>
-                  <p>© {new Date().getFullYear()} Desa Babakan Asem</p>
+                  <p>{t("sigDesa.mapUpdated")}</p>
+                  <p>© {new Date().getFullYear()} {t("sigDesa.copyright")}</p>
                 </div>
               </div>
             </div>
@@ -289,16 +289,16 @@ export default function SigDesa() {
         
         {/* Information Section */}
         <div className="mt-8 bg-white rounded-xl shadow-lg p-6">
-          <h2 className="text-xl font-bold text-green-700 mb-4">Informasi Peta Desa</h2>
+          <h2 className="text-xl font-bold text-green-700 mb-4">{t("sigDesa.mapInfo.title")}</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             <div className="text-center">
               <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
                 <FaMapMarkedAlt className="text-green-600 text-2xl" />
               </div>
-              <h3 className="font-semibold text-green-700 mb-2">Zona dan Area</h3>
+              <h3 className="font-semibold text-green-700 mb-2">{t("sigDesa.mapInfo.zones.title")}</h3>
               <p className="text-sm text-green-600">
-                Tampilkan pembagian wilayah desa, area pertanian, pemukiman, dan zona khusus lainnya.
+                {t("sigDesa.mapInfo.zones.description")}
               </p>
             </div>
             
@@ -306,9 +306,9 @@ export default function SigDesa() {
               <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
                 <FaMapMarkerAlt className="text-green-600 text-2xl" />
               </div>
-              <h3 className="font-semibold text-green-700 mb-2">Fasilitas Umum</h3>
+              <h3 className="font-semibold text-green-700 mb-2">{t("sigDesa.mapInfo.facilities.title")}</h3>
               <p className="text-sm text-green-600">
-                Temukan lokasi fasilitas penting seperti sekolah, puskesmas, pasar, dan tempat ibadah.
+                {t("sigDesa.mapInfo.facilities.description")}
               </p>
             </div>
           </div>

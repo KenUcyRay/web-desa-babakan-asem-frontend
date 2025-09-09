@@ -760,7 +760,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Emergency Guide */}
+      {/* Emergency Number */}
       <div className="bg-green-600 py-12 px-[5%]" data-aos="fade-up">
         <div className="max-w-4xl mx-auto text-white">
           <h2 className="text-3xl font-bold text-center mb-8">
@@ -782,18 +782,19 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Emergency Guide */}
+            {/* Emergency Number */}
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6">
               <div className="flex items-center gap-3 mb-4">
                 <FaExclamationTriangle className="text-2xl text-red-300" />
-                <h3 className="text-xl font-bold">{t("home.emergency.emergency.title")}</h3>
+                <h3 className="text-xl font-bold">{t("home.emergency.emergencyNumbers.title")}</h3>
               </div>
-              <p className="mb-4 opacity-90">{t("home.emergency.emergency.description")}</p>
+              <p className="mb-4 opacity-90">{t("home.emergency.emergencyNumbers.description")}</p>
               <div className="space-y-2 text-sm">
-                <p>• {t("home.emergency.emergency.police")}: 110</p>
-                <p>• {t("home.emergency.emergency.medical")}: 119</p>
-                <p>• {t("home.emergency.emergency.fire")}: 113</p>
-                <p>• {t("home.emergency.emergency.village")}: (022) 123-4567</p>
+                <p>• {t("home.emergency.emergencyNumbers.police")}</p>
+                <p>• {t("home.emergency.emergencyNumbers.medical")}</p>
+                <p>• {t("home.emergency.emergencyNumbers.fire")}</p>
+                <p>• {t("home.emergency.emergencyNumbers.healthcenter")}</p>
+                <p>• {t("home.emergency.emergencyNumbers.village")}</p>
               </div>
             </div>
           </div>

@@ -137,10 +137,11 @@
       "emergencyNumbers": {
         "title": "Emergency Numbers",
         "description": "For emergency situations, contact the following numbers. Make sure to use only for truly urgent situations.",
-        "police": "Police",
-        "medical": "Ambulance/Health Center",
-        "fire": "Fire Department",
-        "village": "Village Emergency"
+        "police": "110 - Police (Security & Crime)",
+        "medical": "119 - Ambulance (Medical Emergency)",
+        "fire": "113 - Fire Department",
+        "healthcenter": "(0261) 201-234 - Conggeang Health Center",
+        "village": "(022) 123-4567 - Village Emergency"
       }
     }
   },
@@ -287,7 +288,69 @@
     "tableTitle": "Regulation Title",
     "tableYear": "No. / Year",
     "tableDownload": "Download",
-    "download": "Download"
+    "download": "Download",
+    "adminServices": {
+      "title": "Administrative Services Information",
+      "documents": {
+        "title": "Available Document Types",
+        "ktp": "ID Card Application",
+        "kk": "Family Card (KK) Application",
+        "skck": "Police Certificate (SKCK)",
+        "domicile": "Domicile Certificate",
+        "business": "Business Certificate"
+      },
+      "requirements": {
+        "title": "General Requirements",
+        "identity": "Photocopy of ID Card and Family Card",
+        "photo": "Recent passport photos",
+        "form": "Completed application form",
+        "fee": "Administrative fee as required"
+      }
+    },
+    "contact": {
+      "title": "Contact and Complaint Services",
+      "office": {
+        "title": "Village Office Address",
+        "address": "Address:",
+        "fullAddress": "Jalan Babakan Asem No. 142, Babakan Asem Village, Conggeang District, Sumedang Regency, West Java 45391",
+        "phone": "Phone:",
+        "hours": "Service Hours:",
+        "workingHours": "Monday - Friday, 01:00 - 08:00 UTC"
+      },
+      "complaints": {
+        "title": "Complaint Services",
+        "direct": "Visit the village office directly",
+        "phone": "Phone: (0261) 123-456",
+        "email": "Email: pengaduan@babakanasem.desa.id",
+        "online": "Through the official village website"
+      }
+    },
+    "relatedLinks": {
+      "title": "Related Links",
+      "regency": "Sumedang Regency Government",
+      "regencyDesc": "Official website of Sumedang Regency",
+      "province": "West Java Provincial Government",
+      "provinceDesc": "Official website of West Java Province",
+      "ministry": "Ministry of Villages",
+      "ministryDesc": "Ministry of Villages, PDT and Transmigration website"
+    },
+    "disaster": {
+      "title": "Disaster Information and Preparedness",
+      "potential": {
+        "title": "Potential Disasters in the Area",
+        "flood": "Floods (rainy season)",
+        "landslide": "Landslides (hilly areas)",
+        "earthquake": "Earthquakes (earthquake-prone zone)",
+        "drought": "Drought (dry season)"
+      },
+      "preparedness": {
+        "title": "Preparedness Steps",
+        "plan": "Have a family evacuation plan",
+        "supplies": "Prepare disaster preparedness bag",
+        "routes": "Know the nearest evacuation routes",
+        "contact": "Save emergency contact numbers"
+      }
+    }
   },
   "villagePotential": {
     "title": "Village Potentials of Babakan Asem",
@@ -918,6 +981,42 @@
     "alert": {
       "news_error": "Failed to fetch news data. Please try again later.",
       "agenda_error": "Failed to fetch agenda data. Please try again later."
+    }
+  },
+  "sigDesa": {
+    "title": "Village Map",
+    "subtitle": "View our village's geographical information, including important areas, public facilities, and disaster-prone zones",
+    "interactiveMap": "Interactive Village Map",
+    "zoomInfo": "Zoom and drag to explore",
+    "mapLegend": "Map Legend",
+    "filterInfo": "Filter displayed information",
+    "categories": {
+      "all": "All",
+      "area": "Areas",
+      "location": "Locations"
+    },
+    "areaZone": "Areas and Zones",
+    "importantLocation": "Important Locations",
+    "noAreaRegistered": "No areas registered",
+    "noLocationRegistered": "No locations registered",
+    "moreAreas": "more areas",
+    "moreLocations": "more locations",
+    "mapUpdated": "This map is updated regularly",
+    "copyright": "Babakan Asem Village",
+    "mapInfo": {
+      "title": "Village Map Information",
+      "zones": {
+        "title": "Zones and Areas",
+        "description": "Display village area divisions, agricultural areas, settlements, and other special zones."
+      },
+      "facilities": {
+        "title": "Public Facilities",
+        "description": "Find locations of important facilities such as schools, health centers, markets, and places of worship."
+      }
+    },
+    "mapOverlay": {
+      "areas": "Areas",
+      "locations": "Locations"
     }
   }
 }

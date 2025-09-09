@@ -96,10 +96,11 @@
       "emergencyNumbers": {
         "title": "Nomor Darurat",
         "description": "Untuk situasi darurat, hubungi nomor-nomor berikut. Pastikan hanya digunakan untuk keadaan yang benar-benar mendesak.",
-        "police": "Polisi",
-        "medical": "Ambulans/Puskesmas",
-        "fire": "Pemadam Kebakaran",
-        "village": "Darurat Desa"
+        "police": "110 - Polisi (Keamanan & Kriminal)",
+        "medical": "119 - Ambulans (Gawat Darurat Medis)",
+        "fire": "113 - Pemadam Kebakaran",
+        "healthcenter": "(0261) 201-234 - Puskesmas Conggeang",
+        "village": "(022) 123-4567 - Darurat Desa"
       }
     }
   },
@@ -246,7 +247,69 @@
     "tableTitle": "Judul Peraturan",
     "tableYear": "No. / Tahun",
     "tableDownload": "Unduh",
-    "download": "Download"
+    "download": "Download",
+    "adminServices": {
+      "title": "Informasi Pelayanan Administrasi",
+      "documents": {
+        "title": "Jenis Dokumen Tersedia",
+        "ktp": "Pembuatan KTP",
+        "kk": "Pembuatan Kartu Keluarga (KK)",
+        "skck": "Surat Keterangan Catatan Kepolisian (SKCK)",
+        "domicile": "Surat Keterangan Domisili",
+        "business": "Surat Keterangan Usaha"
+      },
+      "requirements": {
+        "title": "Persyaratan Umum",
+        "identity": "Fotokopi KTP dan KK",
+        "photo": "Pas foto terbaru",
+        "form": "Formulir yang telah diisi",
+        "fee": "Biaya administrasi sesuai ketentuan"
+      }
+    },
+    "contact": {
+      "title": "Kontak dan Layanan Pengaduan",
+      "office": {
+        "title": "Alamat Kantor Desa",
+        "address": "Alamat:",
+        "fullAddress": "Jalan Babakan Asem No. 142, Desa Babakan Asem, Kecamatan Conggeang, Kabupaten Sumedang, Jawa Barat 45391",
+        "phone": "Telepon:",
+        "hours": "Jam Pelayanan:",
+        "workingHours": "Senin - Jumat, 08:00 - 15:00 WIB"
+      },
+      "complaints": {
+        "title": "Layanan Pengaduan",
+        "direct": "Datang langsung ke kantor desa",
+        "phone": "Telepon: (0261) 123-456",
+        "email": "Email: pengaduan@babakanasem.desa.id",
+        "online": "Melalui website resmi desa"
+      }
+    },
+    "relatedLinks": {
+      "title": "Link Terkait",
+      "regency": "Pemerintah Kabupaten Sumedang",
+      "regencyDesc": "Website resmi Kabupaten Sumedang",
+      "province": "Pemerintah Provinsi Jawa Barat",
+      "provinceDesc": "Website resmi Provinsi Jawa Barat",
+      "ministry": "Kementerian Desa",
+      "ministryDesc": "Website Kementerian Desa, PDT dan Transmigrasi"
+    },
+    "disaster": {
+      "title": "Informasi Bencana dan Kesiapsiagaan",
+      "potential": {
+        "title": "Potensi Bencana di Daerah",
+        "flood": "Banjir (musim hujan)",
+        "landslide": "Tanah longsor (daerah perbukitan)",
+        "earthquake": "Gempa bumi (zona rawan gempa)",
+        "drought": "Kekeringan (musim kemarau)"
+      },
+      "preparedness": {
+        "title": "Langkah Kesiapsiagaan",
+        "plan": "Memiliki rencana evakuasi keluarga",
+        "supplies": "Menyiapkan tas siaga bencana",
+        "routes": "Mengetahui jalur evakuasi terdekat",
+        "contact": "Menyimpan nomor kontak darurat"
+      }
+    }
   },
   "villagePotential": {
     "title": "Potensi Desa Babakan Asem",
@@ -877,6 +940,42 @@
     "alert": {
       "news_error": "Gagal mengambil data berita. Silakan coba lagi nanti.",
       "agenda_error": "Gagal mengambil data agenda. Silakan coba lagi nanti."
+    }
+  },
+  "sigDesa": {
+    "title": "Peta Desa",
+    "subtitle": "Lihat informasi geografis desa kami, termasuk area penting, fasilitas umum, dan zona rawan bencana",
+    "interactiveMap": "Peta Interaktif Desa",
+    "zoomInfo": "Zoom dan geser untuk menjelajahi",
+    "mapLegend": "Legenda Peta",
+    "filterInfo": "Filter informasi yang ditampilkan",
+    "categories": {
+      "all": "Semua",
+      "area": "Area",
+      "location": "Lokasi"
+    },
+    "areaZone": "Area dan Zona",
+    "importantLocation": "Lokasi Penting",
+    "noAreaRegistered": "Tidak ada area terdaftar",
+    "noLocationRegistered": "Tidak ada lokasi terdaftar",
+    "moreAreas": "area lainnya",
+    "moreLocations": "lokasi lainnya",
+    "mapUpdated": "Peta ini diperbarui secara berkala",
+    "copyright": "Desa Babakan Asem",
+    "mapInfo": {
+      "title": "Informasi Peta Desa",
+      "zones": {
+        "title": "Zona dan Area",
+        "description": "Tampilkan pembagian wilayah desa, area pertanian, pemukiman, dan zona khusus lainnya."
+      },
+      "facilities": {
+        "title": "Fasilitas Umum",
+        "description": "Temukan lokasi fasilitas penting seperti sekolah, puskesmas, pasar, dan tempat ibadah."
+      }
+    },
+    "mapOverlay": {
+      "areas": "Area",
+      "locations": "Lokasi"
     }
   }
 }

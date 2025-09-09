@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { FaFlag, FaUsers, FaHome, FaDownload } from "react-icons/fa";
+import { FaFlag, FaUsers, FaHome, FaDownload, FaFileAlt, FaPhone, FaMapMarkerAlt, FaClock, FaExternalLinkAlt, FaShieldAlt, FaExclamationTriangle, FaLifeRing, FaIdCard, FaEnvelope } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { MemberApi } from "../../libs/api/MemberApi";
 import AOS from "aos";
@@ -26,14 +26,11 @@ export default function Pemerintahan() {
 
   const lembagaDesa = [
     { nama: t("government.org1"), icon: <FaFlag />, path: "/bumdes" },
-    { nama: t("government.org2"), icon: <FaUsers />, path: "/dpd" },
     { nama: t("government.org3"), icon: <FaHome />, path: "/karang-taruna" },
   ];
 
   const layananAdmin = [
     { nama: t("government.service1"), path: "/surat-pengantar" },
-    { nama: t("government.service2"), path: "/formulir-layanan" },
-    { nama: t("government.service3"), path: "/layanan-online" },
   ];
 
   const [members, setMembers] = useState([]);
@@ -59,9 +56,9 @@ export default function Pemerintahan() {
   return (
     <div className="font-poppins bg-gray-50 pt-[60px] lg:pt-[40px] animate-fade">
       {/* Header Section */}
-      <section className="bg-white py-8 sm:py-12 md:py-16" data-aos="fade-up">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 items-center">
+      <section className="bg-white py-12 sm:py-16 md:py-20" data-aos="fade-up">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 sm:gap-12 items-center">
             {/* Teks Kiri */}
             <div
               data-aos="fade-right"
@@ -112,11 +109,11 @@ export default function Pemerintahan() {
 
       {/* Struktur Pemerintahan */}
       <section
-        className="bg-green-50 py-8 sm:py-10 md:py-14"
+        className="bg-green-50 py-12 sm:py-16 md:py-20"
         data-aos="fade-up"
       >
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center">
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-green-700 mb-6 sm:mb-8 md:mb-10">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-green-700 mb-8 sm:mb-12">
             {t("government.structureTitle")}
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
@@ -158,9 +155,12 @@ export default function Pemerintahan() {
           className="bg-gradient-to-br from-[#f7ffe5] to-white shadow-md rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8"
           data-aos="fade-right"
         >
-          <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-green-700 mb-3 sm:mb-4">
-            {t("government.orgTitle")}
-          </h3>
+          <div className="flex items-center gap-3 mb-3 sm:mb-4">
+            <FaUsers className="text-green-600 text-xl sm:text-2xl" />
+            <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-green-700">
+              {t("government.orgTitle")}
+            </h3>
+          </div>
           <div className="space-y-2 sm:space-y-3">
             {lembagaDesa.map((item, i) => (
               <button
@@ -187,9 +187,12 @@ export default function Pemerintahan() {
           className="bg-gradient-to-br from-[#f7ffe5] to-white shadow-md rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8"
           data-aos="fade-left"
         >
-          <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-green-700 mb-3 sm:mb-4">
-            {t("government.serviceTitle")}
-          </h3>
+          <div className="flex items-center gap-3 mb-3 sm:mb-4">
+            <FaIdCard className="text-green-600 text-xl sm:text-2xl" />
+            <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-green-700">
+              {t("government.serviceTitle")}
+            </h3>
+          </div>
           <div className="space-y-2 sm:space-y-3">
             {layananAdmin.map((layanan, i) => (
               <button
@@ -207,9 +210,12 @@ export default function Pemerintahan() {
       {/* Regulasi */}
       <section className="bg-white py-8 sm:py-10 md:py-14" data-aos="fade-up">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-4 sm:mb-6 md:mb-8">
-            {t("government.regulationTitle")}
-          </h2>
+          <div className="flex items-center justify-center gap-3 mb-4 sm:mb-6 md:mb-8">
+            <FaFileAlt className="text-green-600 text-xl sm:text-2xl md:text-3xl" />
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">
+              {t("government.regulationTitle")}
+            </h2>
+          </div>
 
           {/* Mobile: Card Layout */}
           <div className="block md:hidden space-y-3 sm:space-y-4">
@@ -225,7 +231,8 @@ export default function Pemerintahan() {
                   <p className="text-xs text-gray-500">{item.tahun}</p>
                   <a
                     href={item.file}
-                    download
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="text-blue-600 flex items-center gap-1 hover:underline text-xs"
                   >
                     <FaDownload size={12} /> {t("government.download")}
@@ -258,7 +265,8 @@ export default function Pemerintahan() {
                     <td className="p-3 lg:p-4 text-center">
                       <a
                         href={item.file}
-                        download
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="text-blue-600 flex items-center gap-1 hover:underline mx-auto justify-center text-sm"
                       >
                         <FaDownload size={14} /> {t("government.download")}
@@ -268,6 +276,144 @@ export default function Pemerintahan() {
                 ))}
               </tbody>
             </table>
+          </div>
+        </div>
+      </section>
+
+      {/* Informasi Pelayanan Administrasi */}
+      <section className="bg-green-50 py-8 sm:py-10 md:py-14" data-aos="fade-up">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="flex items-center justify-center gap-3 mb-6 sm:mb-8">
+            <FaIdCard className="text-green-600 text-xl sm:text-2xl md:text-3xl" />
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-green-700">
+              {t("government.adminServices.title")}
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+            <div className="bg-white rounded-xl p-6 shadow-md">
+              <h3 className="text-lg font-bold text-gray-800 mb-4">
+                {t("government.adminServices.documents.title")}
+              </h3>
+              <ul className="space-y-2 text-gray-700">
+                <li>• {t("government.adminServices.documents.ktp")}</li>
+                <li>• {t("government.adminServices.documents.kk")}</li>
+                <li>• {t("government.adminServices.documents.skck")}</li>
+                <li>• {t("government.adminServices.documents.domicile")}</li>
+                <li>• {t("government.adminServices.documents.business")}</li>
+              </ul>
+            </div>
+            <div className="bg-white rounded-xl p-6 shadow-md">
+              <h3 className="text-lg font-bold text-gray-800 mb-4">
+                {t("government.adminServices.requirements.title")}
+              </h3>
+              <ul className="space-y-2 text-gray-700">
+                <li>• {t("government.adminServices.requirements.identity")}</li>
+                <li>• {t("government.adminServices.requirements.photo")}</li>
+                <li>• {t("government.adminServices.requirements.form")}</li>
+                <li>• {t("government.adminServices.requirements.fee")}</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Kontak dan Layanan Pengaduan */}
+      <section className="bg-white py-8 sm:py-10 md:py-14" data-aos="fade-up">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="flex items-center justify-center gap-3 mb-6 sm:mb-8">
+            <FaPhone className="text-green-600 text-xl sm:text-2xl md:text-3xl" />
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">
+              {t("government.contact.title")}
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+            <div className="bg-gray-50 rounded-xl p-6">
+              <h3 className="text-lg font-bold text-gray-800 mb-4">
+                {t("government.contact.office.title")}
+              </h3>
+              <div className="space-y-3 text-gray-700">
+                <p><strong>{t("government.contact.office.address")}</strong></p>
+                <p>{t("government.contact.office.fullAddress")}</p>
+                <p><strong>{t("government.contact.office.phone")}</strong> (0261) 123-456</p>
+                <p><strong>{t("government.contact.office.hours")}</strong> {t("government.contact.office.workingHours")}</p>
+              </div>
+            </div>
+            <div className="bg-gray-50 rounded-xl p-6">
+              <h3 className="text-lg font-bold text-gray-800 mb-4">
+                {t("government.contact.complaints.title")}
+              </h3>
+              <div className="space-y-3 text-gray-700">
+                <p>• {t("government.contact.complaints.direct")}</p>
+                <p>• {t("government.contact.complaints.phone")}</p>
+                <p>• {t("government.contact.complaints.email")}</p>
+                <p>• {t("government.contact.complaints.online")}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Link Terkait */}
+      <section className="bg-green-50 py-8 sm:py-10 md:py-14" data-aos="fade-up">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="flex items-center justify-center gap-3 mb-6 sm:mb-8">
+            <FaExternalLinkAlt className="text-green-600 text-xl sm:text-2xl md:text-3xl" />
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-green-700">
+              {t("government.relatedLinks.title")}
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            <a href="https://sumedangkab.go.id" target="_blank" rel="noopener noreferrer" 
+               className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition text-center">
+              <h3 className="font-bold text-gray-800 mb-2">{t("government.relatedLinks.regency")}</h3>
+              <p className="text-gray-600 text-sm">{t("government.relatedLinks.regencyDesc")}</p>
+            </a>
+            <a href="https://jabar.go.id" target="_blank" rel="noopener noreferrer"
+               className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition text-center">
+              <h3 className="font-bold text-gray-800 mb-2">{t("government.relatedLinks.province")}</h3>
+              <p className="text-gray-600 text-sm">{t("government.relatedLinks.provinceDesc")}</p>
+            </a>
+            <a href="https://kemendesa.go.id" target="_blank" rel="noopener noreferrer"
+               className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition text-center">
+              <h3 className="font-bold text-gray-800 mb-2">{t("government.relatedLinks.ministry")}</h3>
+              <p className="text-gray-600 text-sm">{t("government.relatedLinks.ministryDesc")}</p>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Informasi Bencana dan Kesiapsiagaan */}
+      <section className="bg-white py-8 sm:py-10 md:py-14" data-aos="fade-up">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="flex items-center justify-center gap-3 mb-6 sm:mb-8">
+            <FaShieldAlt className="text-red-600 text-xl sm:text-2xl md:text-3xl" />
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">
+              {t("government.disaster.title")}
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+            <div className="bg-red-50 rounded-xl p-6 border border-red-200">
+              <h3 className="text-lg font-bold text-red-800 mb-4">
+                {t("government.disaster.potential.title")}
+              </h3>
+              <ul className="space-y-2 text-red-700">
+                <li>• {t("government.disaster.potential.flood")}</li>
+                <li>• {t("government.disaster.potential.landslide")}</li>
+                <li>• {t("government.disaster.potential.earthquake")}</li>
+                <li>• {t("government.disaster.potential.drought")}</li>
+              </ul>
+            </div>
+            <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
+              <h3 className="text-lg font-bold text-blue-800 mb-4">
+                {t("government.disaster.preparedness.title")}
+              </h3>
+              <ul className="space-y-2 text-blue-700">
+                <li>• {t("government.disaster.preparedness.plan")}</li>
+                <li>• {t("government.disaster.preparedness.supplies")}</li>
+                <li>• {t("government.disaster.preparedness.routes")}</li>
+                <li>• {t("government.disaster.preparedness.contact")}</li>
+              </ul>
+            </div>
           </div>
         </div>
       </section>
