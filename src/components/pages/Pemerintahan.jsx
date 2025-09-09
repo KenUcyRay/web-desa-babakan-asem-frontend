@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { FaFlag, FaUsers, FaHome, FaDownload, FaFileAlt, FaPhone, FaMapMarkerAlt, FaClock, FaExternalLinkAlt, FaShieldAlt, FaExclamationTriangle, FaLifeRing, FaIdCard, FaEnvelope } from "react-icons/fa";
+import { FaFlag, FaUsers, FaHome, FaDownload, FaFileAlt, FaPhone, FaMapMarkerAlt, FaClock, FaExternalLinkAlt, FaShieldAlt, FaExclamationTriangle, FaLifeRing, FaIdCard, FaEnvelope, FaTimes } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { MemberApi } from "../../libs/api/MemberApi";
 import AOS from "aos";
@@ -25,8 +25,26 @@ export default function Pemerintahan() {
   ];
 
   const lembagaDesa = [
-    { nama: t("government.org1"), icon: <FaFlag />, path: "/bumdes" },
-    { nama: t("government.org3"), icon: <FaHome />, path: "/karang-taruna" },
+    { 
+      nama: i18n.language === 'en' ? 'BUMDes (Village-Owned Enterprises)' : t("government.org1"), 
+      icon: <FaFlag />, 
+      path: "/bumdes" 
+    },
+    { 
+      nama: i18n.language === 'en' ? 'Youth Organization (Karang Taruna)' : t("government.org3"), 
+      icon: <FaHome />, 
+      path: "/karang-taruna" 
+    },
+    { 
+      nama: i18n.language === 'en' ? 'BPD (Village Consultative Body)' : "BPD (Badan Permusyawaratan Desa)", 
+      icon: <FaUsers />, 
+      path: "/bpd" 
+    },
+    { 
+      nama: i18n.language === 'en' ? 'PKK (Family Welfare Empowerment)' : "PKK (Pemberdayaan Kesejahteraan Keluarga)", 
+      icon: <FaUsers />, 
+      path: "/pkk" 
+    },
   ];
 
   const layananAdmin = [
@@ -34,6 +52,15 @@ export default function Pemerintahan() {
   ];
 
   const [members, setMembers] = useState([]);
+  const [pdfModal, setPdfModal] = useState({ isOpen: false, title: '', url: '' });
+
+  const openPdfModal = (title, url) => {
+    setPdfModal({ isOpen: true, title, url });
+  };
+
+  const closePdfModal = () => {
+    setPdfModal({ isOpen: false, title: '', url: '' });
+  };
 
   const fetchMembers = async () => {
     const response = await MemberApi.getMembers(
@@ -145,7 +172,7 @@ export default function Pemerintahan() {
         </div>
       </section>
 
-      {/* Lembaga & Layanan */}
+      {/* Lembaga & Informasi */}
       <section
         className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 md:py-16 grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8"
         data-aos="fade-up"
@@ -182,27 +209,30 @@ export default function Pemerintahan() {
           </div>
         </div>
 
-        {/* Layanan Admin */}
+        {/* Jam Pelayanan */}
         <div
           className="bg-gradient-to-br from-[#f7ffe5] to-white shadow-md rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8"
           data-aos="fade-left"
         >
           <div className="flex items-center gap-3 mb-3 sm:mb-4">
-            <FaIdCard className="text-green-600 text-xl sm:text-2xl" />
+            <FaClock className="text-green-600 text-xl sm:text-2xl" />
             <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-green-700">
-              {t("government.serviceTitle")}
+              {i18n.language === 'en' ? 'Service Hours' : 'Jam Pelayanan'}
             </h3>
           </div>
-          <div className="space-y-2 sm:space-y-3">
-            {layananAdmin.map((layanan, i) => (
-              <button
-                key={i}
-                onClick={() => navigate(layanan.path)}
-                className="w-full bg-gray-50 hover:bg-blue-50 px-3 sm:px-4 py-2 sm:py-3 rounded-lg border transition text-left font-medium text-gray-700 text-xs sm:text-sm md:text-base min-w-0 truncate"
-              >
-                {layanan.nama}
-              </button>
-            ))}
+          <div className="space-y-3 text-gray-700">
+            <div className="bg-gray-50 p-3 rounded-lg">
+              <p className="font-semibold text-gray-800">{i18n.language === 'en' ? 'Monday - Friday' : 'Senin - Jumat'}</p>
+              <p className="text-sm">08:00 - 16:00 WIB</p>
+            </div>
+            <div className="bg-gray-50 p-3 rounded-lg">
+              <p className="font-semibold text-gray-800">{i18n.language === 'en' ? 'Saturday' : 'Sabtu'}</p>
+              <p className="text-sm">08:00 - 12:00 WIB</p>
+            </div>
+            <div className="bg-red-50 p-3 rounded-lg border border-red-200">
+              <p className="font-semibold text-red-800">{i18n.language === 'en' ? 'Sunday & Holidays' : 'Minggu & Hari Libur'}</p>
+              <p className="text-sm text-red-600">{i18n.language === 'en' ? 'Closed' : 'Tutup'}</p>
+            </div>
           </div>
         </div>
       </section>
@@ -229,14 +259,12 @@ export default function Pemerintahan() {
                 </h4>
                 <div className="flex justify-between items-center">
                   <p className="text-xs text-gray-500">{item.tahun}</p>
-                  <a
-                    href={item.file}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <button
+                    onClick={() => openPdfModal(item.judul, item.file)}
                     className="text-blue-600 flex items-center gap-1 hover:underline text-xs"
                   >
-                    <FaDownload size={12} /> {t("government.download")}
-                  </a>
+                    <FaFileAlt size={12} /> Preview
+                  </button>
                 </div>
               </div>
             ))}
@@ -263,14 +291,12 @@ export default function Pemerintahan() {
                     <td className="p-3 lg:p-4 break-words">{item.judul}</td>
                     <td className="p-3 lg:p-4">{item.tahun}</td>
                     <td className="p-3 lg:p-4 text-center">
-                      <a
-                        href={item.file}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                      <button
+                        onClick={() => openPdfModal(item.judul, item.file)}
                         className="text-blue-600 flex items-center gap-1 hover:underline mx-auto justify-center text-sm"
                       >
-                        <FaDownload size={14} /> {t("government.download")}
-                      </a>
+                        <FaFileAlt size={14} /> Preview
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -289,7 +315,7 @@ export default function Pemerintahan() {
               {t("government.adminServices.title")}
             </h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
             <div className="bg-white rounded-xl p-6 shadow-md">
               <h3 className="text-lg font-bold text-gray-800 mb-4">
                 {t("government.adminServices.documents.title")}
@@ -298,8 +324,6 @@ export default function Pemerintahan() {
                 <li>• {t("government.adminServices.documents.ktp")}</li>
                 <li>• {t("government.adminServices.documents.kk")}</li>
                 <li>• {t("government.adminServices.documents.skck")}</li>
-                <li>• {t("government.adminServices.documents.domicile")}</li>
-                <li>• {t("government.adminServices.documents.business")}</li>
               </ul>
             </div>
             <div className="bg-white rounded-xl p-6 shadow-md">
@@ -307,11 +331,26 @@ export default function Pemerintahan() {
                 {t("government.adminServices.requirements.title")}
               </h3>
               <ul className="space-y-2 text-gray-700">
-                <li>• {t("government.adminServices.requirements.identity")}</li>
-                <li>• {t("government.adminServices.requirements.photo")}</li>
+                <li>• {i18n.language === 'en' ? 'NIK (National Identity Number)' : 'NIK (Nomor Induk Kependudukan)'}</li>
+                <li>• {i18n.language === 'en' ? 'Full Name' : 'Nama Lengkap'}</li>
                 <li>• {t("government.adminServices.requirements.form")}</li>
-                <li>• {t("government.adminServices.requirements.fee")}</li>
               </ul>
+            </div>
+            <div className="bg-white rounded-xl p-6 shadow-md flex flex-col">
+              <h3 className="text-lg font-bold text-gray-800 mb-4">
+                {i18n.language === 'en' ? 'Service Access' : 'Akses Layanan'}
+              </h3>
+              <p className="text-gray-600 text-sm mb-4 flex-1">
+                {i18n.language === 'en' 
+                  ? 'Submit requests for cover letters and other administrative documents online.' 
+                  : 'Ajukan permohonan surat pengantar dan dokumen administrasi lainnya secara online.'}
+              </p>
+              <button
+                onClick={() => navigate('/surat-pengantar')}
+                className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg font-medium transition flex items-center justify-center gap-2"
+              >
+                <FaFileAlt /> {i18n.language === 'en' ? 'Create Request' : 'Buat Permohonan'}
+              </button>
             </div>
           </div>
         </div>
@@ -417,6 +456,52 @@ export default function Pemerintahan() {
           </div>
         </div>
       </section>
+
+      {/* PDF Modal */}
+      {pdfModal.isOpen && (
+        <div className="fixed inset-0 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg w-full max-w-4xl h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between p-4 border-b">
+              <h3 className="text-lg font-semibold text-gray-800 truncate">
+                {pdfModal.title}
+              </h3>
+              <div className="flex items-center gap-2">
+                <a
+                  href={pdfModal.url}
+                  download
+                  className="text-blue-600 hover:text-blue-800 flex items-center gap-1 text-sm"
+                >
+                  <FaDownload size={14} /> Download
+                </a>
+                <button
+                  onClick={closePdfModal}
+                  className="text-gray-500 hover:text-gray-700 p-1"
+                >
+                  <FaTimes size={20} />
+                </button>
+              </div>
+            </div>
+            <div className="flex-1 p-4">
+              <div className="w-full h-full bg-gray-100 rounded flex items-center justify-center">
+                <div className="text-center text-gray-600">
+                  <FaFileAlt size={48} className="mx-auto mb-4 text-gray-400" />
+                  <p className="text-lg font-medium mb-2">PDF Preview</p>
+                  <p className="text-sm mb-4">Dummy PDF content would be displayed here</p>
+                  <div className="bg-white p-6 rounded border-2 border-dashed border-gray-300 max-w-md mx-auto">
+                    <h4 className="font-bold text-gray-800 mb-2">PERATURAN DESA</h4>
+                    <p className="text-sm text-gray-600 mb-2">Nomor: {pdfModal.url.includes('01/2021') ? '01/2021' : '02/2023'}</p>
+                    <p className="text-xs text-gray-500">Tentang: {pdfModal.title}</p>
+                    <div className="mt-4 text-xs text-gray-400">
+                      <p>--- Dummy PDF Content ---</p>
+                      <p>This is a preview placeholder</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
