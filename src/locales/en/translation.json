@@ -131,7 +131,7 @@
         "title": "Village Call Center",
         "description": "Contact the village call center for administrative assistance, service information, and general inquiries about the village.",
         "admin": "Village Admin",
-        "hours": "Service Hours: Monday - Friday, 01:00 - 08:00 UTC",
+        "hours": "Service Hours: Monday - Friday, 08:00 - 15:00 UTC+7",
         "services": "Services: Administration, Information, Complaints"
       },
       "emergencyNumbers": {
@@ -181,7 +181,7 @@
       },
       "phone": {
         "title": "Phone",
-        "number": "0853-3019-2025"
+        "number": "+62 853-3019-2025"
       },
       "whatsapp": {
         "title": "WhatsApp",
@@ -315,7 +315,7 @@
         "fullAddress": "Jalan Babakan Asem No. 142, Babakan Asem Village, Conggeang District, Sumedang Regency, West Java 45391",
         "phone": "Phone:",
         "hours": "Service Hours:",
-        "workingHours": "Monday - Friday, 01:00 - 08:00 UTC"
+        "workingHours": "Monday - Friday, 08:00 - 15:00 UTC+7<br/>Saturday, 08:00 - 12:00 UTC+7<br/>Sunday & Holidays: Closed"
       },
       "complaints": {
         "title": "Complaint Services",
@@ -478,7 +478,7 @@
       "Small Business (UMKM) Application",
       "Population Data Request"
     ],
-    "note": "<strong>Note:</strong> Services are only available on weekdays (Monday - Friday) from 01:00 to 08:00 UTC. Please bring original and photocopy documents."
+    "note": "<strong>Note:</strong> Services are only available on weekdays (Monday - Friday) from 08:00 to 15:00 UTC+7. Please bring original and photocopy documents."
   },
   "administrasi": {
     "title": "Village Administration Services",
@@ -948,7 +948,7 @@
     "village_name": "Babakan Asem Village",
     "address": "Jalan Babakan Asem No. 142 Babakan Asem Village,\nConggeang District, Sumedang Regency,\nWest Java 45391",
     "contact_us": "Contact Us",
-    "phone": "0853-3019-2025",
+    "phone": "+62 853-3019-2025",
     "email": "Babakanasem@gmail.com",
     "services": "Services",
     "service_1": "Jumadi / Kesik Village Head",
@@ -959,6 +959,8 @@
     "explore_3": "Sumedang Website",
     "explore_4": "Kartanegara",
     "supported_by": "Supported by",
+    "available_on": "Available on",
+    "follow_us": "Follow Us",
     "copyright": "© 2025 Babakan Asem Village. All rights reserved."
   },
   "sidebarInfo": {
@@ -967,11 +969,11 @@
     "contact_cards": {
       "phone": {
         "title": "Phone",
-        "number": "(0261) 123456"
+        "number": "+62 261 123456"
       },
       "whatsapp": {
         "title": "WhatsApp",
-        "number": "0812‑3456‑7890"
+        "number": "+62 812‑3456‑7890"
       },
       "email": {
         "title": "Email Us",

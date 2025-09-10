@@ -223,11 +223,11 @@ export default function Pemerintahan() {
           <div className="space-y-3 text-gray-700">
             <div className="bg-gray-50 p-3 rounded-lg">
               <p className="font-semibold text-gray-800">{i18n.language === 'en' ? 'Monday - Friday' : 'Senin - Jumat'}</p>
-              <p className="text-sm">08:00 - 16:00 WIB</p>
+              <p className="text-sm">{i18n.language === 'en' ? '08:00 - 16:00 UTC+7' : '08:00 - 16:00 WIB'}</p>
             </div>
             <div className="bg-gray-50 p-3 rounded-lg">
               <p className="font-semibold text-gray-800">{i18n.language === 'en' ? 'Saturday' : 'Sabtu'}</p>
-              <p className="text-sm">08:00 - 12:00 WIB</p>
+              <p className="text-sm">{i18n.language === 'en' ? '08:00 - 12:00 UTC+7' : '08:00 - 12:00 WIB'}</p>
             </div>
             <div className="bg-red-50 p-3 rounded-lg border border-red-200">
               <p className="font-semibold text-red-800">{i18n.language === 'en' ? 'Sunday & Holidays' : 'Minggu & Hari Libur'}</p>

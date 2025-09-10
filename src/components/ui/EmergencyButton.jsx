@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FaExclamationTriangle,
@@ -28,10 +28,46 @@ const EmergencyButton = () => {
     location: null,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [bottomPosition, setBottomPosition] = useState(24); // 24px = bottom-6
 
   // Check if user is logged in and has regular role
   const isLoggedIn = !!profile;
   const isRegularUser = !profile?.role || profile?.role === "REGULAR";
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const footer = document.querySelector('footer');
+      if (footer) {
+        const footerRect = footer.getBoundingClientRect();
+        const windowHeight = window.innerHeight;
+        
+        // Jika footer mulai terlihat di layar
+        if (footerRect.top < windowHeight) {
+          // Hitung jarak yang tersisa dari bottom viewport ke footer
+          const spaceAboveFooter = footerRect.top;
+          const newBottomPosition = windowHeight - spaceAboveFooter + 20; // 20px margin dari footer
+          
+          // Pastikan tidak kurang dari 24px (posisi normal)
+          if (newBottomPosition > 24) {
+            setBottomPosition(newBottomPosition);
+          } else {
+            setBottomPosition(24);
+          }
+        } else {
+          setBottomPosition(24);
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('resize', handleScroll);
+    handleScroll(); // Check initial position
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
+    };
+  }, []);
 
   const handleEmergencyClick = async () => {
     if (!isLoggedIn) {
@@ -158,7 +194,10 @@ const EmergencyButton = () => {
   // Show blocked state
   if (isBlocked) {
     return (
-      <div className="fixed bottom-6 left-6 z-[998] w-14 h-14 rounded-full bg-gray-400 flex items-center justify-center text-white text-xs font-bold">
+      <div 
+        className="fixed left-6 z-[30] w-14 h-14 rounded-full bg-gray-400 flex items-center justify-center text-white text-xs font-bold transition-all duration-300"
+        style={{ bottom: `${bottomPosition}px` }}
+      >
         {t("emergency.blocked")}
       </div>
     );
@@ -169,7 +208,8 @@ const EmergencyButton = () => {
       {/* Emergency Button */}
       <motion.button
         onClick={handleEmergencyClick}
-        className="fixed bottom-6 left-6 z-[998] w-14 h-14 rounded-full shadow-lg text-white bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center hover:scale-105 transition-transform"
+        className="fixed left-6 z-[30] w-14 h-14 rounded-full shadow-lg text-white bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center hover:scale-105 transition-all duration-300"
+        style={{ bottom: `${bottomPosition}px` }}
         whileTap={{ scale: 0.95 }}
         animate={{
           boxShadow: [

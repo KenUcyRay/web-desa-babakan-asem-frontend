@@ -140,7 +140,7 @@
       },
       "phone": {
         "title": "Telepon",
-        "number": "0853-3019-2025"
+        "number": "+62 853-3019-2025"
       },
       "whatsapp": {
         "title": "WhatsApp",
@@ -907,7 +907,7 @@
     "village_name": "Desa Babakan Asem",
     "address": "Jalan Babakan Asem No. 142 Desa Babakan Asem,\nKecamatan Conggeang, Kabupaten Sumedang,\nJawa Barat 45391",
     "contact_us": "Hubungi Kami",
-    "phone": "0853-3019-2025",
+    "phone": "+62 853-3019-2025",
     "email": "Babakanasem@gmail.com",
     "services": "Layanan",
     "service_1": "Jumadi / Kades Kesik",
@@ -918,6 +918,8 @@
     "explore_3": "Website Sumedang",
     "explore_4": "Kartanegara",
     "supported_by": "Didukung oleh",
+    "available_on": "Tersedia di",
+    "follow_us": "Ikuti Kami",
     "copyright": "© 2025 Desa Babakan Asem. Hak cipta dilindungi."
   },
   "sidebarInfo": {
@@ -926,11 +928,11 @@
     "contact_cards": {
       "phone": {
         "title": "Telepon",
-        "number": "(0261) 123456"
+        "number": "+62 261 123456"
       },
       "whatsapp": {
         "title": "WhatsApp",
-        "number": "0812‑3456‑7890"
+        "number": "+62 812‑3456‑7890"
       },
       "email": {
         "title": "Email Kami",

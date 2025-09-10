@@ -686,7 +686,9 @@ export default function Home() {
                         `${formatRupiahBillion(value, i18n.language)}`,
                         name === "anggaran"
                           ? t("home.apb.budget")
-                          : t("home.apb.realization"),
+                          : name === "realisasi"
+                          ? t("home.apb.realization")
+                          : name,
                       ]}
                       labelFormatter={(value) => `${t("home.apb.field")}: ${value}`}
                       contentStyle={{
