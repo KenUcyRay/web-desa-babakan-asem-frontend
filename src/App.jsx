@@ -76,6 +76,7 @@ import EmergencyPage from "./components/admin/EmergencyPage";
 // import GisDesa from "./components/admin/GisDesa";
 import ManageProgram from "./components/admin/ManageProgram";
 import ManageApb from "./components/admin/ManageApb";
+import ManageRegulasi from "./components/admin/ManageRegulasi";
 import KelolaSIG from "./components/admin/KelolaSIG";
 
 // Pengaturan Admin Organisasi
@@ -163,6 +164,9 @@ function LayoutUmum() {
 
           {/* - Form Administrasi */}
           <Route path="/surat-pengantar" element={<SuratPengantar />} />
+          
+          {/* - Admin Login */}
+        
         </Routes>
 
         {/* ✅ Floating Menu tampil di semua halaman umum */}
@@ -200,6 +204,7 @@ function LayoutAdmin() {
         {/* <Route path="gis-desa" element={<GisDesa />} /> */}
         <Route path="manage-program" element={<ManageProgram />} />
         <Route path="manage-apb" element={<ManageApb />} />
+        <Route path="manage-regulasi" element={<ManageRegulasi />} />
         <Route path="kelola-sig" element={<KelolaSIG />} />
 
         {/* - Kelola Infografis */}

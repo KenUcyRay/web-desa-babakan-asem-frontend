@@ -22,6 +22,7 @@ import {
   FaMoneyCheckAlt,
   FaMapMarkerAlt,
   FaExclamationTriangle, // Ikon baru untuk informasi darurat
+  FaFileAlt,
 } from "react-icons/fa";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 import { BsDatabaseFillLock } from "react-icons/bs";
@@ -169,6 +170,11 @@ export default function AdminSidebar({ isOpen, onClose }) {
       to: "/admin/manage-apb",
       label: "Kelola APB",
       icon: <FaMoneyCheckAlt />,
+    },
+    {
+      to: "/admin/manage-regulasi",
+      label: "Kelola Regulasi",
+      icon: <FaFileAlt />,
     },
   ];
 
