@@ -881,6 +881,63 @@
     "callModalCancel": "Cancel",
     "callModalConfirm": "CALL"
   },
+
+  "emergencyform": {
+    "sos": "SOS Emergency",
+    "emergency": "Emergency",
+    "cancel": "Cancel",
+    "confirmMessage": "Are you sure you want to send an emergency SOS signal? This will alert emergency services.",
+    "warningTitle": "Warning",
+    "warningMessage": "{{name}}, you have canceled the emergency call {{count}} times. If you cancel {{remaining}} more times, you will be temporarily blocked from using this feature.",
+    "understood": "Understood",
+    "blockedTitle": "Feature Blocked",
+    "blockedFor": "Emergency feature is blocked for",
+    "seconds": "seconds",
+    
+    "selectEmergencyType": "Select Emergency Type",
+    "userReporting": "Reporting emergency",
+    "phoneNumber": "Phone Number",
+    "phonePlaceholder": "08123456789",
+    "emergencyType": "Emergency Type",
+    "location": "Location",
+    "locationRetrieved": "Location retrieved",
+    "noLocation": "No location",
+    "getLocation": "📍",
+    "gettingLocation": "Getting location...",
+    "additionalInfo": "Additional Information",
+    "additionalInfoPlaceholder": "Additional information (optional)...",
+    "sendSOS": "🚨 Send SOS",
+    "sending": "Sending...",
+    
+    "types": {
+      "fire": "Fire",
+      "fireDescription": "Fire occurring in the area",
+      "flood": "Flood",
+      "floodDescription": "Flood or water inundation",
+      "medical": "Medical Emergency",
+      "medicalDescription": "Accident or serious illness",
+      "accident": "Accident",
+      "accidentDescription": "Traffic accident",
+      "crime": "Criminal Act",
+      "crimeDescription": "Theft, robbery, etc.",
+      "collapse": "Building Collapse",
+      "collapseDescription": "House or building collapse",
+      "electricity": "Electrical Hazard",
+      "electricityDescription": "Short circuit or electrical danger",
+      "tree": "Fallen Tree",
+      "treeDescription": "Fallen tree blocking the road"
+    },
+    
+    "successTitle": "Success!",
+    "sosSuccessSent": "SOS successfully sent! Emergency services have been notified.",
+    
+    "errorUnauthorized": "You are not authorized to send SOS. Please log in again.",
+    "errorNetwork": "Network connection problem. Please try again.",
+    "errorGeneral": "An error occurred while sending SOS. Please try again.",
+    
+
+    "gettingLocationMessage": "Retrieving your location..."
+},
   "sosButton": {
     "label": "EMERGENCY",
     "tooltip": "EMERGENCY BUTTON - For critical situations only! Will send location and call response team.",
