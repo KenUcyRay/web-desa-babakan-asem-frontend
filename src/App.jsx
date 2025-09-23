@@ -73,6 +73,7 @@ import ManagePkk from "./components/admin/ManagePkk";
 import ManagePrestasi from "./components/admin/ManagePrestasi";
 import DataMaster from "./components/admin/DataMaster";
 import EmergencyPage from "./components/admin/EmergencyPage";
+import ManageCall from "./components/admin/ManageCall";
 // import GisDesa from "./components/admin/GisDesa";
 import ManageProgram from "./components/admin/ManageProgram";
 import ManageApb from "./components/admin/ManageApb";
@@ -206,6 +207,7 @@ function LayoutAdmin() {
         <Route path="manage-apb" element={<ManageApb />} />
         <Route path="manage-regulasi" element={<ManageRegulasi />} />
         <Route path="kelola-sig" element={<KelolaSIG />} />
+        <Route path="manage-call" element={<ManageCall />} />
 
         {/* - Kelola Infografis */}
         <Route path="kelola-infografis/penduduk" element={<ManagePenduduk />} />

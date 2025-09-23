@@ -1,108 +1,175 @@
 export class EmergencyApi {
   static async create(data) {
-    const response = await fetch(
-      `${import.meta.env.VITE_NEW_BASE_URL}/private/emergencies`,
-      {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify(data),
+    console.log("[EmergencyApi] create payload:", data);
+    
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_NEW_BASE_URL}/private/emergencies`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify(data),
+        }
+      );
+
+      // Handle different response types
+      let body;
+      const contentType = response.headers.get("content-type");
+      
+      if (contentType && contentType.includes("application/json")) {
+        body = await response.json();
+      } else {
+        body = await response.text();
       }
-    );
 
-    const body = await response.json();
+      console.log("[EmergencyApi] response:", { status: response.status, body });
 
-    if (!response.ok) {
-      console.log(body);
-      throw new Error(body || "Failed to create emergency");
+      if (!response.ok) {
+        console.log("[EmergencyApi] create failed:", body);
+        
+        // Handle different error response formats
+        let errorMessage = "Failed to create emergency";
+        
+        if (typeof body === 'object' && body !== null) {
+          errorMessage = body.message || body.error || body.errors || errorMessage;
+        } else if (typeof body === 'string') {
+          errorMessage = body;
+        }
+        
+        throw new Error(errorMessage);
+      }
+
+      console.log("[EmergencyApi] create success:", body);
+      return body;
+      
+    } catch (error) {
+      console.error("[EmergencyApi] create error:", error);
+      
+      // Network errors
+      if (error.name === 'TypeError' || error.message.includes('Failed to fetch')) {
+        throw new Error("Network error: Unable to connect to server");
+      }
+      
+      throw error;
     }
-
-    return body;
   }
+
   static async get(page = 1, limit = 10, isHandled = false) {
-    const response = await fetch(
-      `${
-        import.meta.env.VITE_NEW_BASE_URL
-      }/admin/emergencies?page=${page}&limit=${limit}&is_handled=${isHandled}`,
-      {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-      }
-    );
+    try {
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_NEW_BASE_URL
+        }/admin/emergencies?page=${page}&limit=${limit}&is_handled=${isHandled}`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
+      );
 
-    const body = await response.json();
-
-    if (!response.ok) {
-      throw new Error(body || "Failed to fetch emergencies");
-    }
-
-    return body;
-  }
-  static async update(id) {
-    const response = await fetch(
-      `${import.meta.env.VITE_NEW_BASE_URL}/admin/emergencies/${id}`,
-      {
-        method: "PATCH",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-      }
-    );
-
-    const body = await response.json();
-    if (!response.ok) {
-      throw new Error(body || "Failed to update emergency");
-    }
-    return body;
-  }
-  static async delete(id) {
-    const response = await fetch(
-      `${import.meta.env.VITE_NEW_BASE_URL}/admin/emergencies/${id}`,
-      {
-        method: "DELETE",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-      }
-    );
-
-    if (!response.ok) {
       const body = await response.json();
-      throw new Error(body || "Failed to delete emergency");
-    }
 
-    return true;
-  }
-  static async count() {
-    const response = await fetch(
-      `${import.meta.env.VITE_NEW_BASE_URL}/admin/emergencies/count`,
-      {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
+      if (!response.ok) {
+        throw new Error(body.message || body.error || "Failed to fetch emergencies");
       }
-    );
 
-    const body = await response.json();
-
-    if (!response.ok) {
-      throw new Error(body || "Failed to count emergencies");
+      return body;
+    } catch (error) {
+      console.error("[EmergencyApi] get error:", error);
+      throw error;
     }
+  }
 
-    return body;
+  static async update(id) {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_NEW_BASE_URL}/admin/emergencies/${id}`,
+        {
+          method: "PATCH",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
+      );
+
+      const body = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(body.message || body.error || "Failed to update emergency");
+      }
+      
+      return body;
+    } catch (error) {
+      console.error("[EmergencyApi] update error:", error);
+      throw error;
+    }
+  }
+
+  static async delete(id) {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_NEW_BASE_URL}/admin/emergencies/${id}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        let errorBody = "Failed to delete emergency";
+        try {
+          const body = await response.json();
+          errorBody = body.message || body.error || errorBody;
+        } catch (e) {
+          // Response might not be JSON
+        }
+        throw new Error(errorBody);
+      }
+
+      return true;
+    } catch (error) {
+      console.error("[EmergencyApi] delete error:", error);
+      throw error;
+    }
+  }
+
+  static async count() {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_NEW_BASE_URL}/admin/emergencies/count`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
+      );
+
+      const body = await response.json();
+
+      if (!response.ok) {
+        throw new Error(body.message || body.error || "Failed to count emergencies");
+      }
+
+      return body;
+    } catch (error) {
+      console.error("[EmergencyApi] count error:", error);
+      throw error;
+    }
   }
 }

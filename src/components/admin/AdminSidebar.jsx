@@ -24,6 +24,7 @@ import {
   FaExclamationTriangle, // Ikon baru untuk informasi darurat
   FaFileAlt,
 } from "react-icons/fa";
+import { RiCustomerService2Fill } from "react-icons/ri";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 import { BsDatabaseFillLock } from "react-icons/bs";
 import { useEffect, useState } from "react";
@@ -183,6 +184,12 @@ export default function AdminSidebar({ isOpen, onClose }) {
       to: "/admin/manage-user",
       label: "Kelola Pengguna",
       icon: <FaUsers />,
+    },
+
+    {
+      to: "/admin/manage-call",
+      label: "Kelola Call Center",
+      icon: <RiCustomerService2Fill />,
     },
     {
       to: "/admin/manage-pesan",
