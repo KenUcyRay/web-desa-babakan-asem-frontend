@@ -1,13 +1,16 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { AdministrasiApi } from "../../libs/api/AdministrasiApi";
 import { alertSuccess } from "../../libs/alert";
 import { useTranslation } from "react-i18next";
 import { Helper } from "../../utils/Helper";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function SuratPengantar() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { t, i18n } = useTranslation();
+  const { profile, isInitialized } = useAuth();
   const [formData, setFormData] = useState({
     name: "",
     nik: "",
@@ -22,6 +25,11 @@ export default function SuratPengantar() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // Require login before submitting
+    if (isInitialized && !profile) {
+      navigate("/login", { state: { from: location.pathname } });
+      return;
+    }
     const response = await AdministrasiApi.createPengantar(
       formData,
       i18n.language

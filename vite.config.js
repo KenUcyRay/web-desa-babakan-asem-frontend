@@ -21,4 +21,7 @@ export default defineConfig({
     // ✅ Ini penting buat React Router
     historyApiFallback: true,
   },
+  preview: {
+    allowedHosts: ['https://desababakanasem.web.id'],
+  }
 });
