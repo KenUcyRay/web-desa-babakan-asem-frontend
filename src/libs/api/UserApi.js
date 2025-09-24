@@ -2,7 +2,6 @@ export class UserApi {
   static async register(body, language) {
     return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/users/register`, {
       method: "POST",
-      credentials: "include",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
@@ -22,7 +21,6 @@ export class UserApi {
   static async login(body, language) {
     return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/users/login`, {
       method: "POST",
-      credentials: "include",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
@@ -40,7 +38,6 @@ export class UserApi {
   static async profile(language) {
     return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/private/users`, {
       method: "GET",
-      credentials: "include",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
@@ -53,7 +50,6 @@ export class UserApi {
       `${import.meta.env.VITE_NEW_BASE_URL}/private/users/logout`,
       {
         method: "POST",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -124,7 +120,6 @@ export class UserApi {
   ) {
     return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/private/users`, {
       method: "PATCH",
-      credentials: "include",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
@@ -143,7 +138,6 @@ export class UserApi {
   static async createAdmin(body, language) {
     return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/admin/users`, {
       method: "POST",
-      credentials: "include",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
@@ -161,7 +155,6 @@ export class UserApi {
   static async deleteUser(language) {
     return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/private/users/`, {
       method: "DELETE",
-      credentials: "include",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
@@ -176,7 +169,6 @@ export class UserApi {
       }/admin/users?page=${page}&limit=${limit}`,
       {
         method: "GET",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -190,7 +182,6 @@ export class UserApi {
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/users/${userId}`,
       {
         method: "PATCH",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",

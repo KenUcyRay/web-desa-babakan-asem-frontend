@@ -40,7 +40,7 @@ export default function Bumdes() {
 
   return (
     <div className="font-poppins bg-[#f7ffe5] min-h-screen">
-      <div className="bg-gradient-to-r from-[#9BEC00] to-[#D2FF72] py-16 text-center shadow-sm">
+      <div className="bg-gradient-to-r from-green-400 to-[#B6F500] py-16 text-center shadow-sm">
         <div className="max-w-4xl mx-auto px-6">
           <h1
             className="text-4xl md:text-5xl font-extrabold text-gray-900 drop-shadow-sm"
@@ -49,7 +49,7 @@ export default function Bumdes() {
             {t("bumdes.title")}
           </h1>
           <p
-            className="text-gray-700 mt-4 text-lg leading-relaxed"
+            className="text-gray-800 mt-4 text-lg leading-relaxed"
             data-aos="fade-up"
           >
             {t("bumdes.subtitle")}
@@ -140,7 +140,7 @@ export default function Bumdes() {
         )}
       </div>
 
-      <div className="bg-gradient-to-r from-[#9BEC00] to-[#D2FF72] py-12 mt-12 text-center shadow-inner">
+      <div className="bg-gradient-to-r from-green-400 to-[#B6F500] py-12 text-center shadow-inner">
         <h2
           className="text-3xl md:text-4xl font-bold text-gray-900"
           data-aos="zoom-in"
@@ -148,7 +148,7 @@ export default function Bumdes() {
           🌱 {t("bumdes.footerTitle")}
         </h2>
         <p
-          className="text-gray-700 mt-3 text-lg max-w-2xl mx-auto"
+          className="text-gray-800 mt-3 text-lg max-w-2xl mx-auto"
           data-aos="zoom-in"
           data-aos-delay="200"
         >

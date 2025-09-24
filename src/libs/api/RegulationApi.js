@@ -52,7 +52,6 @@ export const RegulationApi = {
       const response = await fetch(`${BASE_URL}/admin/regulations`, {
         method: "POST",
         body: formData,
-        credentials: "include", // penting kalau pakai cookie session
       });
       const result = await response.json();
       if (!response.ok) {
@@ -71,7 +70,6 @@ export const RegulationApi = {
       const response = await fetch(`${BASE_URL}/admin/regulations/${id}`, {
         method: "PUT",
         body: formData,
-        credentials: "include",
       });
       const result = await response.json();
       if (!response.ok) {
@@ -89,7 +87,6 @@ export const RegulationApi = {
     try {
       const response = await fetch(`${BASE_URL}/admin/regulations/${id}`, {
         method: "DELETE",
-        credentials: "include",
       });
       const result = await response.json();
       if (!response.ok) {

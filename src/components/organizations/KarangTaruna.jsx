@@ -57,9 +57,9 @@ export default function KarangTaruna() {
   }, [i18n.language]);
 
   return (
-    <div className="bg-gray-50 py-12 w-full max-w-screzen-2xl mx-auto px-4 sm:px-6 md:px-8 font-poppins">
+    <div className="bg-gray-50 py-12 w-full max-w-screen-2xl mx-auto px-4 sm:px-6 md:px-8 font-poppins overflow-x-hidden">
       <div className="text-center mb-16" data-aos="fade-down">
-        <h1 className="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-[#9BEC00] to-[#1ee432] bg-clip-text text-transparent">
+        <h1 className="text-4xl md:text-5xl font-extrabold text-green-700">
           {t("karangTaruna.title")}
         </h1>
         <p className="mt-4 text-gray-600 max-w-3xl mx-auto leading-relaxed text-lg">
@@ -80,16 +80,16 @@ export default function KarangTaruna() {
 
       <div className="grid md:grid-cols-2 gap-8 mb-20">
         <div
-          className="p-8 rounded-2xl bg-gradient-to-r from-[#9BEC00] to-[#D2FF72] shadow-md text-center"
+          className="p-8 rounded-2xl bg-yellow-50 shadow-md text-center"
           data-aos="fade-right"
         >
-          <h2 className="text-2xl font-bold text-gray-900 mb-3">
+          <h2 className="text-2xl font-bold text-yellow-800 mb-3">
             {t("karangTaruna.visionTitle")}
           </h2>
-          <p className="text-gray-800 text-lg">{t("karangTaruna.vision")}</p>
+          <p className="text-gray-700 text-lg">{t("karangTaruna.vision")}</p>
         </div>
         <div
-          className="p-8 rounded-2xl bg-white shadow-md"
+          className="p-8 rounded-2xl bg-green-50 shadow-md"
           data-aos="fade-left"
         >
           <h2 className="text-2xl font-bold text-green-800 mb-3 text-center">

@@ -20,7 +20,6 @@ export class MessageApi {
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/messages${query}`,
       {
         method: "GET",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -35,7 +34,6 @@ export class MessageApi {
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/messages/${id}`,
       {
         method: "PATCH",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",

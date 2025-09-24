@@ -78,7 +78,6 @@ export default function ManageApb() {
     try {
       const response = await fetch(`${BASE_URL}/admin/apb/${editing.id}`, {
         method: "PATCH",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
@@ -99,7 +98,6 @@ export default function ManageApb() {
     try {
       const response = await fetch(`${BASE_URL}/admin/apb`, {
         method: "POST",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
@@ -126,7 +124,6 @@ export default function ManageApb() {
 
     const response = await fetch(`${BASE_URL}/admin/apb/${id}`, {
       method: "DELETE",
-      credentials: "include",
     });
 
     if (!response.ok) {

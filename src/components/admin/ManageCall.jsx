@@ -71,6 +71,9 @@ export default function ManageCall() {
       const res = await CallCenterApi.get(currentPage, 6);
       setCalls(res.data);
       setTotalPages(res.total_page);
+      
+      // Dispatch event untuk memberitahu FloatingMenu bahwa data telah diupdate
+      window.dispatchEvent(new CustomEvent('callCenterUpdated'));
     } catch (err) {
       console.error(err);
       Swal.fire({
@@ -139,6 +142,10 @@ export default function ManageCall() {
       try {
         await CallCenterApi.delete(id);
         fetchData();
+        
+        // Dispatch event untuk memberitahu FloatingMenu bahwa data telah diupdate
+        window.dispatchEvent(new CustomEvent('callCenterUpdated'));
+        
         Swal.fire({
           icon: 'success',
           title: 'Berhasil!',
@@ -166,6 +173,9 @@ export default function ManageCall() {
           call.id === id ? { ...call, is_active: !currentStatus } : call
         )
       );
+      
+      // Dispatch event untuk memberitahu FloatingMenu bahwa data telah diupdate
+      window.dispatchEvent(new CustomEvent('callCenterUpdated'));
       
       Swal.fire({
         icon: 'success',
@@ -195,6 +205,13 @@ export default function ManageCall() {
         icon: "whatsapp",
         color: "text-green-500",
       }));
+    } else if (formData.type === "CALL_CENTER" && formData.icon === "whatsapp") {
+      // Jika berubah dari WhatsApp ke Call Center, reset ke icon default
+      setFormData((prev) => ({
+        ...prev,
+        icon: "customer_service",
+        color: "text-blue-500",
+      }));
     }
   }, [formData.type]);
 
@@ -206,6 +223,8 @@ export default function ManageCall() {
       number: formatNumberForBackend(formData.number),
       color: selectedIcon ? selectedIcon.color : "text-gray-600",
     };
+    
+    console.log('Submitting data:', finalFormData); // Debug log
     
     try {
       if (editingId) {
@@ -227,6 +246,9 @@ export default function ManageCall() {
       }
       setShowModal(false);
       fetchData();
+      
+      // Dispatch event untuk memberitahu FloatingMenu bahwa data telah diupdate
+      window.dispatchEvent(new CustomEvent('callCenterUpdated'));
     } catch (err) {
       console.error("Error saving contact:", err);
       Swal.fire({
@@ -325,12 +347,17 @@ export default function ManageCall() {
           </div>
         )}
 
-        {filteredCalls.map((call) => (
+        {filteredCalls.map((call) => {
+          // Pastikan icon dan color sesuai dengan data terbaru
+          const iconColor = getIconColor(call.icon);
+          const iconComponent = getIconComponent(call.icon);
+          
+          return (
           <div key={call.id} className={`bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden border-l-4 ${call.is_active ? 'border-l-blue-500' : 'border-l-gray-400'} ${!call.is_active ? 'opacity-75' : ''}`}>
             <div className="p-4">
               <div className="flex items-start justify-between mb-3">
-                <div className={`p-3 rounded-full bg-gray-50 ${call.color}`}>
-                  {getIconComponent(call.icon)}
+                <div className={`p-3 rounded-full bg-gray-50 ${iconColor}`}>
+                  {iconComponent}
                 </div>
                 <div className="flex flex-wrap gap-1">
                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -375,7 +402,8 @@ export default function ManageCall() {
               </button>
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* PAGINATION */}
@@ -440,20 +468,28 @@ export default function ManageCall() {
                   </div>
                   <div>
                     <label className="block text-sm font-medium mb-2">Icon</label>
-                    <select
-                      value={formData.icon}
-                      onChange={(e) => handleIconChange(e.target.value)}
-                      className={`w-full border rounded-lg p-3 transition-opacity ${
-                        formData.type === "WHATSAPP" ? "opacity-50 cursor-not-allowed" : ""
-                      }`}
-                      disabled={formData.type === "WHATSAPP"}
-                    >
-                      {iconOptions.map((option) => (
-                        <option key={option.key} value={option.key}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
+                    <div className="flex items-center gap-3">
+                      <div className={`p-3 rounded-full bg-gray-50 transition-all duration-200 ${getIconColor(formData.icon)}`}>
+                        {getIconComponent(formData.icon)}
+                      </div>
+                      <select
+                        value={formData.icon}
+                        onChange={(e) => handleIconChange(e.target.value)}
+                        className={`flex-1 border rounded-lg p-3 transition-opacity ${
+                          formData.type === "WHATSAPP" ? "opacity-50 cursor-not-allowed" : ""
+                        }`}
+                        disabled={formData.type === "WHATSAPP"}
+                      >
+                        {iconOptions.map((option) => (
+                          <option key={option.key} value={option.key}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Preview icon akan berubah sesuai pilihan Anda
+                    </p>
                   </div>
                 </div>
 

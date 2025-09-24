@@ -4,7 +4,6 @@ export class CategoryApi {
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/products/categories`,
       {
         method: "GET",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -18,7 +17,6 @@ export class CategoryApi {
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/products/categories`,
       {
         method: "POST",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -33,7 +31,6 @@ export class CategoryApi {
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/products/categories/${id}`,
       {
         method: "PUT",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -48,7 +45,6 @@ export class CategoryApi {
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/products/categories/${id}`,
       {
         method: "DELETE",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",

@@ -17,10 +17,10 @@ export default function IDM() {
   const { t, i18n } = useTranslation();
   const [idm, setIdm] = useState([]);
   const [extraIdm, setExtraIdm] = useState({
-    status_desa: "-",
-    sosial: 0,
-    ekonomi: 0,
-    lingkungan: 0,
+    status_desa: "Tidak ada data",
+    sosial: "Tidak ada data",
+    ekonomi: "Tidak ada data",
+    lingkungan: "Tidak ada data",
   });
   const [lastUpdated, setLastUpdated] = useState(null);
 
@@ -99,25 +99,33 @@ export default function IDM() {
         </div>
       </div>
 
-      {/* Diagram Line */}
+      {/* Diagram Line - hanya tampil jika ada data */}
       <div className="mt-12">
         <h3 className="text-2xl font-bold text-gray-800 text-center mb-6">
           {t("idm.chart.title")}
         </h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={idm}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="year" />
-            <YAxis domain={[0.6, 1]} />
-            <Tooltip />
-            <Line
-              type="monotone"
-              dataKey="skor"
-              stroke="#B6F500"
-              strokeWidth={3}
-            />
-          </LineChart>
-        </ResponsiveContainer>
+        {idm.length > 0 ? (
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={idm}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="year" />
+              <YAxis domain={[0.6, 1]} />
+              <Tooltip />
+              <Line
+                type="monotone"
+                dataKey="skor"
+                stroke="#B6F500"
+                strokeWidth={3}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        ) : (
+          <div className="bg-white p-8 rounded-xl shadow border border-gray-200 text-center">
+            <p className="text-gray-500 text-lg">
+              Tidak ada data IDM tersedia
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

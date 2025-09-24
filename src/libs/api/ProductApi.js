@@ -33,7 +33,7 @@ export class ProductApi {
       }/admin/products/me?page=${page}&limit=${limit}`,
       {
         method: "GET",
-        credentials: "include",
+         //  village,
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -57,7 +57,7 @@ export class ProductApi {
       {
         method: "POST",
         body: formData,
-        credentials: "include",
+         //  village,
         headers: {
           "Accept-Language": language,
         },
@@ -81,7 +81,7 @@ export class ProductApi {
       {
         method: "PATCH",
         body: formData,
-        credentials: "include",
+         //  village,
         headers: {
           "Accept-Language": language,
         },
@@ -96,7 +96,7 @@ export class ProductApi {
       }/admin/products/delete-by-product/${id}`,
       {
         method: "DELETE",
-        credentials: "include",
+         //  village,
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -114,7 +114,7 @@ export class ProductApi {
       }/private/products/rating/${productId}`,
       {
         method: "POST",
-        credentials: "include",
+         //  village,
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -133,7 +133,7 @@ export class ProductApi {
       }/private/products/rating/${productId}`,
       {
         method: "GET",
-        credentials: "include",
+         //  village,
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -151,7 +151,7 @@ export class ProductApi {
       }/private/products/rating/${ratingId}`,
       {
         method: "PUT",
-        credentials: "include",
+         //  village,
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -170,7 +170,7 @@ export class ProductApi {
       }/private/products/rating/${ratingId}`,
       {
         method: "DELETE",
-        credentials: "include",
+         //  village,
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",

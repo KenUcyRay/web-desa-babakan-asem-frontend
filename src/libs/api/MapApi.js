@@ -69,7 +69,7 @@ export class MapApi {
     try {
       const response = await fetch(`${MAPS_BASE_URL}-data`, {
         method: "GET",
-        credentials: "include",
+         //  village,
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -89,7 +89,7 @@ export class MapApi {
     try {
       const response = await fetch(`${REGION_BASE_URL}/${id}`, {
         method: "GET",
-        credentials: "include",
+         //  village,
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -109,7 +109,7 @@ export class MapApi {
     try {
       const response = await fetch(`${REGION_BASE_URL}`, {
         method: "POST",
-        credentials: "include",
+         //  village,
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -130,7 +130,7 @@ export class MapApi {
     try {
       const response = await fetch(POI_BASE_URL, {
         method: "POST",
-        credentials: "include",
+         //  village,
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -151,7 +151,7 @@ export class MapApi {
     try {
       const response = await fetch(MAPS_BASE_URL, {
         method: "GET",
-        credentials: "include",
+         //  village,
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -171,7 +171,7 @@ export class MapApi {
     try {
       const response = await fetch(`${MAPS_BASE_URL}/${id}`, {
         method: "GET",
-        credentials: "include",
+         //  village,
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -213,7 +213,7 @@ export class MapApi {
         `${import.meta.env.VITE_NEW_BASE_URL}/admin/maps`,
         {
           method: "POST",
-          credentials: "include",
+           //  village,
           body: formData,
           headers: {
             "Accept-Language": language,
@@ -264,7 +264,7 @@ export class MapApi {
         `${import.meta.env.VITE_NEW_BASE_URL}/admin/maps/${id}`,
         {
           method: "PATCH",
-          credentials: "include",
+           //  village,
           headers: {
             Accept: "application/json",
             "Accept-Language": language,
@@ -292,7 +292,7 @@ export class MapApi {
     try {
       const response = await fetch(`${MAPS_BASE_URL}/${id}`, {
         method: "DELETE",
-        credentials: "include",
+         //  village,
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",

@@ -137,7 +137,7 @@ export default function ManageBansos() {
           bansos.map((item) => (
             <div
               key={item.id}
-              className="bg-white p-6 rounded-xl shadow relative hover:shadow-lg hover:scale-[1.02] transition"
+              className="bg-white p-6 rounded-xl shadow hover:shadow-lg hover:scale-[1.02] transition"
             >
               <p className="font-semibold text-gray-800">{item.name}</p>
               <p className="text-sm text-gray-500">Jumlah penerima</p>
@@ -149,16 +149,16 @@ export default function ManageBansos() {
                   Diperbarui: {Helper.formatTanggal(item.updated_at)}
                 </p>
               )}
-              <div className="absolute top-3 right-3 flex gap-3 opacity-0 hover:opacity-100 transition-opacity">
+              <div className="mt-4 pt-4 border-t border-gray-100 flex gap-2">
                 <button
                   onClick={() => handleEdit(item)}
-                  className="text-blue-600 hover:underline text-sm"
+                  className="flex-1 px-3 py-2 bg-blue-500 text-white text-sm rounded-lg hover:bg-blue-600 transition font-medium"
                 >
                   Edit
                 </button>
                 <button
                   onClick={() => handleDelete(item.id, item.name)}
-                  className="text-red-600 hover:underline text-sm"
+                  className="flex-1 px-3 py-2 bg-red-500 text-white text-sm rounded-lg hover:bg-red-600 transition font-medium"
                 >
                   Hapus
                 </button>
@@ -166,9 +166,14 @@ export default function ManageBansos() {
             </div>
           ))
         ) : (
-          <p className="col-span-3 text-center text-gray-500">
-            Tidak ada data bantuan sosial saat ini.
-          </p>
+          <div className="col-span-full bg-white p-8 rounded-xl shadow border border-gray-200 text-center">
+            <p className="text-gray-500 text-lg">
+              Tidak ada data bantuan sosial tersedia
+            </p>
+            <p className="text-gray-400 text-sm mt-2">
+              Klik tombol "+ Tambah" untuk menambahkan data baru
+            </p>
+          </div>
         )}
       </div>
 

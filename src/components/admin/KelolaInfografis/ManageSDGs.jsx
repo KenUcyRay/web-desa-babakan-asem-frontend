@@ -42,6 +42,26 @@ const iconList = [
   <FaUniversity />,
 ];
 
+const defaultSDGs = [
+  "Tanpa Kemiskinan",
+  "Tanpa Kelaparan", 
+  "Kesehatan & Kesejahteraan",
+  "Pendidikan Berkualitas",
+  "Kesetaraan Gender",
+  "Air Bersih & Sanitasi",
+  "Energi Bersih & Terjangkau",
+  "Pekerjaan Layak & Ekonomi",
+  "Infrastruktur & Inovasi",
+  "Mengurangi Ketimpangan",
+  "Kota & Komunitas Berkelanjutan",
+  "Konsumsi Bertanggung Jawab",
+  "Aksi Iklim",
+  "Ekosistem Lautan",
+  "Ekosistem Daratan",
+  "Perdamaian & Keadilan",
+  "Kemitraan untuk Tujuan"
+];
+
 export default function ManageSDGs() {
   const { i18n } = useTranslation();
   const [sdg, setSdg] = useState([]);
@@ -58,39 +78,82 @@ export default function ManageSDGs() {
       return;
     }
 
-    setSdg(data.sdgs);
+    setSdg(data.sdgs || []);
 
     // Cek update terakhir
-    const latestData = data.sdgs.reduce((latest, current) => {
-      return new Date(current.updated_at || 0) >
-        new Date(latest.updated_at || 0)
-        ? current
-        : latest;
-    }, {});
-    if (latestData.updated_at) setLastUpdated(latestData.updated_at);
+    if (data.sdgs && data.sdgs.length > 0) {
+      const latestData = data.sdgs.reduce((latest, current) => {
+        return new Date(current.updated_at || 0) >
+          new Date(latest.updated_at || 0)
+          ? current
+          : latest;
+      }, {});
+      if (latestData.updated_at) setLastUpdated(latestData.updated_at);
+    }
   };
 
   const handleEdit = (idx) => {
+    const displayData = getDisplayData();
     setEditingIndex(idx);
-    setProgressBaru(sdg[idx].progress);
+    setProgressBaru(displayData[idx].progress.toString());
     setShowForm(true);
   };
 
   const handleSave = async () => {
-    const updated = [...sdg];
-    const id = updated[editingIndex].id;
-    const body = { progress: parseInt(progressBaru) };
+    const displayData = getDisplayData();
+    const currentItem = displayData[editingIndex];
 
-    const res = await InfografisApi.updateSdg(id, body, i18n.language);
-    if (res.ok) {
-      updated[editingIndex].progress = parseInt(progressBaru);
-      updated[editingIndex].updated_at = new Date().toISOString();
-      setSdg(updated);
-      alertSuccess("Progress SDG berhasil diperbarui");
-      setShowForm(false);
-    } else {
-      await Helper.errorResponseHandler(await res.json());
+    try {
+      let res;
+      if (currentItem.id) {
+        // Update existing SDG
+        res = await InfografisApi.updateSdg(currentItem.id, { progress: parseInt(progressBaru) }, i18n.language);
+      } else {
+        // Create new SDG
+        res = await fetch(`${import.meta.env.VITE_NEW_BASE_URL || 'http://localhost:4000/api'}/admin/sdgs`, {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            name: currentItem.name,
+            progress: parseInt(progressBaru)
+          })
+        });
+      }
+
+      const result = await res.json();
+      if (res.ok) {
+        await fetchSdg();
+        alertSuccess("Progress SDG berhasil diperbarui");
+        setShowForm(false);
+        setEditingIndex(null);
+        setProgressBaru("");
+      } else {
+        if (result.error === 'DUPLICATE_ENTRY') {
+          alertError("SDG ini sudah ada. Silakan edit yang sudah ada.");
+        } else {
+          await Helper.errorResponseHandler(result);
+        }
+      }
+    } catch (error) {
+      await Helper.errorResponseHandler(error);
     }
+  };
+
+  // Function to get display data (merge existing SDGs with defaults)
+  const getDisplayData = () => {
+    return defaultSDGs.map((name, idx) => {
+      const existingSDG = sdg.find(s => s.name === name);
+      return existingSDG || {
+        id: null,
+        name: name,
+        progress: 0,
+        updated_at: null
+      };
+    });
   };
 
   useEffect(() => {
@@ -117,9 +180,9 @@ export default function ManageSDGs() {
 
       {/* Grid SDGs */}
       <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {sdg.map((item, idx) => (
+        {getDisplayData().map((item, idx) => (
           <div
-            key={item.id}
+            key={idx}
             className="flex flex-col items-center bg-white p-6 rounded-xl shadow hover:shadow-lg hover:scale-[1.03] transition-all relative"
           >
             <div className="text-3xl text-[#B6F500]">
@@ -129,9 +192,13 @@ export default function ManageSDGs() {
               item.name
             }`}</p>
             <p className="text-xl font-bold text-gray-800">{item.progress}%</p>
-            {item.updated_at && (
+            {item.updated_at ? (
               <p className="mt-1 text-xs text-gray-400">
                 Diperbarui: {Helper.formatTanggal(item.updated_at)}
+              </p>
+            ) : (
+              <p className="mt-1 text-xs text-gray-400">
+                Belum ada data
               </p>
             )}
             <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
@@ -155,7 +222,7 @@ export default function ManageSDGs() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg p-6 w-80">
             <h3 className="text-xl font-semibold mb-4">
-              Edit Progress - {sdg[editingIndex].name}
+              Edit Progress - {getDisplayData()[editingIndex]?.name}
             </h3>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Progress Baru (%)
@@ -170,7 +237,11 @@ export default function ManageSDGs() {
             />
             <div className="flex justify-end gap-2">
               <button
-                onClick={() => setShowForm(false)}
+                onClick={() => {
+                  setShowForm(false);
+                  setEditingIndex(null);
+                  setProgressBaru("");
+                }}
                 className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
               >
                 Batal

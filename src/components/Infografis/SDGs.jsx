@@ -99,25 +99,33 @@ export default function SDGs() {
 
       {/* Grid 17 Tujuan */}
       <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 mt-8">
-        {sdg.map((item, idx) => (
-          <div
-            key={item.id}
-            className="flex flex-col items-center bg-white p-6 rounded-xl shadow hover:shadow-lg hover:scale-105 transition-all"
-          >
-            <div className="text-3xl text-[#B6F500]">
-              {iconList[idx] || <FaHeartbeat />}
-            </div>
-            <p className="text-gray-600 mt-2 text-center">
-              {`${idx + 1}. ${item.name}`}
-            </p>
-            <p className="text-xl font-bold text-gray-800">{item.progress}%</p>
-            {item.updated_at && (
-              <p className="mt-1 text-xs text-gray-400">
-                {t("sdgs.updatedAt")}: {Helper.formatTanggal(item.updated_at)}
+        {sdg.length > 0 ? (
+          sdg.map((item, idx) => (
+            <div
+              key={item.id}
+              className="flex flex-col items-center bg-white p-6 rounded-xl shadow hover:shadow-lg hover:scale-105 transition-all"
+            >
+              <div className="text-3xl text-[#B6F500]">
+                {iconList[idx] || <FaHeartbeat />}
+              </div>
+              <p className="text-gray-600 mt-2 text-center">
+                {`${idx + 1}. ${item.name}`}
               </p>
-            )}
+              <p className="text-xl font-bold text-gray-800">{item.progress}%</p>
+              {item.updated_at && (
+                <p className="mt-1 text-xs text-gray-400">
+                  {t("sdgs.updatedAt")}: {Helper.formatTanggal(item.updated_at)}
+                </p>
+              )}
+            </div>
+          ))
+        ) : (
+          <div className="col-span-full bg-white p-8 rounded-xl shadow border border-gray-200 text-center">
+            <p className="text-gray-500 text-lg">
+              Tidak ada data SDGs tersedia
+            </p>
           </div>
-        ))}
+        )}
       </div>
     </div>
   );

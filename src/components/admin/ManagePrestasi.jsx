@@ -40,7 +40,6 @@ export default function ManagePrestasi() {
           import.meta.env.VITE_NEW_BASE_URL
         }/village-achievements?page=${currentPage}&per_page=${itemsPerPage}`,
         {
-          credentials: "include",
         }
       );
       const json = await response.json();
@@ -88,7 +87,6 @@ export default function ManagePrestasi() {
         {
           method: "PATCH",
           body: formData,
-          credentials: "include",
         }
       );
       if (!response.ok) {
@@ -103,7 +101,6 @@ export default function ManagePrestasi() {
         {
           method: "POST",
           body: formData,
-          credentials: "include",
         }
       );
       if (!response.ok) {
@@ -123,7 +120,6 @@ export default function ManagePrestasi() {
         `${import.meta.env.VITE_NEW_BASE_URL}/admin/village-achievements/${id}`,
         {
           method: "DELETE",
-          credentials: "include",
         }
       );
       if (!response.ok) {

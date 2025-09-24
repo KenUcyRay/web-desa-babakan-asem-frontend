@@ -3,7 +3,7 @@ export class CallCenterApi {
     try {
       const response = await fetch(
         `${import.meta.env.VITE_NEW_BASE_URL}/admin/callcenters?page=${page}&limit=${limit}`,
-        { method: "GET", credentials: "include", headers: { "Content-Type": "application/json", Accept: "application/json" } }
+        { method: "GET", headers: { "Content-Type": "application/json", Accept: "application/json" } }
       );
       const body = await response.json();
       if (!response.ok) throw new Error(body.message || body.error || "Failed to fetch call centers");
@@ -18,7 +18,7 @@ export class CallCenterApi {
     try {
       const response = await fetch(
         `${import.meta.env.VITE_NEW_BASE_URL}/admin/callcenters`,
-        { method: "POST", credentials: "include", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify(data) }
+        { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify(data) }
       );
       const body = await response.json();
       if (!response.ok) throw new Error(body.message || body.error || "Failed to create call center");
@@ -33,7 +33,7 @@ export class CallCenterApi {
     try {
       const response = await fetch(
         `${import.meta.env.VITE_NEW_BASE_URL}/admin/callcenters/${id}`,
-        { method: "PUT", credentials: "include", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify(data) }
+        { method: "PUT", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify(data) }
       );
       const body = await response.json();
       if (!response.ok) throw new Error(body.message || body.error || "Failed to update call center");
@@ -48,7 +48,7 @@ export class CallCenterApi {
     try {
       const response = await fetch(
         `${import.meta.env.VITE_NEW_BASE_URL}/admin/callcenters/${id}`,
-        { method: "DELETE", credentials: "include", headers: { "Content-Type": "application/json", Accept: "application/json" } }
+        { method: "DELETE", headers: { "Content-Type": "application/json", Accept: "application/json" } }
       );
       if (!response.ok) {
         let errorBody = "Failed to delete call center";

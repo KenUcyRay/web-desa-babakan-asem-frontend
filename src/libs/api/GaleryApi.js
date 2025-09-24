@@ -19,7 +19,6 @@ export class GaleryApi {
     formData.append("image", data.image);
     return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/admin/galeri`, {
       method: "POST",
-      credentials: "include",
       body: formData,
       headers: {
         "Accept-Language": language,
@@ -35,7 +34,6 @@ export class GaleryApi {
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/galeri/${id}`,
       {
         method: "PUT",
-        credentials: "include",
         body: formData,
         headers: {
           "Accept-Language": language,
@@ -49,7 +47,6 @@ export class GaleryApi {
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/galeri/${id}`,
       {
         method: "DELETE",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",

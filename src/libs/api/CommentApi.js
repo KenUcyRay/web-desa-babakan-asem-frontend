@@ -5,7 +5,6 @@ export class CommentApi {
       `${import.meta.env.VITE_NEW_BASE_URL}/private/comments/create/${id}`,
       {
         method: "POST",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -39,7 +38,6 @@ export class CommentApi {
       }/private/comments/update/${commentId}`,
       {
         method: "PATCH",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -59,7 +57,6 @@ export class CommentApi {
         import.meta.env.VITE_NEW_BASE_URL
       }/private/comments/delete/${commentId}`,
       {
-        credentials: "include",
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",

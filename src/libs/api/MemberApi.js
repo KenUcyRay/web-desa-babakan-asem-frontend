@@ -29,7 +29,6 @@ export class MemberApi {
       {
         method: "POST",
         body: formData,
-        credentials: "include",
         headers: {
           "Accept-Language": language,
         },
@@ -44,7 +43,6 @@ export class MemberApi {
       }/admin/organizations/members?organizationType=${type}&page=${page}&limit=${limit}`,
       {
         method: "GET",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -70,7 +68,6 @@ export class MemberApi {
       {
         method: "PATCH",
         body: formData,
-        credentials: "include",
         headers: {
           "Accept-Language": language,
         },
@@ -82,7 +79,6 @@ export class MemberApi {
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/organizations/members/${id}`,
       {
         method: "DELETE",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",

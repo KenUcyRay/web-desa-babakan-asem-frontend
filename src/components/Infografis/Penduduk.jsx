@@ -434,10 +434,7 @@ export default function Penduduk() {
       </div>
 
       {/* Data Penduduk Utama - Gender, Kepala Keluarga, dan Anak-Anak */}
-      {(genderData.length > 0 ||
-        kepalaKeluargaData.length > 0 ||
-        anakAnakData.length > 0) && (
-        <section>
+      <section>
           <div className="grid md:grid-cols-3 gap-8 items-center mb-8">
             <div className="md:col-span-1">
               <h3 className="text-3xl font-bold text-gray-800 mb-4">
@@ -455,35 +452,41 @@ export default function Penduduk() {
               </div>
             </div>
             <div className="md:col-span-2">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {genderData.map((item, idx) => (
-                  <StatCard
-                    key={`gender-${idx}`}
-                    icon={item.icon}
-                    label={item.key}
-                    value={item.value}
-                    updatedAt={item.updated_at}
-                  />
-                ))}
-                {kepalaKeluargaData.map((item, idx) => (
-                  <StatCard
-                    key={`kk-${idx}`}
-                    icon={item.icon}
-                    label={item.key}
-                    value={item.value}
-                    updatedAt={item.updated_at}
-                  />
-                ))}
-                {anakAnakData.map((item, idx) => (
-                  <StatCard
-                    key={`anak-${idx}`}
-                    icon={item.icon}
-                    label={item.key}
-                    value={item.value}
-                    updatedAt={item.updated_at}
-                  />
-                ))}
-              </div>
+              {(genderData.length > 0 || kepalaKeluargaData.length > 0 || anakAnakData.length > 0) ? (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {genderData.map((item, idx) => (
+                    <StatCard
+                      key={`gender-${idx}`}
+                      icon={item.icon}
+                      label={item.key}
+                      value={item.value}
+                      updatedAt={item.updated_at}
+                    />
+                  ))}
+                  {kepalaKeluargaData.map((item, idx) => (
+                    <StatCard
+                      key={`kk-${idx}`}
+                      icon={item.icon}
+                      label={item.key}
+                      value={item.value}
+                      updatedAt={item.updated_at}
+                    />
+                  ))}
+                  {anakAnakData.map((item, idx) => (
+                    <StatCard
+                      key={`anak-${idx}`}
+                      icon={item.icon}
+                      label={item.key}
+                      value={item.value}
+                      updatedAt={item.updated_at}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <p className="text-gray-500">Tidak ada data tersedia</p>
+                </div>
+              )}
             </div>
           </div>
 
@@ -531,11 +534,9 @@ export default function Penduduk() {
             </div>
           </div>
         </section>
-      )}
 
       {/* Pekerjaan */}
-      {pekerjaanData.length > 0 && (
-        <section>
+      <section>
           <div className="grid md:grid-cols-3 gap-8 items-center mb-8">
             <div className="md:col-span-1">
               <h3 className="text-3xl font-bold text-gray-800 mb-4">
@@ -553,17 +554,23 @@ export default function Penduduk() {
               </div>
             </div>
             <div className="md:col-span-2">
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {pekerjaanData.map((item, idx) => (
-                  <StatCard
-                    key={idx}
-                    icon={item.icon}
-                    label={item.key}
-                    value={item.value}
-                    updatedAt={item.updated_at}
-                  />
-                ))}
-              </div>
+              {pekerjaanData.length > 0 ? (
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {pekerjaanData.map((item, idx) => (
+                    <StatCard
+                      key={idx}
+                      icon={item.icon}
+                      label={item.key}
+                      value={item.value}
+                      updatedAt={item.updated_at}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <p className="text-gray-500">Tidak ada data tersedia</p>
+                </div>
+              )}
             </div>
           </div>
 
@@ -598,11 +605,9 @@ export default function Penduduk() {
             </ResponsiveContainer>
           </div>
         </section>
-      )}
 
       {/* Pendidikan */}
-      {pendidikanData.length > 0 && (
-        <section>
+      <section>
           <h3 className="text-3xl font-bold text-gray-800 text-center mb-4">
             {t("penduduk.pendidikan.title")}
           </h3>
@@ -662,11 +667,9 @@ export default function Penduduk() {
             </ResponsiveContainer>
           </div>
         </section>
-      )}
 
       {/* Status Pernikahan */}
-      {pernikahanData.length > 0 && (
-        <section>
+      <section>
           <h3 className="text-3xl font-bold text-gray-800 text-center mb-4">
             {t("penduduk.pernikahan.title")}
           </h3>
@@ -731,11 +734,9 @@ export default function Penduduk() {
             </div>
           </div>
         </section>
-      )}
 
       {/* Agama */}
-      {agamaData.length > 0 && (
-        <section>
+      <section>
           <h3 className="text-3xl font-bold text-gray-800 text-center mb-4">
             {t("penduduk.agama.title")}
           </h3>
@@ -800,11 +801,9 @@ export default function Penduduk() {
             </div>
           </div>
         </section>
-      )}
 
       {/* Kelompok Usia */}
-      {usiaData.length > 0 && (
-        <section>
+      <section>
           <h3 className="text-3xl font-bold text-gray-800 text-center mb-4">
             {t("penduduk.usia.title")}
           </h3>
@@ -868,11 +867,9 @@ export default function Penduduk() {
             </ResponsiveContainer>
           </div>
         </section>
-      )}
 
       {/* Wajib Pilih */}
-      {wajibPilihData.length > 0 && (
-        <section>
+      <section>
           <div className="grid md:grid-cols-3 gap-8 items-center mb-8">
             <div className="md:col-span-1">
               <h3 className="text-3xl font-bold text-gray-800 mb-4">
@@ -904,11 +901,9 @@ export default function Penduduk() {
             </div>
           </div>
         </section>
-      )}
 
       {/* Distribusi Dusun */}
-      {dusunData.length > 0 && (
-        <section>
+      <section>
           <h3 className="text-3xl font-bold text-gray-800 text-center mb-4">
             {t("penduduk.dusun.title")}
           </h3>
@@ -964,7 +959,6 @@ export default function Penduduk() {
             </ResponsiveContainer>
           </div>
         </section>
-      )}
     </div>
   );
 }

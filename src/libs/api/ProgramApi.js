@@ -13,7 +13,6 @@ export class ProgramApi {
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/programs/${id}`,
       {
         method: "DELETE",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -31,7 +30,6 @@ export class ProgramApi {
     return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/admin/programs/`, {
       method: "POST",
       body: formData,
-      credentials: "include",
       headers: {
         "Accept-Language": language,
       },
@@ -50,7 +48,6 @@ export class ProgramApi {
       {
         method: "PATCH",
         body: formData,
-        credentials: "include",
         headers: {
           "Accept-Language": language,
         },

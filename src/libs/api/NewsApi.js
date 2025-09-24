@@ -32,7 +32,6 @@ export class NewsApi {
 
     return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/admin/news`, {
       method: "POST",
-      credentials: "include",
       body: formData,
       headers: {
         "Accept-Language": language,
@@ -47,7 +46,6 @@ export class NewsApi {
       }/admin/news?page=${page}&limit=${limit}`,
       {
         method: "GET",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -71,7 +69,6 @@ export class NewsApi {
       {
         method: "PATCH",
         body: formData,
-        credentials: "include",
         headers: {
           "Accept-Language": language,
         },
@@ -83,7 +80,6 @@ export class NewsApi {
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/news/${id}`,
       {
         method: "DELETE",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",

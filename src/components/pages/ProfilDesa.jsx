@@ -85,7 +85,7 @@ export default function ProfilDesa() {
   };
 
   return (
-    <div className="font-poppins bg-gray-50 pt-[60px] lg:pt-[40px] animate-fade">
+    <div className="font-poppins bg-gray-50 pt-[60px] lg:pt-[40px] animate-fade overflow-x-hidden">
       {/* - HERO SECTION */}
       <section className="relative bg-[#FFFDF6]" data-aos="fade-up">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 md:py-16 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 items-center">

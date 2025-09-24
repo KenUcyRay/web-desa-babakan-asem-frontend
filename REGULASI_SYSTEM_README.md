@@ -54,7 +54,7 @@ Admin (requires authentication):
 
 ### Authentication
 - Cookie-based JWT authentication
-- Automatic cookie handling dengan `credentials: 'include'`
+<!-- - Automatic cookie handling dengan `credentials: 'include'` -->
 - Admin login form dengan validation
 
 ### File Upload

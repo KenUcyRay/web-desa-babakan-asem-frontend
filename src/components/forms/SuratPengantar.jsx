@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { AdministrasiApi } from "../../libs/api/AdministrasiApi";
-import { alertSuccess } from "../../libs/alert";
+import { alertSuccess, alertError } from "../../libs/alert";
 import { useTranslation } from "react-i18next";
 import { Helper } from "../../utils/Helper";
 import { useAuth } from "../../contexts/AuthContext";
@@ -27,6 +27,7 @@ export default function SuratPengantar() {
     e.preventDefault();
     // Require login before submitting
     if (isInitialized && !profile) {
+      await alertError("Anda harus login terlebih dahulu.");
       navigate("/login", { state: { from: location.pathname } });
       return;
     }

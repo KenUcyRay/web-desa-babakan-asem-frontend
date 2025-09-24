@@ -392,11 +392,11 @@ export default function Home() {
           <Link
             key={idx}
             to={item.link}
-            className="group bg-white shadow-lg rounded-xl p-6 hover:shadow-2xl hover:scale-[1.08] hover:-translate-y-3 transition-all duration-500 border border-transparent hover:border-green-200 hover:bg-gradient-to-br hover:from-green-50 hover:to-white cursor-pointer"
+            className="group bg-white shadow-lg rounded-xl p-6 hover:shadow-xl hover:scale-[1.02] hover:-translate-y-1 transition-all duration-300 border border-transparent hover:border-green-100 hover:bg-green-50/30 cursor-pointer"
             data-aos="fade-up"
           >
-            <div className="transform group-hover:scale-125 group-hover:rotate-6 transition-all duration-400 group-hover:drop-shadow-lg">{item.icon}</div>
-            <h3 className="font-bold mt-3 group-hover:text-green-700 transition-colors duration-300">{item.title}</h3>
+            <div className="transform group-hover:scale-110 transition-all duration-300">{item.icon}</div>
+            <h3 className="font-bold mt-3 group-hover:text-green-600 transition-colors duration-300">{item.title}</h3>
             <p className="text-gray-600 mt-1 group-hover:text-gray-700 transition-colors duration-300">{item.desc}</p>
           </Link>
         ))}

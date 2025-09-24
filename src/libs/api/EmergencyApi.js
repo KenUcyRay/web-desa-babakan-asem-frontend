@@ -7,7 +7,7 @@ export class EmergencyApi {
         `${import.meta.env.VITE_NEW_BASE_URL}/private/emergencies`,
         {
           method: "POST",
-          credentials: "include",
+          tials: "include",
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
@@ -66,7 +66,6 @@ export class EmergencyApi {
         }/admin/emergencies?page=${page}&limit=${limit}&is_handled=${isHandled}`,
         {
           method: "GET",
-          credentials: "include",
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
@@ -93,7 +92,6 @@ export class EmergencyApi {
         `${import.meta.env.VITE_NEW_BASE_URL}/admin/emergencies/${id}`,
         {
           method: "PATCH",
-          credentials: "include",
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
@@ -120,7 +118,6 @@ export class EmergencyApi {
         `${import.meta.env.VITE_NEW_BASE_URL}/admin/emergencies/${id}`,
         {
           method: "DELETE",
-          credentials: "include",
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
@@ -152,7 +149,6 @@ export class EmergencyApi {
         `${import.meta.env.VITE_NEW_BASE_URL}/admin/emergencies/count`,
         {
           method: "GET",
-          credentials: "include",
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json",

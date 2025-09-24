@@ -4,7 +4,6 @@ export class InfografisApi {
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/infografis/bansos/${id}`,
       {
         method: "PATCH",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -19,7 +18,6 @@ export class InfografisApi {
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/infografis/bansos/${id}`,
       {
         method: "DELETE",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -34,7 +32,6 @@ export class InfografisApi {
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/infografis/bansos`,
       {
         method: "POST",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -61,7 +58,6 @@ export class InfografisApi {
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/infografis/penduduk/${id}`,
       {
         method: "PATCH",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -84,7 +80,6 @@ export class InfografisApi {
   static async createIdm(data, language) {
     return fetch(`${import.meta.env.VITE_NEW_BASE_URL}/admin/infografis/idm`, {
       method: "POST",
-      credentials: "include",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
@@ -110,7 +105,6 @@ export class InfografisApi {
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/infografis/extra-idm/${id}`,
       {
         method: "PATCH",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -126,7 +120,7 @@ export class InfografisApi {
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/infografis/idm/${id}`,
       {
         method: "PATCH",
-        credentials: "include",
+         //  village: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -141,7 +135,7 @@ export class InfografisApi {
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/infografis/idm/${id}`,
       {
         method: "DELETE",
-        credentials: "include",
+         //  village: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -175,7 +169,7 @@ export class InfografisApi {
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/infografis/sdg/${id}`,
       {
         method: "PATCH",
-        credentials: "include",
+         //  village: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",

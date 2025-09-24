@@ -196,7 +196,7 @@ export default function Pemerintahan() {
   };
 
   return (
-    <div className="font-poppins bg-gray-50 pt-[60px] lg:pt-[40px] animate-fade">
+    <div className="font-poppins bg-gray-50 pt-[60px] lg:pt-[40px] animate-fade overflow-x-hidden">
       {/* =========================
           Header / Hero
           ========================= */}

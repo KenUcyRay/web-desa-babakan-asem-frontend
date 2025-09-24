@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaComments, FaWhatsapp, FaPhone, FaChevronDown, FaTimes } from "react-icons/fa";
+import { FiPhoneCall } from "react-icons/fi";
+import { RiCustomerService2Fill, RiAdminFill } from "react-icons/ri";
+import { MdLocalHospital, MdSupportAgent } from "react-icons/md";
+import { BsShieldCheck, BsTelephone } from "react-icons/bs";
 import { useTranslation, Trans } from "react-i18next";
 import { CallCenterApi } from "../../libs/api/CallcenterApi";
 
@@ -17,17 +21,98 @@ export default function FloatingMenu() {
   const [callCenters, setCallCenters] = useState([]);
   const [whatsAppContacts, setWhatsAppContacts] = useState([]);
 
-  useEffect(() => {
+  const iconOptions = [
+    { key: "customer_service", label: "Customer Service", icon: <RiCustomerService2Fill />, color: "text-blue-500" },
+    { key: "admin", label: "Admin", icon: <RiAdminFill />, color: "text-purple-500" },
+    { key: "hospital", label: "Rumah Sakit/Puskesmas", icon: <MdLocalHospital />, color: "text-red-500" },
+    { key: "police", label: "Polisi", icon: <BsShieldCheck />, color: "text-blue-600" },
+    { key: "support", label: "Support/Bantuan", icon: <MdSupportAgent />, color: "text-green-500" },
+    { key: "phone", label: "Telepon Umum", icon: <BsTelephone />, color: "text-gray-600" },
+    { key: "whatsapp", label: "WhatsApp", icon: <FaWhatsapp />, color: "text-green-500" },
+  ];
+
+  const getIconComponent = (iconKey, name = '', type = '') => {
+    // Jika ada iconKey dan valid
+    if (iconKey) {
+      const option = iconOptions.find((o) => o.key === iconKey);
+      if (option) return option.icon;
+    }
+    
+    // Fallback berdasarkan tipe
+    if (type === 'WHATSAPP') return <FaWhatsapp />;
+    
+    // Fallback berdasarkan nama
+    const lowerName = name.toLowerCase();
+    if (lowerName.includes('admin')) return <RiAdminFill />;
+    if (lowerName.includes('rumah sakit') || lowerName.includes('puskesmas') || lowerName.includes('hospital')) return <MdLocalHospital />;
+    if (lowerName.includes('polisi') || lowerName.includes('police')) return <BsShieldCheck />;
+    if (lowerName.includes('support') || lowerName.includes('bantuan')) return <MdSupportAgent />;
+    
+    return <RiCustomerService2Fill />;
+  };
+
+  const getIconColor = (iconKey, name = '', type = '') => {
+    // Jika ada iconKey dan valid
+    if (iconKey) {
+      const option = iconOptions.find((o) => o.key === iconKey);
+      if (option) return option.color;
+    }
+    
+    // Fallback berdasarkan tipe
+    if (type === 'WHATSAPP') return 'text-green-500';
+    
+    // Fallback berdasarkan nama
+    const lowerName = name.toLowerCase();
+    if (lowerName.includes('admin')) return 'text-purple-500';
+    if (lowerName.includes('rumah sakit') || lowerName.includes('puskesmas') || lowerName.includes('hospital')) return 'text-red-500';
+    if (lowerName.includes('polisi') || lowerName.includes('police')) return 'text-blue-600';
+    if (lowerName.includes('support') || lowerName.includes('bantuan')) return 'text-green-500';
+    
+    return 'text-blue-500';
+  };
+
+  const fetchCallCenterData = () => {
     CallCenterApi.getPublic().then((res) => {
       if (res && res.data) {
-        // Pisahkan berdasarkan tipe
-        const callCenterData = res.data.filter(item => item.type === "CALL_CENTER");
-        const whatsAppData = res.data.filter(item => item.type === "WHATSAPP");
+        // Filter hanya data yang aktif dan pisahkan berdasarkan tipe
+        const activeData = res.data.filter(item => item.is_active);
+        const callCenterData = activeData.filter(item => item.type === "CALL_CENTER");
+        const whatsAppData = activeData.filter(item => item.type === "WHATSAPP");
         
         setCallCenters(callCenterData);
         setWhatsAppContacts(whatsAppData);
       }
+    }).catch((error) => {
+      console.error("Error fetching call center data:", error);
     });
+  };
+
+  useEffect(() => {
+    fetchCallCenterData();
+    
+    // Event listener untuk refresh data ketika ada perubahan dari ManageCall
+    const handleCallCenterUpdate = () => {
+      fetchCallCenterData();
+    };
+    
+    // Listen untuk custom event dari ManageCall
+    window.addEventListener('callCenterUpdated', handleCallCenterUpdate);
+    
+    // Refresh data setiap 10 detik untuk memastikan data ter-update
+    const interval = setInterval(fetchCallCenterData, 10000);
+    
+    // Refresh data ketika window focus kembali
+    const handleFocus = () => {
+      fetchCallCenterData();
+    };
+    
+    window.addEventListener('focus', handleFocus);
+    
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('callCenterUpdated', handleCallCenterUpdate);
+      window.removeEventListener('focus', handleFocus);
+    };
   }, []);
 
   const handleCallCenterClick = (e) => {
@@ -162,8 +247,8 @@ export default function FloatingMenu() {
 
               <div className="px-6 py-6">
                 <div className="text-center mb-6">
-                  <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                    <FaPhone className="text-blue-500" size={24} />
+                  <div className={`mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4 ${getIconColor(selectedService.icon)}`}>
+                    {getIconComponent(selectedService.icon)}
                   </div>
                   <h3 className="text-xl font-bold text-gray-800 mb-2">{selectedService.name}</h3>
                   <p className="text-gray-600 font-mono text-lg">{selectedService.number}</p>
@@ -243,8 +328,8 @@ export default function FloatingMenu() {
 
               <div className="px-6 py-6">
                 <div className="text-center mb-6">
-                  <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
-                    <FaWhatsapp className="text-green-500" size={24} />
+                  <div className={`mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4 ${getIconColor(selectedService.icon)}`}>
+                    {getIconComponent(selectedService.icon)}
                   </div>
                   <h3 className="text-xl font-bold text-gray-800 mb-2">{selectedService.name}</h3>
                   <p className="text-gray-600 font-mono text-lg">{selectedService.number}</p>
@@ -286,7 +371,7 @@ export default function FloatingMenu() {
       </AnimatePresence>
 
       <div
-        className="fixed right-6 z-[30] flex flex-col items-end transition-all duration-300"
+        className="fixed right-6 z-[9998] flex flex-col items-end transition-all duration-300"
         style={{ bottom: `${bottomPosition}px` }}
       >
         {/* Sapaan */}
@@ -368,7 +453,7 @@ export default function FloatingMenu() {
 
                         {callCenters.map((option, index) => (
                           <motion.button
-                            key={option.id}
+                            key={`${option.id}-${option.icon}-${option.name}`}
                             onClick={() => handleCallServiceSelect(option)}
                             className="w-full px-4 py-3 text-left flex items-center gap-3 text-gray-700 text-sm relative overflow-hidden group"
                             whileHover={{ x: 4 }}
@@ -379,8 +464,8 @@ export default function FloatingMenu() {
                           >
                             <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-indigo-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
-                            <div className="relative z-10 p-2 rounded-full bg-white shadow-sm group-hover:shadow-md transition-all duration-300">
-                              <FaPhone size={12} />
+                            <div className={`relative z-10 p-2 rounded-full bg-white shadow-sm group-hover:shadow-md transition-all duration-300 ${getIconColor(option.icon, option.name, option.type)}`}>
+                              {getIconComponent(option.icon, option.name, option.type)}
                             </div>
 
                             <div className="relative z-10 flex-1">
@@ -393,7 +478,7 @@ export default function FloatingMenu() {
                             </div>
 
                             <div className="relative z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                              <FaPhone size={10} className="text-blue-500" />
+                              {getIconComponent(option.icon, option.name, option.type)}
                             </div>
                           </motion.button>
                         ))}
@@ -462,7 +547,7 @@ export default function FloatingMenu() {
 
                         {whatsAppContacts.map((option, index) => (
                           <motion.button
-                            key={option.id}
+                            key={`${option.id}-${option.icon}-${option.name}`}
                             onClick={() => handleWhatsAppServiceSelect(option)}
                             className="w-full px-4 py-3 text-left flex items-center gap-3 text-gray-700 text-sm relative overflow-hidden group"
                             whileHover={{ x: 4 }}
@@ -473,8 +558,8 @@ export default function FloatingMenu() {
                           >
                             <div className="absolute inset-0 bg-gradient-to-r from-green-50 to-emerald-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
-                            <div className="relative z-10 p-2 rounded-full bg-white shadow-sm group-hover:shadow-md transition-all duration-300">
-                              <FaWhatsapp size={12} className="text-green-500" />
+                            <div className={`relative z-10 p-2 rounded-full bg-white shadow-sm group-hover:shadow-md transition-all duration-300 ${getIconColor(option.icon, option.name, option.type)}`}>
+                              {getIconComponent(option.icon, option.name, option.type)}
                             </div>
 
                             <div className="relative z-10 flex-1">
@@ -487,7 +572,7 @@ export default function FloatingMenu() {
                             </div>
 
                             <div className="relative z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                              <FaWhatsapp size={10} className="text-green-500" />
+                              {getIconComponent(option.icon, option.name, option.type)}
                             </div>
                           </motion.button>
                         ))}
