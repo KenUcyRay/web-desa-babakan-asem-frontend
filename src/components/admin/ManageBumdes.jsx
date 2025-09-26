@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ProductApi } from "../../libs/api/ProductApi";
 import { CategoryApi } from "../../libs/api/CategoryApi";
+import { getAuthHeaders } from "../../libs/api/authHelpers";
 import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 import { Helper } from "../../utils/Helper";
 import Pagination from "../ui/Pagination";

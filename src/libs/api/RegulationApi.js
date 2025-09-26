@@ -1,4 +1,5 @@
 // src/libs/api/RegulationApi.js
+import { getAuthHeadersFormData } from './authHelpers';
 const BASE_URL = import.meta.env.VITE_NEW_BASE_URL || "http://localhost:3001/api";
 const SERVER_URL = import.meta.env.VITE_NEW_BASE_URL || "http://localhost:3001";
 
@@ -52,6 +53,8 @@ export const RegulationApi = {
       const response = await fetch(`${BASE_URL}/admin/regulations`, {
         method: "POST",
         body: formData,
+        credentials: 'include',
+        headers: getAuthHeadersFormData('id'),
       });
       const result = await response.json();
       if (!response.ok) {
@@ -68,8 +71,10 @@ export const RegulationApi = {
   update: async (id, formData) => {
     try {
       const response = await fetch(`${BASE_URL}/admin/regulations/${id}`, {
-        method: "PUT",
+        method: "PATCH",
         body: formData,
+        credentials: 'include',
+        headers: getAuthHeadersFormData('id'),
       });
       const result = await response.json();
       if (!response.ok) {
@@ -87,6 +92,8 @@ export const RegulationApi = {
     try {
       const response = await fetch(`${BASE_URL}/admin/regulations/${id}`, {
         method: "DELETE",
+        credentials: 'include',
+        headers: getAuthHeadersFormData('id'),
       });
       const result = await response.json();
       if (!response.ok) {

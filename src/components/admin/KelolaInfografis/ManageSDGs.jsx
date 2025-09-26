@@ -21,6 +21,7 @@ import {
 import { InfografisApi } from "../../../libs/api/InfografisApi";
 import { alertError, alertSuccess } from "../../../libs/alert";
 import { Helper } from "../../../utils/Helper";
+import { getAuthHeaders } from "../../../libs/api/authHelpers";
 
 const iconList = [
   <FaHeartbeat />,
@@ -112,11 +113,8 @@ export default function ManageSDGs() {
         // Create new SDG
         res = await fetch(`${import.meta.env.VITE_NEW_BASE_URL || 'http://localhost:4000/api'}/admin/sdgs`, {
           method: 'POST',
-          credentials: 'include',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          },
+          credentials: "include",
+          headers: getAuthHeaders(i18n.language),
           body: JSON.stringify({
             name: currentItem.name,
             progress: parseInt(progressBaru)
@@ -259,3 +257,4 @@ export default function ManageSDGs() {
     </div>
   );
 }
+

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { alertConfirm, alertSuccess } from "../../libs/alert";
 import { Helper } from "../../utils/Helper";
+import { getAuthHeaders, getAuthHeadersFormData } from "../../libs/api/authHelpers";
 import Pagination from "../ui/Pagination";
 import {
   FaPlus,
@@ -40,6 +41,7 @@ export default function ManagePrestasi() {
           import.meta.env.VITE_NEW_BASE_URL
         }/village-achievements?page=${currentPage}&per_page=${itemsPerPage}`,
         {
+          headers: getAuthHeaders("id")
         }
       );
       const json = await response.json();
@@ -86,6 +88,7 @@ export default function ManagePrestasi() {
         }/admin/village-achievements/${editingId}`,
         {
           method: "PATCH",
+          headers: getAuthHeadersFormData("id"),
           body: formData,
         }
       );
@@ -100,6 +103,7 @@ export default function ManagePrestasi() {
         `${import.meta.env.VITE_NEW_BASE_URL}/admin/village-achievements`,
         {
           method: "POST",
+          headers: getAuthHeadersFormData("id"),
           body: formData,
         }
       );
@@ -120,6 +124,7 @@ export default function ManagePrestasi() {
         `${import.meta.env.VITE_NEW_BASE_URL}/admin/village-achievements/${id}`,
         {
           method: "DELETE",
+          headers: getAuthHeaders("id")
         }
       );
       if (!response.ok) {

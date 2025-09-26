@@ -1,9 +1,11 @@
+import { getAuthHeaders } from './authHelpers';
+
 export class CallCenterApi {
   static async get(page = 1, limit = 10) {
     try {
       const response = await fetch(
         `${import.meta.env.VITE_NEW_BASE_URL}/admin/callcenters?page=${page}&limit=${limit}`,
-        { method: "GET", headers: { "Content-Type": "application/json", Accept: "application/json" } }
+        { method: "GET", credentials: "include", headers: getAuthHeaders('id') }
       );
       const body = await response.json();
       if (!response.ok) throw new Error(body.message || body.error || "Failed to fetch call centers");
@@ -18,7 +20,7 @@ export class CallCenterApi {
     try {
       const response = await fetch(
         `${import.meta.env.VITE_NEW_BASE_URL}/admin/callcenters`,
-        { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify(data) }
+        { method: "POST", credentials: "include", headers: getAuthHeaders('id'), body: JSON.stringify(data) }
       );
       const body = await response.json();
       if (!response.ok) throw new Error(body.message || body.error || "Failed to create call center");
@@ -31,10 +33,20 @@ export class CallCenterApi {
 
   static async update(id, data) {
     try {
-      const response = await fetch(
+      // Try PATCH first
+      let response = await fetch(
         `${import.meta.env.VITE_NEW_BASE_URL}/admin/callcenters/${id}`,
-        { method: "PUT", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify(data) }
+        { method: "PATCH", credentials: "include", headers: getAuthHeaders('id'), body: JSON.stringify(data) }
       );
+
+      // If backend doesn't support PATCH, retry with PUT
+      if (response.status === 404 || response.status === 405) {
+        response = await fetch(
+          `${import.meta.env.VITE_NEW_BASE_URL}/admin/callcenters/${id}`,
+          { method: "PUT", credentials: "include", headers: getAuthHeaders('id'), body: JSON.stringify(data) }
+        );
+      }
+
       const body = await response.json();
       if (!response.ok) throw new Error(body.message || body.error || "Failed to update call center");
       return body;
@@ -48,7 +60,7 @@ export class CallCenterApi {
     try {
       const response = await fetch(
         `${import.meta.env.VITE_NEW_BASE_URL}/admin/callcenters/${id}`,
-        { method: "DELETE", headers: { "Content-Type": "application/json", Accept: "application/json" } }
+        { method: "DELETE", credentials: "include", headers: getAuthHeaders('id') }
       );
       if (!response.ok) {
         let errorBody = "Failed to delete call center";

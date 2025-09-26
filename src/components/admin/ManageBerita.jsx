@@ -299,7 +299,7 @@ export default function ManageBerita() {
                 </>
               ) : (
                 <>
-                  <FaPlus /> Simpan Berita)
+                  <FaPlus /> Simpan Berita
                 </>
               )}
             </button>

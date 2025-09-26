@@ -12,6 +12,7 @@ export class AdministrasiApi {
   }
 
   static async getPengantar(query = "", language) {
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
     return fetch(`${import.meta.env.VITE_NEW_BASE_URL}/admin/administrations`, {
       method: "GET",
       credentials: "include",
@@ -19,11 +20,13 @@ export class AdministrasiApi {
         "Content-Type": "application/json",
         Accept: "application/json",
         "Accept-Language": language,
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
     });
   }
 
   static async updatePengantar(id, language) {
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
     return fetch(
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/administrations/${id}`,
       {
@@ -33,6 +36,7 @@ export class AdministrasiApi {
           "Content-Type": "application/json",
           Accept: "application/json",
           "Accept-Language": language,
+          ...(token && { Authorization: `Bearer ${token}` }),
         },
       }
     );

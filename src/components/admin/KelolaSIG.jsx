@@ -16,9 +16,11 @@ import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 import ColorPicker from "../ui/ColorPicker";
 import EditableMap from "../ui/EditableMap";
 import { MapApi } from "../../libs/api/MapApi";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function KelolaSIG() {
   const { i18n } = useTranslation();
+  const { profile, logout } = useAuth();
   const [activeTab, setActiveTab] = useState("polygon");
   const [selectedColor, setSelectedColor] = useState("#3B82F6");
   const [polygonData, setPolygonData] = useState([]);
@@ -77,10 +79,14 @@ export default function KelolaSIG() {
     },
   ];
 
-  // Load data on mount
+  // Check user role on mount
   useEffect(() => {
+    if (profile && profile.role !== 'ADMIN') {
+      alertError('Hanya admin yang bisa mengelola peta');
+      return;
+    }
     loadMapData();
-  }, []);
+  }, [profile]);
 
   const loadMapData = async () => {
     try {
@@ -248,6 +254,13 @@ export default function KelolaSIG() {
   // Save handlers - FIXED
   const handleSavePolygon = async () => {
     if (isSaving) return;
+    
+    // Check user role
+    if (!profile || profile.role !== 'ADMIN') {
+      alertError('Hanya admin yang bisa membuat peta');
+      return;
+    }
+    
     if (
       !polygonForm.name ||
       !polygonForm.description ||
@@ -294,6 +307,14 @@ export default function KelolaSIG() {
       alertSuccess("Polygon berhasil disimpan!");
     } catch (error) {
       console.error("Save polygon error:", error);
+      
+      // Handle 401 error specifically
+      if (error.message.includes('401') || error.message.includes('Unauthorized')) {
+        alertError('Sesi Anda telah berakhir atau Anda tidak memiliki akses');
+        logout();
+        return;
+      }
+      
       alertError(error.message || "Terjadi kesalahan saat menyimpan polygon");
     } finally {
       setIsSaving(false);
@@ -302,6 +323,13 @@ export default function KelolaSIG() {
 
   const handleSaveMarker = async () => {
     if (isSaving) return;
+    
+    // Check user role
+    if (!profile || profile.role !== 'ADMIN') {
+      alertError('Hanya admin yang bisa membuat peta');
+      return;
+    }
+    
     if (
       !markerForm.name ||
       !markerForm.coordinates.length ||
@@ -353,6 +381,14 @@ export default function KelolaSIG() {
       alertSuccess("Data bencana berhasil disimpan!");
     } catch (error) {
       console.error("Save bencana error:", error);
+      
+      // Handle 401 error specifically
+      if (error.message.includes('401') || error.message.includes('Unauthorized')) {
+        alertError('Sesi Anda telah berakhir atau Anda tidak memiliki akses');
+        logout();
+        return;
+      }
+      
       alertError(
         error.message || "Terjadi kesalahan saat menyimpan data bencana"
       );
@@ -383,6 +419,7 @@ export default function KelolaSIG() {
         year: editingItem.year || new Date().getFullYear(),
         coordinates: polygonForm.coordinates,
         color: polygonForm.color,
+        area: polygonForm.area,
       };
 
       const result = await MapApi.update(
@@ -410,6 +447,14 @@ export default function KelolaSIG() {
       alertSuccess("Polygon berhasil diupdate!");
     } catch (error) {
       console.error("Update error:", error);
+      
+      // Handle 401 error specifically
+      if (error.message.includes('401') || error.message.includes('Unauthorized')) {
+        alertError('Sesi Anda telah berakhir atau Anda tidak memiliki akses');
+        logout();
+        return;
+      }
+      
       alertError(error.message || "Terjadi kesalahan saat mengupdate polygon");
     } finally {
       setIsSaving(false);
@@ -502,6 +547,13 @@ export default function KelolaSIG() {
       await loadMapData();
       alertSuccess("Polygon berhasil dihapus!");
     } catch (error) {
+      // Handle 401 error specifically
+      if (error.message.includes('401') || error.message.includes('Unauthorized')) {
+        alertError('Sesi Anda telah berakhir atau Anda tidak memiliki akses');
+        logout();
+        return;
+      }
+      
       alertError(error.message || "Gagal menghapus polygon");
     }
   };
@@ -533,6 +585,13 @@ export default function KelolaSIG() {
       await loadMapData();
       alertSuccess("Data bencana berhasil dihapus!");
     } catch (error) {
+      // Handle 401 error specifically
+      if (error.message.includes('401') || error.message.includes('Unauthorized')) {
+        alertError('Sesi Anda telah berakhir atau Anda tidak memiliki akses');
+        logout();
+        return;
+      }
+      
       alertError(error.message || "Gagal menghapus data bencana");
     }
   };

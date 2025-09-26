@@ -54,8 +54,8 @@ export default function ManageRegulasi() {
       await alertError("Tahun tidak valid");
       return;
     }
-    if (!editingId && !selectedFile) {
-      await alertError("File PDF harus dipilih untuk regulasi baru");
+    if (!selectedFile) {
+      await alertError("File PDF harus dipilih");
       return;
     }
 
@@ -64,19 +64,14 @@ export default function ManageRegulasi() {
       const data = new FormData();
       data.append("title", formData.title.trim());
       data.append("year", String(formData.year));
-      
-      if (selectedFile) {
-        data.append("file", selectedFile);
-      }
+      data.append("file", selectedFile);
 
-      const response = editingId
-        ? await RegulationApi.update(editingId, data)
-        : await RegulationApi.create(data);
+      const response = await RegulationApi.create(data);
 
       if (response.success) {
         await fetchRegulations();
         resetForm();
-        await alertSuccess(editingId ? "Regulasi berhasil diperbarui" : "Regulasi berhasil ditambahkan");
+        await alertSuccess("Regulasi berhasil ditambahkan");
       } else {
         console.error("Operation failed:", response.errors);
         await alertError("Operasi gagal: " + response.errors);
@@ -89,15 +84,7 @@ export default function ManageRegulasi() {
     }
   };
 
-  const handleEdit = (regulation) => {
-    setEditingId(regulation.id);
-    setFormData({ 
-      title: regulation.title, 
-      year: regulation.year 
-    });
-    setSelectedFile(null);
-    setShowForm(true);
-  };
+
 
   const handleDelete = async (id, title) => {
     const confirmed = await alertConfirm(`Apakah Anda yakin ingin menghapus regulasi "${title}"?`);
@@ -197,7 +184,7 @@ export default function ManageRegulasi() {
           >
             <div className="flex justify-between items-center mb-3 sm:mb-5">
               <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
-                {editingId ? "Edit Regulasi" : "Tambah Regulasi Baru"}
+                Tambah Regulasi Baru
               </h2>
               <button
                 onClick={resetForm}
@@ -243,7 +230,7 @@ export default function ManageRegulasi() {
                 <div className="space-y-3 sm:space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">
-                      File PDF {!editingId && "*"}
+                      File PDF *
                     </label>
                     <div className="border-2 border-dashed border-gray-300 rounded-xl p-4 sm:p-6 hover:border-emerald-400 transition-colors">
                       <input
@@ -272,7 +259,7 @@ export default function ManageRegulasi() {
                   className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2.5 sm:px-6 sm:py-3 rounded-xl shadow-md transition disabled:opacity-50 disabled:cursor-not-allowed order-1 sm:order-none"
                 >
                   <FaSave />
-                  {uploading ? "Memproses..." : editingId ? "Update Regulasi" : "Simpan Regulasi"}
+                  {uploading ? "Memproses..." : "Simpan Regulasi"}
                 </button>
                 <button
                   type="button"
@@ -386,13 +373,7 @@ export default function ManageRegulasi() {
                           >
                             <FaDownload size={16} />
                           </button>
-                          <button
-                            onClick={() => handleEdit(regulation)}
-                            className="text-yellow-600 hover:text-yellow-900 transition-colors"
-                            title="Edit"
-                          >
-                            <FaEdit size={16} />
-                          </button>
+
                           <button
                             onClick={() => handleDelete(regulation.id, regulation.title)}
                             className="text-red-600 hover:text-red-900 transition-colors"
@@ -447,13 +428,7 @@ export default function ManageRegulasi() {
                     >
                       <FaDownload size={16} />
                     </button>
-                    <button
-                      onClick={() => handleEdit(regulation)}
-                      className="p-1.5 text-yellow-600 hover:bg-yellow-50 rounded-full transition"
-                      title="Edit"
-                    >
-                      <FaEdit size={16} />
-                    </button>
+
                     <button
                       onClick={() => handleDelete(regulation.id, regulation.title)}
                       className="p-1.5 text-red-600 hover:bg-red-50 rounded-full transition"

@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
+import { Helper } from "../../utils/Helper";
+import { getAuthHeaders } from "../../libs/api/authHelpers";
 import {
   FaEdit,
   FaTrash,
@@ -111,30 +113,38 @@ const ManageProgram = () => {
   // Fetch program kerja dari API
   const fetchProgramKerja = async () => {
     setLoading(true);
-    const response = await fetch(
-      `${import.meta.env.VITE_NEW_BASE_URL}/village-work-programs`
-    );
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_NEW_BASE_URL}/village-work-programs`,
+        {
+          headers: getAuthHeaders("id")
+        }
+      );
 
-    if (!response.ok) {
-      Helper.errorResponseHandler(await response.json());
+      if (!response.ok) {
+        await Helper.errorResponseHandler(await response.json());
+        setLoading(false);
+        return;
+      }
+
+      const data = await response.json();
+      // Transform API data ke format UI
+
+      const transformedData = (data || []).map((program) => ({
+        id: program.id,
+        nama: program.description,
+        tanggal: program.date ? program.date.split("T")[0] : "",
+        budget: program.budget_amount || 0,
+        status: mapStatusFromApi(program.status),
+        justifikasi: program.justification || "",
+      }));
+
+      setProgramKerja(transformedData);
+    } catch (error) {
+      await Helper.errorResponseHandler(error);
+    } finally {
       setLoading(false);
-      return;
     }
-
-    const data = await response.json();
-    // Transform API data ke format UI
-
-    const transformedData = (data || []).map((program) => ({
-      id: program.id,
-      nama: program.description,
-      tanggal: program.date ? program.date.split("T")[0] : "",
-      budget: program.budget_amount || 0,
-      status: mapStatusFromApi(program.status),
-      justifikasi: program.justification || "",
-    }));
-
-    setProgramKerja(transformedData);
-    setLoading(false);
   };
 
   useEffect(() => {
@@ -184,11 +194,12 @@ const ManageProgram = () => {
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/village-work-programs/${id}`,
       {
         method: "DELETE",
+        headers: getAuthHeaders("id")
       }
     );
 
     if (!response.ok) {
-      Helper.errorResponseHandler(await response.json());
+      await Helper.errorResponseHandler(await response.json());
       return;
     }
 
@@ -215,9 +226,7 @@ const ManageProgram = () => {
         }/admin/village-work-programs/${editingId}`,
         {
           method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: getAuthHeaders("id"),
           body: JSON.stringify(payload),
         }
       );
@@ -227,16 +236,14 @@ const ManageProgram = () => {
         `${import.meta.env.VITE_NEW_BASE_URL}/admin/village-work-programs`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: getAuthHeaders("id"),
           body: JSON.stringify(payload),
         }
       );
     }
 
     if (!response.ok) {
-      Helper.errorResponseHandler(await response.json());
+      await Helper.errorResponseHandler(await response.json());
       return;
     }
 

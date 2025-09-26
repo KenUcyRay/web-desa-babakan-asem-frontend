@@ -24,29 +24,36 @@ export class MemberApi {
     formData.append("profile_photo", data.profile_photo);
     formData.append("is_term", data.is_term);
     formData.append("important_level", data.important_level);
+    
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
     return await fetch(
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/organizations/members`,
       {
         method: "POST",
         body: formData,
+        credentials: "include",
         headers: {
           "Accept-Language": language,
+          ...(token && { Authorization: `Bearer ${token}` }),
         },
       }
     );
   }
 
   static async getAllMembers(type, page = 1, limit = 10, language) {
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
     return await fetch(
       `${
         import.meta.env.VITE_NEW_BASE_URL
       }/admin/organizations/members?organizationType=${type}&page=${page}&limit=${limit}`,
       {
         method: "GET",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
           "Accept-Language": language,
+          ...(token && { Authorization: `Bearer ${token}` }),
         },
       }
     );
@@ -63,26 +70,32 @@ export class MemberApi {
     formData.append("is_term", data.is_term);
     formData.append("important_level", data.important_level) ?? undefined;
 
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
     return await fetch(
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/organizations/members/${id}`,
       {
         method: "PATCH",
         body: formData,
+        credentials: "include",
         headers: {
           "Accept-Language": language,
+          ...(token && { Authorization: `Bearer ${token}` }),
         },
       }
     );
   }
   static async deleteMember(id, language) {
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
     return await fetch(
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/organizations/members/${id}`,
       {
         method: "DELETE",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
           "Accept-Language": language,
+          ...(token && { Authorization: `Bearer ${token}` }),
         },
       }
     );

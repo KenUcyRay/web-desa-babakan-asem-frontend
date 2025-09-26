@@ -23,6 +23,7 @@ import {
   FaMapMarkerAlt,
   FaExclamationTriangle, // Ikon baru untuk informasi darurat
   FaFileAlt,
+  FaShareAlt, // Ikon untuk kelola kontak & lokasi
 } from "react-icons/fa";
 import { RiCustomerService2Fill } from "react-icons/ri";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
@@ -67,7 +68,6 @@ export default function AdminSidebar({ isOpen, onClose }) {
       setCurrentTime(new Date());
     }, 1000);
 
-    // TODO: Fetch emergency data dari API
     const fetchEmergencyData = async () => {
       try {
         const response = await EmergencyApi.count();
@@ -200,6 +200,11 @@ export default function AdminSidebar({ isOpen, onClose }) {
       to: "/admin/manage-administrasi",
       label: "Administrasi",
       icon: <FaClipboardList />,
+    },
+    {
+      to: "/admin/manage-sosmed",
+      label: "Kelola Kontak & Lokasi",
+      icon: <FaShareAlt />,
     },
   ];
 

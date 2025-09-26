@@ -78,6 +78,7 @@ import ManageCall from "./components/admin/ManageCall";
 import ManageProgram from "./components/admin/ManageProgram";
 import ManageApb from "./components/admin/ManageApb";
 import ManageRegulasi from "./components/admin/ManageRegulasi";
+import ManageSosmed from "./components/admin/ManageSosmed";
 import KelolaSIG from "./components/admin/KelolaSIG";
 
 // Pengaturan Admin Organisasi
@@ -206,6 +207,7 @@ function LayoutAdmin() {
         <Route path="manage-program" element={<ManageProgram />} />
         <Route path="manage-apb" element={<ManageApb />} />
         <Route path="manage-regulasi" element={<ManageRegulasi />} />
+        <Route path="manage-sosmed" element={<ManageSosmed />} />
         <Route path="kelola-sig" element={<KelolaSIG />} />
         <Route path="manage-call" element={<ManageCall />} />
 

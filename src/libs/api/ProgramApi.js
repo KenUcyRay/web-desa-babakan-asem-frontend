@@ -1,11 +1,9 @@
+import { getAuthHeaders, getAuthHeadersFormData, getPublicHeaders } from './authHelpers';
+
 export class ProgramApi {
   static async getPrograms(language) {
     return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/programs`, {
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "Accept-Language": language,
-      },
+      headers: getPublicHeaders(language),
     });
   }
   static async deleteProgram(id, language) {
@@ -13,11 +11,8 @@ export class ProgramApi {
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/programs/${id}`,
       {
         method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          "Accept-Language": language,
-        },
+        credentials: "include",
+        headers: getAuthHeaders(language),
       }
     );
   }
@@ -30,9 +25,8 @@ export class ProgramApi {
     return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/admin/programs/`, {
       method: "POST",
       body: formData,
-      headers: {
-        "Accept-Language": language,
-      },
+      credentials: "include",
+      headers: getAuthHeadersFormData(language),
     });
   }
 
@@ -48,9 +42,8 @@ export class ProgramApi {
       {
         method: "PATCH",
         body: formData,
-        headers: {
-          "Accept-Language": language,
-        },
+        credentials: "include",
+        headers: getAuthHeadersFormData(language),
       }
     );
   }

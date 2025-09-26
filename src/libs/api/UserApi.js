@@ -1,3 +1,19 @@
+// Helper function to get auth headers
+const getAuthHeaders = (language) => {
+  const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+  const headers = {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+    "Accept-Language": language,
+  };
+  
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+  
+  return headers;
+};
+
 export class UserApi {
   static async register(body, language) {
     return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/users/register`, {
@@ -9,8 +25,8 @@ export class UserApi {
       },
       body: JSON.stringify({
         name: body.name,
-        email: body.email === "" ? undefined : body.email,
-        phone_number: body.phone === "" ? undefined : body.phone,
+        email: body.email && body.email !== "" ? body.email : undefined,
+        phone_number: body.phone && body.phone !== "" ? body.phone : undefined,
         password: body.password,
         confirm_password: body.confirmPassword,
         remember_me: body.rememberMe,
@@ -27,8 +43,8 @@ export class UserApi {
         "Accept-Language": language,
       },
       body: JSON.stringify({
-        email: body.email === "" ? undefined : body.email,
-        phone_number: body.phone_number === "" ? undefined : body.phone_number,
+        email: body.email && body.email !== "" ? body.email : undefined,
+        phone_number: body.phone_number && body.phone_number !== "" ? body.phone_number : undefined,
         password: body.password,
         remember_me: body.rememberMe,
         recaptcha_token: body.reCaptchaToken,
@@ -38,11 +54,8 @@ export class UserApi {
   static async profile(language) {
     return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/private/users`, {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "Accept-Language": language,
-      },
+      credentials: "include",
+      headers: getAuthHeaders(language),
     });
   }
   static async logout(language) {
@@ -50,11 +63,8 @@ export class UserApi {
       `${import.meta.env.VITE_NEW_BASE_URL}/private/users/logout`,
       {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          "Accept-Language": language,
-        },
+        credentials: "include",
+        headers: getAuthHeaders(language),
       }
     );
   }
@@ -120,11 +130,8 @@ export class UserApi {
   ) {
     return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/private/users`, {
       method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "Accept-Language": language,
-      },
+      credentials: "include",
+      headers: getAuthHeaders(language),
       body: JSON.stringify({
         name: name,
         email: email !== null ? email : undefined,
@@ -138,11 +145,8 @@ export class UserApi {
   static async createAdmin(body, language) {
     return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/admin/users`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "Accept-Language": language,
-      },
+      credentials: "include",
+      headers: getAuthHeaders(language),
       body: JSON.stringify({
         name: body.name,
         email: body.email,
@@ -155,11 +159,8 @@ export class UserApi {
   static async deleteUser(language) {
     return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/private/users/`, {
       method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "Accept-Language": language,
-      },
+      credentials: "include",
+      headers: getAuthHeaders(language),
     });
   }
   static async getAllUsers(page = 1, limit = 10, language) {
@@ -169,11 +170,8 @@ export class UserApi {
       }/admin/users?page=${page}&limit=${limit}`,
       {
         method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          "Accept-Language": language,
-        },
+        credentials: "include",
+        headers: getAuthHeaders(language),
       }
     );
   }
@@ -182,11 +180,8 @@ export class UserApi {
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/users/${userId}`,
       {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          "Accept-Language": language,
-        },
+        credentials: "include",
+        headers: getAuthHeaders(language),
         body: JSON.stringify({
           role: role,
         }),

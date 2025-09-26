@@ -1,14 +1,13 @@
+import { getAuthHeaders } from './authHelpers';
+
 export class CategoryApi {
   static async getCategories(language) {
     return await fetch(
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/products/categories`,
       {
         method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          "Accept-Language": language,
-        },
+        credentials: "include",
+        headers: getAuthHeaders(language),
       }
     );
   }
@@ -17,11 +16,8 @@ export class CategoryApi {
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/products/categories`,
       {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          "Accept-Language": language,
-        },
+        credentials: "include",
+        headers: getAuthHeaders(language),
         body: JSON.stringify({ name: name.name }),
       }
     );
@@ -31,11 +27,8 @@ export class CategoryApi {
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/products/categories/${id}`,
       {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          "Accept-Language": language,
-        },
+        credentials: "include",
+        headers: getAuthHeaders(language),
         body: JSON.stringify(name),
       }
     );
@@ -45,11 +38,8 @@ export class CategoryApi {
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/products/categories/${id}`,
       {
         method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          "Accept-Language": language,
-        },
+        credentials: "include",
+        headers: getAuthHeaders(language),
       }
     );
   }

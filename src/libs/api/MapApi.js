@@ -149,14 +149,21 @@ export class MapApi {
   // Get all maps
   static async getAll(language) {
     try {
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+      
+      const headers = {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "Accept-Language": language,
+      };
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      
       const response = await fetch(MAPS_BASE_URL, {
         method: "GET",
-         //  village,
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          "Accept-Language": language,
-        },
+        headers,
       });
       if (!response.ok) throw new Error("Failed to fetch maps");
       return await response.json();
@@ -189,6 +196,8 @@ export class MapApi {
   // Create new map - FIXED
   static async create(data, language) {
     try {
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+      
       const formData = new FormData();
       formData.append("type", data.type);
       formData.append("name", data.name);
@@ -209,15 +218,20 @@ export class MapApi {
         formData.append("radius", data.radius.toString());
       }
 
+      const headers = {
+        "Accept-Language": language,
+      };
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const response = await fetch(
         `${import.meta.env.VITE_NEW_BASE_URL}/admin/maps`,
         {
           method: "POST",
-           //  village,
           body: formData,
-          headers: {
-            "Accept-Language": language,
-          },
+          headers,
         }
       );
 
@@ -238,6 +252,8 @@ export class MapApi {
   // Update map - FIXED
   static async update(id, data, language) {
     try {
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+      
       const formData = new FormData();
       formData.append("type", data.type);
       formData.append("name", data.name);
@@ -260,15 +276,20 @@ export class MapApi {
         formData.append("radius", data.radius.toString());
       }
 
+      const headers = {
+        Accept: "application/json",
+        "Accept-Language": language,
+      };
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const response = await fetch(
         `${import.meta.env.VITE_NEW_BASE_URL}/admin/maps/${id}`,
         {
           method: "PATCH",
-           //  village,
-          headers: {
-            Accept: "application/json",
-            "Accept-Language": language,
-          },
+          headers,
           body: formData,
         }
       );
@@ -290,14 +311,21 @@ export class MapApi {
   // Delete map
   static async delete(id, language) {
     try {
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+      
+      const headers = {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "Accept-Language": language,
+      };
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      
       const response = await fetch(`${MAPS_BASE_URL}/${id}`, {
         method: "DELETE",
-         //  village,
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          "Accept-Language": language,
-        },
+        headers,
       });
       if (!response.ok) {
         const errorData = await response

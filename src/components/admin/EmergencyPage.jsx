@@ -8,11 +8,15 @@ import {
   FaArrowLeft,
   FaCheckCircle,
   FaTrash,
+  FaMap,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import Pagination from "../ui/Pagination";
 import { EmergencyApi } from "../../libs/api/EmergencyApi";
 import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
+import EmergencyMap from "./EmergencyMap";
+import EmergencyNotification from "../ui/EmergencyNotification";
+import { initializeSocket, onNewEmergency, onEmergencyUpdated, onEmergencyDeleted, offEmergencyEvents, disconnectSocket } from "../../libs/socket";
 
 export default function EmergencyPage() {
   const navigate = useNavigate();
@@ -23,6 +27,8 @@ export default function EmergencyPage() {
   const itemsPerPage = 5;
   const [totalPages, setTotalPages] = useState(1);
   const [count, setCount] = useState(0);
+  const [showMap, setShowMap] = useState(false);
+  const [newEmergencyNotification, setNewEmergencyNotification] = useState(null);
 
   const fetchEmergencies = async () => {
     try {
@@ -49,6 +55,43 @@ export default function EmergencyPage() {
   useEffect(() => {
     fetchEmergencies();
   }, [currentPage, activeTab]);
+
+  // Socket connection for real-time updates
+  useEffect(() => {
+    try {
+      initializeSocket();
+      
+      // Listen for new emergencies
+      onNewEmergency((emergency) => {
+        console.log("🚨 New emergency notification:", emergency);
+        setNewEmergencyNotification(emergency);
+        
+        // Refresh data if on active tab
+        if (activeTab === "active") {
+          fetchEmergencies();
+        }
+      });
+
+      // Listen for emergency updates
+      onEmergencyUpdated((emergency) => {
+        console.log("✅ Emergency updated:", emergency);
+        fetchEmergencies();
+      });
+
+      // Listen for emergency deletions
+      onEmergencyDeleted((data) => {
+        console.log("🗑️ Emergency deleted:", data.id);
+        fetchEmergencies();
+      });
+    } catch (error) {
+      console.error("Socket setup error:", error);
+    }
+
+    return () => {
+      offEmergencyEvents();
+      disconnectSocket();
+    };
+  }, [activeTab]);
 
   const formatTime = (date) => {
     return new Date(date).toLocaleTimeString("id-ID", {
@@ -129,44 +172,56 @@ export default function EmergencyPage() {
           </div>
         </div>
 
-        {/* Tab Navigation */}
-        <div className="flex mb-6 bg-white rounded-lg shadow p-1">
-          <button
-            onClick={() => {
-              setActiveTab("active");
-              setCurrentPage(1);
-            }}
-            className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-md transition-all ${
-              activeTab === "active"
-                ? "bg-red-500 text-white shadow-md"
-                : "text-gray-600 hover:bg-gray-100"
-            }`}
-          >
-            <FaExclamationTriangle />
-            <span>Butuh Bantuan</span>
-            <span className="bg-white text-red-500 text-xs font-bold px-2 py-1 rounded-full">
-              {count.is_not_handled}
-            </span>
-          </button>
+        {/* Action Buttons */}
+        <div className="flex flex-col md:flex-row justify-between items-stretch md:items-center mb-6 gap-4">
+          <div className="flex bg-white rounded-lg shadow p-1 flex-1">
+            <button
+              onClick={() => {
+                setActiveTab("active");
+                setCurrentPage(1);
+              }}
+              className={`flex-1 flex items-center justify-center gap-1 md:gap-2 px-2 md:px-4 py-2 rounded-md transition-all text-sm md:text-base ${
+                activeTab === "active"
+                  ? "bg-red-500 text-white shadow-md"
+                  : "text-gray-600 hover:bg-gray-100"
+              }`}
+            >
+              <FaExclamationTriangle className="text-sm md:text-base" />
+              <span className="hidden sm:inline">Butuh Bantuan</span>
+              <span className="sm:hidden">Aktif</span>
+              <span className="bg-white text-red-500 text-xs font-bold px-1 md:px-2 py-1 rounded-full">
+                {count.is_not_handled}
+              </span>
+            </button>
 
+            <button
+              onClick={() => {
+                setActiveTab("resolved");
+                setCurrentPage(1);
+              }}
+              className={`flex-1 flex items-center justify-center gap-1 md:gap-2 px-2 md:px-4 py-2 rounded-md transition-all text-sm md:text-base ${
+                activeTab === "resolved"
+                  ? "bg-green-500 text-white shadow-md"
+                  : "text-gray-600 hover:bg-gray-100"
+              }`}
+            >
+              <FaCheckCircle className="text-sm md:text-base" />
+              <span>Tertangani</span>
+              <span className="bg-white text-green-500 text-xs font-bold px-1 md:px-2 py-1 rounded-full">
+                {count.is_handled}
+              </span>
+            </button>
+          </div>
+          
           <button
-            onClick={() => {
-              setActiveTab("resolved");
-              setCurrentPage(1);
-            }}
-            className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-md transition-all ${
-              activeTab === "resolved"
-                ? "bg-green-500 text-white shadow-md"
-                : "text-gray-600 hover:bg-gray-100"
-            }`}
+            onClick={() => setShowMap(true)}
+            className="flex items-center justify-center gap-2 px-4 md:px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-md transition-all font-medium text-sm md:text-base w-full md:w-auto"
           >
-            <FaCheckCircle />
-            <span>Tertangani</span>
-            <span className="bg-white text-green-500 text-xs font-bold px-2 py-1 rounded-full">
-              {count.is_handled}
-            </span>
+            <FaMap className="text-sm md:text-base" />
+            <span>Lihat Map</span>
           </button>
         </div>
+
 
         {/* Daftar Emergency */}
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
@@ -244,6 +299,7 @@ export default function EmergencyPage() {
                             <FaPhone className="text-sm mr-2" />
                             <span className="text-sm">
                               {emergency.phone_number}
+
                             </span>
                           </div>
                         </div>
@@ -323,6 +379,21 @@ export default function EmergencyPage() {
           />
         )}
       </div>
+      
+      {/* Emergency Map Modal */}
+      <EmergencyMap 
+        isOpen={showMap} 
+        onClose={() => setShowMap(false)} 
+      />
+      
+      {/* Emergency Notification */}
+      {newEmergencyNotification && (
+        <EmergencyNotification
+          emergency={newEmergencyNotification}
+          onClose={() => setNewEmergencyNotification(null)}
+          onViewMap={() => setShowMap(true)}
+        />
+      )}
     </div>
   );
 }

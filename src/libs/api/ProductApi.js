@@ -1,3 +1,5 @@
+import { getAuthHeaders, getAuthHeadersFormData, getPublicHeaders } from './authHelpers';
+
 export class ProductApi {
   static async getProducts(page = 1, limit = 10, language) {
     return await fetch(
@@ -6,11 +8,7 @@ export class ProductApi {
       }/products/?page=${page}&limit=${limit}`,
       {
         method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          "Accept-Language": language,
-        },
+        headers: getPublicHeaders(language),
       }
     );
   }
@@ -18,11 +16,7 @@ export class ProductApi {
   static async getDetailProduct(id, language) {
     return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/products/${id}`, {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "Accept-Language": language,
-      },
+      headers: getPublicHeaders(language),
     });
   }
 
@@ -33,12 +27,8 @@ export class ProductApi {
       }/admin/products/me?page=${page}&limit=${limit}`,
       {
         method: "GET",
-         //  village,
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          "Accept-Language": language,
-        },
+        credentials: "include",
+        headers: getAuthHeaders(language),
       }
     );
   }
@@ -57,10 +47,8 @@ export class ProductApi {
       {
         method: "POST",
         body: formData,
-         //  village,
-        headers: {
-          "Accept-Language": language,
-        },
+        credentials: "include",
+        headers: getAuthHeadersFormData(language),
       }
     );
   }
@@ -81,10 +69,8 @@ export class ProductApi {
       {
         method: "PATCH",
         body: formData,
-         //  village,
-        headers: {
-          "Accept-Language": language,
-        },
+        credentials: "include",
+        headers: getAuthHeadersFormData(language),
       }
     );
   }
@@ -96,12 +82,8 @@ export class ProductApi {
       }/admin/products/delete-by-product/${id}`,
       {
         method: "DELETE",
-         //  village,
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          "Accept-Language": language,
-        },
+        credentials: "include",
+        headers: getAuthHeaders(language),
       }
     );
   }
@@ -114,12 +96,7 @@ export class ProductApi {
       }/private/products/rating/${productId}`,
       {
         method: "POST",
-         //  village,
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          "Accept-Language": language,
-        },
+        headers: getAuthHeaders(language),
         body: JSON.stringify({ rating }),
       }
     );
@@ -133,12 +110,7 @@ export class ProductApi {
       }/private/products/rating/${productId}`,
       {
         method: "GET",
-         //  village,
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          "Accept-Language": language,
-        },
+        headers: getAuthHeaders(language),
       }
     );
   }
@@ -150,13 +122,8 @@ export class ProductApi {
         import.meta.env.VITE_NEW_BASE_URL
       }/private/products/rating/${ratingId}`,
       {
-        method: "PUT",
-         //  village,
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          "Accept-Language": language,
-        },
+        method: "PATCH",
+        headers: getAuthHeaders(language),
         body: JSON.stringify({ rating }),
       }
     );
@@ -170,12 +137,7 @@ export class ProductApi {
       }/private/products/rating/${ratingId}`,
       {
         method: "DELETE",
-         //  village,
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          "Accept-Language": language,
-        },
+        headers: getAuthHeaders(language),
       }
     );
   }

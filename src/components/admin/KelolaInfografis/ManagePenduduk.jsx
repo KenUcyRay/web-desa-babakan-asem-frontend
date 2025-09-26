@@ -39,6 +39,7 @@ import {
 } from "recharts";
 import { alertError, alertSuccess } from "../../../libs/alert";
 import { Helper } from "../../../utils/Helper";
+import { getAuthHeaders } from "../../../libs/api/authHelpers";
 
 // Custom Tooltip with values
 const CustomTooltip = ({ active, payload, label }) => {
@@ -239,7 +240,11 @@ export default function ManagePenduduk() {
   // Function untuk fetch data berdasarkan type
   const fetchDataByType = async (type) => {
     try {
-      const response = await fetch(`${baseUrl}/residents?type=${type}`);
+      const response = await fetch(`${baseUrl}/residents?type=${type}`, {
+        method: "GET",
+        credentials: "include",
+        headers: getAuthHeaders("id")
+      });
       if (!response.ok) throw new Error(`Failed to fetch ${type} data`);
       const result = await response.json();
       return result.data || [];
@@ -287,10 +292,8 @@ export default function ManagePenduduk() {
     try {
       const response = await fetch(`${baseUrl}/admin/residents`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
+        credentials: "include",
+        headers: getAuthHeaders("id"),
         body: JSON.stringify({
           type: createFormData.type,
           key: createFormData.key,
@@ -324,10 +327,8 @@ export default function ManagePenduduk() {
         `${baseUrl}/admin/residents/${editingData.id}`,
         {
           method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
+          credentials: "include",
+          headers: getAuthHeaders("id"),
           body: JSON.stringify({ value: jumlah }),
         }
       );

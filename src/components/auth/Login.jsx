@@ -23,7 +23,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [reCaptchaToken, setReCaptchaToken] = useState("");
-  const { profile, setProfile } = useAuth();
+  const { profile, login } = useAuth();
   const { isReady } = useProfile();
   const [showPassword, setShowPassword] = useState(false);
 
@@ -43,28 +43,53 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const body = {
-      email,
-      phone_number: phone,
-      password,
-      rememberMe,
-      reCaptchaToken,
-    };
+    try {
+      const body = {
+        email: loginMethod === "email" ? email : "",
+        phone_number: loginMethod === "phone" ? phone : "",
+        password,
+        rememberMe,
+        reCaptchaToken,
+      };
 
-    const response = await UserApi.login(body, i18n.language);
-
-    const responseBody = await response.json();
-    if (!response.ok) {
-      await Helper.errorResponseHandler(responseBody);
-      if (responseBody.errors.name !== "ZodError") {
-        resetForm();
+      const response = await UserApi.login(body, i18n.language);
+      const responseBody = await response.json();
+      
+      if (!response.ok) {
+        await Helper.errorResponseHandler(responseBody);
+        if (responseBody?.errors?.name !== "ZodError") {
+          resetForm();
+        }
+        return;
       }
-      return;
+      
+      // Success - save token and profile
+      if (responseBody?.data && responseBody?.token) {
+        console.log('🔑 Login success - token:', responseBody.token.substring(0, 20) + '...');
+        console.log('👤 User data:', responseBody.data);
+        
+        resetForm();
+        login(responseBody.data, responseBody.token, rememberMe);
+        
+        // Verify token was saved
+        setTimeout(() => {
+          const savedToken = localStorage.getItem('token') || sessionStorage.getItem('token');
+          console.log('✅ Token saved check:', !!savedToken);
+          if (!savedToken) {
+            console.error('❌ TOKEN NOT SAVED!');
+          }
+        }, 100);
+        
+        await alertSuccess(t("login.success"));
+        navigate("/");
+      } else {
+        await alertError("Login response invalid - missing token or data");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      await alertError("Login failed: " + error.message);
+      resetForm();
     }
-    resetForm();
-    setProfile(responseBody.data);
-    await alertSuccess(t("login.success"));
-    await navigate("/");
   };
 
   useEffect(() => {

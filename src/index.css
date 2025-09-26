@@ -3,3 +3,68 @@
 :root {
   --warna-utama: #1e40af; /* biru dongker */
 }
+
+/* Emergency marker animations */
+.custom-emergency-marker {
+  background: transparent !important;
+  border: none !important;
+}
+
+.emergency-marker {
+  position: relative;
+  width: 40px;
+  height: 40px;
+}
+
+.emergency-pulse {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+  background: rgba(239, 68, 68, 0.3);
+  border-radius: 50%;
+  animation: pulse 1.5s infinite;
+}
+
+.emergency-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 20px;
+  animation: blink 1s infinite;
+  z-index: 10;
+}
+
+@keyframes pulse {
+  0% {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2);
+    opacity: 0;
+  }
+}
+
+@keyframes blink {
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0.3;
+  }
+}
+
+/* Emergency popup styling */
+.emergency-popup .leaflet-popup-content-wrapper {
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.emergency-popup .leaflet-popup-content {
+  margin: 0;
+  padding: 0;
+}

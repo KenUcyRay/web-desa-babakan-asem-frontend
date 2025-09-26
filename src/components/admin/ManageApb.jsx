@@ -14,6 +14,7 @@ import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
 import { alertConfirm, alertSuccess } from "../../libs/alert";
 import { useTranslation } from "react-i18next";
 import { Helper } from "../../utils/Helper";
+import { getAuthHeaders } from "../../libs/api/authHelpers";
 
 const BASE_URL = import.meta.env.VITE_NEW_BASE_URL || "http://localhost:3000";
 
@@ -58,7 +59,9 @@ export default function ManageApb() {
 
   const fetchData = async () => {
     try {
-      const response = await fetch(`${BASE_URL}/apb`);
+      const response = await fetch(`${BASE_URL}/apb`, {
+        headers: getAuthHeaders("id")
+      });
       const result = await response.json();
       const transformedData =
         result.data?.map((item) => ({
@@ -78,9 +81,7 @@ export default function ManageApb() {
     try {
       const response = await fetch(`${BASE_URL}/admin/apb/${editing.id}`, {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: getAuthHeaders("id"),
         body: JSON.stringify({
           bidang: form.key,
           anggaran: parseFloat(form.anggaran) * 1000000,
@@ -98,9 +99,7 @@ export default function ManageApb() {
     try {
       const response = await fetch(`${BASE_URL}/admin/apb`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: getAuthHeaders("id"),
         body: JSON.stringify({
           bidang: addForm.key,
           anggaran: parseFloat(addForm.anggaran) * 1000000,
@@ -124,6 +123,7 @@ export default function ManageApb() {
 
     const response = await fetch(`${BASE_URL}/admin/apb/${id}`, {
       method: "DELETE",
+      headers: getAuthHeaders("id")
     });
 
     if (!response.ok) {

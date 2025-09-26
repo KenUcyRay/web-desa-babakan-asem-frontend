@@ -1,14 +1,12 @@
+import { getAuthHeaders, getAuthHeadersFormData, getPublicHeaders } from './authHelpers';
+
 export class GaleryApi {
   static async getGaleri(page = 1, limit = 9, language) {
     return await fetch(
       `${import.meta.env.VITE_NEW_BASE_URL}/galeri?limit=${limit}&page=${page}`,
       {
         method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          "Accept-Language": language,
-        },
+        headers: getPublicHeaders(language),
       }
     );
   }
@@ -20,9 +18,8 @@ export class GaleryApi {
     return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/admin/galeri`, {
       method: "POST",
       body: formData,
-      headers: {
-        "Accept-Language": language,
-      },
+      credentials: "include",
+      headers: getAuthHeadersFormData(language),
     });
   }
 
@@ -35,9 +32,8 @@ export class GaleryApi {
       {
         method: "PUT",
         body: formData,
-        headers: {
-          "Accept-Language": language,
-        },
+        credentials: "include",
+        headers: getAuthHeadersFormData(language),
       }
     );
   }
@@ -47,11 +43,8 @@ export class GaleryApi {
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/galeri/${id}`,
       {
         method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          "Accept-Language": language,
-        },
+        credentials: "include",
+        headers: getAuthHeaders(language),
       }
     );
   }

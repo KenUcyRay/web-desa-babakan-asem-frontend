@@ -27,10 +27,11 @@ export class AgendaApi {
   }
 
   static async getOwnAgenda(page = 1, limit = 10, type = "", language) {
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
     return await fetch(
       `${
         import.meta.env.VITE_NEW_BASE_URL
-      }/admin/agenda/me?page=${page}&limit=${limit}&type=${type}  `,
+      }/admin/agenda/me?page=${page}&limit=${limit}&type=${type}`,
       {
         method: "GET",
         credentials: "include",
@@ -38,6 +39,7 @@ export class AgendaApi {
           "Content-Type": "application/json",
           Accept: "application/json",
           "Accept-Language": language,
+          ...(token && { Authorization: `Bearer ${token}` }),
         },
       }
     );
@@ -54,6 +56,7 @@ export class AgendaApi {
     formData.append("featured_image", data.featured_image);
     formData.append("type", data.type ?? "REGULAR");
 
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
     return await fetch(
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/agenda/create`,
       {
@@ -62,6 +65,7 @@ export class AgendaApi {
         credentials: "include",
         headers: {
           "Accept-Language": language,
+          ...(token && { Authorization: `Bearer ${token}` }),
         },
       }
     );
@@ -81,6 +85,7 @@ export class AgendaApi {
     formData.append("featured_image", data.featured_image ?? null);
     formData.append("type", data.type ?? "REGULAR" ?? null);
 
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
     return await fetch(
       `${
         import.meta.env.VITE_NEW_BASE_URL
@@ -91,22 +96,26 @@ export class AgendaApi {
         credentials: "include",
         headers: {
           "Accept-Language": language,
+          ...(token && { Authorization: `Bearer ${token}` }),
         },
       }
     );
   }
 
   static async deleteAgenda(id, language) {
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
     return await fetch(
       `${
         import.meta.env.VITE_NEW_BASE_URL
       }/admin/agenda/delete-by-agenda/${id}`,
       {
         method: "DELETE",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
           "Accept-Language": language,
+          ...(token && { Authorization: `Bearer ${token}` }),
         },
       }
     );

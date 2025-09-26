@@ -12,6 +12,7 @@ import {
 import { alertConfirm, alertError, alertSuccess } from "../../../libs/alert";
 import { InfografisApi } from "../../../libs/api/InfografisApi";
 import { Helper } from "../../../utils/Helper";
+import { getAuthHeaders } from "../../../libs/api/authHelpers";
 
 export default function ManageIDM() {
   const { i18n } = useTranslation();
@@ -44,14 +45,10 @@ export default function ManageIDM() {
         value: parseFloat(createDimensiData.value)
       };
       
-
-      
       const response = await fetch(`${import.meta.env.VITE_NEW_BASE_URL || 'http://localhost:4000/api'}/admin/infografis/extra-idm`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
+        credentials: "include",
+        headers: getAuthHeaders(i18n.language),
         body: JSON.stringify(requestBody)
       });
 
@@ -95,10 +92,8 @@ export default function ManageIDM() {
       
       const response = await fetch(`${import.meta.env.VITE_NEW_BASE_URL || 'http://localhost:4000/api'}/admin/infografis/extra-idm`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
+        credentials: "include",
+        headers: getAuthHeaders(i18n.language),
         body: JSON.stringify(requestBody)
       });
 
@@ -176,8 +171,9 @@ export default function ManageIDM() {
   const checkExtraIdmStatus = async () => {
     try {
       const response = await fetch(`${import.meta.env.VITE_NEW_BASE_URL || 'http://localhost:4000/api'}/admin/infografis/extra-idm/status`, {
-
-        headers: { 'Accept': 'application/json' }
+        method: "GET",
+        credentials: "include",
+        headers: getAuthHeaders(i18n.language)
       });
       const result = await response.json();
       if (response.ok) {

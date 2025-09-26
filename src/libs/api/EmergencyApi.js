@@ -1,3 +1,27 @@
+// Helper function to get auth headers
+const getAuthHeaders = (language = 'id') => {
+  const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+  console.log('🔑 EmergencyApi getAuthHeaders:', { hasToken: !!token, tokenLength: token?.length });
+  
+  const headers = {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  };
+  
+  if (language) {
+    headers["Accept-Language"] = language;
+  }
+  
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+    console.log('✅ Authorization header added');
+  } else {
+    console.error('❌ No token found for Authorization header');
+  }
+  
+  return headers;
+};
+
 export class EmergencyApi {
   static async create(data) {
     console.log("[EmergencyApi] create payload:", data);
@@ -6,13 +30,10 @@ export class EmergencyApi {
       const response = await fetch(
         `${import.meta.env.VITE_NEW_BASE_URL}/private/emergencies`,
         {
-          method: "POST",
-          tials: "include",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify(data),
+          method: 'POST',
+          credentials: 'include',
+          headers: getAuthHeaders(),
+          body: JSON.stringify(data)
         }
       );
 
@@ -61,15 +82,11 @@ export class EmergencyApi {
   static async get(page = 1, limit = 10, isHandled = false) {
     try {
       const response = await fetch(
-        `${
-          import.meta.env.VITE_NEW_BASE_URL
-        }/admin/emergencies?page=${page}&limit=${limit}&is_handled=${isHandled}`,
+        `${import.meta.env.VITE_NEW_BASE_URL}/admin/emergencies?page=${page}&limit=${limit}&is_handled=${isHandled}`,
         {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
+          method: 'GET',
+          credentials: 'include',
+          headers: getAuthHeaders()
         }
       );
 
@@ -91,11 +108,9 @@ export class EmergencyApi {
       const response = await fetch(
         `${import.meta.env.VITE_NEW_BASE_URL}/admin/emergencies/${id}`,
         {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
+          method: 'PATCH',
+          credentials: 'include',
+          headers: getAuthHeaders()
         }
       );
 
@@ -117,11 +132,9 @@ export class EmergencyApi {
       const response = await fetch(
         `${import.meta.env.VITE_NEW_BASE_URL}/admin/emergencies/${id}`,
         {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
+          method: 'DELETE',
+          credentials: 'include',
+          headers: getAuthHeaders()
         }
       );
 
@@ -148,11 +161,9 @@ export class EmergencyApi {
       const response = await fetch(
         `${import.meta.env.VITE_NEW_BASE_URL}/admin/emergencies/count`,
         {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
+          method: 'GET',
+          credentials: 'include',
+          headers: getAuthHeaders()
         }
       );
 

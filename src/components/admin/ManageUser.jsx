@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { FaUserPlus, FaUserShield, FaExchangeAlt, FaCog, FaEye, FaEyeSlash } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 import Pagination from "../ui/Pagination";
@@ -35,10 +35,14 @@ export default function ManageUser() {
   const [promoteUserId, setPromoteUserId] = useState("");
   const [promoteToRole, setPromoteToRole] = useState("ADMIN");
   const [openDropdowns, setOpenDropdowns] = useState({});
+  const [dropdownPosition, setDropdownPosition] = useState({});
 
   // State for password visibility
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  // Ref untuk dropdown
+  const dropdownRefs = useRef({});
 
   const fetchUsers = async () => {
     const response = await UserApi.getAllUsers(currentPage, 10, i18n.language);
@@ -53,8 +57,47 @@ export default function ManageUser() {
     fetchUsers();
   }, [currentPage]);
 
+  // Handle click outside dropdown
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      Object.keys(openDropdowns).forEach((userId) => {
+        if (openDropdowns[userId]) {
+          // Check if click is outside both button and floating dropdown
+          const isClickOnButton = dropdownRefs.current[userId]?.contains(event.target);
+          const isClickOnDropdown = event.target.closest(`[data-dropdown-id="${userId}"]`);
+          
+          if (!isClickOnButton && !isClickOnDropdown) {
+            setOpenDropdowns((prev) => ({
+              ...prev,
+              [userId]: false,
+            }));
+          }
+        }
+      });
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [openDropdowns]);
+
   // Toggle dropdown
-  const toggleDropdown = (userId) => {
+  const toggleDropdown = (userId, event) => {
+    if (event) {
+      const rect = event.currentTarget.getBoundingClientRect();
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+      
+      setDropdownPosition({
+        [userId]: {
+          top: rect.bottom + scrollTop + 8,
+          left: rect.right + scrollLeft - 224, // 224px = width dropdown (w-56)
+          right: window.innerWidth - rect.right - scrollLeft
+        }
+      });
+    }
+    
     setOpenDropdowns((prev) => ({
       ...prev,
       [userId]: !prev[userId],
@@ -403,7 +446,7 @@ export default function ManageUser() {
       )}
 
       {/* - Table Desktop */}
-      <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-x-auto hidden md:block">
+      <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-x-auto hidden md:block relative">
         <table className="w-full text-left border-collapse min-w-[700px]">
           <thead className="bg-gradient-to-r from-green-500 to-emerald-600 text-white">
             <tr>
@@ -434,46 +477,16 @@ export default function ManageUser() {
                 </td>
                 <td className="p-4 text-center">
                   {user.role && user.role !== "REGULAR" && (
-                    <div className="relative inline-block">
+                    <div 
+                      ref={(el) => (dropdownRefs.current[user.id] = el)}
+                      className="relative inline-block"
+                    >
                       <button
-                        onClick={() => toggleDropdown(user.id)}
-                        className="px-3 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white shadow-md"
+                        onClick={(e) => toggleDropdown(user.id, e)}
+                        className="px-3 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white shadow-md transition-all duration-200 hover:shadow-lg"
                       >
                         <FaCog />
                       </button>
-
-                      {openDropdowns[user.id] && (
-                        <div className="absolute right-0 mt-1 w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-10">
-                          <div className="py-1">
-                            <div className="px-4 py-2 text-xs text-gray-500 font-medium border-b">
-                              Ubah Role
-                            </div>
-                            {roleOptions
-                              .filter(
-                                (option) =>
-                                  option.value !== "REGULAR" &&
-                                  option.value !== user.role
-                              )
-                              .map((option) => (
-                                <button
-                                  key={option.value}
-                                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                  onClick={() =>
-                                    changeUserRole(user.id, option.value)
-                                  }
-                                >
-                                  Ubah ke {option.label}
-                                </button>
-                              ))}
-                            <button
-                              className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600"
-                              onClick={() => changeUserRole(user.id, "REGULAR")}
-                            >
-                              Jadikan User Biasa
-                            </button>
-                          </div>
-                        </div>
-                      )}
                     </div>
                   )}
                 </td>
@@ -489,6 +502,64 @@ export default function ManageUser() {
           </tbody>
         </table>
       </div>
+
+      {/* Floating Dropdown - Desktop */}
+      {Object.keys(openDropdowns).map((userId) => {
+        if (!openDropdowns[userId] || !dropdownPosition[userId]) return null;
+        
+        const user = users.find(u => u.id === userId);
+        if (!user || user.role === "REGULAR") return null;
+        
+        const position = dropdownPosition[userId];
+        
+        return (
+          <div
+            key={`dropdown-${userId}`}
+            data-dropdown-id={userId}
+            className="fixed w-56 bg-white rounded-xl shadow-2xl border border-gray-200 z-[9999] overflow-hidden"
+            style={{
+              top: `${position.top}px`,
+              left: `${position.left}px`,
+            }}
+          >
+            <div className="py-2">
+              <div className="px-4 py-3 text-sm text-gray-600 font-semibold bg-gray-50 border-b border-gray-100">
+                <FaExchangeAlt className="inline mr-2 text-blue-500" />
+                Ubah Role
+              </div>
+              <div className="max-h-60 overflow-y-auto">
+                {roleOptions
+                  .filter(
+                    (option) =>
+                      option.value !== "REGULAR" &&
+                      option.value !== user.role
+                  )
+                  .map((option) => (
+                    <button
+                      key={option.value}
+                      className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors duration-150 flex items-center gap-2"
+                      onClick={() =>
+                        changeUserRole(user.id, option.value)
+                      }
+                    >
+                      {getRoleIcon(option.value)}
+                      Ubah ke {option.label}
+                    </button>
+                  ))}
+                <div className="border-t border-gray-100 mt-1">
+                  <button
+                    className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors duration-150 flex items-center gap-2"
+                    onClick={() => changeUserRole(user.id, "REGULAR")}
+                  >
+                    <FaUserShield className="text-gray-400" />
+                    Jadikan User Biasa
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })}
 
       {/* - Mobile Card View */}
       <div className="md:hidden grid gap-4">
@@ -507,46 +578,16 @@ export default function ManageUser() {
               </div>
 
               {user.role && user.role !== "REGULAR" && (
-                <div className="relative">
+                <div 
+                  ref={(el) => (dropdownRefs.current[user.id] = el)}
+                  className="relative"
+                >
                   <button
-                    onClick={() => toggleDropdown(user.id)}
-                    className="p-2 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 text-white"
+                    onClick={(e) => toggleDropdown(user.id, e)}
+                    className="p-2 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md transition-all duration-200 hover:shadow-lg"
                   >
                     <FaCog />
                   </button>
-
-                  {openDropdowns[user.id] && (
-                    <div className="absolute right-0 mt-1 w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-10">
-                      <div className="py-1">
-                        <div className="px-4 py-2 text-xs text-gray-500 font-medium border-b">
-                          Ubah Role
-                        </div>
-                        {roleOptions
-                          .filter(
-                            (option) =>
-                              option.value !== "REGULAR" &&
-                              option.value !== user.role
-                          )
-                          .map((option) => (
-                            <button
-                              key={option.value}
-                              className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                              onClick={() =>
-                                changeUserRole(user.id, option.value)
-                              }
-                            >
-                              Ubah ke {option.label}
-                            </button>
-                          ))}
-                        <button
-                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600"
-                          onClick={() => changeUserRole(user.id, "REGULAR")}
-                        >
-                          Jadikan User Biasa
-                        </button>
-                      </div>
-                    </div>
-                  )}
                 </div>
               )}
             </div>
@@ -564,6 +605,64 @@ export default function ManageUser() {
           </p>
         )}
       </div>
+
+      {/* Floating Dropdown - Mobile */}
+      {Object.keys(openDropdowns).map((userId) => {
+        if (!openDropdowns[userId] || !dropdownPosition[userId]) return null;
+        
+        const user = users.find(u => u.id === userId);
+        if (!user || user.role === "REGULAR") return null;
+        
+        const position = dropdownPosition[userId];
+        
+        return (
+          <div
+            key={`mobile-dropdown-${userId}`}
+            data-dropdown-id={userId}
+            className="fixed w-56 bg-white rounded-xl shadow-2xl border border-gray-200 z-[9999] overflow-hidden md:hidden"
+            style={{
+              top: `${position.top}px`,
+              left: `${position.left}px`,
+            }}
+          >
+            <div className="py-2">
+              <div className="px-4 py-3 text-sm text-gray-600 font-semibold bg-gray-50 border-b border-gray-100">
+                <FaExchangeAlt className="inline mr-2 text-blue-500" />
+                Ubah Role
+              </div>
+              <div className="max-h-60 overflow-y-auto">
+                {roleOptions
+                  .filter(
+                    (option) =>
+                      option.value !== "REGULAR" &&
+                      option.value !== user.role
+                  )
+                  .map((option) => (
+                    <button
+                      key={option.value}
+                      className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors duration-150 flex items-center gap-2"
+                      onClick={() =>
+                        changeUserRole(user.id, option.value)
+                      }
+                    >
+                      {getRoleIcon(option.value)}
+                      Ubah ke {option.label}
+                    </button>
+                  ))}
+                <div className="border-t border-gray-100 mt-1">
+                  <button
+                    className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors duration-150 flex items-center gap-2"
+                    onClick={() => changeUserRole(user.id, "REGULAR")}
+                  >
+                    <FaUserShield className="text-gray-400" />
+                    Jadikan User Biasa
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })}
 
       {/* - Pagination */}
       <div className="mt-6">
