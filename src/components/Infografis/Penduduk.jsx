@@ -150,9 +150,7 @@ export default function Penduduk() {
     const iconMappings = {
       GENDER: {
         "laki-laki": <FaMale />,
-        "Laki-laki": <FaMale />,
         perempuan: <FaFemale />,
-        "Perempuan": <FaFemale />,
         male: <FaMale />,
         female: <FaFemale />,
       },

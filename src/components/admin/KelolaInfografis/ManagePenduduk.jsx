@@ -272,7 +272,7 @@ export default function ManagePenduduk() {
 
   const getAvailableKeysForType = (type) => {
     const allKeys = {
-      GENDER: ['Laki-laki', 'Perempuan'],
+      GENDER: ['laki-laki', 'perempuan'],
       PERNIKAHAN: ['menikah', 'belum menikah', 'cerai'],
       AGAMA: ['islam', 'kristen', 'hindu', 'buddha', 'katolik'],
       PENDIDIKAN: ['sd', 'smp', 'sma', 'diploma', 'd3', 's1', 's2', 's3'],
@@ -615,19 +615,19 @@ export default function ManagePenduduk() {
                   onClick={() => handleCreate('GENDER')}
                   className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600"
                 >
-                  + Jenis Kelamin
+                  + Data Berdasarkan Gender
                 </button>
                 <button
                   onClick={() => handleCreate('KEPALA_KELUARGA')}
                   className="px-3 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600"
                 >
-                  + KK
+                  + Data KK Berdasarkan Jumlah Keluarga
                 </button>
                 <button
                   onClick={() => handleCreate('ANAK_ANAK')}
                   className="px-3 py-1 bg-purple-500 text-white rounded text-sm hover:bg-purple-600"
                 >
-                  + Anak
+                  + Data Anak Berdasarkan Jumlah Anak
                 </button>
               </div>
             </div>
@@ -685,7 +685,7 @@ export default function ManagePenduduk() {
             onClick={() => handleCreate('PERKERJAAN')}
             className="px-4 py-2 bg-pink-500 text-white rounded hover:bg-pink-600"
           >
-            + Tambah Data Pekerjaan
+            + Tambah Data Pekerjaan Berdasarkan Pekerjaan
           </button>
         </div>
         {pekerjaanData.length > 0 ? (
@@ -709,7 +709,7 @@ export default function ManagePenduduk() {
             onClick={() => handleCreate('PENDIDIKAN')}
             className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600"
           >
-            + Tambah Data Pendidikan
+            + Tambah Data Pendidikan Berdasarkan Tingkat Pendidikan
           </button>
         </div>
         {pendidikanData.length > 0 ? (
@@ -734,7 +734,7 @@ export default function ManagePenduduk() {
             onClick={() => handleCreate('PERNIKAHAN')}
             className="px-4 py-2 bg-sky-500 text-white rounded hover:bg-sky-600"
           >
-            + Tambah Data Pernikahan
+            + Tambah Data Pernikahan Berdasarkan Status Pernikahan
           </button>
         </div>
         {pernikahanData.length > 0 ? (
@@ -759,7 +759,7 @@ export default function ManagePenduduk() {
             onClick={() => handleCreate('AGAMA')}
             className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
           >
-            + Tambah Data Agama
+            + Tambah Data Agama Berdasarkan Pengikut Agama
           </button>
         </div>
         {agamaData.length > 0 ? (
@@ -785,7 +785,7 @@ export default function ManagePenduduk() {
             onClick={() => handleCreate('USIA')}
             className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
           >
-            + Tambah Data Usia
+            + Tambah Data Usia Berdasarkan Kelompok Usia
           </button>
         </div>
         {usiaData.length > 0 ? (
@@ -810,7 +810,7 @@ export default function ManagePenduduk() {
             onClick={() => handleCreate('DUSUN')}
             className="px-4 py-2 bg-teal-500 text-white rounded hover:bg-teal-600"
           >
-            + Tambah Data Dusun
+            + Tambah Data Dusun Berdasarkan Dusun
           </button>
         </div>
         {dusunData.length > 0 ? (
