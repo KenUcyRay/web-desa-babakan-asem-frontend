@@ -97,10 +97,16 @@ import KarangTarunaLayout from "./components/admin/organisasi/KarangTarunaLayout
 import PengaturanProfil from "./components/admin/settings/PengaturanProfil";
 import AdminLayout from "./components/admin/AdminLayout";
 import StPkk from "./components/organizations/StPkk";
+import NotFound from "./components/pages/NotFound";
 
 // - Profil User
 import Profile from "./components/pages/Profile";
 import ScrollToTop from "./components/layout/ScrollToTop";
+
+// - Protected Route
+import ProtectedRoute from "./components/auth/ProtectedRoute";
+import AuthRedirect from "./components/auth/AuthRedirect";
+import TokenValidator from "./components/auth/TokenValidator";
 
 // - Kelola Infografis Admin
 import ManagePenduduk from "./components/admin/KelolaInfografis/ManagePenduduk";
@@ -146,11 +152,23 @@ function LayoutUmum() {
           <Route path="/sigDesa" element={<SigDesa />} />
 
           {/* - Profil User */}
-          <Route path="/profile" element={<Profile />} />
+          <Route path="/profile" element={
+            <ProtectedRoute allowedRoles={["ADMIN", "PKK", "KARANG_TARUNA", "BPD", "CONTRIBUTOR", "REGULAR"]}>
+              <Profile />
+            </ProtectedRoute>
+          } />
 
           {/* - Auth */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={
+            <AuthRedirect>
+              <Login />
+            </AuthRedirect>
+          } />
+          <Route path="/register" element={
+            <AuthRedirect>
+              <Register />
+            </AuthRedirect>
+          } />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/wait" element={<Wait />} />
           <Route path="/reset-password" element={<ResetPassword />} />
@@ -167,7 +185,8 @@ function LayoutUmum() {
           {/* - Form Administrasi */}
           <Route path="/surat-pengantar" element={<SuratPengantar />} />
           
-          {/* - Admin Login */}
+          {/* - 404 Not Found */}
+          <Route path="*" element={<NotFound />} />
         
         </Routes>
 
@@ -188,7 +207,11 @@ function LayoutUmum() {
 function LayoutAdmin() {
   return (
     <Routes>
-      <Route path="/admin" element={<AdminLayout />}>
+      <Route path="/admin" element={
+        <ProtectedRoute requiredRole="ADMIN">
+          <AdminLayout />
+        </ProtectedRoute>
+      }>
         <Route index element={<AdminDashboard />} />
 
         {/* - Menu Admin */}
@@ -255,7 +278,11 @@ function AppContent() {
     if (pathname === "/pkk/admin" || pathname.startsWith("/pkk/admin/")) {
       return (
         <Routes>
-          <Route path="/pkk/admin" element={<PkkLayout />}>
+          <Route path="/pkk/admin" element={
+            <ProtectedRoute requiredRole="PKK">
+              <PkkLayout />
+            </ProtectedRoute>
+          }>
             <Route index element={<DashboardPkk />} />
             <Route path="profil" element={<PengaturanProfil />} />
           </Route>
@@ -270,7 +297,11 @@ function AppContent() {
     ) {
       return (
         <Routes>
-          <Route path="/karang-taruna/admin" element={<KarangTarunaLayout />}>
+          <Route path="/karang-taruna/admin" element={
+            <ProtectedRoute requiredRole="KARANG_TARUNA">
+              <KarangTarunaLayout />
+            </ProtectedRoute>
+          }>
             <Route index element={<DashboardKarang />} />
             <Route path="profil" element={<PengaturanProfil />} />
           </Route>
@@ -282,7 +313,11 @@ function AppContent() {
     if (pathname === "/bpd/admin" || pathname.startsWith("/bpd/admin/")) {
       return (
         <Routes>
-          <Route path="/bpd/admin" element={<BpdLayout />}>
+          <Route path="/bpd/admin" element={
+            <ProtectedRoute requiredRole="BPD">
+              <BpdLayout />
+            </ProtectedRoute>
+          }>
             <Route index element={<DashboardBpd />} />
             <Route path="profil" element={<PengaturanProfil />} />
           </Route>
@@ -294,7 +329,11 @@ function AppContent() {
     if (pathname === "/contributor" || pathname.startsWith("/contributor/")) {
       return (
         <Routes>
-          <Route path="/contributor" element={<ContributorLayout />}>
+          <Route path="/contributor" element={
+            <ProtectedRoute requiredRole="CONTRIBUTOR">
+              <ContributorLayout />
+            </ProtectedRoute>
+          }>
             <Route index element={<DashboardBerita />} />
             <Route path="profil" element={<PengaturanProfil />} />
           </Route>
@@ -323,35 +362,37 @@ function AppContent() {
 export default function App() {
   return (
     <Router>
-      <ScrollToTop />
-      <AppContent />
+      <TokenValidator>
+        <ScrollToTop />
+        <AppContent />
 
-      {/* ✅ Tambahan Toaster biar bisa dipakai di semua halaman */}
-      <Toaster
-        position="top-right"
-        toastOptions={{
-          style: {
-            background: "#ffffff",
-            color: "#333",
-            padding: "12px 16px",
-            borderRadius: "10px",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-            fontFamily: "Poppins, sans-serif",
-          },
-          success: {
-            iconTheme: {
-              primary: "#22c55e",
-              secondary: "#ffffff",
+        {/* ✅ Tambahan Toaster biar bisa dipakai di semua halaman */}
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            style: {
+              background: "#ffffff",
+              color: "#333",
+              padding: "12px 16px",
+              borderRadius: "10px",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+              fontFamily: "Poppins, sans-serif",
             },
-          },
-          error: {
-            iconTheme: {
-              primary: "#ef4444",
-              secondary: "#ffffff",
+            success: {
+              iconTheme: {
+                primary: "#22c55e",
+                secondary: "#ffffff",
+              },
             },
-          },
-        }}
-      />
+            error: {
+              iconTheme: {
+                primary: "#ef4444",
+                secondary: "#ffffff",
+              },
+            },
+          }}
+        />
+      </TokenValidator>
     </Router>
   );
 }

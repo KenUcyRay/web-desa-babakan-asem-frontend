@@ -430,7 +430,7 @@ export default function ManageAnggota() {
                    shadow hover:shadow-lg transition active:scale-95 cursor-pointer"
                 >
                   <FaImage />
-                  Unggah Gambar
+                  {formData.profile_photo ? "Ganti Gambar" : "Unggah Gambar"}
                 </button>
 
                 <input
@@ -440,6 +440,28 @@ export default function ManageAnggota() {
                   onChange={handleFileChange}
                   className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-200 focus:border-green-500 hidden"
                 />
+                
+                {/* Preview Image */}
+                {formData.profile_photo && (
+                  <div className="mt-3">
+                    <p className="text-sm text-green-600 mb-2">✅ Gambar berhasil dipilih:</p>
+                    <div className="relative inline-block">
+                      <img
+                        src={URL.createObjectURL(formData.profile_photo)}
+                        alt="Preview"
+                        className="w-32 h-32 object-cover rounded-lg border-2 border-green-200"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setFormData(prev => ({ ...prev, profile_photo: null }))}
+                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
+                      >
+                        ×
+                      </button>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">{formData.profile_photo.name}</p>
+                  </div>
+                )}
               </div>
 
               <div className="mb-5">

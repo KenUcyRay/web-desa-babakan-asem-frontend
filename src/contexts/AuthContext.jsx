@@ -11,24 +11,13 @@ export const AuthProvider = ({ children }) => {
   const { i18n } = useTranslation();
 
   const saveToken = (token, rememberMe = false) => {
-    console.log('💾 Saving token:', { hasToken: !!token, rememberMe, tokenLength: token?.length });
-    
-    if (!token) {
-      console.error('❌ Cannot save empty token!');
-      return;
-    }
+    if (!token) return;
     
     if (rememberMe) {
       localStorage.setItem('token', token);
-      console.log('💾 Token saved to localStorage');
     } else {
       sessionStorage.setItem('token', token);
-      console.log('💾 Token saved to sessionStorage');
     }
-    
-    // Verify immediately
-    const saved = getToken();
-    console.log('✅ Verification:', { saved: !!saved, matches: saved === token });
   };
 
   const removeToken = () => {
@@ -42,22 +31,34 @@ export const AuthProvider = ({ children }) => {
 
   const fetchProfile = async () => {
     setIsLoading(true);
+    const token = getToken();
+    
+    if (!token) {
+      setProfile(null);
+      setIsLoading(false);
+      setIsInitialized(true);
+      return;
+    }
+    
     try {
       const response = await UserApi.profile(i18n.language);
+      
       if (!response.ok) {
-        if (response.status === 401) {
-          removeToken();
+        if (response.status === 401 || response.status === 403) {
+          localStorage.removeItem('token');
+          sessionStorage.removeItem('token');
           setProfile(null);
         }
         setIsLoading(false);
         setIsInitialized(true);
         return;
       }
+      
       const responseBody = await response.json();
       setProfile(responseBody.data);
     } catch (error) {
-      console.error('Profile fetch error:', error);
-      removeToken();
+      localStorage.removeItem('token');
+      sessionStorage.removeItem('token');
       setProfile(null);
     } finally {
       setIsLoading(false);
@@ -71,14 +72,29 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    removeToken();
+    // Hapus token dari semua storage
+    localStorage.removeItem('token');
+    sessionStorage.removeItem('token');
+    
+    // Clear semua localStorage dan sessionStorage
+    localStorage.clear();
+    sessionStorage.clear();
+    
+    // Reset profile state
     setProfile(null);
+    setIsInitialized(false);
+    
+    // Force redirect dan reload
+    window.location.replace('/');
   };
 
   useLayoutEffect(() => {
-    if (getToken()) {
+    const token = getToken();
+    
+    if (token) {
       fetchProfile();
     } else {
+      setProfile(null);
       setIsLoading(false);
       setIsInitialized(true);
     }
