@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
 import { alertConfirm, alertSuccess } from "../../libs/alert";
 import { Helper } from "../../utils/Helper";
-import { getAuthHeaders, getAuthHeadersFormData } from "../../libs/api/authHelpers";
+import {
+  getAuthHeaders,
+  getAuthHeadersFormData,
+} from "../../libs/api/authHelpers";
 import Pagination from "../ui/Pagination";
 import {
   FaPlus,
@@ -41,7 +44,7 @@ export default function ManagePrestasi() {
           import.meta.env.VITE_NEW_BASE_URL
         }/village-achievements?page=${currentPage}&per_page=${itemsPerPage}`,
         {
-          headers: getAuthHeaders("id")
+          headers: getAuthHeaders("id"),
         }
       );
       const json = await response.json();
@@ -87,6 +90,7 @@ export default function ManagePrestasi() {
           import.meta.env.VITE_NEW_BASE_URL
         }/admin/village-achievements/${editingId}`,
         {
+          credentials: "include",
           method: "PATCH",
           headers: getAuthHeadersFormData("id"),
           body: formData,
@@ -103,6 +107,7 @@ export default function ManagePrestasi() {
         `${import.meta.env.VITE_NEW_BASE_URL}/admin/village-achievements`,
         {
           method: "POST",
+          credentials: "include",
           headers: getAuthHeadersFormData("id"),
           body: formData,
         }
@@ -123,8 +128,10 @@ export default function ManagePrestasi() {
       const response = await fetch(
         `${import.meta.env.VITE_NEW_BASE_URL}/admin/village-achievements/${id}`,
         {
+          credentials: "include",
+
           method: "DELETE",
-          headers: getAuthHeaders("id")
+          headers: getAuthHeaders("id"),
         }
       );
       if (!response.ok) {

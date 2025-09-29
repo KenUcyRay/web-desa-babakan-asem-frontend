@@ -4,6 +4,7 @@ export class CommentApi {
     return await fetch(
       `${import.meta.env.VITE_NEW_BASE_URL}/private/comments/create/${id}`,
       {
+        credentials: "include",
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -37,6 +38,7 @@ export class CommentApi {
         import.meta.env.VITE_NEW_BASE_URL
       }/private/comments/update/${commentId}`,
       {
+        credentials: "include",
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -57,6 +59,7 @@ export class CommentApi {
         import.meta.env.VITE_NEW_BASE_URL
       }/private/comments/delete/${commentId}`,
       {
+        credentials: "include",
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",

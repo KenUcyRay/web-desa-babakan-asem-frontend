@@ -117,7 +117,7 @@ const ManageProgram = () => {
       const response = await fetch(
         `${import.meta.env.VITE_NEW_BASE_URL}/village-work-programs`,
         {
-          headers: getAuthHeaders("id")
+          headers: getAuthHeaders("id"),
         }
       );
 
@@ -193,8 +193,9 @@ const ManageProgram = () => {
     const response = await fetch(
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/village-work-programs/${id}`,
       {
+        credentials: "include",
         method: "DELETE",
-        headers: getAuthHeaders("id")
+        headers: getAuthHeaders("id"),
       }
     );
 
@@ -225,6 +226,7 @@ const ManageProgram = () => {
           import.meta.env.VITE_NEW_BASE_URL
         }/admin/village-work-programs/${editingId}`,
         {
+          credentials: "include",
           method: "PATCH",
           headers: getAuthHeaders("id"),
           body: JSON.stringify(payload),
@@ -235,6 +237,8 @@ const ManageProgram = () => {
       response = await fetch(
         `${import.meta.env.VITE_NEW_BASE_URL}/admin/village-work-programs`,
         {
+          credentials: "include",
+
           method: "POST",
           headers: getAuthHeaders("id"),
           body: JSON.stringify(payload),
