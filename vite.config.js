@@ -22,6 +22,6 @@ export default defineConfig({
     historyApiFallback: true,
   },
   preview: {
-    allowedHosts: ['https://desababakanasem.web.id'],
-  }
+    allowedHosts: ["desababakanasem.web.id"],
+  },
 });
