@@ -1,4 +1,4 @@
-import { getAuthHeaders } from './authHelpers';
+import { getAuthHeaders } from "./authHelpers";
 
 export class CategoryApi {
   static async getCategories(language) {
@@ -6,7 +6,7 @@ export class CategoryApi {
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/products/categories`,
       {
         method: "GET",
-        credentials: "include",
+
         headers: getAuthHeaders(language),
       }
     );
@@ -16,18 +16,18 @@ export class CategoryApi {
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/products/categories`,
       {
         method: "POST",
-        credentials: "include",
+
         headers: getAuthHeaders(language),
         body: JSON.stringify({ name: name.name }),
       }
     );
   }
-  static async updateCategory(id, name,language) {
+  static async updateCategory(id, name, language) {
     return await fetch(
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/products/categories/${id}`,
       {
         method: "PUT",
-        credentials: "include",
+
         headers: getAuthHeaders(language),
         body: JSON.stringify(name),
       }
@@ -38,7 +38,7 @@ export class CategoryApi {
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/products/categories/${id}`,
       {
         method: "DELETE",
-        credentials: "include",
+
         headers: getAuthHeaders(language),
       }
     );

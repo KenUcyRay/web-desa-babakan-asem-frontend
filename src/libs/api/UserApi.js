@@ -1,16 +1,17 @@
 // Helper function to get auth headers
 const getAuthHeaders = (language) => {
-  const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+  const token =
+    localStorage.getItem("token") || sessionStorage.getItem("token");
   const headers = {
     "Content-Type": "application/json",
     Accept: "application/json",
     "Accept-Language": language,
   };
-  
+
   if (token) {
     headers.Authorization = `Bearer ${token}`;
   }
-  
+
   return headers;
 };
 
@@ -44,7 +45,10 @@ export class UserApi {
       },
       body: JSON.stringify({
         email: body.email && body.email !== "" ? body.email : undefined,
-        phone_number: body.phone_number && body.phone_number !== "" ? body.phone_number : undefined,
+        phone_number:
+          body.phone_number && body.phone_number !== ""
+            ? body.phone_number
+            : undefined,
         password: body.password,
         remember_me: body.rememberMe,
         recaptcha_token: body.reCaptchaToken,
@@ -54,7 +58,7 @@ export class UserApi {
   static async profile(language) {
     return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/private/users`, {
       method: "GET",
-      credentials: "include",
+
       headers: getAuthHeaders(language),
     });
   }
@@ -63,7 +67,7 @@ export class UserApi {
       `${import.meta.env.VITE_NEW_BASE_URL}/private/users/logout`,
       {
         method: "POST",
-        credentials: "include",
+
         headers: getAuthHeaders(language),
       }
     );
@@ -130,7 +134,7 @@ export class UserApi {
   ) {
     return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/private/users`, {
       method: "PATCH",
-      credentials: "include",
+
       headers: getAuthHeaders(language),
       body: JSON.stringify({
         name: name,
@@ -145,7 +149,7 @@ export class UserApi {
   static async createAdmin(body, language) {
     return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/admin/users`, {
       method: "POST",
-      credentials: "include",
+
       headers: getAuthHeaders(language),
       body: JSON.stringify({
         name: body.name,
@@ -159,7 +163,7 @@ export class UserApi {
   static async deleteUser(language) {
     return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/private/users/`, {
       method: "DELETE",
-      credentials: "include",
+
       headers: getAuthHeaders(language),
     });
   }
@@ -170,7 +174,7 @@ export class UserApi {
       }/admin/users?page=${page}&limit=${limit}`,
       {
         method: "GET",
-        credentials: "include",
+
         headers: getAuthHeaders(language),
       }
     );
@@ -180,7 +184,7 @@ export class UserApi {
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/users/${userId}`,
       {
         method: "PATCH",
-        credentials: "include",
+
         headers: getAuthHeaders(language),
         body: JSON.stringify({
           role: role,

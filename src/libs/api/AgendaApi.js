@@ -1,4 +1,8 @@
-import { getAuthHeaders, getAuthHeadersFormData, getPublicHeaders } from './authHelpers';
+import {
+  getAuthHeaders,
+  getAuthHeadersFormData,
+  getPublicHeaders,
+} from "./authHelpers";
 
 export class AgendaApi {
   static async getAgenda(page = 1, limit = 10, type = "", language) {
@@ -27,7 +31,7 @@ export class AgendaApi {
       }/admin/agenda/me?page=${page}&limit=${limit}&type=${type}`,
       {
         method: "GET",
-        credentials: "include",
+
         headers: getAuthHeaders(language),
       }
     );
@@ -49,7 +53,7 @@ export class AgendaApi {
       {
         method: "POST",
         body: formData,
-        credentials: "include",
+
         headers: getAuthHeadersFormData(language),
       }
     );
@@ -76,7 +80,7 @@ export class AgendaApi {
       {
         method: "PATCH",
         body: formData,
-        credentials: "include",
+
         headers: getAuthHeadersFormData(language),
       }
     );
@@ -89,7 +93,7 @@ export class AgendaApi {
       }/admin/agenda/delete-by-agenda/${id}`,
       {
         method: "DELETE",
-        credentials: "include",
+
         headers: getAuthHeaders(language),
       }
     );

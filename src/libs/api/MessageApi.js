@@ -16,12 +16,13 @@ export class MessageApi {
   }
 
   static async get(query = "", language) {
-    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    const token =
+      localStorage.getItem("token") || sessionStorage.getItem("token");
     return await fetch(
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/messages${query}`,
       {
         method: "GET",
-        credentials: "include",
+
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -33,12 +34,13 @@ export class MessageApi {
   }
 
   static async markAsRead(id, language) {
-    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    const token =
+      localStorage.getItem("token") || sessionStorage.getItem("token");
     return await fetch(
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/messages/${id}`,
       {
         method: "PATCH",
-        credentials: "include",
+
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",

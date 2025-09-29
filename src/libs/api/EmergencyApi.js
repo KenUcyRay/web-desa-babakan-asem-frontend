@@ -1,80 +1,90 @@
 // Helper function to get auth headers
-const getAuthHeaders = (language = 'id') => {
-  const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-  console.log('🔑 EmergencyApi getAuthHeaders:', { hasToken: !!token, tokenLength: token?.length });
-  
+const getAuthHeaders = (language = "id") => {
+  const token =
+    localStorage.getItem("token") || sessionStorage.getItem("token");
+  console.log("🔑 EmergencyApi getAuthHeaders:", {
+    hasToken: !!token,
+    tokenLength: token?.length,
+  });
+
   const headers = {
     "Content-Type": "application/json",
     Accept: "application/json",
   };
-  
+
   if (language) {
     headers["Accept-Language"] = language;
   }
-  
+
   if (token) {
     headers.Authorization = `Bearer ${token}`;
-    console.log('✅ Authorization header added');
+    console.log("✅ Authorization header added");
   } else {
-    console.error('❌ No token found for Authorization header');
+    console.error("❌ No token found for Authorization header");
   }
-  
+
   return headers;
 };
 
 export class EmergencyApi {
   static async create(data) {
     console.log("[EmergencyApi] create payload:", data);
-    
+
     try {
       const response = await fetch(
         `${import.meta.env.VITE_NEW_BASE_URL}/private/emergencies`,
         {
-          method: 'POST',
-          credentials: 'include',
+          method: "POST",
+
           headers: getAuthHeaders(),
-          body: JSON.stringify(data)
+          body: JSON.stringify(data),
         }
       );
 
       // Handle different response types
       let body;
       const contentType = response.headers.get("content-type");
-      
+
       if (contentType && contentType.includes("application/json")) {
         body = await response.json();
       } else {
         body = await response.text();
       }
 
-      console.log("[EmergencyApi] response:", { status: response.status, body });
+      console.log("[EmergencyApi] response:", {
+        status: response.status,
+        body,
+      });
 
       if (!response.ok) {
         console.log("[EmergencyApi] create failed:", body);
-        
+
         // Handle different error response formats
         let errorMessage = "Failed to create emergency";
-        
-        if (typeof body === 'object' && body !== null) {
-          errorMessage = body.message || body.error || body.errors || errorMessage;
-        } else if (typeof body === 'string') {
+
+        if (typeof body === "object" && body !== null) {
+          errorMessage =
+            body.message || body.error || body.errors || errorMessage;
+        } else if (typeof body === "string") {
           errorMessage = body;
         }
-        
+
         throw new Error(errorMessage);
       }
 
       console.log("[EmergencyApi] create success:", body);
       return body;
-      
     } catch (error) {
       console.error("[EmergencyApi] create error:", error);
-      
+
       // Network errors
-      if (error.name === 'TypeError' || error.message.includes('Failed to fetch')) {
+      if (
+        error.name === "TypeError" ||
+        error.message.includes("Failed to fetch")
+      ) {
         throw new Error("Network error: Unable to connect to server");
       }
-      
+
       throw error;
     }
   }
@@ -82,18 +92,22 @@ export class EmergencyApi {
   static async get(page = 1, limit = 10, isHandled = false) {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_NEW_BASE_URL}/admin/emergencies?page=${page}&limit=${limit}&is_handled=${isHandled}`,
+        `${
+          import.meta.env.VITE_NEW_BASE_URL
+        }/admin/emergencies?page=${page}&limit=${limit}&is_handled=${isHandled}`,
         {
-          method: 'GET',
-          credentials: 'include',
-          headers: getAuthHeaders()
+          method: "GET",
+
+          headers: getAuthHeaders(),
         }
       );
 
       const body = await response.json();
 
       if (!response.ok) {
-        throw new Error(body.message || body.error || "Failed to fetch emergencies");
+        throw new Error(
+          body.message || body.error || "Failed to fetch emergencies"
+        );
       }
 
       return body;
@@ -108,18 +122,20 @@ export class EmergencyApi {
       const response = await fetch(
         `${import.meta.env.VITE_NEW_BASE_URL}/admin/emergencies/${id}`,
         {
-          method: 'PATCH',
-          credentials: 'include',
-          headers: getAuthHeaders()
+          method: "PATCH",
+
+          headers: getAuthHeaders(),
         }
       );
 
       const body = await response.json();
-      
+
       if (!response.ok) {
-        throw new Error(body.message || body.error || "Failed to update emergency");
+        throw new Error(
+          body.message || body.error || "Failed to update emergency"
+        );
       }
-      
+
       return body;
     } catch (error) {
       console.error("[EmergencyApi] update error:", error);
@@ -132,9 +148,9 @@ export class EmergencyApi {
       const response = await fetch(
         `${import.meta.env.VITE_NEW_BASE_URL}/admin/emergencies/${id}`,
         {
-          method: 'DELETE',
-          credentials: 'include',
-          headers: getAuthHeaders()
+          method: "DELETE",
+
+          headers: getAuthHeaders(),
         }
       );
 
@@ -161,16 +177,18 @@ export class EmergencyApi {
       const response = await fetch(
         `${import.meta.env.VITE_NEW_BASE_URL}/admin/emergencies/count`,
         {
-          method: 'GET',
-          credentials: 'include',
-          headers: getAuthHeaders()
+          method: "GET",
+
+          headers: getAuthHeaders(),
         }
       );
 
       const body = await response.json();
 
       if (!response.ok) {
-        throw new Error(body.message || body.error || "Failed to count emergencies");
+        throw new Error(
+          body.message || body.error || "Failed to count emergencies"
+        );
       }
 
       return body;

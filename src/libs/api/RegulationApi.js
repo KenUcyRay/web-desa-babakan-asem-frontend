@@ -1,6 +1,7 @@
 // src/libs/api/RegulationApi.js
-import { getAuthHeadersFormData } from './authHelpers';
-const BASE_URL = import.meta.env.VITE_NEW_BASE_URL || "http://localhost:3001/api";
+import { getAuthHeadersFormData } from "./authHelpers";
+const BASE_URL =
+  import.meta.env.VITE_NEW_BASE_URL || "http://localhost:3001/api";
 const SERVER_URL = import.meta.env.VITE_NEW_BASE_URL || "http://localhost:3001";
 
 export const RegulationApi = {
@@ -14,7 +15,11 @@ export const RegulationApi = {
       const json = await response.json();
       if (!response.ok) {
         console.error("RegulationApi.getAll error body:", json);
-        return { success: false, data: [], errors: json.errors || json.message || "Failed to fetch regulations" };
+        return {
+          success: false,
+          data: [],
+          errors: json.errors || json.message || "Failed to fetch regulations",
+        };
       }
       // Backend return {success: true, data: [...]}
       return { success: true, data: json.data || json };
@@ -53,13 +58,16 @@ export const RegulationApi = {
       const response = await fetch(`${BASE_URL}/admin/regulations`, {
         method: "POST",
         body: formData,
-        credentials: 'include',
-        headers: getAuthHeadersFormData('id'),
+
+        headers: getAuthHeadersFormData("id"),
       });
       const result = await response.json();
       if (!response.ok) {
         console.error("RegulationApi.create error body:", result);
-        return { success: false, errors: result.errors || result.message || "Upload failed" };
+        return {
+          success: false,
+          errors: result.errors || result.message || "Upload failed",
+        };
       }
       return { success: true, data: result.data || result };
     } catch (error) {
@@ -73,13 +81,16 @@ export const RegulationApi = {
       const response = await fetch(`${BASE_URL}/admin/regulations/${id}`, {
         method: "PATCH",
         body: formData,
-        credentials: 'include',
-        headers: getAuthHeadersFormData('id'),
+
+        headers: getAuthHeadersFormData("id"),
       });
       const result = await response.json();
       if (!response.ok) {
         console.error("RegulationApi.update error body:", result);
-        return { success: false, errors: result.errors || result.message || "Update failed" };
+        return {
+          success: false,
+          errors: result.errors || result.message || "Update failed",
+        };
       }
       return { success: true, data: result.data || result };
     } catch (error) {
@@ -92,13 +103,16 @@ export const RegulationApi = {
     try {
       const response = await fetch(`${BASE_URL}/admin/regulations/${id}`, {
         method: "DELETE",
-        credentials: 'include',
-        headers: getAuthHeadersFormData('id'),
+
+        headers: getAuthHeadersFormData("id"),
       });
       const result = await response.json();
       if (!response.ok) {
         console.error("RegulationApi.delete error body:", result);
-        return { success: false, errors: result.errors || result.message || "Delete failed" };
+        return {
+          success: false,
+          errors: result.errors || result.message || "Delete failed",
+        };
       }
       return { success: true, data: result };
     } catch (error) {

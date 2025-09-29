@@ -108,9 +108,9 @@ export default function ManagePenduduk() {
   const [jumlahBaru, setJumlahBaru] = useState("");
   const [updateTrigger, setUpdateTrigger] = useState(0);
   const [createFormData, setCreateFormData] = useState({
-    type: '',
-    key: '',
-    value: ''
+    type: "",
+    key: "",
+    value: "",
   });
   const [availableKeys, setAvailableKeys] = useState([]);
 
@@ -242,8 +242,8 @@ export default function ManagePenduduk() {
     try {
       const response = await fetch(`${baseUrl}/residents?type=${type}`, {
         method: "GET",
-        credentials: "include",
-        headers: getAuthHeaders("id")
+
+        headers: getAuthHeaders("id"),
       });
       if (!response.ok) throw new Error(`Failed to fetch ${type} data`);
       const result = await response.json();
@@ -265,40 +265,61 @@ export default function ManagePenduduk() {
   };
 
   const handleCreate = (type) => {
-    setCreateFormData({ type, key: '', value: '' });
+    setCreateFormData({ type, key: "", value: "" });
     setAvailableKeys(getAvailableKeysForType(type));
     setShowCreateForm(true);
   };
 
   const getAvailableKeysForType = (type) => {
     const allKeys = {
-      GENDER: ['laki-laki', 'perempuan'],
-      PERNIKAHAN: ['menikah', 'belum menikah', 'cerai'],
-      AGAMA: ['islam', 'kristen', 'hindu', 'buddha', 'katolik'],
-      PENDIDIKAN: ['sd', 'smp', 'sma', 'diploma', 'd3', 's1', 's2', 's3'],
-      PERKERJAAN: ['petani', 'nelayan', 'guru', 'pedagang', 'pegawai', 'wiraswasta', 'pns', 'tni/polri'],
-      USIA: ['0-5 tahun', '6-12 tahun', '13-17 tahun', '18-25 tahun', '26-35 tahun', '36-45 tahun', '46-55 tahun', '56-65 tahun', '65+ tahun'],
-      DUSUN: ['Dusun A', 'Dusun B', 'Dusun C', 'Dusun D'],
-      KEPALA_KELUARGA: ['kepala keluarga'],
-      WAJIB_PILIH: ['wajib pilih'],
-      ANAK_ANAK: ['anak-anak']
+      GENDER: ["laki-laki", "perempuan"],
+      PERNIKAHAN: ["menikah", "belum menikah", "cerai"],
+      AGAMA: ["islam", "kristen", "hindu", "buddha", "katolik"],
+      PENDIDIKAN: ["sd", "smp", "sma", "diploma", "d3", "s1", "s2", "s3"],
+      PERKERJAAN: [
+        "petani",
+        "nelayan",
+        "guru",
+        "pedagang",
+        "pegawai",
+        "wiraswasta",
+        "pns",
+        "tni/polri",
+      ],
+      USIA: [
+        "0-5 tahun",
+        "6-12 tahun",
+        "13-17 tahun",
+        "18-25 tahun",
+        "26-35 tahun",
+        "36-45 tahun",
+        "46-55 tahun",
+        "56-65 tahun",
+        "65+ tahun",
+      ],
+      DUSUN: ["Dusun A", "Dusun B", "Dusun C", "Dusun D"],
+      KEPALA_KELUARGA: ["kepala keluarga"],
+      WAJIB_PILIH: ["wajib pilih"],
+      ANAK_ANAK: ["anak-anak"],
     };
-    
-    const existingKeys = allData.filter(item => item.type === type).map(item => item.key);
-    return allKeys[type]?.filter(key => !existingKeys.includes(key)) || [];
+
+    const existingKeys = allData
+      .filter((item) => item.type === type)
+      .map((item) => item.key);
+    return allKeys[type]?.filter((key) => !existingKeys.includes(key)) || [];
   };
 
   const handleCreateSave = async () => {
     try {
       const response = await fetch(`${baseUrl}/admin/residents`, {
-        method: 'POST',
-        credentials: "include",
+        method: "POST",
+
         headers: getAuthHeaders("id"),
         body: JSON.stringify({
           type: createFormData.type,
           key: createFormData.key,
-          value: parseInt(createFormData.value)
-        })
+          value: parseInt(createFormData.value),
+        }),
       });
 
       const result = await response.json();
@@ -306,9 +327,9 @@ export default function ManagePenduduk() {
         await fetchPenduduk();
         alertSuccess("Data berhasil ditambahkan");
         setShowCreateForm(false);
-        setCreateFormData({ type: '', key: '', value: '' });
+        setCreateFormData({ type: "", key: "", value: "" });
       } else {
-        if (result.error === 'DUPLICATE_ENTRY') {
+        if (result.error === "DUPLICATE_ENTRY") {
           alertError("Data ini sudah ada. Silakan edit yang sudah ada.");
         } else {
           await Helper.errorResponseHandler(result);
@@ -327,7 +348,7 @@ export default function ManagePenduduk() {
         `${baseUrl}/admin/residents/${editingData.id}`,
         {
           method: "PATCH",
-          credentials: "include",
+
           headers: getAuthHeaders("id"),
           body: JSON.stringify({ value: jumlah }),
         }
@@ -487,76 +508,86 @@ export default function ManagePenduduk() {
           </div>
         ) : (
           <div className="text-center py-8 bg-white rounded-xl shadow border border-gray-200">
-            <p className="text-gray-500 text-lg">Tidak ada data {title.toLowerCase()} tersedia</p>
-            <p className="text-gray-400 text-sm mt-2">Data akan muncul setelah diinput</p>
+            <p className="text-gray-500 text-lg">
+              Tidak ada data {title.toLowerCase()} tersedia
+            </p>
+            <p className="text-gray-400 text-sm mt-2">
+              Data akan muncul setelah diinput
+            </p>
           </div>
         )}
         {hasData && (
-        <ResponsiveContainer
-          width="100%"
-          height={chartType === "pie" ? 400 : 350}
-        >
-          {chartType === "pie" ? (
-            <PieChart>
-              <Pie
+          <ResponsiveContainer
+            width="100%"
+            height={chartType === "pie" ? 400 : 350}
+          >
+            {chartType === "pie" ? (
+              <PieChart>
+                <Pie
+                  data={chartData}
+                  dataKey="value"
+                  nameKey="name"
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={renderCustomizedLabel}
+                  outerRadius={80}
+                  fill="#8884d8"
+                >
+                  {data.map((_, i) => (
+                    <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip formatter={tooltipFormatter} />
+                <Legend />
+              </PieChart>
+            ) : chartType === "area" ? (
+              <AreaChart
                 data={chartData}
-                dataKey="value"
-                nameKey="name"
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                label={renderCustomizedLabel}
-                outerRadius={80}
-                fill="#8884d8"
+                margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
               >
-                {data.map((_, i) => (
-                  <Cell key={i} fill={COLORS[i % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip formatter={tooltipFormatter} />
-              <Legend />
-            </PieChart>
-          ) : chartType === "area" ? (
-            <AreaChart
-              data={chartData}
-              margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-            >
-              <defs>
-                <linearGradient id="colorAgeManage" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#82ca9d" stopOpacity={0.8} />
-                  <stop offset="95%" stopColor="#82ca9d" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <XAxis dataKey="name" />
-              <YAxis allowDecimals={false} />
-              <Tooltip content={<CustomTooltip />} />
-              <Legend />
-              <Area
-                type="monotone"
-                dataKey="value"
-                name="Jumlah Penduduk"
-                stroke="#82ca9d"
-                fillOpacity={1}
-                fill="url(#colorAgeManage)"
-              />
-            </AreaChart>
-          ) : (
-            <BarChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis allowDecimals={false} />
-              <Tooltip content={<CustomTooltip />} />
-              <Legend />
-              <Bar
-                dataKey="jumlah"
-                name="Jumlah Penduduk"
-                fill={color}
-                barSize={35}
-                radius={[6, 6, 0, 0]}
-              />
-            </BarChart>
-          )}
-        </ResponsiveContainer>
+                <defs>
+                  <linearGradient
+                    id="colorAgeManage"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
+                    <stop offset="5%" stopColor="#82ca9d" stopOpacity={0.8} />
+                    <stop offset="95%" stopColor="#82ca9d" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <XAxis dataKey="name" />
+                <YAxis allowDecimals={false} />
+                <Tooltip content={<CustomTooltip />} />
+                <Legend />
+                <Area
+                  type="monotone"
+                  dataKey="value"
+                  name="Jumlah Penduduk"
+                  stroke="#82ca9d"
+                  fillOpacity={1}
+                  fill="url(#colorAgeManage)"
+                />
+              </AreaChart>
+            ) : (
+              <BarChart data={chartData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis allowDecimals={false} />
+                <Tooltip content={<CustomTooltip />} />
+                <Legend />
+                <Bar
+                  dataKey="jumlah"
+                  name="Jumlah Penduduk"
+                  fill={color}
+                  barSize={35}
+                  radius={[6, 6, 0, 0]}
+                />
+              </BarChart>
+            )}
+          </ResponsiveContainer>
         )}
       </div>
     );
@@ -605,108 +636,108 @@ export default function ManagePenduduk() {
 
       {/* Data Utama - Gender, Kepala Keluarga, Anak-anak */}
       {!loading && !error && (
-          <div className="mb-12">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-2xl font-bold text-gray-800">
-                Data Utama Penduduk
-              </h3>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => handleCreate('GENDER')}
-                  className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600"
-                >
-                  + Gender
-                </button>
-                <button
-                  onClick={() => handleCreate('KEPALA_KELUARGA')}
-                  className="px-3 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600"
-                >
-                  + KK
-                </button>
-                <button
-                  onClick={() => handleCreate('ANAK_ANAK')}
-                  className="px-3 py-1 bg-purple-500 text-white rounded text-sm hover:bg-purple-600"
-                >
-                  + Anak
-                </button>
-              </div>
-            </div>
-            <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-              {[...genderData, ...kepalaKeluargaData, ...anakAnakData].map(
-                (item, index) => (
-                  <DataCard
-                    key={item.id}
-                    item={item}
-                    index={index}
-                    color="#B6F500"
-                  />
-                )
-              )}
-            </div>
-            <div>
-              <h4 className="text-2xl font-bold text-gray-800 text-center mb-4">
-                Grafik Data Utama Penduduk
-              </h4>
-              <p className="text-center text-gray-600 mb-8">
-                Distribusi data utama penduduk berdasarkan gender, kepala
-                keluarga, dan anak-anak
-              </p>
-              <ResponsiveContainer width="100%" height={350}>
-                <BarChart
-                  data={[
-                    ...genderData,
-                    ...kepalaKeluargaData,
-                    ...anakAnakData,
-                  ].map((d) => ({ name: d.key, jumlah: d.value }))}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis allowDecimals={false} />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Legend />
-                  <Bar
-                    dataKey="jumlah"
-                    name="Jumlah Penduduk"
-                    fill="#B6F500"
-                    barSize={40}
-                    radius={[6, 6, 0, 0]}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
+        <div className="mb-12">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-2xl font-bold text-gray-800">
+              Data Utama Penduduk
+            </h3>
+            <div className="flex gap-2">
+              <button
+                onClick={() => handleCreate("GENDER")}
+                className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600"
+              >
+                + Gender
+              </button>
+              <button
+                onClick={() => handleCreate("KEPALA_KELUARGA")}
+                className="px-3 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600"
+              >
+                + KK
+              </button>
+              <button
+                onClick={() => handleCreate("ANAK_ANAK")}
+                className="px-3 py-1 bg-purple-500 text-white rounded text-sm hover:bg-purple-600"
+              >
+                + Anak
+              </button>
             </div>
           </div>
-        )}
+          <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            {[...genderData, ...kepalaKeluargaData, ...anakAnakData].map(
+              (item, index) => (
+                <DataCard
+                  key={item.id}
+                  item={item}
+                  index={index}
+                  color="#B6F500"
+                />
+              )
+            )}
+          </div>
+          <div>
+            <h4 className="text-2xl font-bold text-gray-800 text-center mb-4">
+              Grafik Data Utama Penduduk
+            </h4>
+            <p className="text-center text-gray-600 mb-8">
+              Distribusi data utama penduduk berdasarkan gender, kepala
+              keluarga, dan anak-anak
+            </p>
+            <ResponsiveContainer width="100%" height={350}>
+              <BarChart
+                data={[
+                  ...genderData,
+                  ...kepalaKeluargaData,
+                  ...anakAnakData,
+                ].map((d) => ({ name: d.key, jumlah: d.value }))}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis allowDecimals={false} />
+                <Tooltip content={<CustomTooltip />} />
+                <Legend />
+                <Bar
+                  dataKey="jumlah"
+                  name="Jumlah Penduduk"
+                  fill="#B6F500"
+                  barSize={40}
+                  radius={[6, 6, 0, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      )}
 
       {/* Sections menggunakan komponen DataSection - Selalu tampil */}
       <div className="mb-12">
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-2xl font-bold text-gray-800">Data Pekerjaan</h3>
           <button
-            onClick={() => handleCreate('PERKERJAAN')}
+            onClick={() => handleCreate("PERKERJAAN")}
             className="px-4 py-2 bg-pink-500 text-white rounded hover:bg-pink-600"
           >
             + Tambah Pekerjaan
           </button>
         </div>
         {pekerjaanData.length > 0 ? (
-          <DataSection
-            title=""
-            data={pekerjaanData}
-            color="#FF69B4"
-          />
+          <DataSection title="" data={pekerjaanData} color="#FF69B4" />
         ) : (
           <div className="text-center py-8 bg-white rounded-xl shadow border border-gray-200">
-            <p className="text-gray-500 text-lg">Tidak ada data pekerjaan tersedia</p>
-            <p className="text-gray-400 text-sm mt-2">Klik tombol "+ Tambah Pekerjaan" untuk menambah data</p>
+            <p className="text-gray-500 text-lg">
+              Tidak ada data pekerjaan tersedia
+            </p>
+            <p className="text-gray-400 text-sm mt-2">
+              Klik tombol "+ Tambah Pekerjaan" untuk menambah data
+            </p>
           </div>
         )}
       </div>
-      
+
       <div className="mb-12">
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-2xl font-bold text-gray-800">Data Pendidikan</h3>
           <button
-            onClick={() => handleCreate('PENDIDIKAN')}
+            onClick={() => handleCreate("PENDIDIKAN")}
             className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600"
           >
             + Tambah Pendidikan
@@ -721,17 +752,23 @@ export default function ManagePenduduk() {
           />
         ) : (
           <div className="text-center py-8 bg-white rounded-xl shadow border border-gray-200">
-            <p className="text-gray-500 text-lg">Tidak ada data pendidikan tersedia</p>
-            <p className="text-gray-400 text-sm mt-2">Klik tombol "+ Tambah Pendidikan" untuk menambah data</p>
+            <p className="text-gray-500 text-lg">
+              Tidak ada data pendidikan tersedia
+            </p>
+            <p className="text-gray-400 text-sm mt-2">
+              Klik tombol "+ Tambah Pendidikan" untuk menambah data
+            </p>
           </div>
         )}
       </div>
-      
+
       <div className="mb-12">
         <div className="flex justify-between items-center mb-6">
-          <h3 className="text-2xl font-bold text-gray-800">Status Pernikahan</h3>
+          <h3 className="text-2xl font-bold text-gray-800">
+            Status Pernikahan
+          </h3>
           <button
-            onClick={() => handleCreate('PERNIKAHAN')}
+            onClick={() => handleCreate("PERNIKAHAN")}
             className="px-4 py-2 bg-sky-500 text-white rounded hover:bg-sky-600"
           >
             + Tambah Pernikahan
@@ -746,17 +783,21 @@ export default function ManagePenduduk() {
           />
         ) : (
           <div className="text-center py-8 bg-white rounded-xl shadow border border-gray-200">
-            <p className="text-gray-500 text-lg">Tidak ada data pernikahan tersedia</p>
-            <p className="text-gray-400 text-sm mt-2">Klik tombol "+ Tambah Pernikahan" untuk menambah data</p>
+            <p className="text-gray-500 text-lg">
+              Tidak ada data pernikahan tersedia
+            </p>
+            <p className="text-gray-400 text-sm mt-2">
+              Klik tombol "+ Tambah Pernikahan" untuk menambah data
+            </p>
           </div>
         )}
       </div>
-      
+
       <div className="mb-12">
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-2xl font-bold text-gray-800">Data Agama</h3>
           <button
-            onClick={() => handleCreate('AGAMA')}
+            onClick={() => handleCreate("AGAMA")}
             className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
           >
             + Tambah Agama
@@ -772,17 +813,21 @@ export default function ManagePenduduk() {
           />
         ) : (
           <div className="text-center py-8 bg-white rounded-xl shadow border border-gray-200">
-            <p className="text-gray-500 text-lg">Tidak ada data agama tersedia</p>
-            <p className="text-gray-400 text-sm mt-2">Klik tombol "+ Tambah Agama" untuk menambah data</p>
+            <p className="text-gray-500 text-lg">
+              Tidak ada data agama tersedia
+            </p>
+            <p className="text-gray-400 text-sm mt-2">
+              Klik tombol "+ Tambah Agama" untuk menambah data
+            </p>
           </div>
         )}
       </div>
-      
+
       <div className="mb-12">
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-2xl font-bold text-gray-800">Kelompok Usia</h3>
           <button
-            onClick={() => handleCreate('USIA')}
+            onClick={() => handleCreate("USIA")}
             className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
           >
             + Tambah Usia
@@ -797,32 +842,36 @@ export default function ManagePenduduk() {
           />
         ) : (
           <div className="text-center py-8 bg-white rounded-xl shadow border border-gray-200">
-            <p className="text-gray-500 text-lg">Tidak ada data usia tersedia</p>
-            <p className="text-gray-400 text-sm mt-2">Klik tombol "+ Tambah Usia" untuk menambah data</p>
+            <p className="text-gray-500 text-lg">
+              Tidak ada data usia tersedia
+            </p>
+            <p className="text-gray-400 text-sm mt-2">
+              Klik tombol "+ Tambah Usia" untuk menambah data
+            </p>
           </div>
         )}
       </div>
-      
+
       <div className="mb-12">
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-2xl font-bold text-gray-800">Distribusi Dusun</h3>
           <button
-            onClick={() => handleCreate('DUSUN')}
+            onClick={() => handleCreate("DUSUN")}
             className="px-4 py-2 bg-teal-500 text-white rounded hover:bg-teal-600"
           >
             + Tambah Dusun
           </button>
         </div>
         {dusunData.length > 0 ? (
-          <DataSection
-            title=""
-            data={dusunData}
-            color="#20B2AA"
-          />
+          <DataSection title="" data={dusunData} color="#20B2AA" />
         ) : (
           <div className="text-center py-8 bg-white rounded-xl shadow border border-gray-200">
-            <p className="text-gray-500 text-lg">Tidak ada data dusun tersedia</p>
-            <p className="text-gray-400 text-sm mt-2">Klik tombol "+ Tambah Dusun" untuk menambah data</p>
+            <p className="text-gray-500 text-lg">
+              Tidak ada data dusun tersedia
+            </p>
+            <p className="text-gray-400 text-sm mt-2">
+              Klik tombol "+ Tambah Dusun" untuk menambah data
+            </p>
           </div>
         )}
       </div>
@@ -873,38 +922,47 @@ export default function ManagePenduduk() {
             <h3 className="text-xl font-semibold mb-4">
               Tambah Data {createFormData.type}
             </h3>
-            
+
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Pilih Kategori:
             </label>
             <select
               value={createFormData.key}
-              onChange={(e) => setCreateFormData(prev => ({ ...prev, key: e.target.value }))}
+              onChange={(e) =>
+                setCreateFormData((prev) => ({ ...prev, key: e.target.value }))
+              }
               className="w-full p-2 border rounded mb-4"
             >
               <option value="">Pilih...</option>
-              {availableKeys.map(key => (
-                <option key={key} value={key}>{key}</option>
+              {availableKeys.map((key) => (
+                <option key={key} value={key}>
+                  {key}
+                </option>
               ))}
             </select>
-            
+
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Jumlah:
             </label>
             <input
               type="number"
               value={createFormData.value}
-              onChange={(e) => setCreateFormData(prev => ({ ...prev, value: e.target.value }))}
+              onChange={(e) =>
+                setCreateFormData((prev) => ({
+                  ...prev,
+                  value: e.target.value,
+                }))
+              }
               className="w-full p-2 border rounded mb-4"
               min="0"
               placeholder="Masukkan jumlah"
             />
-            
+
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => {
                   setShowCreateForm(false);
-                  setCreateFormData({ type: '', key: '', value: '' });
+                  setCreateFormData({ type: "", key: "", value: "" });
                 }}
                 className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
               >

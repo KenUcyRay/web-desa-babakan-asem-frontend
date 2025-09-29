@@ -45,7 +45,7 @@ const iconList = [
 
 const defaultSDGs = [
   "Tanpa Kemiskinan",
-  "Tanpa Kelaparan", 
+  "Tanpa Kelaparan",
   "Kesehatan & Kesejahteraan",
   "Pendidikan Berkualitas",
   "Kesetaraan Gender",
@@ -60,7 +60,7 @@ const defaultSDGs = [
   "Ekosistem Lautan",
   "Ekosistem Daratan",
   "Perdamaian & Keadilan",
-  "Kemitraan untuk Tujuan"
+  "Kemitraan untuk Tujuan",
 ];
 
 export default function ManageSDGs() {
@@ -108,18 +108,27 @@ export default function ManageSDGs() {
       let res;
       if (currentItem.id) {
         // Update existing SDG
-        res = await InfografisApi.updateSdg(currentItem.id, { progress: parseInt(progressBaru) }, i18n.language);
+        res = await InfografisApi.updateSdg(
+          currentItem.id,
+          { progress: parseInt(progressBaru) },
+          i18n.language
+        );
       } else {
         // Create new SDG
-        res = await fetch(`${import.meta.env.VITE_NEW_BASE_URL || 'http://localhost:4000/api'}/admin/sdgs`, {
-          method: 'POST',
-          credentials: "include",
-          headers: getAuthHeaders(i18n.language),
-          body: JSON.stringify({
-            name: currentItem.name,
-            progress: parseInt(progressBaru)
-          })
-        });
+        res = await fetch(
+          `${
+            import.meta.env.VITE_NEW_BASE_URL || "http://localhost:4000/api"
+          }/admin/sdgs`,
+          {
+            method: "POST",
+
+            headers: getAuthHeaders(i18n.language),
+            body: JSON.stringify({
+              name: currentItem.name,
+              progress: parseInt(progressBaru),
+            }),
+          }
+        );
       }
 
       const result = await res.json();
@@ -130,7 +139,7 @@ export default function ManageSDGs() {
         setEditingIndex(null);
         setProgressBaru("");
       } else {
-        if (result.error === 'DUPLICATE_ENTRY') {
+        if (result.error === "DUPLICATE_ENTRY") {
           alertError("SDG ini sudah ada. Silakan edit yang sudah ada.");
         } else {
           await Helper.errorResponseHandler(result);
@@ -144,13 +153,15 @@ export default function ManageSDGs() {
   // Function to get display data (merge existing SDGs with defaults)
   const getDisplayData = () => {
     return defaultSDGs.map((name, idx) => {
-      const existingSDG = sdg.find(s => s.name === name);
-      return existingSDG || {
-        id: null,
-        name: name,
-        progress: 0,
-        updated_at: null
-      };
+      const existingSDG = sdg.find((s) => s.name === name);
+      return (
+        existingSDG || {
+          id: null,
+          name: name,
+          progress: 0,
+          updated_at: null,
+        }
+      );
     });
   };
 
@@ -195,9 +206,7 @@ export default function ManageSDGs() {
                 Diperbarui: {Helper.formatTanggal(item.updated_at)}
               </p>
             ) : (
-              <p className="mt-1 text-xs text-gray-400">
-                Belum ada data
-              </p>
+              <p className="mt-1 text-xs text-gray-400">Belum ada data</p>
             )}
             <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
               <div
@@ -257,4 +266,3 @@ export default function ManageSDGs() {
     </div>
   );
 }
-

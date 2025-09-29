@@ -30,11 +30,12 @@ export class NewsApi {
     formData.append("is_published", data.is_published ? "true" : "false");
     formData.append("featured_image", data.featured_image); // File
 
-    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    const token =
+      localStorage.getItem("token") || sessionStorage.getItem("token");
     return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/admin/news`, {
       method: "POST",
       body: formData,
-      credentials: "include",
+
       headers: {
         "Accept-Language": language,
         ...(token && { Authorization: `Bearer ${token}` }),
@@ -43,14 +44,15 @@ export class NewsApi {
   }
 
   static async getOwnNews(page = 1, limit = 10, language) {
-    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    const token =
+      localStorage.getItem("token") || sessionStorage.getItem("token");
     return await fetch(
       `${
         import.meta.env.VITE_NEW_BASE_URL
       }/admin/news?page=${page}&limit=${limit}`,
       {
         method: "GET",
-        credentials: "include",
+
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -70,13 +72,14 @@ export class NewsApi {
     );
     formData.append("featured_image", data.featured_image ?? null); // File
 
-    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    const token =
+      localStorage.getItem("token") || sessionStorage.getItem("token");
     return await fetch(
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/news/${id}`,
       {
         method: "PATCH",
         body: formData,
-        credentials: "include",
+
         headers: {
           "Accept-Language": language,
           ...(token && { Authorization: `Bearer ${token}` }),
@@ -85,12 +88,13 @@ export class NewsApi {
     );
   }
   static async deleteNews(id, language) {
-    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    const token =
+      localStorage.getItem("token") || sessionStorage.getItem("token");
     return await fetch(
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/news/${id}`,
       {
         method: "DELETE",
-        credentials: "include",
+
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",

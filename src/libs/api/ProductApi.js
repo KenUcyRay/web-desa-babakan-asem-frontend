@@ -1,4 +1,8 @@
-import { getAuthHeaders, getAuthHeadersFormData, getPublicHeaders } from './authHelpers';
+import {
+  getAuthHeaders,
+  getAuthHeadersFormData,
+  getPublicHeaders,
+} from "./authHelpers";
 
 export class ProductApi {
   static async getProducts(page = 1, limit = 10, language) {
@@ -27,7 +31,7 @@ export class ProductApi {
       }/admin/products/me?page=${page}&limit=${limit}`,
       {
         method: "GET",
-        credentials: "include",
+
         headers: getAuthHeaders(language),
       }
     );
@@ -47,7 +51,7 @@ export class ProductApi {
       {
         method: "POST",
         body: formData,
-        credentials: "include",
+
         headers: getAuthHeadersFormData(language),
       }
     );
@@ -69,7 +73,7 @@ export class ProductApi {
       {
         method: "PATCH",
         body: formData,
-        credentials: "include",
+
         headers: getAuthHeadersFormData(language),
       }
     );
@@ -82,7 +86,7 @@ export class ProductApi {
       }/admin/products/delete-by-product/${id}`,
       {
         method: "DELETE",
-        credentials: "include",
+
         headers: getAuthHeaders(language),
       }
     );

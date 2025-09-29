@@ -1,4 +1,8 @@
-import { getAuthHeaders, getAuthHeadersFormData, getPublicHeaders } from './authHelpers';
+import {
+  getAuthHeaders,
+  getAuthHeadersFormData,
+  getPublicHeaders,
+} from "./authHelpers";
 
 export class ProgramApi {
   static async getPrograms(language) {
@@ -11,7 +15,7 @@ export class ProgramApi {
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/programs/${id}`,
       {
         method: "DELETE",
-        credentials: "include",
+
         headers: getAuthHeaders(language),
       }
     );
@@ -25,7 +29,7 @@ export class ProgramApi {
     return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/admin/programs/`, {
       method: "POST",
       body: formData,
-      credentials: "include",
+
       headers: getAuthHeadersFormData(language),
     });
   }
@@ -42,7 +46,7 @@ export class ProgramApi {
       {
         method: "PATCH",
         body: formData,
-        credentials: "include",
+
         headers: getAuthHeadersFormData(language),
       }
     );

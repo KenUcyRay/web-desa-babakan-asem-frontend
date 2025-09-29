@@ -1,4 +1,8 @@
-import { getAuthHeaders, getAuthHeadersFormData, getPublicHeaders } from './authHelpers';
+import {
+  getAuthHeaders,
+  getAuthHeadersFormData,
+  getPublicHeaders,
+} from "./authHelpers";
 
 export class GaleryApi {
   static async getGaleri(page = 1, limit = 9, language) {
@@ -18,7 +22,7 @@ export class GaleryApi {
     return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/admin/galeri`, {
       method: "POST",
       body: formData,
-      credentials: "include",
+
       headers: getAuthHeadersFormData(language),
     });
   }
@@ -32,7 +36,7 @@ export class GaleryApi {
       {
         method: "PUT",
         body: formData,
-        credentials: "include",
+
         headers: getAuthHeadersFormData(language),
       }
     );
@@ -43,7 +47,7 @@ export class GaleryApi {
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/galeri/${id}`,
       {
         method: "DELETE",
-        credentials: "include",
+
         headers: getAuthHeaders(language),
       }
     );

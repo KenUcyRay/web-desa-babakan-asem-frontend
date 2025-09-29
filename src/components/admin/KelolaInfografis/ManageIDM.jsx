@@ -34,7 +34,7 @@ export default function ManageIDM() {
 
   // - Create dimensi baru
   const handleCreateDimensi = () => {
-    setCreateDimensiData({ type: '', value: '', status_desa: 'MAJU' });
+    setCreateDimensiData({ type: "", value: "", status_desa: "MAJU" });
     setShowCreateDimensiForm(true);
   };
 
@@ -42,44 +42,46 @@ export default function ManageIDM() {
     try {
       const requestBody = {
         type: createDimensiData.type,
-        value: parseFloat(createDimensiData.value)
+        value: parseFloat(createDimensiData.value),
       };
-      
-      const response = await fetch(`${import.meta.env.VITE_NEW_BASE_URL || 'http://localhost:4000/api'}/admin/infografis/extra-idm`, {
-        method: 'POST',
-        credentials: "include",
-        headers: getAuthHeaders(i18n.language),
-        body: JSON.stringify(requestBody)
-      });
+
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_NEW_BASE_URL || "http://localhost:4000/api"
+        }/admin/infografis/extra-idm`,
+        {
+          method: "POST",
+
+          headers: getAuthHeaders(i18n.language),
+          body: JSON.stringify(requestBody),
+        }
+      );
 
       const result = await response.json();
 
-      
       if (response.ok) {
         // Hanya update dimensi yang dibuat, jangan update status desa
         setExtraIdmId(result.data.id);
-        
+
         // Update hanya dimensi yang dibuat
-        if (createDimensiData.type === 'sosial') {
+        if (createDimensiData.type === "sosial") {
           setDimensiSosial(result.data.sosial);
           setTempSosial(result.data.sosial);
-        } else if (createDimensiData.type === 'ekonomi') {
+        } else if (createDimensiData.type === "ekonomi") {
           setDimensiEkonomi(result.data.ekonomi);
           setTempEkonomi(result.data.ekonomi);
-        } else if (createDimensiData.type === 'lingkungan') {
+        } else if (createDimensiData.type === "lingkungan") {
           setDimensiLingkungan(result.data.lingkungan);
           setTempLingkungan(result.data.lingkungan);
         }
-        
+
         alertSuccess(`Dimensi ${createDimensiData.type} berhasil dibuat`);
         setShowCreateDimensiForm(false);
-        setCreateDimensiData({ type: '', value: '' });
+        setCreateDimensiData({ type: "", value: "" });
       } else {
-
         alertError(result.message || "Gagal membuat dimensi");
       }
     } catch (error) {
-
       alertError("Terjadi kesalahan jaringan");
     }
   };
@@ -87,33 +89,36 @@ export default function ManageIDM() {
   const handleSaveCreateStatus = async () => {
     try {
       const requestBody = {
-        status_desa: createStatusData.status_desa
+        status_desa: createStatusData.status_desa,
       };
-      
-      const response = await fetch(`${import.meta.env.VITE_NEW_BASE_URL || 'http://localhost:4000/api'}/admin/infografis/extra-idm`, {
-        method: 'POST',
-        credentials: "include",
-        headers: getAuthHeaders(i18n.language),
-        body: JSON.stringify(requestBody)
-      });
+
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_NEW_BASE_URL || "http://localhost:4000/api"
+        }/admin/infografis/extra-idm`,
+        {
+          method: "POST",
+
+          headers: getAuthHeaders(i18n.language),
+          body: JSON.stringify(requestBody),
+        }
+      );
 
       const result = await response.json();
-      
+
       if (response.ok) {
         setExtraIdmId(result.data.id);
         setStatusDesa(result.data.status_desa);
         setTempStatus(result.data.status_desa);
         setStatusExists(true);
-        
+
         alertSuccess("Status desa berhasil dibuat");
         setShowCreateStatusForm(false);
-        setCreateStatusData({ status_desa: 'MAJU' });
+        setCreateStatusData({ status_desa: "MAJU" });
       } else {
-
         alertError(result.message || "Gagal membuat status desa");
       }
     } catch (error) {
-
       alertError("Terjadi kesalahan jaringan");
     }
   };
@@ -121,7 +126,9 @@ export default function ManageIDM() {
   // - Simpan perubahan kotak statistik
   const handleSaveStatistik = async () => {
     if (!extraIdmId) {
-      alertError("Data ExtraIdm belum ada. Silakan buat dimensi terlebih dahulu.");
+      alertError(
+        "Data ExtraIdm belum ada. Silakan buat dimensi terlebih dahulu."
+      );
       return;
     }
 
@@ -159,22 +166,27 @@ export default function ManageIDM() {
   const [editingIndex, setEditingIndex] = useState(null);
   const [formData, setFormData] = useState({ tahun: "", skor: "" });
   const [createDimensiData, setCreateDimensiData] = useState({
-    type: '',
-    value: ''
+    type: "",
+    value: "",
   });
   const [showCreateStatusForm, setShowCreateStatusForm] = useState(false);
   const [createStatusData, setCreateStatusData] = useState({
-    status_desa: 'MAJU'
+    status_desa: "MAJU",
   });
   const [statusExists, setStatusExists] = useState(false);
 
   const checkExtraIdmStatus = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_NEW_BASE_URL || 'http://localhost:4000/api'}/admin/infografis/extra-idm/status`, {
-        method: "GET",
-        credentials: "include",
-        headers: getAuthHeaders(i18n.language)
-      });
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_NEW_BASE_URL || "http://localhost:4000/api"
+        }/admin/infografis/extra-idm/status`,
+        {
+          method: "GET",
+
+          headers: getAuthHeaders(i18n.language),
+        }
+      );
       const result = await response.json();
       if (response.ok) {
         setStatusExists(result.exists);
@@ -187,7 +199,7 @@ export default function ManageIDM() {
         }
       }
     } catch (error) {
-      console.log('Status check failed:', error);
+      console.log("Status check failed:", error);
     }
   };
 
@@ -343,7 +355,7 @@ export default function ManageIDM() {
       setDimensiSosial(0);
       setDimensiEkonomi(0);
       setDimensiLingkungan(0);
-      
+
       setTempStatus("MAJU");
       setTempSosial(0);
       setTempEkonomi(0);
@@ -367,11 +379,13 @@ export default function ManageIDM() {
         <div className="flex gap-2">
           <button
             onClick={handleCreateDimensi}
-            disabled={dimensiSosial > 0 && dimensiEkonomi > 0 && dimensiLingkungan > 0}
+            disabled={
+              dimensiSosial > 0 && dimensiEkonomi > 0 && dimensiLingkungan > 0
+            }
             className={`px-4 py-2 rounded-lg shadow transition ${
               dimensiSosial > 0 && dimensiEkonomi > 0 && dimensiLingkungan > 0
-                ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
-                : 'bg-blue-500 text-white hover:bg-blue-600'
+                ? "bg-gray-400 text-gray-200 cursor-not-allowed"
+                : "bg-blue-500 text-white hover:bg-blue-600"
             }`}
           >
             + Buat Dimensi
@@ -381,8 +395,8 @@ export default function ManageIDM() {
             disabled={statusExists}
             className={`px-4 py-2 rounded-lg shadow transition ${
               statusExists
-                ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
-                : 'bg-purple-500 text-white hover:bg-purple-600'
+                ? "bg-gray-400 text-gray-200 cursor-not-allowed"
+                : "bg-purple-500 text-white hover:bg-purple-600"
             }`}
           >
             + Status Desa
@@ -475,9 +489,9 @@ export default function ManageIDM() {
           onClick={handleSaveStatistik}
           disabled={!extraIdmId}
           className={`px-5 py-2 rounded-lg shadow transition ${
-            extraIdmId 
-              ? 'bg-blue-500 text-white hover:bg-blue-600' 
-              : 'bg-gray-400 text-gray-200 cursor-not-allowed'
+            extraIdmId
+              ? "bg-blue-500 text-white hover:bg-blue-600"
+              : "bg-gray-400 text-gray-200 cursor-not-allowed"
           }`}
         >
           💾 Simpan perubahan
@@ -630,27 +644,30 @@ export default function ManageIDM() {
       {showCreateDimensiForm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg p-6 w-80">
-            <h3 className="text-xl font-semibold mb-4">
-              Buat Dimensi IDM
-            </h3>
+            <h3 className="text-xl font-semibold mb-4">Buat Dimensi IDM</h3>
 
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Pilih Dimensi:
             </label>
             <select
               value={createDimensiData.type}
-              onChange={(e) => setCreateDimensiData(prev => ({ ...prev, type: e.target.value }))}
+              onChange={(e) =>
+                setCreateDimensiData((prev) => ({
+                  ...prev,
+                  type: e.target.value,
+                }))
+              }
               className="w-full p-2 border rounded mb-4"
             >
               <option value="">Pilih dimensi...</option>
               <option value="sosial" disabled={dimensiSosial > 0}>
-                Dimensi Sosial {dimensiSosial > 0 ? '(Sudah ada)' : ''}
+                Dimensi Sosial {dimensiSosial > 0 ? "(Sudah ada)" : ""}
               </option>
               <option value="ekonomi" disabled={dimensiEkonomi > 0}>
-                Dimensi Ekonomi {dimensiEkonomi > 0 ? '(Sudah ada)' : ''}
+                Dimensi Ekonomi {dimensiEkonomi > 0 ? "(Sudah ada)" : ""}
               </option>
               <option value="lingkungan" disabled={dimensiLingkungan > 0}>
-                Dimensi Lingkungan {dimensiLingkungan > 0 ? '(Sudah ada)' : ''}
+                Dimensi Lingkungan {dimensiLingkungan > 0 ? "(Sudah ada)" : ""}
               </option>
             </select>
 
@@ -663,18 +680,21 @@ export default function ManageIDM() {
               min="0"
               max="1"
               value={createDimensiData.value}
-              onChange={(e) => setCreateDimensiData(prev => ({ ...prev, value: e.target.value }))}
+              onChange={(e) =>
+                setCreateDimensiData((prev) => ({
+                  ...prev,
+                  value: e.target.value,
+                }))
+              }
               className="w-full p-2 border rounded mb-4"
               placeholder="Contoh: 0.78"
             />
-
-
 
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => {
                   setShowCreateDimensiForm(false);
-                  setCreateDimensiData({ type: '', value: '' });
+                  setCreateDimensiData({ type: "", value: "" });
                 }}
                 className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
               >
@@ -696,16 +716,19 @@ export default function ManageIDM() {
       {showCreateStatusForm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg p-6 w-80">
-            <h3 className="text-xl font-semibold mb-4">
-              Buat Status Desa
-            </h3>
+            <h3 className="text-xl font-semibold mb-4">Buat Status Desa</h3>
 
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Status Desa:
             </label>
             <select
               value={createStatusData.status_desa}
-              onChange={(e) => setCreateStatusData(prev => ({ ...prev, status_desa: e.target.value }))}
+              onChange={(e) =>
+                setCreateStatusData((prev) => ({
+                  ...prev,
+                  status_desa: e.target.value,
+                }))
+              }
               className="w-full p-2 border rounded mb-4"
             >
               <option value="MAJU">Maju</option>
@@ -719,7 +742,7 @@ export default function ManageIDM() {
               <button
                 onClick={() => {
                   setShowCreateStatusForm(false);
-                  setCreateStatusData({ status_desa: 'MAJU' });
+                  setCreateStatusData({ status_desa: "MAJU" });
                 }}
                 className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
               >

@@ -12,10 +12,11 @@ export class AdministrasiApi {
   }
 
   static async getPengantar(query = "", language) {
-    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    const token =
+      localStorage.getItem("token") || sessionStorage.getItem("token");
     return fetch(`${import.meta.env.VITE_NEW_BASE_URL}/admin/administrations`, {
       method: "GET",
-      credentials: "include",
+
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
@@ -26,12 +27,13 @@ export class AdministrasiApi {
   }
 
   static async updatePengantar(id, language) {
-    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    const token =
+      localStorage.getItem("token") || sessionStorage.getItem("token");
     return fetch(
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/administrations/${id}`,
       {
         method: "PATCH",
-        credentials: "include",
+
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",

@@ -1,4 +1,4 @@
-import { getAuthHeaders } from './authHelpers';
+import { getAuthHeaders } from "./authHelpers";
 
 export class InfografisApi {
   static async updateBansos(id, data, language) {
@@ -6,7 +6,7 @@ export class InfografisApi {
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/infografis/bansos/${id}`,
       {
         method: "PATCH",
-        credentials: "include",
+
         headers: getAuthHeaders(language),
         body: JSON.stringify(data),
       }
@@ -17,7 +17,7 @@ export class InfografisApi {
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/infografis/bansos/${id}`,
       {
         method: "DELETE",
-        credentials: "include",
+
         headers: getAuthHeaders(language),
       }
     );
@@ -28,7 +28,7 @@ export class InfografisApi {
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/infografis/bansos`,
       {
         method: "POST",
-        credentials: "include",
+
         headers: getAuthHeaders(language),
         body: JSON.stringify(data),
       }
@@ -51,7 +51,7 @@ export class InfografisApi {
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/infografis/penduduk/${id}`,
       {
         method: "PATCH",
-        credentials: "include",
+
         headers: getAuthHeaders(language),
         body: JSON.stringify(data),
       }
@@ -70,7 +70,7 @@ export class InfografisApi {
   static async createIdm(data, language) {
     return fetch(`${import.meta.env.VITE_NEW_BASE_URL}/admin/infografis/idm`, {
       method: "POST",
-      credentials: "include",
+
       headers: getAuthHeaders(language),
       body: JSON.stringify(data),
     });
@@ -92,7 +92,7 @@ export class InfografisApi {
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/infografis/extra-idm/${id}`,
       {
         method: "PATCH",
-        credentials: "include",
+
         headers: getAuthHeaders(language),
         body: JSON.stringify(data),
       }
@@ -104,7 +104,7 @@ export class InfografisApi {
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/infografis/idm/${id}`,
       {
         method: "PATCH",
-        credentials: "include",
+
         headers: getAuthHeaders(language),
         body: JSON.stringify(data),
       }
@@ -115,7 +115,7 @@ export class InfografisApi {
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/infografis/idm/${id}`,
       {
         method: "DELETE",
-        credentials: "include",
+
         headers: getAuthHeaders(language),
       }
     );
@@ -145,7 +145,7 @@ export class InfografisApi {
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/infografis/sdg/${id}`,
       {
         method: "PATCH",
-        credentials: "include",
+
         headers: getAuthHeaders(language),
         body: JSON.stringify(data),
       }

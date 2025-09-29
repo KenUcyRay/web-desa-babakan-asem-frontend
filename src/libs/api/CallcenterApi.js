@@ -1,14 +1,19 @@
-import { getAuthHeaders } from './authHelpers';
+import { getAuthHeaders } from "./authHelpers";
 
 export class CallCenterApi {
   static async get(page = 1, limit = 10) {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_NEW_BASE_URL}/admin/callcenters?page=${page}&limit=${limit}`,
-        { method: "GET", credentials: "include", headers: getAuthHeaders('id') }
+        `${
+          import.meta.env.VITE_NEW_BASE_URL
+        }/admin/callcenters?page=${page}&limit=${limit}`,
+        { method: "GET", headers: getAuthHeaders("id") }
       );
       const body = await response.json();
-      if (!response.ok) throw new Error(body.message || body.error || "Failed to fetch call centers");
+      if (!response.ok)
+        throw new Error(
+          body.message || body.error || "Failed to fetch call centers"
+        );
       return body;
     } catch (error) {
       console.error("[CallCenterApi] get error:", error);
@@ -20,10 +25,17 @@ export class CallCenterApi {
     try {
       const response = await fetch(
         `${import.meta.env.VITE_NEW_BASE_URL}/admin/callcenters`,
-        { method: "POST", credentials: "include", headers: getAuthHeaders('id'), body: JSON.stringify(data) }
+        {
+          method: "POST",
+          headers: getAuthHeaders("id"),
+          body: JSON.stringify(data),
+        }
       );
       const body = await response.json();
-      if (!response.ok) throw new Error(body.message || body.error || "Failed to create call center");
+      if (!response.ok)
+        throw new Error(
+          body.message || body.error || "Failed to create call center"
+        );
       return body;
     } catch (error) {
       console.error("[CallCenterApi] create error:", error);
@@ -36,19 +48,30 @@ export class CallCenterApi {
       // Try PATCH first
       let response = await fetch(
         `${import.meta.env.VITE_NEW_BASE_URL}/admin/callcenters/${id}`,
-        { method: "PATCH", credentials: "include", headers: getAuthHeaders('id'), body: JSON.stringify(data) }
+        {
+          method: "PATCH",
+          headers: getAuthHeaders("id"),
+          body: JSON.stringify(data),
+        }
       );
 
       // If backend doesn't support PATCH, retry with PUT
       if (response.status === 404 || response.status === 405) {
         response = await fetch(
           `${import.meta.env.VITE_NEW_BASE_URL}/admin/callcenters/${id}`,
-          { method: "PUT", credentials: "include", headers: getAuthHeaders('id'), body: JSON.stringify(data) }
+          {
+            method: "PUT",
+            headers: getAuthHeaders("id"),
+            body: JSON.stringify(data),
+          }
         );
       }
 
       const body = await response.json();
-      if (!response.ok) throw new Error(body.message || body.error || "Failed to update call center");
+      if (!response.ok)
+        throw new Error(
+          body.message || body.error || "Failed to update call center"
+        );
       return body;
     } catch (error) {
       console.error("[CallCenterApi] update error:", error);
@@ -60,11 +83,14 @@ export class CallCenterApi {
     try {
       const response = await fetch(
         `${import.meta.env.VITE_NEW_BASE_URL}/admin/callcenters/${id}`,
-        { method: "DELETE", credentials: "include", headers: getAuthHeaders('id') }
+        { method: "DELETE", headers: getAuthHeaders("id") }
       );
       if (!response.ok) {
         let errorBody = "Failed to delete call center";
-        try { const body = await response.json(); errorBody = body.message || body.error || errorBody; } catch {}
+        try {
+          const body = await response.json();
+          errorBody = body.message || body.error || errorBody;
+        } catch {}
         throw new Error(errorBody);
       }
       return true;
@@ -78,10 +104,19 @@ export class CallCenterApi {
     try {
       const response = await fetch(
         `${import.meta.env.VITE_NEW_BASE_URL}/callcenters`,
-        { method: "GET", headers: { "Content-Type": "application/json", Accept: "application/json" } }
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
       );
       const body = await response.json();
-      if (!response.ok) throw new Error(body.message || body.error || "Failed to fetch public call centers");
+      if (!response.ok)
+        throw new Error(
+          body.message || body.error || "Failed to fetch public call centers"
+        );
       return body;
     } catch (error) {
       console.error("[CallCenterApi] getPublic error:", error);
