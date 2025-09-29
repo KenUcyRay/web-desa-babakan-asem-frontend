@@ -19,6 +19,7 @@ export class UserApi {
   static async register(body, language) {
     return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/users/register`, {
       method: "POST",
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",

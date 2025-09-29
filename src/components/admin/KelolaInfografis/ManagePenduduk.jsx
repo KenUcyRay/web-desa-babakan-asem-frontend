@@ -636,77 +636,77 @@ export default function ManagePenduduk() {
 
       {/* Data Utama - Gender, Kepala Keluarga, Anak-anak */}
       {!loading && !error && (
-        <div className="mb-12">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-2xl font-bold text-gray-800">
-              Data Utama Penduduk
-            </h3>
-            <div className="flex gap-2">
-              <button
-                onClick={() => handleCreate("GENDER")}
-                className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600"
-              >
-                + Gender
-              </button>
-              <button
-                onClick={() => handleCreate("KEPALA_KELUARGA")}
-                className="px-3 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600"
-              >
-                + KK
-              </button>
-              <button
-                onClick={() => handleCreate("ANAK_ANAK")}
-                className="px-3 py-1 bg-purple-500 text-white rounded text-sm hover:bg-purple-600"
-              >
-                + Anak
-              </button>
+          <div className="mb-12">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-2xl font-bold text-gray-800">
+                Data Utama Penduduk
+              </h3>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => handleCreate('GENDER')}
+                  className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600"
+                >
+                  + Data Berdasarkan Gender
+                </button>
+                <button
+                  onClick={() => handleCreate('KEPALA_KELUARGA')}
+                  className="px-3 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600"
+                >
+                  + Data KK Berdasarkan Jumlah Keluarga
+                </button>
+                <button
+                  onClick={() => handleCreate('ANAK_ANAK')}
+                  className="px-3 py-1 bg-purple-500 text-white rounded text-sm hover:bg-purple-600"
+                >
+                  + Data Anak Berdasarkan Jumlah Anak
+                </button>
+              </div>
+            </div>
+            <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+              {[...genderData, ...kepalaKeluargaData, ...anakAnakData].map(
+                (item, index) => (
+                  <DataCard
+                    key={item.id}
+                    item={item}
+                    index={index}
+                    color="#B6F500"
+                  />
+                )
+              )}
+            </div>
+            <div>
+              <h4 className="text-2xl font-bold text-gray-800 text-center mb-4">
+                Grafik Data Utama Penduduk
+              </h4>
+              <p className="text-center text-gray-600 mb-8">
+                Distribusi data utama penduduk berdasarkan gender, kepala
+                keluarga, dan anak-anak
+              </p>
+              <ResponsiveContainer width="100%" height={350}>
+                <BarChart
+                  data={[
+                    ...genderData,
+                    ...kepalaKeluargaData,
+                    ...anakAnakData,
+                  ].map((d) => ({ name: d.key, jumlah: d.value }))}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis allowDecimals={false} />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Legend />
+                  <Bar
+                    dataKey="jumlah"
+                    name="Jumlah Penduduk"
+                    fill="#B6F500"
+                    barSize={40}
+                    radius={[6, 6, 0, 0]}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           </div>
-          <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            {[...genderData, ...kepalaKeluargaData, ...anakAnakData].map(
-              (item, index) => (
-                <DataCard
-                  key={item.id}
-                  item={item}
-                  index={index}
-                  color="#B6F500"
-                />
-              )
-            )}
-          </div>
-          <div>
-            <h4 className="text-2xl font-bold text-gray-800 text-center mb-4">
-              Grafik Data Utama Penduduk
-            </h4>
-            <p className="text-center text-gray-600 mb-8">
-              Distribusi data utama penduduk berdasarkan gender, kepala
-              keluarga, dan anak-anak
-            </p>
-            <ResponsiveContainer width="100%" height={350}>
-              <BarChart
-                data={[
-                  ...genderData,
-                  ...kepalaKeluargaData,
-                  ...anakAnakData,
-                ].map((d) => ({ name: d.key, jumlah: d.value }))}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis allowDecimals={false} />
-                <Tooltip content={<CustomTooltip />} />
-                <Legend />
-                <Bar
-                  dataKey="jumlah"
-                  name="Jumlah Penduduk"
-                  fill="#B6F500"
-                  barSize={40}
-                  radius={[6, 6, 0, 0]}
-                />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-      )}
+        )}
 
       {/* Sections menggunakan komponen DataSection - Selalu tampil */}
       <div className="mb-12">
@@ -716,7 +716,7 @@ export default function ManagePenduduk() {
             onClick={() => handleCreate("PERKERJAAN")}
             className="px-4 py-2 bg-pink-500 text-white rounded hover:bg-pink-600"
           >
-            + Tambah Pekerjaan
+            + Tambah Data Pekerjaan Berdasarkan Pekerjaan
           </button>
         </div>
         {pekerjaanData.length > 0 ? (
@@ -740,7 +740,7 @@ export default function ManagePenduduk() {
             onClick={() => handleCreate("PENDIDIKAN")}
             className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600"
           >
-            + Tambah Pendidikan
+            + Tambah Data Pendidikan Berdasarkan Tingkat Pendidikan
           </button>
         </div>
         {pendidikanData.length > 0 ? (
@@ -771,7 +771,7 @@ export default function ManagePenduduk() {
             onClick={() => handleCreate("PERNIKAHAN")}
             className="px-4 py-2 bg-sky-500 text-white rounded hover:bg-sky-600"
           >
-            + Tambah Pernikahan
+            + Tambah Data Pernikahan Berdasarkan Status Pernikahan
           </button>
         </div>
         {pernikahanData.length > 0 ? (
@@ -800,7 +800,7 @@ export default function ManagePenduduk() {
             onClick={() => handleCreate("AGAMA")}
             className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
           >
-            + Tambah Agama
+            + Tambah Data Agama Berdasarkan Pengikut Agama
           </button>
         </div>
         {agamaData.length > 0 ? (
@@ -830,7 +830,7 @@ export default function ManagePenduduk() {
             onClick={() => handleCreate("USIA")}
             className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
           >
-            + Tambah Usia
+            + Tambah Data Usia Berdasarkan Kelompok Usia
           </button>
         </div>
         {usiaData.length > 0 ? (
@@ -859,7 +859,7 @@ export default function ManagePenduduk() {
             onClick={() => handleCreate("DUSUN")}
             className="px-4 py-2 bg-teal-500 text-white rounded hover:bg-teal-600"
           >
-            + Tambah Dusun
+            + Tambah Data Dusun Berdasarkan Dusun
           </button>
         </div>
         {dusunData.length > 0 ? (

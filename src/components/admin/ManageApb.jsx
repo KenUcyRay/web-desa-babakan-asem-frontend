@@ -60,7 +60,7 @@ export default function ManageApb() {
   const fetchData = async () => {
     try {
       const response = await fetch(`${BASE_URL}/apb`, {
-        headers: getAuthHeaders("id")
+        headers: getAuthHeaders("id"),
       });
       const result = await response.json();
       const transformedData =
@@ -73,14 +73,14 @@ export default function ManageApb() {
           realisasiMillion: parseInt(item.realisasi) / 1000000,
         })) || [];
       setData(transformedData);
-    } catch (err) {
-    }
+    } catch (err) {}
   };
 
   const updateApb = async () => {
     try {
       const response = await fetch(`${BASE_URL}/admin/apb/${editing.id}`, {
         method: "PATCH",
+        credentials: "include",
         headers: getAuthHeaders("id"),
         body: JSON.stringify({
           bidang: form.key,
@@ -91,14 +91,15 @@ export default function ManageApb() {
       if (!response.ok) throw new Error();
       await fetchData();
       setEditing(null);
-    } catch (err) {
-    }
+    } catch (err) {}
   };
 
   const addApb = async () => {
     try {
       const response = await fetch(`${BASE_URL}/admin/apb`, {
         method: "POST",
+        credentials: "include",
+
         headers: getAuthHeaders("id"),
         body: JSON.stringify({
           bidang: addForm.key,
@@ -114,8 +115,7 @@ export default function ManageApb() {
       await alertSuccess("Data berhasil ditambahkan.");
       setAddForm({ key: "", anggaran: "", realisasi: "" });
       setShowAddForm(false);
-    } catch (err) {
-    }
+    } catch (err) {}
   };
 
   const deleteApb = async (id) => {
@@ -123,7 +123,9 @@ export default function ManageApb() {
 
     const response = await fetch(`${BASE_URL}/admin/apb/${id}`, {
       method: "DELETE",
-      headers: getAuthHeaders("id")
+      credentials: "include",
+
+      headers: getAuthHeaders("id"),
     });
 
     if (!response.ok) {

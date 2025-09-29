@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { alertSuccess } from "../../libs/alert";
 import { Helper } from "../../utils/Helper";
 import Swal from "sweetalert2";
+import { ContactApi } from "../../libs/api/ContactApi";
 import {
   FaMapMarkerAlt,
   FaPhoneAlt,
@@ -22,53 +23,13 @@ export default function ManageSosmed() {
   const [isLoading, setIsLoading] = useState(false);
 
   // Form state
-  const [formType, setFormType] = useState("lokasi");
+  const [formType, setFormType] = useState("LOKASI");
   const [formValue, setFormValue] = useState("");
   const [formLabel, setFormLabel] = useState("");
 
-  // Dummy data for testing
-  const dummyData = [
-    {
-      id: 1,
-      type: "lokasi",
-      value: "Jl. Raya Babakan Asem No. 123, Kecamatan Cibinong, Kabupaten Bogor, Jawa Barat 16918",
-      label: "Alamat Kantor Desa",
-      icon: FaMapMarkerAlt,
-      iconColor: "text-gray-900",
-      bgColor: "bg-gradient-to-br from-green-400 to-[#B6F500]",
-    },
-    {
-      id: 2,
-      type: "telepon",
-      value: "085330192025",
-      label: "Nomor Telepon",
-      icon: FaPhoneAlt,
-      iconColor: "text-gray-900",
-      bgColor: "bg-gradient-to-br from-green-400 to-[#B6F500]",
-    },
-    {
-      id: 3,
-      type: "whatsapp",
-      value: "6285330192025",
-      label: "WhatsApp",
-      icon: FaWhatsapp,
-      iconColor: "text-gray-900",
-      bgColor: "bg-gradient-to-br from-green-400 to-[#B6F500]",
-    },
-    {
-      id: 4,
-      type: "email",
-      value: "babakanasem@gmail.com",
-      label: "Email Kantor",
-      icon: FaEnvelope,
-      iconColor: "text-gray-900",
-      bgColor: "bg-gradient-to-br from-green-400 to-[#B6F500]",
-    },
-  ];
-
   const contactTypes = [
     {
-      id: "lokasi",
+      id: "LOKASI",
       label: "Lokasi/Alamat",
       icon: FaMapMarkerAlt,
       placeholder: "Masukkan alamat lengkap",
@@ -76,23 +37,23 @@ export default function ManageSosmed() {
       bgColor: "bg-gradient-to-br from-green-400 to-[#B6F500]",
     },
     {
-      id: "telepon",
+      id: "TELEPON",
       label: "Telepon",
       icon: FaPhoneAlt,
-      placeholder: "Masukkan nomor telepon",
+      placeholder: "Masukkan nomor telepon (08...)",
       iconColor: "text-gray-900",
       bgColor: "bg-gradient-to-br from-green-400 to-[#B6F500]",
     },
     {
-      id: "whatsapp",
+      id: "WHATSAPP",
       label: "WhatsApp",
       icon: FaWhatsapp,
-      placeholder: "Masukkan nomor WhatsApp",
+      placeholder: "Masukkan nomor WhatsApp (08...)",
       iconColor: "text-gray-900",
       bgColor: "bg-gradient-to-br from-green-400 to-[#B6F500]",
     },
     {
-      id: "email",
+      id: "EMAIL",
       label: "Email",
       icon: FaEnvelope,
       placeholder: "Masukkan alamat email",
@@ -101,17 +62,36 @@ export default function ManageSosmed() {
     },
   ];
 
-  useEffect(() => {
-    // Simulate loading data
+  const getIconComponent = (type) => {
+    const contactType = contactTypes.find((t) => t.id === type);
+    return contactType?.icon || FaMapMarkerAlt;
+  };
+
+  const fetchData = async () => {
     setIsLoading(true);
-    setTimeout(() => {
-      setData(dummyData);
+    try {
+      const response = await ContactApi.get(1, 10);
+      const contacts = response.data.map((contact) => ({
+        ...contact,
+        icon: getIconComponent(contact.type),
+        iconColor: "text-gray-900",
+        bgColor: "bg-gradient-to-br from-green-400 to-[#B6F500]",
+      }));
+      setData(contacts);
+    } catch (error) {
+      console.error("Error fetching contacts:", error);
+      await Helper.errorResponseHandler({ message: error.message });
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
   }, []);
 
   const resetForm = () => {
-    setFormType("lokasi");
+    setFormType("LOKASI");
     setFormValue("");
     setFormLabel("");
     setEditingId(null);
@@ -126,60 +106,47 @@ export default function ManageSosmed() {
     }
 
     // Validate based on type
-    if (formType === "email") {
+    if (formType === "EMAIL") {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(formValue)) {
         alert("Format email tidak valid");
         return;
       }
-    } else if (formType === "telepon" || formType === "whatsapp") {
-      const phoneRegex = /^[0-9+\-\s()]+$/;
-      if (!phoneRegex.test(formValue)) {
-        alert("Format nomor telepon tidak valid");
+    } else if (formType === "TELEPON" || formType === "WHATSAPP") {
+      if (!/^08[0-9]{8,13}$/.test(formValue)) {
+        alert("Nomor harus diawali 08 dan panjang 10–15 digit");
         return;
       }
     }
 
     setIsLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      const payload = {
+        type: formType,
+        label: formLabel,
+        value: formValue,
+      };
+
       if (editingId) {
         // Update existing
-        const updatedData = data.map((item) =>
-          item.id === editingId
-            ? {
-                ...item,
-                type: formType,
-                value: formValue,
-                label: formLabel,
-                icon: contactTypes.find((t) => t.id === formType)?.icon || FaMapMarkerAlt,
-                iconColor: contactTypes.find((t) => t.id === formType)?.iconColor || "text-gray-900",
-                bgColor: contactTypes.find((t) => t.id === formType)?.bgColor || "bg-gradient-to-br from-green-400 to-[#B6F500]",
-              }
-            : item
-        );
-        setData(updatedData);
+        await ContactApi.update(editingId, payload);
         alertSuccess("Kontak berhasil diperbarui!");
       } else {
         // Create new
-        const newContact = {
-          id: Date.now(),
-          type: formType,
-          value: formValue,
-          label: formLabel,
-          icon: contactTypes.find((t) => t.id === formType)?.icon || FaMapMarkerAlt,
-          iconColor: contactTypes.find((t) => t.id === formType)?.iconColor || "text-gray-900",
-          bgColor: contactTypes.find((t) => t.id === formType)?.bgColor || "bg-gradient-to-br from-green-400 to-[#B6F500]",
-        };
-        setData([...data, newContact]);
+        await ContactApi.create(payload);
         alertSuccess("Kontak berhasil ditambahkan!");
       }
       
       resetForm();
       setShowForm(false);
+      await fetchData();
+    } catch (error) {
+      console.error("Error saving contact:", error);
+      await Helper.errorResponseHandler({ message: error.message });
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   const handleEdit = (item) => {
@@ -203,9 +170,14 @@ export default function ManageSosmed() {
     });
 
     if (result.isConfirmed) {
-      const updatedData = data.filter((d) => d.id !== item.id);
-      setData(updatedData);
-      alertSuccess("Kontak berhasil dihapus!");
+      try {
+        await ContactApi.delete(item.id);
+        alertSuccess("Kontak berhasil dihapus!");
+        await fetchData();
+      } catch (error) {
+        console.error("Error deleting contact:", error);
+        await Helper.errorResponseHandler({ message: error.message });
+      }
     }
   };
 
@@ -255,8 +227,6 @@ export default function ManageSosmed() {
           </button>
         )}
       </div>
-
-
 
       {/* MODAL */}
       {showForm && (
@@ -329,7 +299,7 @@ export default function ManageSosmed() {
                       {contactTypes.find((t) => t.id === formType)?.label}:
                     </label>
                     <input 
-                      type={formType === "email" ? "email" : formType === "telepon" || formType === "whatsapp" ? "tel" : "text"}
+                      type={formType === "EMAIL" ? "email" : formType === "TELEPON" || formType === "WHATSAPP" ? "tel" : "text"}
                       value={formValue} 
                       onChange={(e) => setFormValue(e.target.value)} 
                       placeholder={contactTypes.find((t) => t.id === formType)?.placeholder}
@@ -353,8 +323,9 @@ export default function ManageSosmed() {
                   <button 
                     type="submit" 
                     disabled={isLoading}
-                    className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:opacity-50"
+                    className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:opacity-50 flex items-center gap-2"
                   >
+                    {isLoading && <LoadingSpinner className="w-4 h-4" />}
                     {isLoading ? "Menyimpan..." : (editingId ? "Simpan" : "Tambah")}
                   </button>
                 </div>
@@ -424,7 +395,6 @@ export default function ManageSosmed() {
           );
         })}
       </div>
-
     </div>
   );
 }

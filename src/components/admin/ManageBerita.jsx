@@ -217,7 +217,7 @@ export default function ManageBerita() {
                 <div className="flex flex-col items-center justify-center pt-5 pb-6 px-4">
                   <FaImage className="w-8 h-8 text-gray-400" />
                   <p className="text-sm text-gray-500 text-center">
-                    Klik untuk memilih gambar atau drag & drop
+                    {featuredImage ? "Klik untuk mengganti gambar" : "Klik untuk memilih gambar atau drag & drop"}
                   </p>
                 </div>
                 <input
@@ -228,21 +228,42 @@ export default function ManageBerita() {
                 />
               </label>
             </div>
+            
+            {/* Notifikasi upload berhasil */}
+            {featuredImage && (
+              <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded-lg">
+                <p className="text-sm text-green-700 flex items-center gap-2">
+                  ✅ <strong>Gambar berhasil dipilih:</strong> {featuredImage.name}
+                </p>
+              </div>
+            )}
+            
             {(featuredImage ||
               (editingId &&
                 news.find((b) => b.id === editingId)?.featured_image)) && (
               <div className="mt-2">
-                <img
-                  src={
-                    featuredImage
-                      ? URL.createObjectURL(featuredImage)
-                      : `${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
-                          news.find((b) => b.id === editingId)?.featured_image
-                        }`
-                  }
-                  alt="Preview"
-                  className="w-full h-40 object-cover rounded-lg border"
-                />
+                <div className="relative inline-block">
+                  <img
+                    src={
+                      featuredImage
+                        ? URL.createObjectURL(featuredImage)
+                        : `${import.meta.env.VITE_NEW_BASE_URL}/public/images/${
+                            news.find((b) => b.id === editingId)?.featured_image
+                          }`
+                    }
+                    alt="Preview"
+                    className="w-full h-40 object-cover rounded-lg border"
+                  />
+                  {featuredImage && (
+                    <button
+                      type="button"
+                      onClick={() => setFeaturedImage(null)}
+                      className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-red-600 transition"
+                    >
+                      ×
+                    </button>
+                  )}
+                </div>
               </div>
             )}
           </div>

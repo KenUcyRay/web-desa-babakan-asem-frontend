@@ -38,10 +38,11 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
           <button
             key={page}
             onClick={() => onPageChange(page)}
+            disabled={currentPage === page}
             className={`w-10 h-10 flex items-center justify-center rounded-md text-sm font-medium transition ${
               currentPage === page
-                ? "bg-[#B6F500] text-black shadow"
-                : "hover:bg-gray-100 text-gray-700"
+                ? "bg-[#B6F500] text-black shadow cursor-default"
+                : "hover:bg-gray-100 text-gray-700 hover:shadow-sm"
             }`}
           >
             {page}
