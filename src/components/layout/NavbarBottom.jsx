@@ -427,7 +427,7 @@ export default function NavbarBottom() {
                 onClick={() => setMobileOpen(false)}
                 className="hover:underline"
               >
-                Galer
+                Galeri
               </NavLink>
             </div>
           </details>

@@ -638,14 +638,14 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="w-full font-[Poppins,sans-serif] bg-gray-50 min-h-screen p-4 md:p-6 overflow-x-hidden">
+    <div className="w-full max-w-full font-[Poppins,sans-serif] bg-gray-50 min-h-screen p-2 sm:p-4 md:p-6 overflow-x-hidden">
       {/* HEADER DASHBOARD */}
-      <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-8">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 sm:mb-8">
         <div className="mb-4 md:mb-0">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-2">
+          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-800 mb-2">
             Admin Dashboard
           </h1>
-          <p className="text-gray-600">
+          <p className="text-sm sm:text-base text-gray-600">
             Ringkasan aktivitas dan statistik terbaru
           </p>
         </div>
@@ -663,10 +663,10 @@ export default function AdminDashboard() {
       </div>
 
       {/* PETA UTAMA - Dengan implementasi dari Tes.jsx */}
-      <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
-        <div className="bg-gradient-to-r from-green-400 to-[#B6F500] p-4 md:p-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <h2 className="text-xl md:text-2xl font-bold text-white flex items-center gap-3">
+      <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-8 max-w-full">
+        <div className="bg-gradient-to-r from-green-400 to-[#B6F500] p-3 sm:p-4 md:p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3">
+            <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-white flex items-center gap-2 sm:gap-3">
               <div className="bg-white bg-opacity-20 p-2 rounded-lg">
                 <FaMapMarkedAlt className="text-blue-700 text-xl" />
               </div>
@@ -674,14 +674,14 @@ export default function AdminDashboard() {
             </h2>
 
             {/* Filter Tahun dan Toggle Polygon */}
-            <div className="flex items-center gap-2 md:gap-4">
-              <label className="text-black font-medium text-sm md:text-md">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+              <label className="text-black font-medium text-xs sm:text-sm">
                 Pilih Tahun:
               </label>
               <select
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-                className="px-2 py-1 md:px-3 md:py-2 rounded-md border text-sm cursor-pointer"
+                className="px-2 py-1 rounded-md border text-xs sm:text-sm cursor-pointer"
               >
                 {uniqueYears.map((year) => (
                   <option key={year} value={year} className="text-black">
@@ -689,37 +689,39 @@ export default function AdminDashboard() {
                   </option>
                 ))}
               </select>
+              <div className="flex gap-1 sm:gap-2">
               <button
                 onClick={() => setShowPolygons(!showPolygons)}
-                className={`px-2 py-1 rounded-lg text-xs font-medium transition-all duration-300 transform hover:scale-105 ${
+                className={`px-1.5 sm:px-2 py-1 rounded-lg text-xs font-medium transition-all ${
                   showPolygons
-                    ? "bg-blue-500 text-white hover:bg-blue-600 shadow-md cursor-pointer"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    ? "bg-blue-500 text-white cursor-pointer"
+                    : "bg-gray-100 text-gray-600"
                 }`}
               >
-                {showPolygons ? "Area" : "Area"}
+                Area
               </button>
               <button
                 onClick={() => setShowMarkers(!showMarkers)}
-                className={`px-2 py-1 rounded-lg text-xs font-medium transition-all duration-300 transform hover:scale-105 ${
+                className={`px-1.5 sm:px-2 py-1 rounded-lg text-xs font-medium transition-all ${
                   showMarkers
-                    ? "bg-green-500 text-white hover:bg-green-600 shadow-md cursor-pointer"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    ? "bg-green-500 text-white cursor-pointer"
+                    : "bg-gray-100 text-gray-600"
                 }`}
               >
-                {showMarkers ? "Lokasi" : "Lokasi"}
+                Lokasi
               </button>
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="p-6 relative">
-          <div className="rounded-xl overflow-hidden  shadow-md border-2 border-green-100 relative">
+        <div className="p-3 sm:p-4 md:p-6 relative">
+          <div className="rounded-xl overflow-hidden shadow-md border-2 border-green-100 relative">
             <MapContainer
               center={[-6.75, 108.05861]}
               zoom={15}
               scrollWheelZoom={true}
-              className={"w-full h-[750px] 2xl:h-[1000px] z-0"}
+              className={"w-full h-[400px] sm:h-[500px] md:h-[600px] lg:h-[750px] 2xl:h-[1000px] z-0"}
             >
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -820,15 +822,15 @@ export default function AdminDashboard() {
         </div>
 
         {/* LEGENDA PETA - Enhanced Card Style */}
-        <div className="px-3 md:px-6 pb-6 md:pb-8">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 md:mb-6">
-            <h3 className="text-xl md:text-2xl font-bold text-gray-800 flex items-center gap-2">
+        <div className="px-2 sm:px-3 md:px-6 pb-4 sm:pb-6 md:pb-8">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-3 mb-3 sm:mb-4 md:mb-6">
+            <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 flex items-center gap-2">
               <FaMapMarkedAlt className="text-green-600" />
               Legenda Peta
             </h3>
           </div>
           {/* Dynamic legend cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 md:gap-6">
             {/* Kartu Legenda Poligon */}
             {polygonLegendData.length > 0 && (
               <div className="bg-white rounded-xl shadow-lg border-2 border-green-100 p-6 hover:shadow-xl transition-all duration-300">
@@ -978,7 +980,7 @@ export default function AdminDashboard() {
         </h2>
 
         {/* Grid Statistik Detail */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-6 sm:mb-8">
           <DetailStatCard
             icon={<FaComments className="text-2xl text-orange-500" />}
             title={"Pesan"}
@@ -1033,7 +1035,7 @@ export default function AdminDashboard() {
             </button>
           </div>
 
-          <div className="h-80">
+          <div className="h-64 sm:h-72 md:h-80">
             {idmData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={idmData}>
@@ -1089,7 +1091,7 @@ export default function AdminDashboard() {
             </button>
           </div>
 
-          <div className="h-80">
+          <div className="h-64 sm:h-72 md:h-80">
             {populationMainData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={populationMainData}>
@@ -1139,7 +1141,7 @@ export default function AdminDashboard() {
             </button>
           </div>
 
-          <div className="h-80">
+          <div className="h-64 sm:h-72 md:h-80">
             {populationAgeData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart
@@ -1189,7 +1191,7 @@ export default function AdminDashboard() {
           Manajemen Konten
         </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
           <PreviewSection
             title={"Struktur Desa"}
             icon={<FaSitemap className="text-blue-500" />}
@@ -1298,8 +1300,8 @@ function CompactActivityLog({ activities }) {
 
   return (
     <div
-      className={`bg-white rounded-lg shadow-sm border p-3 transition-all duration-300 ${
-        isExpanded ? "min-w-[400px] max-w-[500px]" : "min-w-[300px]"
+      className={`bg-white rounded-lg shadow-sm border p-2 sm:p-3 transition-all duration-300 max-w-[90vw] ${
+        isExpanded ? "w-[280px] sm:w-[400px]" : "w-[250px] sm:w-[300px]"
       }`}
     >
       <div className="flex items-center justify-between mb-2">

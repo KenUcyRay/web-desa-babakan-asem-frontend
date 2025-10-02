@@ -205,7 +205,7 @@ export default function Pemerintahan() {
   };
 
   return (
-    <div className="font-poppins bg-gray-50 pt-[60px] lg:pt-[40px] animate-fade">
+    <div className="font-poppins bg-gray-50 pt-[60px] lg:pt-[40px] animate-fade overflow-x-hidden">
       {/* =========================
           Header / Hero
           ========================= */}
@@ -379,7 +379,8 @@ export default function Pemerintahan() {
               </div>
 
               {/* Desktop table */}
-              <div className="hidden md:block overflow-x-auto rounded-xl shadow-md">
+              <div className="hidden md:block overflow-x-auto rounded-xl shadow-md -mx-2 sm:mx-0">
+                <div className="min-w-full inline-block align-middle">
                 <table className="min-w-full text-left text-gray-700 text-sm lg:text-base">
                   <thead className="bg-gray-100 text-gray-800">
                     <tr>
@@ -414,6 +415,7 @@ export default function Pemerintahan() {
                     ))}
                   </tbody>
                 </table>
+                </div>
               </div>
             </>
           )}
@@ -570,17 +572,17 @@ export default function Pemerintahan() {
           PDF Modal (Preview + Download)
           ========================= */}
       {pdfModal.isOpen && (
-        <div className="fixed inset-0 bg-white/30 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg w-full max-w-5xl h-[90vh] flex flex-col shadow-2xl">
-            <div className="flex items-center justify-between p-4 border-b bg-gray-50 rounded-t-lg">
-              <h3 className="text-lg font-semibold text-gray-800 truncate flex-1 mr-4">{pdfModal.title}</h3>
-              <div className="flex items-center gap-3 flex-shrink-0">
+        <div className="fixed inset-0 bg-white/30 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-4">
+          <div className="bg-white rounded-lg w-full max-w-5xl h-[90vh] sm:h-[85vh] flex flex-col shadow-2xl mx-2 sm:mx-0">
+            <div className="flex items-center justify-between p-2 sm:p-4 border-b bg-gray-50 rounded-t-lg">
+              <h3 className="text-sm sm:text-lg font-semibold text-gray-800 truncate flex-1 mr-2 sm:mr-4">{pdfModal.title}</h3>
+              <div className="flex items-center gap-1 sm:gap-3 flex-shrink-0">
                 <a 
                   href={getDownloadUrl(pdfModal.id)} 
                   download 
-                  className="text-blue-600 hover:text-blue-800 flex items-center gap-1 text-sm font-medium px-3 py-2 rounded-md hover:bg-blue-50 transition cursor-pointer"
+                  className="text-blue-600 hover:text-blue-800 flex items-center gap-1 text-xs sm:text-sm font-medium px-2 sm:px-3 py-1 sm:py-2 rounded-md hover:bg-blue-50 transition cursor-pointer"
                 >
-                  <FaDownload size={14} /> Download
+                  <FaDownload size={12} className="sm:w-3.5 sm:h-3.5" /> <span className="hidden sm:inline">Download</span>
                 </a>
                 <button 
                   onClick={closePdfModal} 

@@ -352,23 +352,23 @@ export default function ManageIDM() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-8 font-poppins bg-gray-50 min-h-screen">
+    <div className="w-full max-w-full mx-auto px-1 sm:px-2 md:px-4 lg:px-6 py-4 sm:py-6 md:py-8 font-poppins bg-gray-50 min-h-screen overflow-x-hidden">
       {/* - Header */}
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h2 className="text-3xl font-bold text-gray-800">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 sm:mb-8">
+        <div className="flex-1">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800">
             Skor IDM Desa Babakan Asem
           </h2>
-          <p className="mt-2 text-gray-600">
+          <p className="mt-2 text-sm sm:text-base text-gray-600">
             Perkembangan <strong>Indeks Desa Membangun (IDM)</strong> dari tahun
             ke tahun.
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-2">
           <button
             onClick={handleCreateDimensi}
             disabled={dimensiSosial > 0 && dimensiEkonomi > 0 && dimensiLingkungan > 0}
-            className={`px-4 py-2 rounded-lg shadow transition ${
+            className={`px-2 sm:px-4 py-2 rounded-lg shadow transition text-xs sm:text-sm ${
               dimensiSosial > 0 && dimensiEkonomi > 0 && dimensiLingkungan > 0
                 ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
                 : 'bg-blue-500 text-white hover:bg-blue-600 cursor-pointer'
@@ -379,7 +379,7 @@ export default function ManageIDM() {
           <button
             onClick={() => setShowCreateStatusForm(true)}
             disabled={statusExists}
-            className={`px-4 py-2 rounded-lg shadow transition ${
+            className={`px-2 sm:px-4 py-2 rounded-lg shadow transition text-xs sm:text-sm ${
               statusExists
                 ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
                 : 'bg-purple-500 text-white hover:bg-purple-600 cursor-pointer'
@@ -389,7 +389,7 @@ export default function ManageIDM() {
           </button>
           <button
             onClick={handleAdd}
-            className="px-4 py-2 bg-green-500 text-white rounded-lg shadow hover:bg-green-600 transition cursor-pointer"
+            className="px-2 sm:px-4 py-2 bg-green-500 text-white rounded-lg shadow hover:bg-green-600 transition cursor-pointer text-xs sm:text-sm"
           >
             + Tambah data
           </button>
@@ -397,14 +397,14 @@ export default function ManageIDM() {
       </div>
 
       {/* - Kotak Statistik (edit & simpan) */}
-      <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-6 mt-8">
-        <div className="flex flex-col items-center bg-white p-6 rounded-xl shadow">
-          <p className="text-gray-600">Status desa</p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mt-6 sm:mt-8">
+        <div className="flex flex-col items-center bg-white p-3 sm:p-4 md:p-6 rounded-xl shadow">
+          <p className="text-sm sm:text-base text-gray-600">Status desa</p>
           {extraIdmId ? (
             <select
               value={tempStatus}
               onChange={(e) => setTempStatus(e.target.value)}
-              className="mt-2 border rounded px-3 py-2 text-gray-800"
+              className="mt-2 border rounded px-2 sm:px-3 py-1 sm:py-2 text-gray-800 text-sm sm:text-base"
             >
               <option value="MAJU">Maju</option>
               <option value="BERKEMBANG">Berkembang</option>
@@ -417,8 +417,8 @@ export default function ManageIDM() {
           )}
         </div>
 
-        <div className="flex flex-col items-center bg-white p-6 rounded-xl shadow">
-          <p className="text-gray-600">Dimensi sosial</p>
+        <div className="flex flex-col items-center bg-white p-3 sm:p-4 md:p-6 rounded-xl shadow">
+          <p className="text-sm sm:text-base text-gray-600">Dimensi sosial</p>
           {extraIdmId && dimensiSosial > 0 ? (
             <input
               type="number"
@@ -427,15 +427,15 @@ export default function ManageIDM() {
               max="1"
               value={tempSosial}
               onChange={(e) => setTempSosial(parseFloat(e.target.value))}
-              className="mt-2 border rounded px-3 py-2 w-20 text-center"
+              className="mt-2 border rounded px-2 sm:px-3 py-1 sm:py-2 w-16 sm:w-20 text-center text-sm sm:text-base"
             />
           ) : (
             <p className="mt-2 text-gray-400 text-sm">Belum ada data</p>
           )}
         </div>
 
-        <div className="flex flex-col items-center bg-white p-6 rounded-xl shadow">
-          <p className="text-gray-600">Dimensi ekonomi</p>
+        <div className="flex flex-col items-center bg-white p-3 sm:p-4 md:p-6 rounded-xl shadow">
+          <p className="text-sm sm:text-base text-gray-600">Dimensi ekonomi</p>
           {extraIdmId && dimensiEkonomi > 0 ? (
             <input
               type="number"
@@ -444,15 +444,15 @@ export default function ManageIDM() {
               max="1"
               value={tempEkonomi}
               onChange={(e) => setTempEkonomi(parseFloat(e.target.value))}
-              className="mt-2 border rounded px-3 py-2 w-20 text-center"
+              className="mt-2 border rounded px-2 sm:px-3 py-1 sm:py-2 w-16 sm:w-20 text-center text-sm sm:text-base"
             />
           ) : (
             <p className="mt-2 text-gray-400 text-sm">Belum ada data</p>
           )}
         </div>
 
-        <div className="flex flex-col items-center bg-white p-6 rounded-xl shadow">
-          <p className="text-gray-600">Dimensi lingkungan</p>
+        <div className="flex flex-col items-center bg-white p-3 sm:p-4 md:p-6 rounded-xl shadow">
+          <p className="text-sm sm:text-base text-gray-600">Dimensi lingkungan</p>
           {extraIdmId && dimensiLingkungan > 0 ? (
             <input
               type="number"
@@ -461,7 +461,7 @@ export default function ManageIDM() {
               max="1"
               value={tempLingkungan}
               onChange={(e) => setTempLingkungan(parseFloat(e.target.value))}
-              className="mt-2 border rounded px-3 py-2 w-20 text-center"
+              className="mt-2 border rounded px-2 sm:px-3 py-1 sm:py-2 w-16 sm:w-20 text-center text-sm sm:text-base"
             />
           ) : (
             <p className="mt-2 text-gray-400 text-sm">Belum ada data</p>
@@ -485,7 +485,7 @@ export default function ManageIDM() {
       </div>
 
       {/* - Tampilan nilai tersimpan */}
-      <div className="mt-4 text-gray-700">
+      <div className="mt-4 text-sm sm:text-base text-gray-700">
         <p>
           <strong>Status desa:</strong> {statusDesa}
         </p>
@@ -501,17 +501,18 @@ export default function ManageIDM() {
       </div>
 
       {/* - Tabel Data */}
-      <div className="overflow-x-auto mt-8">
-        <table className="w-full bg-white rounded-xl shadow">
+      <div className="overflow-x-auto mt-6 sm:mt-8 -mx-4 sm:-mx-2 md:mx-0">
+        <div className="min-w-full inline-block align-middle">
+        <table className="w-full bg-white rounded-xl shadow min-w-[320px]">
           <thead className="bg-gray-100">
             <tr>
-              <th className="p-3 text-left font-semibold text-gray-700">
+              <th className="p-1 sm:p-2 md:p-3 text-left font-semibold text-gray-700 text-xs sm:text-sm">
                 Tahun
               </th>
-              <th className="p-3 text-left font-semibold text-gray-700">
+              <th className="p-1 sm:p-2 md:p-3 text-left font-semibold text-gray-700 text-xs sm:text-sm">
                 Skor
               </th>
-              <th className="p-3 text-left font-semibold text-gray-700">
+              <th className="p-1 sm:p-2 md:p-3 text-left font-semibold text-gray-700 text-xs sm:text-sm">
                 Aksi
               </th>
             </tr>
@@ -519,19 +520,19 @@ export default function ManageIDM() {
           <tbody>
             {skorIDM.map((data) => (
               <tr key={data.id} className="...">
-                <td className="p-3">{data.tahun}</td>
-                <td className="p-3">{data.skor}</td>
-                <td className="p-3 space-x-3">
+                <td className="p-1 sm:p-2 md:p-3 text-xs sm:text-sm">{data.tahun}</td>
+                <td className="p-1 sm:p-2 md:p-3 text-xs sm:text-sm">{data.skor}</td>
+                <td className="p-1 sm:p-2 md:p-3 space-x-1 sm:space-x-3">
                   <a
                     href={`#edit-idm-form-${data.id}`}
                     onClick={() => handleEdit(data.id)}
-                    className="text-blue-600 hover:underline cursor-pointer"
+                    className="text-blue-600 hover:underline cursor-pointer text-xs sm:text-sm"
                   >
                     Edit
                   </a>
                   <button
                     onClick={() => handleDelete(data.id)}
-                    className="text-red-600 hover:underline cursor-pointer"
+                    className="text-red-600 hover:underline cursor-pointer text-xs sm:text-sm"
                   >
                     Hapus
                   </button>
@@ -541,21 +542,22 @@ export default function ManageIDM() {
 
             {skorIDM.length === 0 && (
               <tr>
-                <td colSpan={3} className="p-4 text-center text-gray-500">
+                <td colSpan={3} className="p-3 sm:p-4 text-center text-gray-500 text-sm">
                   Tidak ada data IDM tersedia
                 </td>
               </tr>
             )}
           </tbody>
         </table>
+        </div>
       </div>
 
       {/* - Grafik Line */}
-      <div className="mt-12">
-        <h3 className="text-2xl font-bold text-gray-800 text-center mb-6">
+      <div className="mt-8 sm:mt-12">
+        <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 text-center mb-4 sm:mb-6">
           Grafik Perkembangan Skor IDM
         </h3>
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer width="100%" height={250} className="sm:h-[300px]">
           <LineChart data={skorIDM}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="tahun" />
@@ -574,8 +576,8 @@ export default function ManageIDM() {
 
       {/* - Modal Form Tambah/Edit Skor IDM */}
       {showForm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div id={editingIndex ? `edit-idm-form-${editingIndex}` : "create-idm-form"} className="bg-white rounded-lg shadow-lg p-6 w-80">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div id={editingIndex ? `edit-idm-form-${editingIndex}` : "create-idm-form"} className="bg-white rounded-lg shadow-lg p-4 sm:p-6 w-full max-w-sm sm:max-w-md mx-4">
             <h3 className="text-xl font-semibold mb-4">
               {isAdding ? "Tambah data IDM" : "Edit data IDM"}
             </h3>
@@ -629,8 +631,8 @@ export default function ManageIDM() {
 
       {/* - Modal Form Create Dimensi */}
       {showCreateDimensiForm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-80">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 w-full max-w-sm sm:max-w-md mx-4">
             <h3 className="text-xl font-semibold mb-4">
               Buat Dimensi IDM
             </h3>
@@ -695,8 +697,8 @@ export default function ManageIDM() {
 
       {/* - Modal Form Create Status Desa */}
       {showCreateStatusForm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-80">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 w-full max-w-sm sm:max-w-md mx-4">
             <h3 className="text-xl font-semibold mb-4">
               Buat Status Desa
             </h3>
