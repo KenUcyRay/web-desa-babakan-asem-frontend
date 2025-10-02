@@ -166,7 +166,7 @@ export default function ManageRegulasi() {
           </div>
 
           <button
-            className="flex items-center justify-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2 sm:px-5 sm:py-2.5 rounded-lg shadow-md transition text-sm sm:text-base w-full sm:w-auto mt-2 sm:mt-0"
+            className="flex items-center justify-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2 sm:px-5 sm:py-2.5 rounded-lg shadow-md transition text-sm sm:text-base w-full sm:w-auto mt-2 sm:mt-0 cursor-pointer"
             onClick={() => {
               resetForm();
               setShowForm(true);
@@ -179,6 +179,7 @@ export default function ManageRegulasi() {
         {/* Form */}
         {showForm && (
           <div
+            id="create-regulasi-form"
             ref={formRef}
             className="bg-white rounded-xl shadow-md border border-gray-200 p-4 sm:p-6 mb-4 sm:mb-6 md:mb-8"
           >
@@ -188,7 +189,7 @@ export default function ManageRegulasi() {
               </h2>
               <button
                 onClick={resetForm}
-                className="text-gray-500 hover:text-gray-700 transition p-1 rounded-full hover:bg-gray-100"
+                className="text-gray-500 hover:text-gray-700 transition p-1 rounded-full hover:bg-gray-100 cursor-pointer"
               >
                 <FaTimes size={20} />
               </button>
@@ -256,7 +257,7 @@ export default function ManageRegulasi() {
                 <button
                   type="submit"
                   disabled={uploading}
-                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2.5 sm:px-6 sm:py-3 rounded-xl shadow-md transition disabled:opacity-50 disabled:cursor-not-allowed order-1 sm:order-none"
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2.5 sm:px-6 sm:py-3 rounded-xl shadow-md transition disabled:opacity-50 disabled:cursor-not-allowed order-1 sm:order-none cursor-pointer"
                 >
                   <FaSave />
                   {uploading ? "Memproses..." : "Simpan Regulasi"}
@@ -264,7 +265,7 @@ export default function ManageRegulasi() {
                 <button
                   type="button"
                   onClick={resetForm}
-                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2.5 sm:px-5 sm:py-3 rounded-xl transition"
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2.5 sm:px-5 sm:py-3 rounded-xl transition cursor-pointer"
                 >
                   <FaTimes /> Batal
                 </button>
@@ -299,7 +300,7 @@ export default function ManageRegulasi() {
                   resetForm();
                   setShowForm(true);
                 }}
-                className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2 sm:px-5 sm:py-2.5 rounded-lg shadow-md transition w-full sm:w-auto"
+                className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2 sm:px-5 sm:py-2.5 rounded-lg shadow-md transition w-full sm:w-auto cursor-pointer"
               >
                 <FaPlus /> Tambah Regulasi
               </button>
@@ -368,7 +369,7 @@ export default function ManageRegulasi() {
                         <div className="flex items-center gap-3">
                           <button
                             onClick={() => handleDownload(regulation)}
-                            className="text-blue-600 hover:text-blue-900 transition-colors"
+                            className="text-blue-600 hover:text-blue-900 transition-colors cursor-pointer"
                             title="Download"
                           >
                             <FaDownload size={16} />
@@ -376,7 +377,7 @@ export default function ManageRegulasi() {
 
                           <button
                             onClick={() => handleDelete(regulation.id, regulation.title)}
-                            className="text-red-600 hover:text-red-900 transition-colors"
+                            className="text-red-600 hover:text-red-900 transition-colors cursor-pointer"
                             title="Hapus"
                           >
                             <FaTrash size={16} />
@@ -423,7 +424,7 @@ export default function ManageRegulasi() {
                   <div className="border-t border-gray-100 pt-2 mt-2 flex justify-end gap-3">
                     <button
                       onClick={() => handleDownload(regulation)}
-                      className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-full transition"
+                      className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-full transition cursor-pointer"
                       title="Download"
                     >
                       <FaDownload size={16} />
@@ -431,7 +432,7 @@ export default function ManageRegulasi() {
 
                     <button
                       onClick={() => handleDelete(regulation.id, regulation.title)}
-                      className="p-1.5 text-red-600 hover:bg-red-50 rounded-full transition"
+                      className="p-1.5 text-red-600 hover:bg-red-50 rounded-full transition cursor-pointer"
                       title="Hapus"
                     >
                       <FaTrash size={16} />

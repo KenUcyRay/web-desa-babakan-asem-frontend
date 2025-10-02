@@ -190,7 +190,7 @@ export default function Administrasi() {
           <div className="flex flex-wrap justify-center gap-4">
             <button
               onClick={() => navigate("/surat-pengantar")}
-              className="group bg-lime-400 text-black font-semibold px-8 py-3 rounded-full hover:bg-lime-300 transition-all duration-300 transform hover:scale-105 hover:shadow-lg"
+              className="group bg-lime-400 text-black font-semibold px-8 py-3 rounded-full hover:bg-lime-300 transition-all duration-300 transform hover:scale-105 hover:shadow-lg cursor-pointer"
             >
               <span className="flex items-center gap-2">
                 {t("administrasi.topButtons.ajukan")}
@@ -199,7 +199,7 @@ export default function Administrasi() {
             </button>
             <button
               onClick={() => navigate("/panduan")}
-              className="group bg-white text-gray-700 font-semibold px-8 py-3 rounded-full border-2 border-gray-200 hover:border-lime-300 hover:bg-lime-50 transition-all duration-300 transform hover:scale-105 hover:shadow-lg"
+              className="group bg-white text-gray-700 font-semibold px-8 py-3 rounded-full border-2 border-gray-200 hover:border-lime-300 hover:bg-lime-50 transition-all duration-300 transform hover:scale-105 hover:shadow-lg cursor-pointer"
             >
               <span className="flex items-center gap-2">
                 {t("administrasi.topButtons.panduan")}
@@ -325,7 +325,7 @@ export default function Administrasi() {
                 {/* Action Button - FIXED NAVIGATION */}
                 <button
                   onClick={() => navigate(service.route)}
-                  className="w-full bg-gradient-to-r from-lime-400 to-green-500 text-white font-semibold px-6 py-4 rounded-2xl hover:from-lime-500 hover:to-green-600 transition-all duration-300 transform group-hover:scale-105 shadow-lg hover:shadow-xl"
+                  className="w-full bg-gradient-to-r from-lime-400 to-green-500 text-white font-semibold px-6 py-4 rounded-2xl hover:from-lime-500 hover:to-green-600 transition-all duration-300 transform group-hover:scale-105 shadow-lg hover:shadow-xl cursor-pointer"
                 >
                   <span className="flex items-center justify-center gap-2">
                     {service.button}

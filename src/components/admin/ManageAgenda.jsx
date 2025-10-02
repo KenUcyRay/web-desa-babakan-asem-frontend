@@ -202,7 +202,7 @@ export default function ManageAgenda() {
               setEditingId(null);
               setShowForm(true);
             }}
-            className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-3 rounded-lg shadow-md transition hover:shadow-lg"
+            className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-3 rounded-lg shadow-md transition hover:shadow-lg cursor-pointer"
           >
             <FiPlus className="text-lg" />
             Tambah Agenda Baru
@@ -242,6 +242,7 @@ export default function ManageAgenda() {
       {/* Form Tambah / Edit */}
       {showForm && (
         <form
+          id={editingId ? `edit-agenda-form-${editingId}` : "create-agenda-form"}
           onSubmit={handleSubmit}
           className="bg-white shadow-xl rounded-xl p-6 mb-8 border border-gray-100 space-y-5 max-w-4xl mx-auto"
         >
@@ -262,7 +263,7 @@ export default function ManageAgenda() {
             <button
               type="button"
               onClick={resetForm}
-              className="text-gray-400 hover:text-gray-600"
+              className="text-gray-400 hover:text-gray-600 cursor-pointer"
             >
               <FiX size={20} />
             </button>
@@ -319,7 +320,7 @@ export default function ManageAgenda() {
                   </label>
                   <input
                     type="datetime-local"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition cursor-pointer"
                     value={startTime}
                     onChange={(e) => setStartTime(e.target.value)}
                   />
@@ -331,7 +332,7 @@ export default function ManageAgenda() {
                   </label>
                   <input
                     type="datetime-local"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition cursor-pointer"
                     value={endTime}
                     onChange={(e) => setEndTime(e.target.value)}
                   />
@@ -344,7 +345,7 @@ export default function ManageAgenda() {
                   Tipe Agenda
                 </label>
                 <select
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition cursor-pointer"
                   value={typeSelected}
                   onChange={(e) => setTypeSelected(e.target.value)}
                 >
@@ -412,8 +413,8 @@ export default function ManageAgenda() {
                     onClick={() => setIsPublished(true)}
                     className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg border transition ${
                       isPublished
-                        ? "bg-green-100 border-green-500 text-green-700"
-                        : "bg-gray-50 border-gray-300 text-gray-600 hover:bg-gray-100"
+                        ? "bg-green-100 border-green-500 text-green-700 cursor-pointer"
+                        : "bg-gray-50 border-gray-300 text-gray-600 hover:bg-gray-100 cursor-pointer"
                     }`}
                   >
                     <FiCheck /> Publish
@@ -423,8 +424,8 @@ export default function ManageAgenda() {
                     onClick={() => setIsPublished(false)}
                     className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg border transition ${
                       !isPublished
-                        ? "bg-red-100 border-red-500 text-red-700"
-                        : "bg-gray-50 border-gray-300 text-gray-600 hover:bg-gray-100"
+                        ? "bg-red-100 border-red-500 text-red-700 cursor-pointer"
+                        : "bg-gray-50 border-gray-300 text-gray-600 hover:bg-gray-100 cursor-pointer"
                     }`}
                   >
                     <FiX /> Draft
@@ -438,13 +439,13 @@ export default function ManageAgenda() {
             <button
               type="button"
               onClick={resetForm}
-              className="px-5 py-2.5 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 transition"
+              className="px-5 py-2.5 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 transition cursor-pointer"
             >
               Batal
             </button>
             <button
               type="submit"
-              className="px-6 py-2.5 rounded-lg bg-green-600 hover:bg-green-700 text-white shadow-md transition flex items-center gap-2"
+              className="px-6 py-2.5 rounded-lg bg-green-600 hover:bg-green-700 text-white shadow-md transition flex items-center gap-2 cursor-pointer"
             >
               {editingId ? (
                 <>
@@ -468,7 +469,7 @@ export default function ManageAgenda() {
             <h3 className="mt-2 text-lg font-medium text-gray-900">
               Tidak ada agenda yang ditemukan
             </h3>
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-gray-500">``
               {kategori === "Semua"
                 ? "Belum ada agenda yang ditambahkan."
                 : `Tidak ada agenda yang ditemukan untuk kategori ${kategoriLabel[kategori]}.`}
@@ -479,7 +480,7 @@ export default function ManageAgenda() {
                   setEditingId(null);
                   setShowForm(true);
                 }}
-                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer"
               >
                 <FiPlus className="-ml-1 mr-2 h-5 w-5" />
                 Tambah Agenda Baru
@@ -558,15 +559,16 @@ export default function ManageAgenda() {
                   </div>
 
                   <div className="flex justify-between mt-6 pt-4 border-t">
-                    <button
+                    <a
+                      href={`#edit-agenda-form-${a.id}`}
                       onClick={() => handleEdit(a.id)}
-                      className="flex items-center gap-1.5 text-sm font-medium text-blue-600 hover:text-blue-800 transition"
+                      className="flex items-center gap-1.5 text-sm font-medium text-blue-600 hover:text-blue-800 transition cursor-pointer"
                     >
                       <FiEdit2 size={14} /> Edit
-                    </button>
+                    </a>
                     <button
                       onClick={() => handleDelete(a.id)}
-                      className="flex items-center gap-1.5 text-sm font-medium text-red-600 hover:text-red-800 transition"
+                      className="flex items-center gap-1.5 text-sm font-medium text-red-600 hover:text-red-800 transition cursor-pointer"
                     >
                       <FiTrash2 size={14} /> Hapus
                     </button>

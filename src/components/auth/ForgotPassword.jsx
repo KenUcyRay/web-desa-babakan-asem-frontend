@@ -26,7 +26,7 @@ export default function ForgotPassword() {
       navigate("/wait");
       return;
     }
-    await Helper.errorResponseHandler(await response.json());
+    await Helper.errorResponseHandler(await response.json(), Helper.CONTEXT.FORGOT_PASSWORD);
     setEmail("");
   };
 

@@ -45,8 +45,8 @@ export const AuthProvider = ({ children }) => {
       
       if (!response.ok) {
         if (response.status === 401 || response.status === 403) {
-          localStorage.removeItem('token');
-          sessionStorage.removeItem('token');
+          // Token expired atau tidak valid, hapus dan logout silent
+          removeToken();
           setProfile(null);
         }
         setIsLoading(false);
@@ -57,8 +57,7 @@ export const AuthProvider = ({ children }) => {
       const responseBody = await response.json();
       setProfile(responseBody.data);
     } catch (error) {
-      localStorage.removeItem('token');
-      sessionStorage.removeItem('token');
+      removeToken();
       setProfile(null);
     } finally {
       setIsLoading(false);
@@ -71,20 +70,39 @@ export const AuthProvider = ({ children }) => {
     setProfile(userData);
   };
 
-  const logout = () => {
-    // Hapus token dari semua storage
-    localStorage.removeItem('token');
-    sessionStorage.removeItem('token');
+  const logout = async (showAlert = true) => {
+    const lang = localStorage.getItem("i18nextLng") || "id";
+    const isEnglish = lang.startsWith("en");
     
-    // Clear semua localStorage dan sessionStorage
-    localStorage.clear();
-    sessionStorage.clear();
+    try {
+      // Coba logout ke server, tapi jangan tunggu jika gagal
+      const token = getToken();
+      if (token) {
+        const UserApi = await import('../libs/api/UserApi');
+        await UserApi.UserApi.logout(i18n.language).catch(() => {
+          // Ignore server logout error - token mungkin sudah expired
+        });
+      }
+    } catch (error) {
+      // Ignore any error
+    }
+    
+    // Hapus token dari semua storage
+    removeToken();
     
     // Reset profile state
     setProfile(null);
-    setIsInitialized(false);
+    setIsInitialized(true); // Keep initialized as true
     
-    // Force redirect dan reload
+    // Show success message if requested
+    if (showAlert) {
+      const { alertSuccess } = await import('../libs/alert');
+      await alertSuccess(
+        isEnglish ? "Successfully logged out." : "Berhasil keluar."
+      );
+    }
+    
+    // Force redirect
     window.location.replace('/');
   };
 

@@ -50,9 +50,18 @@ export default function Pemerintahan() {
 
   // optional: service hours toggles / states
   const serviceHours = [
-    { day: "Monday - Friday", time: "08:00 - 16:00 WIB" },
-    { day: "Saturday", time: "08:00 - 12:00 WIB" },
-    { day: "Sunday & Holidays", time: "Closed" },
+    { 
+      day: i18n.language === "en" ? "Monday - Friday" : "Senin - Jumat", 
+      time: "08:00 - 16:00 WIB" 
+    },
+    { 
+      day: i18n.language === "en" ? "Saturday" : "Sabtu", 
+      time: "08:00 - 12:00 WIB" 
+    },
+    { 
+      day: i18n.language === "en" ? "Sunday & Holidays" : "Minggu & Hari Libur", 
+      time: i18n.language === "en" ? "Closed" : "Tutup" 
+    },
   ];
 
   // lembaga desa (static but i18n-aware)
@@ -196,7 +205,7 @@ export default function Pemerintahan() {
   };
 
   return (
-    <div className="font-poppins bg-gray-50 pt-[60px] lg:pt-[40px] animate-fade overflow-x-hidden">
+    <div className="font-poppins bg-gray-50 pt-[60px] lg:pt-[40px] animate-fade">
       {/* =========================
           Header / Hero
           ========================= */}
@@ -294,7 +303,7 @@ export default function Pemerintahan() {
               <button
                 key={i}
                 onClick={() => navigate(item.path)}
-                className="w-full flex items-center justify-between bg-gray-50 hover:bg-green-50 px-3 sm:px-4 py-2 sm:py-3 rounded-lg border transition text-xs sm:text-sm md:text-base min-w-0"
+                className="w-full flex items-center justify-between bg-gray-50 hover:bg-green-50 px-3 sm:px-4 py-2 sm:py-3 rounded-lg border transition text-xs sm:text-sm md:text-base min-w-0 cursor-pointer"
               >
                 <span className="flex items-center gap-2 text-gray-700 font-medium flex-1 min-w-0">
                   <span className="text-green-600 flex-shrink-0">{item.icon}</span>
@@ -310,17 +319,17 @@ export default function Pemerintahan() {
         <div className="bg-gradient-to-br from-[#f7ffe5] to-white shadow-md rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8" data-aos="fade-left">
           <div className="flex items-center gap-3 mb-3 sm:mb-4">
             <FaClock className="text-green-600 text-xl sm:text-2xl" />
-            <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-green-700">{i18n.language === "en" ? "Service Hours" : "Jam Pelayanan"}</h3>
+            <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-green-700">{t("government.serviceHours")}</h3>
           </div>
           <div className="space-y-3 text-gray-700">
             {serviceHours.map((s, idx) => (
-              <div key={idx} className={`rounded-lg p-3 ${s.time === "Closed" ? "bg-red-50 border border-red-200" : "bg-gray-50"}`}>
-                <p className={`font-semibold ${s.time === "Closed" ? "text-red-800" : "text-gray-800"}`}>{s.day}</p>
+              <div key={idx} className={`rounded-lg p-3 ${s.time === "Closed" || s.time === "Tutup" ? "bg-red-50 border border-red-200" : "bg-gray-50"}`}>
+                <p className={`font-semibold ${s.time === "Closed" || s.time === "Tutup" ? "text-red-800" : "text-gray-800"}`}>{s.day}</p>
                 <p className="text-sm">{s.time}</p>
               </div>
             ))}
             <div className="mt-3 text-xs text-gray-500">
-              <strong>Timezone:</strong> UTC+7 (WIB)
+              <strong>{t("government.timezone")}:</strong> {t("government.timezoneValue")}
             </div>
           </div>
         </div>
@@ -352,13 +361,13 @@ export default function Pemerintahan() {
                       <div className="flex items-center gap-3">
                         <button 
                           onClick={() => openPdfModal(item.title, item.id)} 
-                          className="text-blue-600 flex items-center gap-1 hover:underline text-xs"
+                          className="text-blue-600 flex items-center gap-1 hover:underline text-xs cursor-pointer"
                         >
                           <FaFileAlt size={12} /> Preview
                         </button>
                         <a 
                           href={getDownloadUrl(item.id)} 
-                          className="text-gray-600 flex items-center gap-1 hover:underline text-xs" 
+                          className="text-gray-600 flex items-center gap-1 hover:underline text-xs cursor-pointer" 
                           download
                         >
                           <FaDownload size={12} /> Download
@@ -388,14 +397,14 @@ export default function Pemerintahan() {
                           <div className="flex items-center justify-center gap-3">
                             <button 
                               onClick={() => openPdfModal(item.title, item.id)} 
-                              className="text-blue-600 flex items-center gap-1 hover:underline mx-auto justify-center text-sm"
+                              className="text-blue-600 flex items-center gap-1 hover:underline mx-auto justify-center text-sm cursor-pointer"
                             >
                               <FaFileAlt size={14} /> Preview
                             </button>
                             <a 
                               href={getDownloadUrl(item.id)} 
                               download 
-                              className="text-gray-600 hover:text-gray-900"
+                              className="text-gray-600 hover:text-gray-900 cursor-pointer"
                             >
                               <FaDownload />
                             </a>
@@ -447,7 +456,7 @@ export default function Pemerintahan() {
                   ? "Submit requests for cover letters and other administrative documents online."
                   : "Ajukan permohonan surat pengantar dan dokumen administrasi lainnya secara online."}
               </p>
-              <button onClick={() => navigate("/surat-pengantar")} className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg font-medium transition flex items-center justify-center gap-2">
+              <button onClick={() => navigate("/surat-pengantar")} className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg font-medium transition flex items-center justify-center gap-2 cursor-pointer">
                 <FaFileAlt /> {i18n.language === "en" ? "Create Request" : "Buat Permohonan"}
               </button>
             </div>
@@ -484,7 +493,7 @@ export default function Pemerintahan() {
                 <p>• {t("government.contact.complaints.email")}</p>
                 <p>• {t("government.contact.complaints.online")}</p>
                 <div className="mt-4">
-                  <a href="mailto:pengaduan@desa.id" className="text-green-700 hover:underline flex items-center gap-2"><FaEnvelope /> pengaduan@desa.id</a>
+                  <a href="mailto:pengaduan@desa.id" className="text-green-700 hover:underline flex items-center gap-2 cursor-pointer"><FaEnvelope /> pengaduan@desa.id</a>
                 </div>
               </div>
             </div>
@@ -503,19 +512,19 @@ export default function Pemerintahan() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             <a href="https://sumedangkab.go.id" target="_blank" rel="noopener noreferrer"
-               className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition text-center">
+               className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition text-center cursor-pointer">
               <h3 className="font-bold text-gray-800 mb-2">{t("government.relatedLinks.regency")}</h3>
               <p className="text-gray-600 text-sm">{t("government.relatedLinks.regencyDesc")}</p>
             </a>
 
             <a href="https://jabar.go.id" target="_blank" rel="noopener noreferrer"
-               className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition text-center">
+               className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition text-center cursor-pointer">
               <h3 className="font-bold text-gray-800 mb-2">{t("government.relatedLinks.province")}</h3>
               <p className="text-gray-600 text-sm">{t("government.relatedLinks.provinceDesc")}</p>
             </a>
 
             <a href="https://kemendesa.go.id" target="_blank" rel="noopener noreferrer"
-               className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition text-center">
+               className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition text-center cursor-pointer">
               <h3 className="font-bold text-gray-800 mb-2">{t("government.relatedLinks.ministry")}</h3>
               <p className="text-gray-600 text-sm">{t("government.relatedLinks.ministryDesc")}</p>
             </a>
@@ -569,13 +578,13 @@ export default function Pemerintahan() {
                 <a 
                   href={getDownloadUrl(pdfModal.id)} 
                   download 
-                  className="text-blue-600 hover:text-blue-800 flex items-center gap-1 text-sm font-medium px-3 py-2 rounded-md hover:bg-blue-50 transition"
+                  className="text-blue-600 hover:text-blue-800 flex items-center gap-1 text-sm font-medium px-3 py-2 rounded-md hover:bg-blue-50 transition cursor-pointer"
                 >
                   <FaDownload size={14} /> Download
                 </a>
                 <button 
                   onClick={closePdfModal} 
-                  className="text-gray-500 hover:text-gray-700 p-2 rounded-md hover:bg-gray-100 transition"
+                  className="text-gray-500 hover:text-gray-700 p-2 rounded-md hover:bg-gray-100 transition cursor-pointer"
                 >
                   <FaTimes size={20} />
                 </button>

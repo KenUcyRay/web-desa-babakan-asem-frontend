@@ -150,7 +150,15 @@
         "title": "Email Kami",
         "address": "babakanasem@gmail.com"
       }
-    }
+    },
+    "location": "Alamat",
+    "phone": "Telepon",
+    "whatsapp": "WhatsApp",
+    "email": "Email",
+    "website": "Website",
+    "loading": "Memuat kontak...",
+    "noContacts": "Belum Ada Kontak",
+    "noContactsDesc": "Informasi kontak belum tersedia"
   },
   "navbarTop": {
     "home": "Beranda",
@@ -166,7 +174,7 @@
     "kontak": "Kontak Kami",
     "masuk": "Masuk",
     "logout": "Keluar",
-    "profilSaya": "Profil Saya",
+    "profilSaya": "Profil",
     "dashboardAdmin": "Dashboard {{role}}",
     "logoutConfirm": "Apakah Anda yakin ingin keluar?",
     "logoutSuccess": "Anda telah keluar.",
@@ -234,6 +242,9 @@
     "greetingBy": "– Kepala Desa Babakan Asem",
     "structureTitle": "Struktur Organisasi",
     "orgTitle": "Lembaga Desa",
+    "serviceHours": "Jam Pelayanan",
+    "timezone": "Zona Waktu",
+    "timezoneValue": "UTC+7 (WIB)",
     "org1": "BUMDes",
     "org2": "DPD",
     "org3": "Karang Taruna",
@@ -248,6 +259,7 @@
     "tableYear": "No. / Tahun",
     "tableDownload": "Unduh",
     "download": "Download",
+    "noMembers": "Data struktur pemerintahan tidak ada.",
     "adminServices": {
       "title": "Informasi Pelayanan Administrasi",
       "documents": {
@@ -327,7 +339,44 @@
     "carousel2Title": "Peternakan Terawat",
     "carousel2Desc": "Sapi, kambing, ayam, dan domba menunjang ketahanan pangan desa.",
     "carousel3Title": "Perkebunan Hijau",
-    "carousel3Desc": "Perkebunan mangga, pisang, dan hortikultura menambah penghasilan warga."
+    "carousel3Desc": "Perkebunan mangga, pisang, dan hortikultura menambah penghasilan warga.",
+    "fisheriesTitle": "Perikanan",
+    "fisheriesDesc": "Budidaya ikan air tawar dan kolam yang menjadi sumber protein dan ekonomi masyarakat desa."
+  },
+  "villagePotentials": {
+    "developmentTitle": "Program Pengembangan Potensi",
+    "development": {
+      "agriculture": {
+        "title": "Modernisasi Pertanian",
+        "item1": "Penggunaan teknologi irigasi tetes",
+        "item2": "Pelatihan teknik budidaya modern", 
+        "item3": "Bantuan alat pertanian canggih"
+      },
+      "livestock": {
+        "title": "Peningkatan Kualitas Ternak",
+        "item1": "Program inseminasi buatan",
+        "item2": "Pelatihan manajemen kandang",
+        "item3": "Bantuan pakan berkualitas"
+      },
+      "agrotourism": {
+        "title": "Pengembangan Agrowisata",
+        "item1": "Wisata petik buah langsung",
+        "item2": "Edukasi proses pertanian",
+        "item3": "Paket wisata keluarga"
+      },
+      "digital": {
+        "title": "Pemasaran Digital",
+        "item1": "Platform e-commerce desa",
+        "item2": "Pelatihan media sosial",
+        "item3": "Branding produk lokal"
+      }
+    },
+    "cta": {
+      "title": "Mari Bersama Kembangkan Potensi Desa",
+      "description": "Bergabunglah dengan kami dalam mengembangkan potensi Desa Babakan Asem. Bersama-sama kita wujudkan desa yang mandiri, maju, dan sejahtera.",
+      "contact": "Hubungi Kami",
+      "products": "Lihat Produk BUMDes"
+    }
   },
   "pkk": {
     "title": "Desa Babakan Asem",
@@ -517,6 +566,8 @@
     "title": "Skor IDM Desa Babakan Asem",
     "description": "Indeks Desa Membangun (IDM) dari tahun ke tahun.",
     "lastUpdated": "Terakhir diperbarui",
+    "noData": "Tidak ada data IDM tersedia",
+    "noDataValue": "Tidak ada data",
     "box": {
       "status": "Status Desa",
       "sosial": "Dimensi Sosial",
@@ -525,6 +576,13 @@
     },
     "chart": {
       "title": "Perkembangan Skor IDM"
+    },
+    "status": {
+      "independent": "Mandiri",
+      "advanced": "Maju",
+      "developing": "Berkembang",
+      "underdeveloped": "Tertinggal",
+      "very_underdeveloped": "Sangat Tertinggal"
     }
   },
   "bansos": {
@@ -535,28 +593,62 @@
     "trend_title": "Tren Penerima Bantuan Sosial",
     "recipients": "penerima",
     "year": "Tahun",
-    "analysis_title": "Analisis Tren",
-    "analysis_text": "Data menunjukkan penurunan signifikan dalam jumlah penerima bansos dari tahun 2020 hingga 2024. Penurunan sebesar <bold>39%</bold> ini menunjukkan peningkatan kesejahteraan masyarakat dan efektivitas program pengentasan kemiskinan. Faktor utama penurunan meliputi:",
+    "analysis_title": "Analisis Data Bantuan Sosial",
+    "analysis_text": "Grafik di atas menunjukkan distribusi penerima bantuan sosial berdasarkan program yang tersedia di desa.",
     "analysis_point_1": "Pertumbuhan ekonomi yang stabil",
     "analysis_point_2": "Program pemberdayaan masyarakat yang efektif",
     "analysis_point_3": "Peningkatan lapangan pekerjaan",
     "analysis_point_4": "Pendidikan dan pelatihan keterampilan",
     "active_programs": "Program Bansos Aktif",
     "createdAt": "Dibuat pada",
+    "noData": "Tidak ada data bantuan sosial tersedia",
     "about_title": "Tentang Program Bansos",
     "what_is": "Apa itu Bansos?",
     "what_is_text": "Bantuan Sosial (Bansos) adalah program pemerintah untuk memberikan bantuan kepada masyarakat yang membutuhkan. Program ini bertujuan untuk mengurangi beban ekonomi masyarakat miskin dan rentan.",
     "goals": "Tujuan Program",
-    "goal_1": "Meningkatkan akses pelayanan dasar",
-    "goal_2": "Mengurangi kesenjangan sosial",
-    "goal_3": "Meningkatkan kesejahteraan masyarakat",
-    "goal_4": "Memberikan perlindungan sosial"
+    "goal_1": "Mengurangi kemiskinan dan kesenjangan sosial",
+    "goal_2": "Meningkatkan kesejahteraan masyarakat",
+    "goal_3": "Memberikan perlindungan sosial",
+    "goal_4": "Memberdayakan masyarakat kurang mampu",
+    "programs": {
+      "pkh": "Program Keluarga Harapan (PKH)",
+      "blt": "Bantuan Langsung Tunai (BLT)",
+      "bpnt": "Bantuan Pangan Non Tunai (BPNT)",
+      "pip": "Program Indonesia Pintar (PIP)",
+      "kip": "Kartu Indonesia Pintar (KIP)",
+      "kis": "Kartu Indonesia Sehat (KIS)",
+      "bsu": "Bantuan Subsidi Upah (BSU)",
+      "cash_assistance": "Bansos Tunai",
+      "food_assistance": "Bantuan Pangan",
+      "education_assistance": "Bantuan Pendidikan",
+      "health_assistance": "Bantuan Kesehatan"
+    }
   },
   "sdgs": {
     "title": "SDGs Desa",
     "description": "17 Tujuan Pembangunan Berkelanjutan di Desa Babakan Asem.",
     "lastUpdated": "Terakhir diperbarui",
-    "updatedAt": "Diperbarui"
+    "updatedAt": "Diperbarui",
+    "noData": "Tidak ada data SDGs tersedia",
+    "goals": {
+      "no_poverty": "Tanpa Kemiskinan",
+      "zero_hunger": "Tanpa Kelaparan",
+      "good_health": "Kehidupan Sehat dan Sejahtera",
+      "quality_education": "Pendidikan Berkualitas",
+      "gender_equality": "Kesetaraan Gender",
+      "clean_water": "Air Bersih dan Sanitasi Layak",
+      "affordable_energy": "Energi Bersih dan Terjangkau",
+      "decent_work": "Pekerjaan Layak dan Pertumbuhan Ekonomi",
+      "industry_innovation": "Industri, Inovasi dan Infrastruktur",
+      "reduced_inequalities": "Berkurangnya Kesenjangan",
+      "sustainable_cities": "Kota dan Komunitas Berkelanjutan",
+      "responsible_consumption": "Konsumsi dan Produksi yang Bertanggung Jawab",
+      "climate_action": "Penanganan Perubahan Iklim",
+      "life_below_water": "Ekosistem Lautan",
+      "life_on_land": "Ekosistem Daratan",
+      "peace_justice": "Perdamaian, Keadilan dan Kelembagaan yang Tangguh",
+      "partnerships": "Kemitraan untuk Mencapai Tujuan"
+    }
   },
   "penduduk": {
     "title": "Data Penduduk Desa",
@@ -568,28 +660,38 @@
     "mainData": {
       "title": "Data Penduduk Utama",
       "description": "Komposisi dasar penduduk desa berdasarkan jenis kelamin, jumlah kepala keluarga, dan data anak-anak. Data ini menjadi dasar untuk perencanaan program pembangunan dan pelayanan masyarakat.",
-      "chartTitle": "Grafik Data Penduduk Utama",
-      "chartDescription": "Visualisasi komposisi dasar penduduk desa"
+      "chartTitle": "Komposisi Penduduk Utama",
+      "chartDescription": "Distribusi berdasarkan jenis kelamin, kepala keluarga, dan anak-anak yang mencerminkan struktur demografis desa"
     },
     "pekerjaan": {
       "title": "Data Pekerjaan",
-      "description": "Distribusi mata pencaharian penduduk menunjukkan karakteristik ekonomi masyarakat desa."
+      "description": "Distribusi mata pencaharian penduduk menunjukkan karakteristik ekonomi masyarakat desa.",
+      "chartTitle": "Distribusi Pekerjaan Penduduk",
+      "chartDescription": "Ragam profesi yang menunjukkan dinamika perekonomian dan potensi pengembangan sektor unggulan desa"
     },
     "pendidikan": {
       "title": "Tingkat Pendidikan",
-      "description": "Profil pendidikan masyarakat desa menggambarkan kualitas sumber daya manusia."
+      "description": "Profil pendidikan masyarakat desa menggambarkan kualitas sumber daya manusia.",
+      "chartTitle": "Tingkat Pendidikan Penduduk",
+      "chartDescription": "Jenjang pendidikan yang menggambarkan kualitas SDM dan potensi pengembangan kapasitas masyarakat"
     },
     "pernikahan": {
       "title": "Status Pernikahan",
-      "description": "Komposisi status pernikahan penduduk dewasa menunjukkan struktur keluarga dalam masyarakat."
+      "description": "Komposisi status pernikahan penduduk dewasa menunjukkan struktur keluarga dalam masyarakat.",
+      "chartTitle": "Status Pernikahan Penduduk",
+      "chartDescription": "Komposisi status pernikahan yang memberikan gambaran struktur sosial dan dinamika keluarga di masyarakat"
     },
     "agama": {
       "title": "Data Agama",
-      "description": "Keberagaman agama mencerminkan toleransi dan keharmonisan hidup bermasyarakat."
+      "description": "Keberagaman agama mencerminkan toleransi dan keharmonisan hidup bermasyarakat.",
+      "chartTitle": "Komposisi Keagamaan",
+      "chartDescription": "Keragaman kepercayaan yang menunjukkan toleransi beragama dan harmoni sosial dalam masyarakat multikultural"
     },
     "usia": {
       "title": "Kelompok Usia",
-      "description": "Struktur usia menunjukkan komposisi penduduk berdasarkan kelompok umur."
+      "description": "Struktur usia menunjukkan komposisi penduduk berdasarkan kelompok umur.",
+      "chartTitle": "Distribusi Kelompok Usia",
+      "chartDescription": "Piramida usia yang menunjukkan potensi demografis dan perencanaan pembangunan berkelanjutan"
     },
     "wajibPilih": {
       "title": "Data Wajib Pilih",
@@ -597,7 +699,103 @@
     },
     "dusun": {
       "title": "Distribusi Per Dusun",
-      "description": "Penyebaran penduduk di wilayah desa berdasarkan dusun."
+      "description": "Penyebaran penduduk di wilayah desa berdasarkan dusun.",
+      "chartTitle": "Sebaran Penduduk Per Dusun",
+      "chartDescription": "Distribusi geografis yang menentukan pola pembangunan dan prioritas pengembangan infrastruktur wilayah"
+    },
+    "didYouKnow": "Tahukah Anda?",
+    "demographicInsight": "Data demografis desa ini mencerminkan keragaman sosial dan ekonomi masyarakat yang dinamis. Setiap angka memiliki cerita tentang kehidupan dan perkembangan komunitas lokal.",
+    "interesting": "Menarik:",
+    "genderInsight": "Komposisi gender dan struktur keluarga menentukan dinamika sosial dan kebutuhan pembangunan desa.",
+    "insight": "Insight:",
+    "occupationInsight": "Keragaman profesi menunjukkan ekonomi desa yang tidak tergantung pada satu sektor saja, menciptakan ketahanan ekonomi yang lebih baik.",
+    "interestingFact": "Fakta Menarik:",
+    "educationInsight": "Tingkat pendidikan mencerminkan kualitas sumber daya manusia dan berkorelasi dengan tingkat kesejahteraan masyarakat desa.",
+    "marriageInsight": "Status pernikahan mempengaruhi struktur sosial dan pola kehidupan bermasyarakat, serta menjadi indikator stabilitas keluarga di desa.",
+    "diversity": "Keberagaman:",
+    "religionInsight": "Pluralitas agama mencerminkan toleransi dan harmoni antar umat beragama, menjadi kekuatan sosial dalam membangun persatuan masyarakat desa.",
+    "demographicBonus": "Bonus Demografi:",
+    "ageInsight": "Struktur usia penduduk menentukan potensi bonus demografi dan kebutuhan layanan publik yang harus disediakan pemerintah desa.",
+    "regionalEquity": "Pemerataan Wilayah:",
+    "hamletInsight": "Distribusi penduduk per dusun mempengaruhi alokasi anggaran pembangunan infrastruktur dan pelayanan publik di setiap wilayah.",
+    "populationCount": "Jumlah Penduduk",
+    "noData": "Tidak ada data tersedia",
+    "loading": "Memuat data penduduk...",
+    "error": "Gagal mengambil data penduduk"
+  },
+  "population": {
+    "gender": {
+      "male": "Laki-laki",
+      "female": "Perempuan"
+    },
+    "marital": {
+      "married": "Menikah",
+      "single": "Belum Menikah",
+      "divorced": "Cerai",
+      "widow": "Janda",
+      "widower": "Duda"
+    },
+    "religion": {
+      "islam": "Islam",
+      "christian": "Kristen",
+      "catholic": "Katolik",
+      "hindu": "Hindu",
+      "buddhist": "Buddha",
+      "confucian": "Konghucu"
+    },
+    "education": {
+      "elementary": "SD",
+      "junior_high": "SMP",
+      "senior_high": "SMA",
+      "diploma": "Diploma",
+      "associate": "D3",
+      "bachelor": "S1",
+      "master": "S2",
+      "doctorate": "S3",
+      "no_school": "Tidak Sekolah"
+    },
+    "occupation": {
+      "farmer": "Petani",
+      "fisherman": "Nelayan",
+      "teacher": "Guru",
+      "trader": "Pedagang",
+      "employee": "Pegawai",
+      "entrepreneur": "Wiraswasta",
+      "housewife": "Ibu Rumah Tangga",
+      "student": "Pelajar",
+      "retired": "Pensiunan",
+      "unemployed": "Tidak Bekerja"
+    },
+    "family": {
+      "head": "Kepala Keluarga",
+      "total_households": "Jumlah KK"
+    },
+    "children": {
+      "total": "Anak-anak",
+      "toddler": "Balita"
+    },
+    "age": {
+      "0_5": "0-5 Tahun",
+      "6_12": "6-12 Tahun",
+      "13_17": "13-17 Tahun",
+      "18_25": "18-25 Tahun",
+      "26_35": "26-35 Tahun",
+      "36_45": "36-45 Tahun",
+      "46_55": "46-55 Tahun",
+      "56_65": "56-65 Tahun",
+      "65_plus": "65+ Tahun"
+    },
+    "voting": {
+      "eligible": "Wajib Pilih",
+      "not_eligible": "Belum Wajib Pilih"
+    },
+    "hamlet": {
+      "a": "Dusun A",
+      "b": "Dusun B",
+      "c": "Dusun C",
+      "1": "Dusun 1",
+      "2": "Dusun 2",
+      "3": "Dusun 3"
     }
   },
   "infografis": {

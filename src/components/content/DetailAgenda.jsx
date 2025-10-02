@@ -116,7 +116,7 @@ export default function DetailAgenda() {
       <div className="md:col-span-3">
         <button
           onClick={handleBack}
-          className="mb-5 flex items-center gap-2 px-4 py-2 rounded-full border border-gray-300 text-gray-800 hover:bg-gray-900 hover:text-white hover:scale-105 transition-all duration-300"
+          className="mb-5 flex items-center gap-2 px-4 py-2 rounded-full border border-gray-300 text-gray-800 hover:bg-gray-900 hover:text-white hover:scale-105 transition-all duration-300 cursor-pointer"
         >
           <HiArrowLeft className="text-lg" />
           {t("detailAgenda.back")}
@@ -156,7 +156,7 @@ export default function DetailAgenda() {
             />
             <button
               type="submit"
-              className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition"
+              className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition cursor-pointer  "
             >
               {t("detailAgenda.sendComment")}
             </button>
@@ -202,7 +202,7 @@ export default function DetailAgenda() {
                           {profile.id === c.user?.id && (
                             <button
                               onClick={() => startEditComment(c)}
-                              className="text-blue-500 text-sm hover:underline"
+                              className="text-blue-500 text-sm hover:underline cursor-pointer"
                             >
                               {t("detailAgenda.edit")}
                             </button>
@@ -211,7 +211,7 @@ export default function DetailAgenda() {
                             profile.role === "ADMIN") && (
                             <button
                               onClick={() => handleDeleteComment(c.id)}
-                              className="text-red-500 text-sm hover:underline"
+                              className="text-red-500 text-sm hover:underline cursor-pointer"
                             >
                               {t("detailAgenda.delete")}
                             </button>

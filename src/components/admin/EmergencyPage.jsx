@@ -11,15 +11,18 @@ import {
   FaMap,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import Pagination from "../ui/Pagination";
 import { EmergencyApi } from "../../libs/api/EmergencyApi";
 import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 import EmergencyMap from "./EmergencyMap";
 import EmergencyNotification from "../ui/EmergencyNotification";
 import { initializeSocket, onNewEmergency, onEmergencyUpdated, onEmergencyDeleted, offEmergencyEvents, disconnectSocket } from "../../libs/socket";
+import warningSound from "../../assets/warning.mp3";
 
 export default function EmergencyPage() {
   const navigate = useNavigate();
+  const { i18n } = useTranslation();
   const [emergencies, setEmergencies] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("active"); // "active" atau "resolved"
@@ -29,6 +32,12 @@ export default function EmergencyPage() {
   const [count, setCount] = useState(0);
   const [showMap, setShowMap] = useState(false);
   const [newEmergencyNotification, setNewEmergencyNotification] = useState(null);
+  const [audio] = useState(() => {
+    const audioInstance = new Audio(warningSound);
+    audioInstance.loop = true;
+    audioInstance.volume = 0.7;
+    return audioInstance;
+  });
 
   const fetchEmergencies = async () => {
     try {
@@ -36,10 +45,11 @@ export default function EmergencyPage() {
       const response = await EmergencyApi.get(
         currentPage,
         itemsPerPage,
-        isHandled
+        isHandled,
+        i18n.language
       );
 
-      const countResponse = await EmergencyApi.count();
+      const countResponse = await EmergencyApi.count(i18n.language);
 
       setEmergencies(response.data);
       setTotalPages(response.total_page);
@@ -51,6 +61,18 @@ export default function EmergencyPage() {
       setIsLoading(false);
     }
   };
+
+  // Handle audio based on emergency count
+  useEffect(() => {
+    if (count.is_not_handled > 0) {
+      audio.play().catch(error => {
+        console.log("Audio play failed:", error);
+      });
+    } else {
+      audio.pause();
+      audio.currentTime = 0;
+    }
+  }, [count.is_not_handled, audio]);
 
   useEffect(() => {
     fetchEmergencies();
@@ -66,21 +88,42 @@ export default function EmergencyPage() {
         console.log("🚨 New emergency notification:", emergency);
         setNewEmergencyNotification(emergency);
         
-        // Refresh data if on active tab
-        if (activeTab === "active") {
-          fetchEmergencies();
-        }
+        // Update count immediately
+        setCount(prev => ({
+          ...prev,
+          is_not_handled: prev.is_not_handled + 1
+        }));
+        
+        // Refresh data
+        fetchEmergencies();
       });
 
       // Listen for emergency updates
       onEmergencyUpdated((emergency) => {
         console.log("✅ Emergency updated:", emergency);
+        
+        // Update count immediately (emergency resolved)
+        if (emergency.is_handled) {
+          setCount(prev => ({
+            ...prev,
+            is_not_handled: Math.max(0, prev.is_not_handled - 1),
+            is_handled: prev.is_handled + 1
+          }));
+        }
+        
         fetchEmergencies();
       });
 
       // Listen for emergency deletions
       onEmergencyDeleted((data) => {
         console.log("🗑️ Emergency deleted:", data.id);
+        
+        // Update count immediately (emergency deleted)
+        setCount(prev => ({
+          ...prev,
+          is_not_handled: Math.max(0, prev.is_not_handled - 1)
+        }));
+        
         fetchEmergencies();
       });
     } catch (error) {
@@ -128,9 +171,9 @@ export default function EmergencyPage() {
         "Apakah Anda yakin menandai tertangani?"
       );
       if (!confirm) return;
-      // TODO: API call untuk update status
-      await EmergencyApi.update(id);
-
+      
+      await EmergencyApi.update(id, i18n.language);
+      await alertSuccess("Emergency berhasil ditandai tertangani");
       fetchEmergencies();
     } catch (error) {
       await alertError("Error resolving emergency:", error);
@@ -142,7 +185,7 @@ export default function EmergencyPage() {
       const confirm = await alertConfirm("Apakah Anda yakin menghapus?");
       if (!confirm) return;
       // TODO: API call untuk update status
-      await EmergencyApi.delete(id);
+      await EmergencyApi.delete(id, i18n.language);
 
       fetchEmergencies();
       await alertSuccess("Emergency berhasil dihapus");
@@ -182,8 +225,8 @@ export default function EmergencyPage() {
               }}
               className={`flex-1 flex items-center justify-center gap-1 md:gap-2 px-2 md:px-4 py-2 rounded-md transition-all text-sm md:text-base ${
                 activeTab === "active"
-                  ? "bg-red-500 text-white shadow-md"
-                  : "text-gray-600 hover:bg-gray-100"
+                  ? "bg-red-500 text-white shadow-md cursor-pointer"
+                  : "text-gray-600 hover:bg-gray-100 cursor-pointer"
               }`}
             >
               <FaExclamationTriangle className="text-sm md:text-base" />
@@ -201,13 +244,13 @@ export default function EmergencyPage() {
               }}
               className={`flex-1 flex items-center justify-center gap-1 md:gap-2 px-2 md:px-4 py-2 rounded-md transition-all text-sm md:text-base ${
                 activeTab === "resolved"
-                  ? "bg-green-500 text-white shadow-md"
-                  : "text-gray-600 hover:bg-gray-100"
+                  ? "bg-green-500 text-white shadow-md cursor-pointer"
+                  : "text-gray-600 hover:bg-gray-100 cursor-pointer"
               }`}
             >
               <FaCheckCircle className="text-sm md:text-base" />
               <span>Tertangani</span>
-              <span className="bg-white text-green-500 text-xs font-bold px-1 md:px-2 py-1 rounded-full">
+              <span className="bg-white text-green-500 text-xs font-bold px-1 md:px-2 py-1 rounded-full cursor">
                 {count.is_handled}
               </span>
             </button>
@@ -215,7 +258,7 @@ export default function EmergencyPage() {
           
           <button
             onClick={() => setShowMap(true)}
-            className="flex items-center justify-center gap-2 px-4 md:px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-md transition-all font-medium text-sm md:text-base w-full md:w-auto"
+            className="flex items-center justify-center gap-2 px-4 md:px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-md transition-all font-medium text-sm md:text-base w-full md:w-auto cursor-pointer"
           >
             <FaMap className="text-sm md:text-base" />
             <span>Lihat Map</span>
@@ -348,7 +391,7 @@ export default function EmergencyPage() {
                       {!emergency.is_handled && (
                         <button
                           onClick={() => handleResolve(emergency.id)}
-                          className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg shadow flex items-center gap-2 transition-colors"
+                          className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg shadow flex items-center gap-2 transition-colors cursor-pointer"
                         >
                           <FaCheckCircle />
                           Tandai Tertangani
@@ -357,7 +400,7 @@ export default function EmergencyPage() {
 
                       <button
                         onClick={() => handleDelete(emergency.id)}
-                        className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg shadow flex items-center gap-2 transition-colors"
+                        className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg shadow flex items-center gap-2 transition-colors cursor-pointer"
                       >
                         <FaTrash />
                         Hapus

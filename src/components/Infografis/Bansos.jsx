@@ -26,6 +26,24 @@ ChartJS.register(
 
 export default function Bansos() {
   const { t, i18n } = useTranslation();
+
+  // Function to translate dynamic Bansos data
+  const translateBansosData = (name) => {
+    const translations = {
+      'pkh': t('bansos.programs.pkh'),
+      'blt': t('bansos.programs.blt'),
+      'bpnt': t('bansos.programs.bpnt'),
+      'pip': t('bansos.programs.pip'),
+      'kip': t('bansos.programs.kip'),
+      'kis': t('bansos.programs.kis'),
+      'bsu': t('bansos.programs.bsu'),
+      'bansos tunai': t('bansos.programs.cash_assistance'),
+      'bantuan pangan': t('bansos.programs.food_assistance'),
+      'bantuan pendidikan': t('bansos.programs.education_assistance'),
+      'bantuan kesehatan': t('bansos.programs.health_assistance')
+    };
+    return translations[name?.toLowerCase()] || name;
+  };
   const [bansos, setBansos] = useState([]);
   const [chartData, setChartData] = useState([]);
   const [lastUpdated, setLastUpdated] = useState(null);
@@ -94,7 +112,7 @@ export default function Bansos() {
     labels: chartData.map((item) => item.name),
     datasets: [
       {
-        label: "Jumlah Penerima",
+        label: t("bansos.jumlah"),
         data: chartData.map((item) => item.amount),
         backgroundColor: "#B6F500",
         borderColor: "#9BD500",
@@ -113,7 +131,7 @@ export default function Bansos() {
       },
       title: {
         display: true,
-        text: "Data Bantuan Sosial",
+        text: t("bansos.title"),
         align: "center",
         font: {
           family: "Poppins, sans-serif",
@@ -141,7 +159,7 @@ export default function Bansos() {
         displayColors: false,
         callbacks: {
           label: function (context) {
-            return `${context.parsed.y.toLocaleString()} Penerima`;
+            return `${context.parsed.y.toLocaleString()} ${t("bansos.recipients")}`;
           },
         },
       },
@@ -208,9 +226,9 @@ export default function Bansos() {
                 >
                   <div className="flex justify-between items-start mb-3">
                     <div className="flex-1">
-                      <p className="font-semibold text-gray-800">{item.name}</p>
+                      <p className="font-semibold text-gray-800">{translateBansosData(item.name)}</p>
                       <p className="text-gray-500 text-sm mt-1">
-                        Jumlah Penerima
+                        {t("bansos.jumlah")}
                       </p>
                     </div>
                     <span className="text-xl font-bold text-[#B6F500] ml-4">
@@ -220,7 +238,7 @@ export default function Bansos() {
                   {item.created_at && (
                     <div className="mt-3 pt-3 border-t border-gray-100">
                       <p className="text-xs text-gray-500">
-                        Dibuat: {Helper.formatTanggal(item.created_at)}
+                        {t("bansos.createdAt")}: {Helper.formatTanggal(item.created_at)}
                       </p>
                     </div>
                   )}
@@ -230,7 +248,7 @@ export default function Bansos() {
           ) : (
             <div className="bg-white p-8 rounded-xl shadow border border-gray-200 text-center">
               <p className="text-gray-500 text-lg">
-                Tidak ada data bantuan sosial tersedia
+                {t("bansos.noData")}
               </p>
             </div>
           )}
@@ -251,13 +269,13 @@ export default function Bansos() {
           </div>
           <div>
             <h4 className="font-bold text-gray-800 mb-2">
-              Tujuan Bantuan Sosial
+              {t("bansos.goals")}
             </h4>
             <ul className="text-gray-700 space-y-1 list-disc list-inside">
-              <li>Mengurangi kemiskinan dan kesenjangan sosial</li>
-              <li>Meningkatkan kesejahteraan masyarakat</li>
-              <li>Memberikan perlindungan sosial</li>
-              <li>Memberdayakan masyarakat kurang mampu</li>
+              <li>{t("bansos.goal_1")}</li>
+              <li>{t("bansos.goal_2")}</li>
+              <li>{t("bansos.goal_3")}</li>
+              <li>{t("bansos.goal_4")}</li>
             </ul>
           </div>
         </div>
@@ -271,10 +289,10 @@ export default function Bansos() {
           </div>
           <div className="mt-6 bg-blue-50 p-4 rounded-lg border border-blue-100">
             <h4 className="font-bold text-blue-800 mb-2">
-              Analisis Data Bantuan Sosial
+              {t("bansos.analysis_title")}
             </h4>
             <p className="text-gray-700">
-              Grafik di atas menunjukkan distribusi penerima bantuan sosial berdasarkan program yang tersedia di desa.
+              {t("bansos.analysis_text")}
             </p>
           </div>
         </div>

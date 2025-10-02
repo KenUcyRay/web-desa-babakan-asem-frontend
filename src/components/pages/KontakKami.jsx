@@ -114,14 +114,14 @@ export default function KontakKami() {
       </>
     );
 
-    const baseClasses = "p-5 rounded-xl shadow-md bg-white flex flex-col gap-2 hover:shadow-xl hover:scale-105 transition-all duration-300";
+    const baseClasses = "p-5 rounded-xl shadow-md bg-white flex flex-col gap-2";
 
     if (isClickable) {
       return (
         <a
           key={contact.id}
           href={link}
-          className={`${baseClasses} hover:bg-green-50`}
+          className={`${baseClasses}`}
           target={contact.type === "WHATSAPP" ? "_blank" : undefined}
           rel={contact.type === "WHATSAPP" ? "noopener noreferrer" : undefined}
         >
@@ -212,7 +212,7 @@ export default function KontakKami() {
               <div className="text-center">
                 <button
                   type="submit"
-                  className="px-8 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors"
+                  className="px-8 py-3 bg-gradient-to-br from-green-400 to-[#B6F500] text-gray-900 font-semibold rounded-lg hover:bg-green-700 transition-colors cursor-pointer"
                 >
                   {t("contact.form.submit")}
                 </button>
@@ -249,7 +249,7 @@ export default function KontakKami() {
             <>
               {/* Lokasi/Alamat - Full width */}
               {lokasiContact && (
-                <div className="p-6 rounded-xl shadow-lg bg-white flex gap-4 hover:shadow-xl hover:scale-105 transition-all duration-300">
+                <div className="p-6 rounded-xl shadow-lg bg-white flex gap-4">
                   <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-[#B6F500] text-gray-900">
                     <FaMapMarkerAlt size={20} />
                   </div>
@@ -271,7 +271,7 @@ export default function KontakKami() {
                     // Jika hanya 1 contact, tampilkan full width
                     <a
                       href={getContactLink(otherContacts[0])}
-                      className="p-5 rounded-xl shadow-md bg-white flex items-center gap-4 hover:shadow-xl hover:scale-105 transition-all duration-300 hover:bg-green-50"
+                      className="p-5 rounded-xl shadow-md bg-white flex items-center gap-4"
                       target={otherContacts[0].type === "WHATSAPP" ? "_blank" : undefined}
                       rel={otherContacts[0].type === "WHATSAPP" ? "noopener noreferrer" : undefined}
                     >

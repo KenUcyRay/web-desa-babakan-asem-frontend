@@ -75,7 +75,7 @@ export default function Bpd() {
         </ul>
       </section>
 
-      {/* ✅ Statistik */}
+      {/* ✅ Statistik
       <section className="max-w-6xl mx-auto px-4 md:px-8 py-10 md:py-14">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 text-center">
           {[1, 2, 3].map((num, i) => (
@@ -94,7 +94,7 @@ export default function Bpd() {
             </div>
           ))}
         </div>
-      </section>
+      </section> */}
 
       {/* ✅ Struktur Organisasi */}
       <section className="max-w-6xl mx-auto px-4 md:px-8 py-10 md:py-14">

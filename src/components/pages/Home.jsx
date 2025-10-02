@@ -426,7 +426,7 @@ export default function Home() {
       <div className="bg-green-50 py-10 px-[5%]" data-aos="fade-up">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-bold">{t("home.latestnews.title")}</h2>
-          <Link to="/berita" className="text-green-600 hover:underline">
+          <Link to="/berita" className="text-green-600 hover:underline cursor-pointer">
             {t("home.latestnews.seeall")}
           </Link>
         </div>
@@ -467,7 +467,7 @@ export default function Home() {
       <div className="bg-green-50 py-10 px-[5%]" data-aos="fade-up">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-bold">{t("home.bumdes.title")}</h2>
-          <Link to="/bumdes" className="text-green-600 hover:underline">
+          <Link to="/bumdes" className="text-green-600 hover:underline cursor-pointer">
             {t("home.bumdes.seeall")}
           </Link>
         </div>
@@ -524,7 +524,7 @@ export default function Home() {
                       href={item.product.link_whatsapp}
                       target="_blank"
                       rel="noreferrer"
-                      className="flex items-center gap-1 text-white bg-green-500 hover:bg-green-600 px-3 py-1.5 rounded-lg shadow hover:shadow-lg text-sm transition-all duration-300 group-hover:scale-105"
+                      className="flex items-center gap-1 text-white bg-green-500 hover:bg-green-600 px-3 py-1.5 rounded-lg shadow hover:shadow-lg text-sm transition-all duration-300 group-hover:scale-105 cursor-pointer"
                     >
                       <FaWhatsapp />
                       {t("home.bumdes.order")}

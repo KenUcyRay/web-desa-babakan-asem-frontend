@@ -117,7 +117,7 @@ export default function Bumdes() {
                         href={item.product.link_whatsapp}
                         target="_blank"
                         rel="noreferrer"
-                        className="flex items-center gap-2 text-white bg-green-500 hover:bg-green-600 px-4 py-2 rounded-lg shadow hover:shadow-md transition"
+                        className="flex items-center gap-2 text-white bg-green-500 hover:bg-green-600 px-4 py-2 rounded-lg shadow hover:shadow-md transition cursor-pointer"
                       >
                         <FaWhatsapp className="text-lg" /> {t("bumdes.order")}
                       </a>

@@ -56,7 +56,7 @@ export default function Login() {
       const responseBody = await response.json();
       
       if (!response.ok) {
-        await Helper.errorResponseHandler(responseBody);
+        await Helper.errorResponseHandler(responseBody, Helper.CONTEXT.LOGIN);
         if (responseBody?.errors?.name !== "ZodError") {
           resetForm();
         }
@@ -197,7 +197,7 @@ export default function Login() {
                     <input
                       type="tel"
                       placeholder={t("login.placeholder.phone")}
-                      className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-300 outline-none"
+                      className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-300 outline-none cursor-pointer"
                       onChange={(e) => setPhone(e.target.value)}
                       value={phone}
                     />
@@ -262,7 +262,7 @@ export default function Login() {
 
             <button
               type="submit"
-              className="w-full py-3 bg-gradient-to-r from-green-400 to-[#B6F500] text-white font-semibold rounded-lg hover:opacity-90 transition duration-200"
+              className="w-full py-3 bg-gradient-to-r from-green-400 to-[#B6F500] text-white font-semibold rounded-lg hover:opacity-90 transition duration-200 cursor-pointer"
             >
               {t("login.submit")}
             </button>

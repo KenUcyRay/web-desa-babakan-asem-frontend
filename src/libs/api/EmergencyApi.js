@@ -1,7 +1,6 @@
 // Helper function to get auth headers
 const getAuthHeaders = (language = 'id') => {
   const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-  console.log('🔑 EmergencyApi getAuthHeaders:', { hasToken: !!token, tokenLength: token?.length });
   
   const headers = {
     "Content-Type": "application/json",
@@ -14,16 +13,13 @@ const getAuthHeaders = (language = 'id') => {
   
   if (token) {
     headers.Authorization = `Bearer ${token}`;
-    console.log('✅ Authorization header added');
-  } else {
-    console.error('❌ No token found for Authorization header');
   }
   
   return headers;
 };
 
 export class EmergencyApi {
-  static async create(data) {
+  static async create(data, language = 'id') {
     console.log("[EmergencyApi] create payload:", data);
     
     try {
@@ -32,7 +28,7 @@ export class EmergencyApi {
         {
           method: 'POST',
           credentials: 'include',
-          headers: getAuthHeaders(),
+          headers: getAuthHeaders(language),
           body: JSON.stringify(data)
         }
       );
@@ -79,14 +75,14 @@ export class EmergencyApi {
     }
   }
 
-  static async get(page = 1, limit = 10, isHandled = false) {
+  static async get(page = 1, limit = 10, isHandled = false, language = 'id') {
     try {
       const response = await fetch(
         `${import.meta.env.VITE_NEW_BASE_URL}/admin/emergencies?page=${page}&limit=${limit}&is_handled=${isHandled}`,
         {
           method: 'GET',
           credentials: 'include',
-          headers: getAuthHeaders()
+          headers: getAuthHeaders(language)
         }
       );
 
@@ -103,14 +99,14 @@ export class EmergencyApi {
     }
   }
 
-  static async update(id) {
+  static async update(id, language = 'id') {
     try {
       const response = await fetch(
         `${import.meta.env.VITE_NEW_BASE_URL}/admin/emergencies/${id}`,
         {
           method: 'PATCH',
           credentials: 'include',
-          headers: getAuthHeaders()
+          headers: getAuthHeaders(language)
         }
       );
 
@@ -127,14 +123,14 @@ export class EmergencyApi {
     }
   }
 
-  static async delete(id) {
+  static async delete(id, language = 'id') {
     try {
       const response = await fetch(
         `${import.meta.env.VITE_NEW_BASE_URL}/admin/emergencies/${id}`,
         {
           method: 'DELETE',
           credentials: 'include',
-          headers: getAuthHeaders()
+          headers: getAuthHeaders(language)
         }
       );
 
@@ -156,14 +152,14 @@ export class EmergencyApi {
     }
   }
 
-  static async count() {
+  static async count(language = 'id') {
     try {
       const response = await fetch(
         `${import.meta.env.VITE_NEW_BASE_URL}/admin/emergencies/count`,
         {
           method: 'GET',
           credentials: 'include',
-          headers: getAuthHeaders()
+          headers: getAuthHeaders(language)
         }
       );
 

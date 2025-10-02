@@ -681,7 +681,7 @@ export default function AdminDashboard() {
               <select
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-                className="px-2 py-1 md:px-3 md:py-2 rounded-md border text-sm"
+                className="px-2 py-1 md:px-3 md:py-2 rounded-md border text-sm cursor-pointer"
               >
                 {uniqueYears.map((year) => (
                   <option key={year} value={year} className="text-black">
@@ -693,7 +693,7 @@ export default function AdminDashboard() {
                 onClick={() => setShowPolygons(!showPolygons)}
                 className={`px-2 py-1 rounded-lg text-xs font-medium transition-all duration-300 transform hover:scale-105 ${
                   showPolygons
-                    ? "bg-blue-500 text-white hover:bg-blue-600 shadow-md"
+                    ? "bg-blue-500 text-white hover:bg-blue-600 shadow-md cursor-pointer"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                 }`}
               >
@@ -703,7 +703,7 @@ export default function AdminDashboard() {
                 onClick={() => setShowMarkers(!showMarkers)}
                 className={`px-2 py-1 rounded-lg text-xs font-medium transition-all duration-300 transform hover:scale-105 ${
                   showMarkers
-                    ? "bg-green-500 text-white hover:bg-green-600 shadow-md"
+                    ? "bg-green-500 text-white hover:bg-green-600 shadow-md cursor-pointer"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                 }`}
               >
@@ -1028,7 +1028,7 @@ export default function AdminDashboard() {
                 <span className="font-medium text-green-600">{idmStatus}</span>
               </p>
             </div>
-            <button className="text-sm text-blue-600 hover:text-blue-800 font-medium ml-4 px-3 py-1 rounded-lg hover:bg-blue-50 transition-colors">
+            <button className="text-sm text-blue-600 hover:text-blue-800 font-medium ml-4 px-3 py-1 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer">
               Kelola →
             </button>
           </div>
@@ -1084,7 +1084,7 @@ export default function AdminDashboard() {
                 Distribusi berdasarkan gender, kepala keluarga, dan anak-anak
               </p>
             </div>
-            <button className="text-sm text-blue-600 hover:text-blue-800 font-medium ml-4 px-3 py-1 rounded-lg hover:bg-blue-50 transition-colors">
+            <button className="text-sm text-blue-600 hover:text-blue-800 font-medium ml-4 px-3 py-1 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer">
               Kelola →
             </button>
           </div>
@@ -1134,7 +1134,7 @@ export default function AdminDashboard() {
                 Distribusi penduduk berdasarkan kelompok usia
               </p>
             </div>
-            <button className="text-sm text-blue-600 hover:text-blue-800 font-medium ml-4 px-3 py-1 rounded-lg hover:bg-blue-50 transition-colors">
+            <button className="text-sm text-blue-600 hover:text-blue-800 font-medium ml-4 px-3 py-1 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer">
               Kelola →
             </button>
           </div>
@@ -1309,7 +1309,7 @@ function CompactActivityLog({ activities }) {
         </h4>
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="text-xs text-blue-600 hover:text-blue-800 transition-colors"
+          className="text-xs text-blue-600 hover:text-blue-800 transition-colors cursor-pointer"
         >
           {isExpanded ? "Perkecil" : "Lihat Semua"}
         </button>
@@ -1450,7 +1450,7 @@ function PreviewSection({
         </div>
         <button
           onClick={onClick}
-          className="ml-4 bg-blue-500 hover:bg-blue-600 text-white text-xs font-medium py-2 px-3 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-md flex items-center gap-1"
+          className="ml-4 bg-blue-500 hover:bg-blue-600 text-white text-xs font-medium py-2 px-3 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-md flex items-center gap-1 cursor-pointer"
         >
           <span>Kelola</span>
           <svg

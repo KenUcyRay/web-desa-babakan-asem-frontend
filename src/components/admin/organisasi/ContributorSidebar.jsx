@@ -56,18 +56,14 @@ export default function ContributorSidebar({ isOpen, onClose }) {
     });
   };
 
+  const { logout } = useAuth();
+
   const handleLogout = async () => {
     const confirm = await alertConfirm("Apakah Anda yakin ingin keluar?");
     if (!confirm) return;
-    const response = await UserApi.logout(i18n.language);
-    if (!response.ok) {
-      const responseBody = await response.json();
-      await Helper.errorResponseHandler(responseBody);
-      return;
-    }
-    setProfile(null);
+    
+    await logout();
     await alertSuccess("Anda telah keluar.");
-    navigate("/login");
   };
 
   const menu = [

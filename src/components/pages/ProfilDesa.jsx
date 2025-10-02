@@ -16,20 +16,75 @@ import "aos/dist/aos.css";
 import kumpul from "../../assets/kumpul.jpg";
 import { useTranslation } from "react-i18next";
 import { Helper } from "../../utils/Helper";
+import { ContactApi } from "../../libs/api/ContactApi";
 
 export default function ProfilDesa() {
   const { t } = useTranslation();
+
+  // Function to translate dynamic contact types
+  const translateContactType = (type) => {
+    const translations = {
+      'LOKASI': t('contact.location'),
+      'TELEPON': t('contact.phone'), 
+      'WHATSAPP': t('contact.whatsapp'),
+      'EMAIL': t('contact.email'),
+      'WEBSITE': t('contact.website')
+    };
+    return translations[type] || type;
+  };
   const [activeMilestone, setActiveMilestone] = useState(0);
   const [achievements, setAchievements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [contacts, setContacts] = useState([]);
+  const [isLoadingContacts, setIsLoadingContacts] = useState(true);
 
   // Base URL dari environment variable
   const BASE_URL = import.meta.env.VITE_NEW_BASE_URL;
 
+  const iconMap = {
+    LOKASI: FaMapMarkerAlt,
+    TELEPON: FaPhoneAlt,
+    WHATSAPP: FaWhatsapp,
+    EMAIL: FaEnvelope,
+  };
+
+  const getContactIcon = (type) => {
+    return iconMap[type] || FaEnvelope;
+  };
+
+  const getContactLink = (contact) => {
+    switch (contact.type) {
+      case "TELEPON":
+        return `tel:${contact.value}`;
+      case "WHATSAPP":
+        const waNumber = contact.value.startsWith("0")
+          ? "62" + contact.value.substring(1)
+          : contact.value;
+        return `https://wa.me/${waNumber}`;
+      case "EMAIL":
+        return `mailto:${contact.value}`;
+      default:
+        return null;
+    }
+  };
+
+  const fetchContacts = async () => {
+    setIsLoadingContacts(true);
+    try {
+      const response = await ContactApi.getPublic();
+      setContacts(response);
+    } catch (error) {
+      console.error("Error fetching contacts:", error);
+    } finally {
+      setIsLoadingContacts(false);
+    }
+  };
+
   useEffect(() => {
     AOS.init({ duration: 800, once: true });
     fetchAchievements();
+    fetchContacts();
   }, []);
 
   const fetchAchievements = async () => {
@@ -85,7 +140,7 @@ export default function ProfilDesa() {
   };
 
   return (
-    <div className="font-poppins bg-gray-50 pt-[60px] lg:pt-[40px] animate-fade overflow-x-hidden">
+    <div className="font-poppins bg-gray-50 pt-[60px] lg:pt-[40px] animate-fade">
       {/* - HERO SECTION */}
       <section className="relative bg-[#FFFDF6]" data-aos="fade-up">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 md:py-16 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 items-center">
@@ -354,117 +409,101 @@ export default function ProfilDesa() {
             {t("profileVillage.contactTitle")}
           </h2>
           <div className="flex flex-col gap-4 sm:gap-6 max-w-3xl mx-auto">
-            {/* Location */}
-            <div
-              className="p-4 sm:p-6 rounded-lg sm:rounded-xl shadow-lg bg-white flex items-start gap-3 sm:gap-4 hover:shadow-xl transition"
-              data-aos="fade-right"
-            >
-              <div className="w-10 h-10 sm:w-12 sm:h-12 flex-shrink-0 flex items-center justify-center rounded-full bg-gradient-to-br from-[#9BEC00] to-[#D2FF72] shadow text-gray-900">
-                <FaMapMarkerAlt size={16} className="sm:w-5 sm:h-5" />
+            {isLoadingContacts ? (
+              <div className="p-6 rounded-xl shadow-lg bg-white text-center">
+                <div className="flex justify-center items-center gap-3">
+                  <svg className="animate-spin h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  <p className="text-gray-500">{t("contact.loading")}</p>
+                </div>
               </div>
-              <div className="flex-1 min-w-0">
-                <h4 className="font-bold text-gray-900 text-base sm:text-lg">
-                  {t("profileVillage.locationTitle")}
-                </h4>
-                <p className="text-xs sm:text-sm text-gray-600 leading-relaxed break-words">
-                  {t("profileVillage.locationDetail")}
-                </p>
+            ) : contacts.length === 0 ? (
+              <div className="p-6 rounded-xl shadow-lg bg-white text-center">
+                <div className="flex justify-center mb-4">
+                  <div className="bg-gray-100 p-5 rounded-full">
+                    <FaEnvelope className="text-4xl text-gray-400" />
+                  </div>
+                </div>
+                <h3 className="text-xl font-medium text-gray-700 mb-2">
+                  {t("contact.noContacts")}
+                </h3>
+                <p className="text-gray-500">{t("contact.noContactsDesc")}</p>
               </div>
-            </div>
+            ) : (
+              <>
+                {/* Location */}
+                {contacts.find(c => c.type === "LOKASI") && (
+                  <div
+                    className="p-4 sm:p-6 rounded-lg sm:rounded-xl shadow-lg bg-white flex items-start gap-3 sm:gap-4 hover:shadow-xl transition"
+                    data-aos="fade-right"
+                  >
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 flex-shrink-0 flex items-center justify-center rounded-full bg-gradient-to-br from-[#9BEC00] to-[#D2FF72] shadow text-gray-900">
+                      <FaMapMarkerAlt size={16} className="sm:w-5 sm:h-5" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-bold text-gray-900 text-base sm:text-lg">
+                        {translateContactType("LOKASI")}
+                      </h4>
+                      <p className="text-xs sm:text-sm text-gray-600 leading-relaxed break-words">
+                        {contacts.find(c => c.type === "LOKASI").value}
+                      </p>
+                    </div>
+                  </div>
+                )}
 
-            {/* Phone & WhatsApp */}
-            <div
-              className="grid grid-cols-1 sm:grid-cols-2 gap-4"
-              data-aos="fade-up"
-            >
-              <a
-                href="tel:085330192025"
-                className="p-4 sm:p-5 rounded-lg sm:rounded-xl shadow-md bg-white flex flex-col items-start gap-2 hover:shadow-xl transition"
-              >
-                <div className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-gradient-to-br from-[#9BEC00] to-[#D2FF72] shadow text-gray-900">
-                  <FaPhoneAlt size={14} className="sm:w-4 sm:h-4" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-gray-900 text-xs sm:text-sm">
-                    {t("profileVillage.phoneTitle")}
-                  </h4>
-                  <p className="text-xs text-gray-700">0853-3019-2025</p>
-                </div>
-              </a>
-              <a
-                href="https://wa.me/6285330192025"
-                className="p-4 sm:p-5 rounded-lg sm:rounded-xl shadow-md bg-white flex flex-col items-start gap-2 hover:shadow-xl transition"
-              >
-                <div className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-gradient-to-br from-[#9BEC00] to-[#D2FF72] shadow text-gray-900">
-                  <FaWhatsapp size={14} className="sm:w-4 sm:h-4" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-gray-900 text-xs sm:text-sm">
-                    {t("profileVillage.whatsappTitle")}
-                  </h4>
-                  <p className="text-xs text-gray-700">+62 853‑3019‑2025</p>
-                </div>
-              </a>
-            </div>
+                {/* Other contacts */}
+                {contacts.filter(c => c.type !== "LOKASI").length > 0 && (
+                  <div
+                    className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+                    data-aos="fade-up"
+                  >
+                    {contacts.filter(c => c.type !== "LOKASI").map((contact) => {
+                      const Icon = getContactIcon(contact.type);
+                      const link = getContactLink(contact);
+                      const isClickable = link !== null;
 
-            {/* Email */}
-            <a
-              href="mailto:babakanasem@gmail.com"
-              className="p-4 sm:p-5 rounded-lg sm:rounded-xl shadow-md bg-white flex items-center gap-3 sm:gap-4 hover:shadow-xl transition"
-              data-aos="fade-left"
-            >
-              <div className="w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0 flex items-center justify-center rounded-full bg-gradient-to-br from-[#9BEC00] to-[#D2FF72] shadow text-gray-900">
-                <FaEnvelope size={14} className="sm:w-4 sm:h-4" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <h4 className="font-bold text-gray-900 text-sm sm:text-base">
-                  {t("profileVillage.emailTitle")}
-                </h4>
-                <p className="text-xs sm:text-sm text-gray-700 break-all">
-                  babakanasem@gmail.com
-                </p>
-              </div>
-            </a>
+                      const CardContent = () => (
+                        <>
+                          <div className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-gradient-to-br from-[#9BEC00] to-[#D2FF72] shadow text-gray-900">
+                            <Icon size={14} className="sm:w-4 sm:h-4" />
+                          </div>
+                          <div>
+                            <h4 className="font-bold text-gray-900 text-xs sm:text-sm">
+                              {translateContactType(contact.type)}
+                            </h4>
+                            <p className="text-xs text-gray-700">{contact.value}</p>
+                          </div>
+                        </>
+                      );
 
-            {/* Social Media */}
-            <div
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4"
-              data-aos="fade-up"
-            >
-              <a
-                href="https://facebook.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-white shadow hover:shadow-lg transition"
-              >
-                <FaFacebook className="text-blue-600 text-2xl sm:text-3xl flex-shrink-0" />
-                <span className="font-semibold text-gray-800 text-sm sm:text-base">
-                  Facebook
-                </span>
-              </a>
-              <a
-                href="https://instagram.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-white shadow hover:shadow-lg transition"
-              >
-                <FaInstagram className="text-pink-500 text-2xl sm:text-3xl flex-shrink-0" />
-                <span className="font-semibold text-gray-800 text-sm sm:text-base">
-                  Instagram
-                </span>
-              </a>
-              <a
-                href="https://tiktok.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-white shadow hover:shadow-lg transition sm:col-span-2 lg:col-span-1"
-              >
-                <FaTiktok className="text-black text-2xl sm:text-3xl flex-shrink-0" />
-                <span className="font-semibold text-gray-800 text-sm sm:text-base">
-                  TikTok
-                </span>
-              </a>
-            </div>
+                      const baseClasses = "p-4 sm:p-5 rounded-lg sm:rounded-xl shadow-md bg-white flex flex-col items-start gap-2 hover:shadow-xl transition";
+
+                      if (isClickable) {
+                        return (
+                          <a
+                            key={contact.id}
+                            href={link}
+                            className={baseClasses}
+                            target={contact.type === "WHATSAPP" ? "_blank" : undefined}
+                            rel={contact.type === "WHATSAPP" ? "noopener noreferrer" : undefined}
+                          >
+                            <CardContent />
+                          </a>
+                        );
+                      }
+
+                      return (
+                        <div key={contact.id} className={baseClasses}>
+                          <CardContent />
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </>
+            )}
           </div>
         </div>
       </section>

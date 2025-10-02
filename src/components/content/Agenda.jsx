@@ -95,7 +95,7 @@ export default function Agenda() {
                 className={`px-2.5 py-1.5 rounded-full text-xs font-medium transition-all duration-300 ${
                   selectedCategory === kategori
                     ? "bg-gradient-to-r from-[#9BEC00] to-[#D2FF72] text-gray-800 shadow-md"
-                    : "bg-white text-gray-600 border hover:bg-green-50"
+                    : "bg-white text-gray-600 border hover:bg-green-50 cursor-pointer"
                 }`}
               >
                 {t(`agenda.category.${kategori}`)}

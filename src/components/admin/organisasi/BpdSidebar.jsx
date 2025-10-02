@@ -56,17 +56,14 @@ export default function BpdSidebar({ isOpen, onClose }) {
     });
   };
 
+  const { logout } = useAuth();
+
   const handleLogout = async () => {
     const confirm = await alertConfirm("Apakah anda yakin ingin keluar?");
     if (!confirm) return;
-    const response = await UserApi.logout(i18n.language);
-    if (!response.ok) {
-      await Helper.handleErrorResponse(await response.json());
-      return;
-    }
-    setProfile(null);
+    
+    await logout();
     await alertSuccess("Anda telah keluar");
-    navigate("/login");
   };
 
   const menu = [

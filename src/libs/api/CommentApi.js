@@ -1,3 +1,19 @@
+// Helper function to get auth headers
+const getAuthHeaders = (language) => {
+  const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+  const headers = {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+    "Accept-Language": language,
+  };
+  
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+  
+  return headers;
+};
+
 export class CommentApi {
   // - Buat komentar baru
   static async createComment(id, type, content, language) {
@@ -5,11 +21,8 @@ export class CommentApi {
       `${import.meta.env.VITE_NEW_BASE_URL}/private/comments/create/${id}`,
       {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          "Accept-Language": language,
-        },
+        credentials: "include",
+        headers: getAuthHeaders(language),
         body: JSON.stringify({
           target_type: type,
           content: content,
@@ -38,11 +51,8 @@ export class CommentApi {
       }/private/comments/update/${commentId}`,
       {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          "Accept-Language": language,
-        },
+        credentials: "include",
+        headers: getAuthHeaders(language),
         body: JSON.stringify({
           content: newContent,
         }),
@@ -58,11 +68,8 @@ export class CommentApi {
       }/private/comments/delete/${commentId}`,
       {
         method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          "Accept-Language": language,
-        },
+        credentials: "include",
+        headers: getAuthHeaders(language),
       }
     );
   }

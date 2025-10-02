@@ -70,7 +70,7 @@ export default function AdminSidebar({ isOpen, onClose }) {
 
     const fetchEmergencyData = async () => {
       try {
-        const response = await EmergencyApi.count();
+        const response = await EmergencyApi.count(i18n.language);
         setEmergencyCount(response.data);
       } catch (error) {
         console.error("Error fetching emergency data:", error);
@@ -102,17 +102,21 @@ export default function AdminSidebar({ isOpen, onClose }) {
     });
   };
 
+  const { logout } = useAuth();
+
   const handleLogout = async () => {
     const confirm = await alertConfirm("Apakah Anda yakin ingin keluar?");
     if (!confirm) return;
-    const response = await UserApi.logout(i18n.language);
-    if (!response.ok) {
-      Helper.errorResponseHandler(await response.json());
-      return;
+    
+    try {
+      await logout(true); // Pass true to show success alert
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Force logout even if server call fails
+      localStorage.clear();
+      sessionStorage.clear();
+      window.location.replace('/');
     }
-    setProfile(null);
-    await alertSuccess("Anda telah keluar.");
-    navigate("/login");
   };
 
   const menu = [

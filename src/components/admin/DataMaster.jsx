@@ -230,7 +230,7 @@ export default function DataMaster() {
                 </div>
               </div>
               <div className="mt-6">
-                <button className="w-full bg-white bg-opacity-90 text-gray-800 font-medium py-2.5 px-4 rounded-lg shadow hover:bg-opacity-100 transition">
+                <button className="w-full bg-white bg-opacity-90 text-gray-800 font-medium py-2.5 px-4 rounded-lg shadow hover:bg-opacity-100 transition cursor-pointer">
                   Akses Sekarang
                 </button>
               </div>
@@ -267,7 +267,7 @@ export default function DataMaster() {
 
               <div className="px-6 pb-6">
                 <button
-                  className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-green-400 to-[#B6F500] hover:from-blue-600 hover:to-indigo-700 text-white font-medium py-3 px-6 rounded-lg shadow transition-all duration-300"
+                  className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-green-400 to-[#B6F500] hover:from-blue-600 hover:to-indigo-700 text-white font-medium py-3 px-6 rounded-lg shadow transition-all duration-300 cursor-pointer"
                   onClick={
                     item.onClick ? item.onClick : () => navigate(item.link)
                   }

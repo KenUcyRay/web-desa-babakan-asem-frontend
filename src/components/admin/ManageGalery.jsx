@@ -128,7 +128,7 @@ export default function ManageGalery() {
         {!showForm && (
           <button
             onClick={() => setShowForm(true)}
-            className="flex items-center gap-2 bg-gradient-to-r bg-green-500 hover:bg-green-600 text-white px-5 py-2.5 rounded-lg shadow-md transition transform"
+            className="flex items-center gap-2 bg-gradient-to-r bg-green-500 hover:bg-green-600 text-white px-5 py-2.5 rounded-lg shadow-md transition transform cursor-pointer"
           >
             <FaPlus /> Tambah Foto
           </button>
@@ -138,6 +138,7 @@ export default function ManageGalery() {
       {/* FORM TAMBAH/EDIT FOTO */}
       {showForm && (
         <form
+          id={editingId ? `edit-galery-form-${editingId}` : "create-galery-form"}
           onSubmit={handleSave}
           className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8 mx-auto max-w-2xl"
         >
@@ -148,7 +149,7 @@ export default function ManageGalery() {
             <button
               type="button"
               onClick={resetForm}
-              className="text-gray-500 hover:text-gray-700 transition"
+              className="text-gray-500 hover:text-gray-700 transition cursor-pointer"
             >
               <FaTimes size={20} />
             </button>
@@ -205,14 +206,14 @@ export default function ManageGalery() {
           <div className="flex gap-3 mt-6 pt-5 border-t border-gray-200">
             <button
               type="submit"
-              className="flex items-center gap-2 bg-gradient-to-r bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-xl shadow-md transition transform "
+              className="flex items-center gap-2 bg-gradient-to-r bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-xl shadow-md transition transform cursor-pointer"
             >
               <FaSave /> {editingId ? "Ubah Galeri" : "Simpan Galeri"}
             </button>
             <button
               type="button"
               onClick={resetForm}
-              className="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 px-5 py-3 rounded-xl transition"
+              className="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 px-5 py-3 rounded-xl transition cursor-pointer"
             >
               <FaTimes /> Batal
             </button>
@@ -235,7 +236,7 @@ export default function ManageGalery() {
           {!showForm && (
             <button
               onClick={() => setShowForm(true)}
-              className="inline-flex items-center gap-2 bg-gradient-to-r bg-green-500 hover:bg-green-600 text-white px-5 py-2.5 rounded-lg shadow-md transition"
+              className="inline-flex items-center gap-2 bg-gradient-to-r bg-green-500 hover:bg-green-600 text-white px-5 py-2.5 rounded-lg shadow-md transition cursor-pointer"
             >
               <FaPlus /> Tambah Foto
             </button>
@@ -263,15 +264,16 @@ export default function ManageGalery() {
                     {galeri.title}
                   </h3>
                   <div className="flex justify-between mt-5 pt-4 border-t border-gray-100">
-                    <button
+                    <a
+                      href={`#edit-galery-form-${galeri.id}`}
                       onClick={() => handleEdit(galeri.id)}
-                      className="flex items-center gap-1 text-blue-500 hover:text-blue-700 hover:bg-green-50 px-3 py-1.5 rounded-lg transition"
+                      className="flex items-center gap-1 text-blue-500 hover:text-blue-700 hover:bg-green-50 px-3 py-1.5 rounded-lg transition cursor-pointer"
                     >
                       <FaEdit size={14} /> Edit
-                    </button>
+                    </a>
                     <button
                       onClick={() => handleDelete(galeri.id)}
-                      className="flex items-center gap-1 text-red-500 hover:text-red-700 hover:bg-red-50 px-3 py-1.5 rounded-lg transition"
+                      className="flex items-center gap-1 text-red-500 hover:text-red-700 hover:bg-red-50 px-3 py-1.5 rounded-lg transition cursor-pointer"
                     >
                       <FaTrash size={14} /> Hapus
                     </button>

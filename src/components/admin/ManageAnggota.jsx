@@ -184,7 +184,7 @@ export default function ManageAnggota() {
 
         <button
           onClick={handleAdd}
-          className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2 rounded-lg shadow-lg transition transform hover:-translate-y-0.5"
+          className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2 rounded-lg shadow-lg transition transform hover:-translate-y-0.5 cursor-pointer"
         >
           <FaPlus /> Tambah anggota
         </button>
@@ -199,7 +199,7 @@ export default function ManageAnggota() {
               setKategori(k.key);
               setCurrentPage(1);
             }}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition ${
+            className={`px-4 py-2 rounded-full text-sm font-medium transition cursor-pointer ${
               kategori === k.key
                 ? "bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg"
                 : "bg-gray-100 hover:bg-green-50 text-gray-700"
@@ -261,15 +261,16 @@ export default function ManageAnggota() {
             </div>
 
             <div className="flex justify-between p-4 border-t text-sm">
-              <button
+              <a
+                href={`#edit-anggota-form-${member.id}`}
                 onClick={() => handleEdit(member.id)}
-                className="flex items-center gap-1 text-blue-600 hover:text-blue-800 transition"
+                className="flex items-center gap-1 text-blue-600 hover:text-blue-800 transition cursor-pointer"
               >
                 <FaEdit /> Edit
-              </button>
+              </a>
               <button
                 onClick={() => handleDelete(member.id)}
-                className="flex items-center gap-1 text-red-600 hover:text-red-800 transition"
+                className="flex items-center gap-1 text-red-600 hover:text-red-800 transition cursor-pointer"
               >
                 <FaTrash /> Hapus
               </button>
@@ -301,13 +302,14 @@ export default function ManageAnggota() {
               </h2>
               <button
                 onClick={() => setShowModal(false)}
-                className="text-white hover:text-gray-200 transition"
+                className="text-white hover:text-gray-200 transition cursor-pointer"
               >
                 <FaTimes size={22} />
               </button>
             </div>
 
             <form
+              id={editingId ? `edit-anggota-form-${editingId}` : "create-anggota-form"}
               onSubmit={handleSubmit}
               className="p-6 max-h-[80vh] overflow-y-auto"
             >
@@ -454,7 +456,7 @@ export default function ManageAnggota() {
                       <button
                         type="button"
                         onClick={() => setFormData(prev => ({ ...prev, profile_photo: null }))}
-                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
+                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 cursor-pointer"
                       >
                         ×
                       </button>
@@ -499,14 +501,14 @@ export default function ManageAnggota() {
               <div className="flex justify-end gap-3 mt-8 pt-5 border-t border-gray-200">
                 <button
                   type="button"
-                  className="px-6 py-3 rounded-xl bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium transition shadow"
+                  className="px-6 py-3 rounded-xl bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium transition shadow cursor-pointer"
                   onClick={() => setShowModal(false)}
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
-                  className="px-7 py-3 rounded-xl bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-medium shadow-lg transition transform hover:-translate-y-0.5"
+                  className="px-7 py-3 rounded-xl bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-medium shadow-lg transition transform hover:-translate-y-0.5 cursor-pointer"
                 >
                   {editingId ? "Simpan" : "Tambah"}
                 </button>
