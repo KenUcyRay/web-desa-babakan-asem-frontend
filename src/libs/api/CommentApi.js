@@ -20,6 +20,7 @@ export class CommentApi {
     return await fetch(
       `${import.meta.env.VITE_NEW_BASE_URL}/private/comments/create/${id}`,
       {
+        credentials: "include",
         method: "POST",
         credentials: "include",
         headers: getAuthHeaders(language),
@@ -50,6 +51,7 @@ export class CommentApi {
         import.meta.env.VITE_NEW_BASE_URL
       }/private/comments/update/${commentId}`,
       {
+        credentials: "include",
         method: "PATCH",
         credentials: "include",
         headers: getAuthHeaders(language),
@@ -67,6 +69,7 @@ export class CommentApi {
         import.meta.env.VITE_NEW_BASE_URL
       }/private/comments/delete/${commentId}`,
       {
+        credentials: "include",
         method: "DELETE",
         credentials: "include",
         headers: getAuthHeaders(language),

@@ -1,16 +1,17 @@
 // Helper function to get auth headers
 const getAuthHeaders = (language) => {
-  const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+  const token =
+    localStorage.getItem("token") || sessionStorage.getItem("token");
   const headers = {
     "Content-Type": "application/json",
     Accept: "application/json",
     "Accept-Language": language,
   };
-  
+
   if (token) {
     headers.Authorization = `Bearer ${token}`;
   }
-  
+
   return headers;
 };
 
@@ -39,6 +40,7 @@ export class UserApi {
     return await fetch(`${import.meta.env.VITE_NEW_BASE_URL}/users/login`, {
       method: "POST",
       credentials: "include",
+
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
@@ -46,7 +48,10 @@ export class UserApi {
       },
       body: JSON.stringify({
         email: body.email && body.email !== "" ? body.email : undefined,
-        phone_number: body.phone_number && body.phone_number !== "" ? body.phone_number : undefined,
+        phone_number:
+          body.phone_number && body.phone_number !== ""
+            ? body.phone_number
+            : undefined,
         password: body.password,
         remember_me: body.rememberMe,
         recaptcha_token: body.reCaptchaToken,

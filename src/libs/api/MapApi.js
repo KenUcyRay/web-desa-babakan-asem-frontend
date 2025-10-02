@@ -69,7 +69,9 @@ export class MapApi {
     try {
       const response = await fetch(`${MAPS_BASE_URL}-data`, {
         method: "GET",
-         //  village,
+        //  village,
+        credentials: "include",
+
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -89,7 +91,9 @@ export class MapApi {
     try {
       const response = await fetch(`${REGION_BASE_URL}/${id}`, {
         method: "GET",
-         //  village,
+        //  village,
+        credentials: "include",
+
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -109,7 +113,9 @@ export class MapApi {
     try {
       const response = await fetch(`${REGION_BASE_URL}`, {
         method: "POST",
-         //  village,
+        //  village,
+        credentials: "include",
+
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -130,7 +136,9 @@ export class MapApi {
     try {
       const response = await fetch(POI_BASE_URL, {
         method: "POST",
-         //  village,
+        //  village,
+        credentials: "include",
+
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -149,20 +157,23 @@ export class MapApi {
   // Get all maps
   static async getAll(language) {
     try {
-      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-      
+      const token =
+        localStorage.getItem("token") || sessionStorage.getItem("token");
+
       const headers = {
         "Content-Type": "application/json",
         Accept: "application/json",
         "Accept-Language": language,
       };
-      
+
       if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
+        headers["Authorization"] = `Bearer ${token}`;
       }
-      
+
       const response = await fetch(MAPS_BASE_URL, {
         method: "GET",
+        credentials: "include",
+
         headers,
       });
       if (!response.ok) throw new Error("Failed to fetch maps");
@@ -178,7 +189,9 @@ export class MapApi {
     try {
       const response = await fetch(`${MAPS_BASE_URL}/${id}`, {
         method: "GET",
-         //  village,
+        //  village,
+        credentials: "include",
+
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -196,8 +209,9 @@ export class MapApi {
   // Create new map - FIXED
   static async create(data, language) {
     try {
-      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-      
+      const token =
+        localStorage.getItem("token") || sessionStorage.getItem("token");
+
       const formData = new FormData();
       formData.append("type", data.type);
       formData.append("name", data.name);
@@ -221,14 +235,16 @@ export class MapApi {
       const headers = {
         "Accept-Language": language,
       };
-      
+
       if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
+        headers["Authorization"] = `Bearer ${token}`;
       }
 
       const response = await fetch(
         `${import.meta.env.VITE_NEW_BASE_URL}/admin/maps`,
+
         {
+          credentials: "include",
           method: "POST",
           body: formData,
           headers,
@@ -252,8 +268,9 @@ export class MapApi {
   // Update map - FIXED
   static async update(id, data, language) {
     try {
-      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-      
+      const token =
+        localStorage.getItem("token") || sessionStorage.getItem("token");
+
       const formData = new FormData();
       formData.append("type", data.type);
       formData.append("name", data.name);
@@ -280,14 +297,16 @@ export class MapApi {
         Accept: "application/json",
         "Accept-Language": language,
       };
-      
+
       if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
+        headers["Authorization"] = `Bearer ${token}`;
       }
 
       const response = await fetch(
         `${import.meta.env.VITE_NEW_BASE_URL}/admin/maps/${id}`,
         {
+          credentials: "include",
+
           method: "PATCH",
           headers,
           body: formData,
@@ -311,19 +330,22 @@ export class MapApi {
   // Delete map
   static async delete(id, language) {
     try {
-      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-      
+      const token =
+        localStorage.getItem("token") || sessionStorage.getItem("token");
+
       const headers = {
         "Content-Type": "application/json",
         Accept: "application/json",
         "Accept-Language": language,
       };
-      
+
       if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
+        headers["Authorization"] = `Bearer ${token}`;
       }
-      
+
       const response = await fetch(`${MAPS_BASE_URL}/${id}`, {
+        credentials: "include",
+
         method: "DELETE",
         headers,
       });
