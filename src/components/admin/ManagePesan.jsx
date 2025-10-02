@@ -144,15 +144,13 @@ export default function ManagePesan() {
       </div>
 
       {/* - PAGINATION */}
-      {messages.length > 0 && (
-        <div className="mt-8 flex justify-center">
-          <Pagination
-            currentPage={page}
-            totalPages={totalPages}
-            onPageChange={setPage}
-          />
-        </div>
-      )}
+      <div className="mt-8 flex justify-center">
+        <Pagination
+          currentPage={page}
+          totalPages={totalPages}
+          onPageChange={setPage}
+        />
+      </div>
     </div>
   );
 }

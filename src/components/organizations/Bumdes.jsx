@@ -129,15 +129,13 @@ export default function Bumdes() {
           </div>
         )}
 
-        {products.length > 0 && (
-          <div className="mt-10 flex justify-end" data-aos="fade-up">
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-            />
-          </div>
-        )}
+        <div className="mt-10 flex justify-end" data-aos="fade-up">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+        </div>
       </div>
 
       <div className="bg-gradient-to-r from-green-400 to-[#B6F500] py-12 text-center shadow-inner">

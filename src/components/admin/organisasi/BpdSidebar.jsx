@@ -122,7 +122,7 @@ export default function BpdSidebar({ isOpen, onClose }) {
               key={item.to}
               to={item.to}
               onClick={onClose}
-              className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-all duration-200 ${
+              className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-all duration-200 cursor-pointer ${
                 isActive
                   ? "bg-gradient-to-r from-green-400 to-[#B6F500] text-white font-semibold shadow-md"
                   : "text-gray-700 hover:bg-gradient-to-r hover:from-green-50 hover:to-lime-50 hover:text-green-700"
@@ -145,7 +145,7 @@ export default function BpdSidebar({ isOpen, onClose }) {
               key={item.to}
               to={item.to}
               onClick={onClose}
-              className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-all duration-200 ${
+              className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-all duration-200 cursor-pointer ${
                 isActive
                   ? "bg-gradient-to-r from-green-400 to-[#B6F500] text-white font-semibold shadow-md"
                   : "hover:bg-gradient-to-r hover:from-green-50 hover:to-lime-50 text-gray-700 hover:text-green-700"
@@ -163,14 +163,14 @@ export default function BpdSidebar({ isOpen, onClose }) {
         <Link
           to="/"
           onClick={onClose}
-          className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 text-gray-700 text-sm transition-all duration-200"
+          className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 text-gray-700 text-sm transition-all duration-200 cursor-pointer"
         >
           <FaArrowLeft /> Kembali ke Website
         </Link>
 
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 px-3 py-2 w-full text-left rounded-md hover:bg-red-50 text-red-500 text-sm transition-all duration-200"
+          className="flex items-center gap-3 px-3 py-2 w-full text-left rounded-md hover:bg-red-50 text-red-500 text-sm transition-all duration-200 cursor-pointer"
         >
           <FaSignOutAlt /> Keluar
         </button>

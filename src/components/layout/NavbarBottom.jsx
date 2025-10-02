@@ -18,15 +18,17 @@ export default function NavbarBottom() {
 
   const { role, setProfile, profile } = useAuth();
 
-  const isTentangActive = ["/profil", "/pemerintahan", "/potensi"].includes(
-    location.pathname
+  const isTentangActive = ["/profil", "/pemerintahan", "/potensi"].some(path => 
+    location.pathname === path || location.pathname.startsWith(path + "/")
   );
   const isInformasiActive = [
     "/administrasi",
-    "/agenda",
+    "/agenda", 
     "/berita",
     "/galeri",
-  ].includes(location.pathname);
+  ].some(path => 
+    location.pathname === path || location.pathname.startsWith(path + "/")
+  );
 
   const activeClass = "text-[#B6F500] font-semibold";
   const normalClass = "hover:text-[#B6F500] transition";

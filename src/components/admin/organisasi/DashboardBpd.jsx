@@ -320,7 +320,7 @@ export default function DashboardBpd() {
       <div className="flex border-b mb-6">
         <button
           onClick={() => setActiveTab("structure")}
-          className={`px-4 py-2 font-medium ${
+          className={`px-4 py-2 font-medium cursor-pointer ${
             activeTab === "structure"
               ? "text-green-600 border-b-2 border-green-600"
               : "text-gray-500"
@@ -330,7 +330,7 @@ export default function DashboardBpd() {
         </button>
         <button
           onClick={() => setActiveTab("agenda")}
-          className={`px-4 py-2 font-medium ${
+          className={`px-4 py-2 font-medium cursor-pointer ${
             activeTab === "agenda"
               ? "text-green-600 border-b-2 border-green-600"
               : "text-gray-500"
@@ -356,7 +356,7 @@ export default function DashboardBpd() {
                   resetForms();
                   setShowMemberForm(true);
                 }}
-                className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2 rounded-lg shadow-lg transition transform hover:-translate-y-0.5"
+                className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2 rounded-lg shadow-lg transition transform hover:-translate-y-0.5 cursor-pointer"
               >
                 <FaPlus /> Tambah Anggota
               </button>
@@ -366,6 +366,7 @@ export default function DashboardBpd() {
           {/* Form Anggota */}
           {showMemberForm && (
             <form
+              id="member-form"
               onSubmit={handleMemberSave}
               className="bg-white p-6 rounded-xl shadow-md mb-6 space-y-4 max-w-2xl border"
             >
@@ -489,6 +490,31 @@ export default function DashboardBpd() {
                   className="w-full border rounded-lg p-2 hidden"
                   onChange={handleMemberImageChange}
                 />
+                {(memberForm.profile_photo ||
+                  (editingMemberId &&
+                    members.find((m) => m.id === editingMemberId)
+                      ?.profile_photo)) && (
+                  <div className="mt-3">
+                    <img
+                      src={
+                        memberForm.profile_photo
+                          ? URL.createObjectURL(memberForm.profile_photo)
+                          : members.find((m) => m.id === editingMemberId)
+                              ?.profile_photo?.startsWith("http")
+                          ? members.find((m) => m.id === editingMemberId)
+                              ?.profile_photo
+                          : `${
+                              import.meta.env.VITE_NEW_BASE_URL
+                            }/public/images/${
+                              members.find((m) => m.id === editingMemberId)
+                                ?.profile_photo
+                            }`
+                      }
+                      alt="Preview foto anggota"
+                      className="w-32 h-32 object-cover rounded-lg shadow-sm border border-gray-200"
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="flex items-center gap-2">
@@ -505,14 +531,14 @@ export default function DashboardBpd() {
               <div className="flex gap-3">
                 <button
                   type="submit"
-                  className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-5 py-2 rounded-lg shadow hover:shadow-lg transition"
+                  className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-5 py-2 rounded-lg shadow hover:shadow-lg transition cursor-pointer"
                 >
                   <FaSave /> {editingMemberId ? "Edit" : "Simpan"}
                 </button>
                 <button
                   type="button"
                   onClick={resetForms}
-                  className="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition"
+                  className="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition cursor-pointer"
                 >
                   <FaTimes /> Batal
                 </button>
@@ -567,16 +593,17 @@ export default function DashboardBpd() {
                   </div>
 
                   <div className="flex justify-between p-4 border-t text-sm">
-                    <button
+                    <a
+                      href="#member-form"
                       onClick={() => handleMemberEdit(member.id)}
-                      className="flex items-center gap-1 text-blue-600 hover:text-blue-800 transition"
+                      className="flex items-center gap-1 text-blue-600 hover:text-blue-800 transition cursor-pointer"
                     >
                       <FaEdit />
                       Edit
-                    </button>
+                    </a>
                     <button
                       onClick={() => handleMemberDelete(member.id)}
-                      className="flex items-center gap-1 text-red-600 hover:text-red-800 transition"
+                      className="flex items-center gap-1 text-red-600 hover:text-red-800 transition cursor-pointer"
                     >
                       <FaTrash /> Hapus
                     </button>
@@ -612,7 +639,7 @@ export default function DashboardBpd() {
                   resetForms();
                   setShowAgendaForm(true);
                 }}
-                className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2 rounded-lg shadow-lg transition transform hover:-translate-y-0.5"
+                className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2 rounded-lg shadow-lg transition transform hover:-translate-y-0.5 cursor-pointer"
               >
                 <FaPlus /> Tambah Agenda
               </button>
@@ -636,7 +663,7 @@ export default function DashboardBpd() {
                 )}
               </h3>
 
-              <form onSubmit={handleAgendaSave} className="space-y-4">
+              <form id="agenda-form" onSubmit={handleAgendaSave} className="space-y-4">
                 <div>
                   <label className="block font-medium text-gray-700 mb-1">
                     Judul Agenda
@@ -788,14 +815,14 @@ export default function DashboardBpd() {
                 <div className="flex gap-3 pt-4">
                   <button
                     type="submit"
-                    className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-5 py-2 rounded-lg shadow hover:shadow-lg transition"
+                    className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-5 py-2 rounded-lg shadow hover:shadow-lg transition cursor-pointer"
                   >
                     <FaSave /> {editingAgendaId ? "Edit" : "Simpan"}
                   </button>
                   <button
                     type="button"
                     onClick={resetForms}
-                    className="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition"
+                    className="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition cursor-pointer"
                   >
                     <FaTimes /> Batal
                   </button>
@@ -881,15 +908,16 @@ export default function DashboardBpd() {
 
                         {/* Action Buttons */}
                         <div className="flex gap-2 lg:flex-col">
-                          <button
+                          <a
+                            href="#agenda-form"
                             onClick={() => handleAgendaEdit(agenda.id)}
-                            className="flex items-center gap-1 px-3 py-2 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded transition text-sm"
+                            className="flex items-center gap-1 px-3 py-2 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded transition text-sm cursor-pointer"
                           >
                             <FaEdit /> Edit
-                          </button>
+                          </a>
                           <button
                             onClick={() => handleAgendaDelete(agenda.id)}
-                            className="flex items-center gap-1 px-3 py-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded transition text-sm"
+                            className="flex items-center gap-1 px-3 py-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded transition text-sm cursor-pointer"
                           >
                             <FaTrash /> Hapus
                           </button>
@@ -903,15 +931,13 @@ export default function DashboardBpd() {
           </div>
 
           {/* Pagination */}
-          {agendaTotalPages > 1 && (
-            <div className="mt-6 flex justify-center">
-              <Pagination
-                currentPage={agendaPage}
-                totalPages={agendaTotalPages}
-                onPageChange={setAgendaPage}
-              />
-            </div>
-          )}
+          <div className="mt-6 flex justify-center">
+            <Pagination
+              currentPage={agendaPage}
+              totalPages={agendaTotalPages}
+              onPageChange={setAgendaPage}
+            />
+          </div>
         </>
       )}
     </div>

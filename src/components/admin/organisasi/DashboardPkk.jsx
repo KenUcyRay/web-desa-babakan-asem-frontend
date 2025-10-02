@@ -446,7 +446,7 @@ export default function ManagePkk() {
       <div className="flex border-b mb-6">
         <button
           onClick={() => setActiveTab("program")}
-          className={`px-4 py-2 font-medium ${
+          className={`px-4 py-2 font-medium cursor-pointer ${
             activeTab === "program"
               ? "text-green-600 border-b-2 border-green-600"
               : "text-gray-500"
@@ -456,7 +456,7 @@ export default function ManagePkk() {
         </button>
         <button
           onClick={() => setActiveTab("structure")}
-          className={`px-4 py-2 font-medium ${
+          className={`px-4 py-2 font-medium cursor-pointer ${
             activeTab === "structure"
               ? "text-green-600 border-b-2 border-green-600"
               : "text-gray-500"
@@ -466,7 +466,7 @@ export default function ManagePkk() {
         </button>
         <button
           onClick={() => setActiveTab("agenda")}
-          className={`px-4 py-2 font-medium ${
+          className={`px-4 py-2 font-medium cursor-pointer ${
             activeTab === "agenda"
               ? "text-green-600 border-b-2 border-green-600"
               : "text-gray-500"
@@ -491,7 +491,7 @@ export default function ManagePkk() {
                   resetForms();
                   setShowProgramForm(true);
                 }}
-                className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2 rounded-lg shadow-lg transition transform hover:-translate-y-0.5"
+                className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2 rounded-lg shadow-lg transition transform hover:-translate-y-0.5 cursor-pointer"
               >
                 <FaPlus /> Tambah Program PKK
               </button>
@@ -501,6 +501,7 @@ export default function ManagePkk() {
           {/* Form Program */}
           {showProgramForm && (
             <form
+              id="program-form"
               onSubmit={handleProgramSave}
               className="bg-white p-6 rounded-xl shadow-md mb-6 space-y-4 max-w-2xl border"
             >
@@ -587,14 +588,14 @@ export default function ManagePkk() {
               <div className="flex gap-3">
                 <button
                   type="submit"
-                  className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-5 py-2 rounded-lg shadow hover:shadow-lg transition"
+                  className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-5 py-2 rounded-lg shadow hover:shadow-lg transition cursor-pointer"
                 >
                   <FaSave /> {editingProgramId ? "Edit" : "Simpan"}
                 </button>
                 <button
                   type="button"
                   onClick={resetForms}
-                  className="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition"
+                  className="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition cursor-pointer"
                 >
                   <FaTimes /> Batal
                 </button>
@@ -629,16 +630,17 @@ export default function ManagePkk() {
                       {program.description}
                     </p>
                     <div className="flex justify-between mt-4 text-sm">
-                      <button
+                      <a
+                        href="#program-form"
                         onClick={() => handleProgramEdit(program.id)}
-                        className="flex items-center gap-1 text-blue-500 hover:text-blue-700 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition"
+                        className="flex items-center gap-1 text-blue-500 hover:text-blue-700 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition cursor-pointer"
                       >
                         <FaEdit />
                         Edit
-                      </button>
+                      </a>
                       <button
                         onClick={() => handleProgramDelete(program.id)}
-                        className="flex items-center gap-1 text-red-500 hover:text-red-700 hover:bg-red-50 px-3 py-1.5 rounded-lg transition"
+                        className="flex items-center gap-1 text-red-500 hover:text-red-700 hover:bg-red-50 px-3 py-1.5 rounded-lg transition cursor-pointer"
                       >
                         <FaTrash />
                         Hapus
@@ -676,7 +678,7 @@ export default function ManagePkk() {
                 resetForms();
                 setShowMemberForm(true);
               }}
-              className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2 rounded-lg shadow-lg transition transform hover:-translate-y-0.5"
+              className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2 rounded-lg shadow-lg transition transform hover:-translate-y-0.5 cursor-pointer"
             >
               <FaPlus /> Tambah Anggota PKK
             </button>
@@ -732,16 +734,17 @@ export default function ManagePkk() {
                   </div>
 
                   <div className="flex justify-between p-4 border-t text-sm">
-                    <button
+                    <a
+                      href="#member-form"
                       onClick={() => handleMemberEdit(member.id)}
-                      className="flex items-center gap-1 text-blue-600 hover:text-blue-800 transition"
+                      className="flex items-center gap-1 text-blue-600 hover:text-blue-800 transition cursor-pointer"
                     >
                       <FaEdit />
                       Edit
-                    </button>
+                    </a>
                     <button
                       onClick={() => handleMemberDelete(member.id)}
-                      className="flex items-center gap-1 text-red-600 hover:text-red-800 transition"
+                      className="flex items-center gap-1 text-red-600 hover:text-red-800 transition cursor-pointer"
                     >
                       <FaTrash /> Hapus
                     </button>
@@ -774,13 +777,14 @@ export default function ManagePkk() {
                   </h2>
                   <button
                     onClick={resetForms}
-                    className="text-white hover:text-gray-200 transition"
+                    className="text-white hover:text-gray-200 transition cursor-pointer"
                   >
                     <FaTimes size={22} />
                   </button>
                 </div>
 
                 <form
+                  id="member-form"
                   onSubmit={handleMemberSave}
                   className="p-6 max-h-[80vh] overflow-y-auto space-y-4"
                 >
@@ -899,6 +903,31 @@ export default function ManagePkk() {
                       onChange={handleMemberImageChange}
                       className="hidden w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-200 focus:border-green-500"
                     />
+                    {(memberForm.profile_photo ||
+                      (editingMemberId &&
+                        members.find((m) => m.id === editingMemberId)
+                          ?.profile_photo)) && (
+                      <div className="mt-3">
+                        <img
+                          src={
+                            memberForm.profile_photo
+                              ? URL.createObjectURL(memberForm.profile_photo)
+                              : members.find((m) => m.id === editingMemberId)
+                                  ?.profile_photo?.startsWith("http")
+                              ? members.find((m) => m.id === editingMemberId)
+                                  ?.profile_photo
+                              : `${
+                                  import.meta.env.VITE_NEW_BASE_URL
+                                }/public/images/${
+                                  members.find((m) => m.id === editingMemberId)
+                                    ?.profile_photo
+                                }`
+                          }
+                          alt="Preview foto anggota"
+                          className="w-32 h-32 object-cover rounded-lg shadow-sm border border-gray-200"
+                        />
+                      </div>
+                    )}
                   </div>
 
                   <div className="mb-5">
@@ -941,14 +970,14 @@ export default function ManagePkk() {
                   <div className="flex justify-end gap-3 mt-8 pt-5 border-t border-gray-200">
                     <button
                       type="button"
-                      className="px-6 py-3 rounded-xl bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium transition shadow"
+                      className="px-6 py-3 rounded-xl bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium transition shadow cursor-pointer"
                       onClick={resetForms}
                     >
                       Batal
                     </button>
                     <button
                       type="submit"
-                      className="px-7 py-3 rounded-xl bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-medium shadow-lg transition transform hover:-translate-y-0.5"
+                      className="px-7 py-3 rounded-xl bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-medium shadow-lg transition transform hover:-translate-y-0.5 cursor-pointer"
                     >
                       {editingMemberId ? "Edit" : "Simpan"}
                     </button>
@@ -975,7 +1004,7 @@ export default function ManagePkk() {
                   resetForms();
                   setShowAgendaForm(true);
                 }}
-                className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2 rounded-lg shadow-lg transition transform hover:-translate-y-0.5"
+                className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2 rounded-lg shadow-lg transition transform hover:-translate-y-0.5 cursor-pointer"
               >
                 <FaPlus /> Tambah Agenda PKK
               </button>
@@ -999,7 +1028,7 @@ export default function ManagePkk() {
                 )}
               </h3>
 
-              <form onSubmit={handleAgendaSave} className="space-y-4">
+              <form id="agenda-form" onSubmit={handleAgendaSave} className="space-y-4">
                 <div>
                   <label className="block font-medium text-gray-700 mb-1">
                     Judul agenda
@@ -1150,14 +1179,14 @@ export default function ManagePkk() {
                 <div className="flex gap-3 pt-4">
                   <button
                     type="submit"
-                    className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-5 py-2 rounded-lg shadow hover:shadow-lg transition"
+                    className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-5 py-2 rounded-lg shadow hover:shadow-lg transition cursor-pointer"
                   >
                     <FaSave /> {editingAgendaId ? "Edit" : "Simpan"}
                   </button>
                   <button
                     type="button"
                     onClick={resetForms}
-                    className="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition"
+                    className="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition cursor-pointer"
                   >
                     <FaTimes />
                     Batal
@@ -1242,15 +1271,16 @@ export default function ManagePkk() {
 
                         {/* Action Buttons */}
                         <div className="flex gap-2 lg:flex-col">
-                          <button
+                          <a
+                            href="#agenda-form"
                             onClick={() => handleAgendaEdit(agenda.id)}
-                            className="flex items-center gap-1 px-3 py-2 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded transition text-sm"
+                            className="flex items-center gap-1 px-3 py-2 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded transition text-sm cursor-pointer"
                           >
                             <FaEdit /> Edit
-                          </button>
+                          </a>
                           <button
                             onClick={() => handleAgendaDelete(agenda.id)}
-                            className="flex items-center gap-1 px-3 py-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded transition text-sm"
+                            className="flex items-center gap-1 px-3 py-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded transition text-sm cursor-pointer"
                           >
                             <FaTrash /> Hapus
                           </button>
@@ -1264,15 +1294,13 @@ export default function ManagePkk() {
           </div>
 
           {/* Pagination */}
-          {agendaTotalPages > 1 && (
-            <div className="mt-6 flex justify-center">
-              <Pagination
-                currentPage={agendaPage}
-                totalPages={agendaTotalPages}
-                onPageChange={setAgendaPage}
-              />
-            </div>
-          )}
+          <div className="mt-6 flex justify-center">
+            <Pagination
+              currentPage={agendaPage}
+              totalPages={agendaTotalPages}
+              onPageChange={setAgendaPage}
+            />
+          </div>
         </>
       )}
     </div>

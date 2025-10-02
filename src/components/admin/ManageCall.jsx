@@ -407,11 +407,9 @@ export default function ManageCall() {
       </div>
 
       {/* PAGINATION */}
-      {filteredCalls.length > 0 && (
-        <div className="mt-6 flex justify-center">
-          <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
-        </div>
-      )}
+      <div className="mt-6 flex justify-center">
+        <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+      </div>
 
       {/* MODAL */}
       {showModal && (

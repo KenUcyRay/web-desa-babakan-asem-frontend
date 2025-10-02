@@ -579,15 +579,13 @@ export default function ManageAgenda() {
           </div>
 
           {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="mt-8 flex justify-center">
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={setCurrentPage}
-              />
-            </div>
-          )}
+          <div className="mt-8 flex justify-center">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
+          </div>
         </>
       )}
     </div>

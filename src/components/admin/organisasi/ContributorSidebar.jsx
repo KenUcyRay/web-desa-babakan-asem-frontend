@@ -170,7 +170,7 @@ export default function ContributorSidebar({ isOpen, onClose }) {
 
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 px-3 py-2 w-full text-left rounded-md hover:bg-red-50 text-red-500 text-sm transition-all duration-200"
+          className="flex items-center gap-3 px-3 py-2 w-full text-left rounded-md hover:bg-red-50 text-red-500 text-sm transition-all duration-200 cursor-pointer"
         >
           <FaSignOutAlt /> Keluar
         </button>
