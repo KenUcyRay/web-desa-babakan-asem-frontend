@@ -315,7 +315,7 @@ const ManageProgram = () => {
                   </label>
                   <input
                     type="text"
-                    placeholder="Nama Program Kerja"
+                    placeholder="Contoh: Pembangunan Jalan Desa, Pelatihan UMKM"
                     className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition"
                     value={newProgram.nama}
                     onChange={(e) =>
@@ -350,7 +350,7 @@ const ManageProgram = () => {
                     </span>
                     <input
                       type="number"
-                      placeholder="Budget"
+                      placeholder="50000000"
                       className="w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-2 sm:py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition"
                       value={newProgram.budget}
                       onChange={(e) =>
@@ -384,7 +384,7 @@ const ManageProgram = () => {
                   Keterangan Program
                 </label>
                 <textarea
-                  placeholder="Keterangan program kerja"
+                  placeholder="Deskripsikan detail program kerja, tujuan, dan manfaatnya untuk masyarakat desa"
                   className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition"
                   value={newProgram.justifikasi}
                   onChange={(e) =>

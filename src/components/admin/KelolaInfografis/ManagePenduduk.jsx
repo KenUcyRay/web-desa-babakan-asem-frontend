@@ -453,7 +453,7 @@ export default function ManagePenduduk() {
       )}
       <button
         onClick={() => handleEdit(item)}
-        className="absolute top-2 right-2 text-blue-500 hover:text-blue-700"
+        className="absolute top-2 right-2 text-blue-500 hover:text-blue-700 cursor-pointer"
       >
         <FaEdit className="text-sm" />
       </button>
@@ -613,19 +613,19 @@ export default function ManagePenduduk() {
               <div className="flex gap-2">
                 <button
                   onClick={() => handleCreate('GENDER')}
-                  className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600"
+                  className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600 cursor-pointer"
                 >
                   + Data Berdasarkan Gender
                 </button>
                 <button
                   onClick={() => handleCreate('KEPALA_KELUARGA')}
-                  className="px-3 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600"
+                  className="px-3 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600 cursor-pointer"
                 >
                   + Data KK Berdasarkan Jumlah Keluarga
                 </button>
                 <button
                   onClick={() => handleCreate('ANAK_ANAK')}
-                  className="px-3 py-1 bg-purple-500 text-white rounded text-sm hover:bg-purple-600"
+                  className="px-3 py-1 bg-purple-500 text-white rounded text-sm hover:bg-purple-600 cursor-pointer"
                 >
                   + Data Anak Berdasarkan Jumlah Anak
                 </button>
@@ -683,7 +683,7 @@ export default function ManagePenduduk() {
           <h3 className="text-2xl font-bold text-gray-800">Data Pekerjaan</h3>
           <button
             onClick={() => handleCreate('PERKERJAAN')}
-            className="px-4 py-2 bg-pink-500 text-white rounded hover:bg-pink-600"
+            className="px-4 py-2 bg-pink-500 text-white rounded hover:bg-pink-600 cursor-pointer"
           >
             + Tambah Data Pekerjaan Berdasarkan Pekerjaan
           </button>
@@ -707,7 +707,7 @@ export default function ManagePenduduk() {
           <h3 className="text-2xl font-bold text-gray-800">Data Pendidikan</h3>
           <button
             onClick={() => handleCreate('PENDIDIKAN')}
-            className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600"
+            className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 cursor-pointer"
           >
             + Tambah Data Pendidikan Berdasarkan Tingkat Pendidikan
           </button>
@@ -732,7 +732,7 @@ export default function ManagePenduduk() {
           <h3 className="text-2xl font-bold text-gray-800">Status Pernikahan</h3>
           <button
             onClick={() => handleCreate('PERNIKAHAN')}
-            className="px-4 py-2 bg-sky-500 text-white rounded hover:bg-sky-600"
+            className="px-4 py-2 bg-sky-500 text-white rounded hover:bg-sky-600 cursor-pointer"
           >
             + Tambah Data Pernikahan Berdasarkan Status Pernikahan
           </button>
@@ -757,7 +757,7 @@ export default function ManagePenduduk() {
           <h3 className="text-2xl font-bold text-gray-800">Data Agama</h3>
           <button
             onClick={() => handleCreate('AGAMA')}
-            className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+            className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 cursor-pointer"
           >
             + Tambah Data Agama Berdasarkan Pengikut Agama
           </button>
@@ -783,7 +783,7 @@ export default function ManagePenduduk() {
           <h3 className="text-2xl font-bold text-gray-800">Kelompok Usia</h3>
           <button
             onClick={() => handleCreate('USIA')}
-            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 cursor-pointer"
           >
             + Tambah Data Usia Berdasarkan Kelompok Usia
           </button>
@@ -808,7 +808,7 @@ export default function ManagePenduduk() {
           <h3 className="text-2xl font-bold text-gray-800">Distribusi Dusun</h3>
           <button
             onClick={() => handleCreate('DUSUN')}
-            className="px-4 py-2 bg-teal-500 text-white rounded hover:bg-teal-600"
+            className="px-4 py-2 bg-teal-500 text-white rounded hover:bg-teal-600 cursor-pointer"
           >
             + Tambah Data Dusun Berdasarkan Dusun
           </button>
@@ -851,13 +851,13 @@ export default function ManagePenduduk() {
                   setEditingData(null);
                   setJumlahBaru("");
                 }}
-                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 cursor-pointer"
               >
                 Batal
               </button>
               <button
                 onClick={handleSave}
-                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 cursor-pointer"
               >
                 Simpan
               </button>
@@ -906,14 +906,14 @@ export default function ManagePenduduk() {
                   setShowCreateForm(false);
                   setCreateFormData({ type: '', key: '', value: '' });
                 }}
-                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 cursor-pointer"
               >
                 Batal
               </button>
               <button
                 onClick={handleCreateSave}
                 disabled={!createFormData.key || !createFormData.value}
-                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-400"
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-400 cursor-pointer"
               >
                 Tambah
               </button>

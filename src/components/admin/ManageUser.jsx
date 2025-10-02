@@ -249,7 +249,7 @@ export default function ManageUser() {
               setShowPromoteForm(false);
               closeAllDropdowns();
             }}
-            className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-4 py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+            className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-4 py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
           >
             <FaUserPlus /> Tambah Akun
           </button>
@@ -260,7 +260,7 @@ export default function ManageUser() {
               setShowAddForm(false);
               closeAllDropdowns();
             }}
-            className="flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-600 hover:to-amber-700 text-white px-4 py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+            className="flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-600 hover:to-amber-700 text-white px-4 py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
           >
             <FaExchangeAlt /> Ubah Role User
           </button>
@@ -316,7 +316,7 @@ export default function ManageUser() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 cursor-pointer"
                 >
                   {showPassword ? <FaEyeSlash /> : <FaEye />}
                 </button>
@@ -339,7 +339,7 @@ export default function ManageUser() {
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 cursor-pointer"
                 >
                   {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
                 </button>
@@ -366,13 +366,13 @@ export default function ManageUser() {
             <button
               type="button"
               onClick={() => setShowAddForm(false)}
-              className="px-5 py-2.5 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium transition-colors"
+              className="px-5 py-2.5 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium transition-colors cursor-pointer"
             >
               Batal
             </button>
             <button
               type="submit"
-              className="px-5 py-2.5 rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-medium shadow-md transition-all"
+              className="px-5 py-2.5 rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-medium shadow-md transition-all cursor-pointer"
             >
               Simpan
             </button>
@@ -431,13 +431,13 @@ export default function ManageUser() {
                 setShowPromoteForm(false);
                 setPromoteUserId("");
               }}
-              className="px-5 py-2.5 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium transition-colors"
+              className="px-5 py-2.5 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium transition-colors cursor-pointer"
             >
               Batal
             </button>
             <button
               type="submit"
-              className="px-5 py-2.5 rounded-lg bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-600 hover:to-amber-700 text-white font-medium shadow-md transition-all"
+              className="px-5 py-2.5 rounded-lg bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-600 hover:to-amber-700 text-white font-medium shadow-md transition-all cursor-pointer"
             >
               Ubah Role
             </button>
@@ -483,7 +483,7 @@ export default function ManageUser() {
                     >
                       <button
                         onClick={(e) => toggleDropdown(user.id, e)}
-                        className="px-3 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white shadow-md transition-all duration-200 hover:shadow-lg"
+                        className="px-3 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white shadow-md transition-all duration-200 hover:shadow-lg cursor-pointer"
                       >
                         <FaCog />
                       </button>
@@ -537,7 +537,7 @@ export default function ManageUser() {
                   .map((option) => (
                     <button
                       key={option.value}
-                      className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors duration-150 flex items-center gap-2"
+                      className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors duration-150 flex items-center gap-2 cursor-pointer"
                       onClick={() =>
                         changeUserRole(user.id, option.value)
                       }
@@ -548,7 +548,7 @@ export default function ManageUser() {
                   ))}
                 <div className="border-t border-gray-100 mt-1">
                   <button
-                    className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors duration-150 flex items-center gap-2"
+                    className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors duration-150 flex items-center gap-2 cursor-pointer"
                     onClick={() => changeUserRole(user.id, "REGULAR")}
                   >
                     <FaUserShield className="text-gray-400" />
@@ -584,7 +584,7 @@ export default function ManageUser() {
                 >
                   <button
                     onClick={(e) => toggleDropdown(user.id, e)}
-                    className="p-2 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md transition-all duration-200 hover:shadow-lg"
+                    className="p-2 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md transition-all duration-200 hover:shadow-lg cursor-pointer"
                   >
                     <FaCog />
                   </button>
@@ -640,7 +640,7 @@ export default function ManageUser() {
                   .map((option) => (
                     <button
                       key={option.value}
-                      className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors duration-150 flex items-center gap-2"
+                      className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors duration-150 flex items-center gap-2 cursor-pointer"
                       onClick={() =>
                         changeUserRole(user.id, option.value)
                       }
@@ -651,7 +651,7 @@ export default function ManageUser() {
                   ))}
                 <div className="border-t border-gray-100 mt-1">
                   <button
-                    className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors duration-150 flex items-center gap-2"
+                    className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors duration-150 flex items-center gap-2 cursor-pointer"
                     onClick={() => changeUserRole(user.id, "REGULAR")}
                   >
                     <FaUserShield className="text-gray-400" />

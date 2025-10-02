@@ -85,12 +85,26 @@ export default function ManageBumdes() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Format WhatsApp link automatically
+    let formattedWhatsappLink = linkWhatsapp;
+    if (linkWhatsapp && !linkWhatsapp.startsWith('https://wa.me/')) {
+      // Remove any non-digit characters and format
+      const cleanNumber = linkWhatsapp.replace(/\D/g, '');
+      if (cleanNumber.startsWith('08')) {
+        formattedWhatsappLink = `https://wa.me/62${cleanNumber.substring(1)}`;
+      } else if (cleanNumber.startsWith('62')) {
+        formattedWhatsappLink = `https://wa.me/${cleanNumber}`;
+      } else {
+        formattedWhatsappLink = `https://wa.me/${cleanNumber}`;
+      }
+    }
+
     const rawData = {
       title,
       description,
       price: parseFloat(price),
       category_id: categoryId,
-      link_whatsapp: linkWhatsapp,
+      link_whatsapp: formattedWhatsappLink,
       featured_image: featuredImage,
     };
 
@@ -229,7 +243,7 @@ export default function ManageBumdes() {
                 resetCategoryForm();
                 setShowCategoryForm(true);
               }}
-              className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-4 py-2.5 rounded-lg shadow-md transition"
+              className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-4 py-2.5 rounded-lg shadow-md transition cursor-pointer"
             >
               <FaPlus /> Tambah kategori
             </button>
@@ -255,7 +269,7 @@ export default function ManageBumdes() {
             <div className="flex gap-3">
               <button
                 type="submit"
-                className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-5 py-2.5 rounded-lg shadow-md transition"
+                className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-5 py-2.5 rounded-lg shadow-md transition cursor-pointer"
               >
                 <FaSave />{" "}
                 {editingCategoryId ? "Update Kategori" : "Simpan Kategori"}
@@ -266,7 +280,7 @@ export default function ManageBumdes() {
                   resetCategoryForm();
                   setShowCategoryForm(false);
                 }}
-                className="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2.5 rounded-lg transition"
+                className="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2.5 rounded-lg transition cursor-pointer"
               >
                 <FaTimes /> Batal
               </button>
@@ -292,14 +306,14 @@ export default function ManageBumdes() {
                 <div className="flex gap-2">
                   <button
                     onClick={() => handleEditCategory(cat.id)}
-                    className="p-2 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded-full transition"
+                    className="p-2 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded-full transition cursor-pointer"
                     title="Edit"
                   >
                     <FaEdit size={14} />
                   </button>
                   <button
                     onClick={() => handleDeleteCategory(cat.id)}
-                    className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full transition"
+                    className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full transition cursor-pointer"
                     title="Hapus"
                   >
                     <FaTrash size={14} />
@@ -319,13 +333,14 @@ export default function ManageBumdes() {
               resetForm();
               setShowForm(true);
             }}
-            className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-5 py-2.5 rounded-lg shadow-md transition"
+            className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-5 py-2.5 rounded-lg shadow-md transition cursor-pointer"
           >
             <FaPlus /> Tambah produk
           </button>
         </div>
       ) : (
         <form
+          id={editingId ? `edit-product-form-${editingId}` : "create-product-form"}
           onSubmit={handleSubmit}
           className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8"
         >
@@ -382,7 +397,7 @@ export default function ManageBumdes() {
                     className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition"
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
-                    placeholder="0"
+                    placeholder="25000"
                   />
                 </div>
               </div>
@@ -417,7 +432,7 @@ export default function ManageBumdes() {
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition"
                   value={linkWhatsapp}
                   onChange={(e) => setLinkWhatsapp(e.target.value)}
-                  placeholder="Contoh: https://wa.me/6281234567890"
+                  placeholder="08123456789"
                 />
               </div>
 
@@ -461,7 +476,7 @@ export default function ManageBumdes() {
           <div className="flex gap-3 mt-8 pt-5 border-t border-gray-200">
             <button
               type="submit"
-              className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-6 py-3 rounded-xl shadow-md transition"
+              className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-6 py-3 rounded-xl shadow-md transition cursor-pointer"
             >
               <FaSave /> {editingId ? "Update Produk" : "Simpan Produk"}
             </button>
@@ -471,7 +486,7 @@ export default function ManageBumdes() {
                 resetForm();
                 setShowForm(false);
               }}
-              className="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 px-5 py-3 rounded-xl transition"
+              className="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 px-5 py-3 rounded-xl transition cursor-pointer"
             >
               <FaTimes /> Batal
             </button>
@@ -497,7 +512,7 @@ export default function ManageBumdes() {
                 resetForm();
                 setShowForm(true);
               }}
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-5 py-2.5 rounded-lg shadow-md transition"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-5 py-2.5 rounded-lg shadow-md transition cursor-pointer"
             >
               <FaPlus /> Tambah produk
             </button>
@@ -548,16 +563,17 @@ export default function ManageBumdes() {
                       </a>
                     </div>
                     <div className="flex gap-1">
-                      <button
+                      <a
+                        href={`#edit-product-form-${item.product.id}`}
                         onClick={() => handleEdit(item.product.id)}
-                        className="p-2 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded-full transition"
+                        className="p-2 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded-full transition cursor-pointer inline-block"
                         title="Edit"
                       >
                         <FaEdit size={16} />
-                      </button>
+                      </a>
                       <button
                         onClick={() => handleDelete(item.product.id)}
-                        className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full transition"
+                        className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full transition cursor-pointer"
                         title="Hapus"
                       >
                         <FaTrash size={16} />

@@ -371,7 +371,7 @@ export default function ManageIDM() {
             className={`px-4 py-2 rounded-lg shadow transition ${
               dimensiSosial > 0 && dimensiEkonomi > 0 && dimensiLingkungan > 0
                 ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
-                : 'bg-blue-500 text-white hover:bg-blue-600'
+                : 'bg-blue-500 text-white hover:bg-blue-600 cursor-pointer'
             }`}
           >
             + Buat Dimensi
@@ -382,14 +382,14 @@ export default function ManageIDM() {
             className={`px-4 py-2 rounded-lg shadow transition ${
               statusExists
                 ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
-                : 'bg-purple-500 text-white hover:bg-purple-600'
+                : 'bg-purple-500 text-white hover:bg-purple-600 cursor-pointer'
             }`}
           >
             + Status Desa
           </button>
           <button
             onClick={handleAdd}
-            className="px-4 py-2 bg-green-500 text-white rounded-lg shadow hover:bg-green-600 transition"
+            className="px-4 py-2 bg-green-500 text-white rounded-lg shadow hover:bg-green-600 transition cursor-pointer"
           >
             + Tambah data
           </button>
@@ -476,7 +476,7 @@ export default function ManageIDM() {
           disabled={!extraIdmId}
           className={`px-5 py-2 rounded-lg shadow transition ${
             extraIdmId 
-              ? 'bg-blue-500 text-white hover:bg-blue-600' 
+              ? 'bg-blue-500 text-white hover:bg-blue-600 cursor-pointer' 
               : 'bg-gray-400 text-gray-200 cursor-not-allowed'
           }`}
         >
@@ -522,15 +522,16 @@ export default function ManageIDM() {
                 <td className="p-3">{data.tahun}</td>
                 <td className="p-3">{data.skor}</td>
                 <td className="p-3 space-x-3">
-                  <button
+                  <a
+                    href={`#edit-idm-form-${data.id}`}
                     onClick={() => handleEdit(data.id)}
-                    className="text-blue-600 hover:underline"
+                    className="text-blue-600 hover:underline cursor-pointer"
                   >
                     Edit
-                  </button>
+                  </a>
                   <button
                     onClick={() => handleDelete(data.id)}
-                    className="text-red-600 hover:underline"
+                    className="text-red-600 hover:underline cursor-pointer"
                   >
                     Hapus
                   </button>
@@ -574,7 +575,7 @@ export default function ManageIDM() {
       {/* - Modal Form Tambah/Edit Skor IDM */}
       {showForm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-80">
+          <div id={editingIndex ? `edit-idm-form-${editingIndex}` : "create-idm-form"} className="bg-white rounded-lg shadow-lg p-6 w-80">
             <h3 className="text-xl font-semibold mb-4">
               {isAdding ? "Tambah data IDM" : "Edit data IDM"}
             </h3>
@@ -611,13 +612,13 @@ export default function ManageIDM() {
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => setShowForm(false)}
-                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 cursor-pointer"
               >
                 Batal
               </button>
               <button
                 onClick={handleSave}
-                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 cursor-pointer"
               >
                 Simpan
               </button>
@@ -676,14 +677,14 @@ export default function ManageIDM() {
                   setShowCreateDimensiForm(false);
                   setCreateDimensiData({ type: '', value: '' });
                 }}
-                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 cursor-pointer"
               >
                 Batal
               </button>
               <button
                 onClick={handleSaveCreateDimensi}
                 disabled={!createDimensiData.type || !createDimensiData.value}
-                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-400"
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-400 cursor-pointer"
               >
                 Buat
               </button>
@@ -721,13 +722,13 @@ export default function ManageIDM() {
                   setShowCreateStatusForm(false);
                   setCreateStatusData({ status_desa: 'MAJU' });
                 }}
-                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 cursor-pointer"
               >
                 Batal
               </button>
               <button
                 onClick={handleSaveCreateStatus}
-                className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600"
+                className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 cursor-pointer"
               >
                 Buat
               </button>
