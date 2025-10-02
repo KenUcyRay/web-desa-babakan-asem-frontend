@@ -597,7 +597,7 @@ export default function FloatingMenu() {
             setOpen(!open);
             setShowGreeting(false);
           }}
-          className="w-14 h-14 rounded-full shadow-lg text-white bg-gradient-to-br from-green-400 to-[#B6F500] flex items-center justify-center hover:scale-105 transition-transform"
+          className="w-14 h-14 rounded-full shadow-lg text-white bg-gradient-to-br from-green-400 to-[#B6F500] flex items-center justify-center hover:scale-105 transition-transform cursor-pointer"
           whileTap={{ scale: 0.95 }}
         >
           <FaComments size={24} />

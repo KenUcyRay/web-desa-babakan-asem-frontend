@@ -24,6 +24,30 @@ import { Helper } from "../../utils/Helper";
 
 export default function SDGs() {
   const { t, i18n } = useTranslation();
+
+  // Function to translate dynamic SDGs data
+  const translateSDGsData = (name) => {
+    const translations = {
+      'tanpa kemiskinan': t('sdgs.goals.no_poverty'),
+      'tanpa kelaparan': t('sdgs.goals.zero_hunger'),
+      'kehidupan sehat dan sejahtera': t('sdgs.goals.good_health'),
+      'pendidikan berkualitas': t('sdgs.goals.quality_education'),
+      'kesetaraan gender': t('sdgs.goals.gender_equality'),
+      'air bersih dan sanitasi layak': t('sdgs.goals.clean_water'),
+      'energi bersih dan terjangkau': t('sdgs.goals.affordable_energy'),
+      'pekerjaan layak dan pertumbuhan ekonomi': t('sdgs.goals.decent_work'),
+      'industri, inovasi dan infrastruktur': t('sdgs.goals.industry_innovation'),
+      'berkurangnya kesenjangan': t('sdgs.goals.reduced_inequalities'),
+      'kota dan komunitas berkelanjutan': t('sdgs.goals.sustainable_cities'),
+      'konsumsi dan produksi yang bertanggung jawab': t('sdgs.goals.responsible_consumption'),
+      'penanganan perubahan iklim': t('sdgs.goals.climate_action'),
+      'ekosistem lautan': t('sdgs.goals.life_below_water'),
+      'ekosistem daratan': t('sdgs.goals.life_on_land'),
+      'perdamaian, keadilan dan kelembagaan yang tangguh': t('sdgs.goals.peace_justice'),
+      'kemitraan untuk mencapai tujuan': t('sdgs.goals.partnerships')
+    };
+    return translations[name?.toLowerCase()] || name;
+  };
   const iconList = [
     <FaHeartbeat />, // 1. Tanpa Kemiskinan
     <FaLeaf />, // 2. Tanpa Kelaparan
@@ -109,7 +133,7 @@ export default function SDGs() {
                 {iconList[idx] || <FaHeartbeat />}
               </div>
               <p className="text-gray-600 mt-2 text-center">
-                {`${idx + 1}. ${item.name}`}
+                {`${idx + 1}. ${translateSDGsData(item.name)}`}
               </p>
               <p className="text-xl font-bold text-gray-800">{item.progress}%</p>
               {item.updated_at && (
@@ -122,7 +146,7 @@ export default function SDGs() {
         ) : (
           <div className="col-span-full bg-white p-8 rounded-xl shadow border border-gray-200 text-center">
             <p className="text-gray-500 text-lg">
-              Tidak ada data SDGs tersedia
+              {t("sdgs.noData")}
             </p>
           </div>
         )}

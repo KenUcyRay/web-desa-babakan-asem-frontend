@@ -174,7 +174,7 @@ export default function ManagePrestasi() {
               resetForm();
               setShowForm(true);
             }}
-            className="flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white px-5 py-2.5 rounded-lg shadow-md transition transform hover:-translate-y-0.5"
+            className="flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white px-5 py-2.5 rounded-lg shadow-md transition transform hover:-translate-y-0.5 cursor-pointer"
           >
             <FaPlus />
             Tambah Prestasi
@@ -185,6 +185,7 @@ export default function ManagePrestasi() {
       {/* FORM */}
       {showForm && (
         <form
+          id={editingId ? `edit-prestasi-form-${editingId}` : "create-prestasi-form"}
           onSubmit={handleSubmit}
           className="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-8 max-w-3xl mx-auto"
         >
@@ -197,7 +198,7 @@ export default function ManagePrestasi() {
                 setShowForm(false);
                 resetForm();
               }}
-              className="text-gray-500 hover:text-gray-700 transition"
+              className="text-gray-500 hover:text-gray-700 transition cursor-pointer"
             >
               <FaTimes size={20} />
             </button>
@@ -239,7 +240,7 @@ export default function ManagePrestasi() {
                   type="date"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-yellow-500 focus:border-transparent outline-none transition"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-yellow-500 focus:border-transparent outline-none transition cursor-pointer"
                 />
               </div>
 
@@ -290,7 +291,7 @@ export default function ManagePrestasi() {
           <div className="flex gap-3 mt-8 pt-5 border-t border-gray-200">
             <button
               type="submit"
-              className="flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white px-6 py-3 rounded-xl shadow-md transition transform hover:-translate-y-0.5"
+              className="flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white px-6 py-3 rounded-xl shadow-md transition transform hover:-translate-y-0.5 cursor-pointer"
             >
               <FaSave />
               {editingId ? "Simpan Perubahan" : "Simpan Prestasi "}
@@ -301,7 +302,7 @@ export default function ManagePrestasi() {
                 resetForm();
                 setShowForm(false);
               }}
-              className="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 px-5 py-3 rounded-xl transition"
+              className="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 px-5 py-3 rounded-xl transition cursor-pointer"
             >
               <FaTimes /> Batal
             </button>
@@ -335,7 +336,7 @@ export default function ManagePrestasi() {
                 resetForm();
                 setShowForm(true);
               }}
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white px-5 py-2.5 rounded-lg shadow-md transition"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white px-5 py-2.5 rounded-lg shadow-md transition cursor-pointer"
             >
               <FaPlus /> Tambah Prestasi
             </button>
@@ -371,15 +372,16 @@ export default function ManagePrestasi() {
                       : item.created_at}
                   </div>
                   <div className="flex gap-3 mt-5 pt-4 border-t border-gray-100">
-                    <button
+                    <a
+                      href={`#edit-prestasi-form-${item.id}`}
                       onClick={() => handleEdit(item.id)}
-                      className="flex items-center gap-1 text-blue-500 hover:text-blue-700 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition"
+                      className="flex items-center gap-1 text-blue-500 hover:text-blue-700 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition cursor-pointer"
                     >
                       <FaEdit size={14} /> Edit
-                    </button>
+                    </a>
                     <button
                       onClick={() => handleDelete(item.id)}
-                      className="flex items-center gap-1 text-red-500 hover:text-red-700 hover:bg-red-50 px-3 py-1.5 rounded-lg transition"
+                      className="flex items-center gap-1 text-red-500 hover:text-red-700 hover:bg-red-50 px-3 py-1.5 rounded-lg transition cursor-pointer"
                     >
                       <FaTrash size={14} /> Hapus
                     </button>

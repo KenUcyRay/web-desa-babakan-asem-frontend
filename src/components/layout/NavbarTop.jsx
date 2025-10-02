@@ -1,23 +1,32 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { FaGlobe } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 
 export default function NavbarTop() {
   const { i18n } = useTranslation();
+  const location = useLocation();
   const [currentLang, setCurrentLang] = useState("ID");
   const [hideTopbar, setHideTopbar] = useState(false);
   const [lastScroll, setLastScroll] = useState(0);
 
   const changeLanguage = (lng) => i18n.changeLanguage(lng);
   const changeLang = (lang) => {
+    if(lang === "ID" || lang === "EN"){
     setCurrentLang(lang);
     changeLanguage(lang.toLowerCase());
+    }else{
+         setCurrentLang("ID");
+    changeLanguage('id'); 
+    }
+
   };
 
   useEffect(() => {
-    setCurrentLang(i18n.language.toUpperCase());
+    changeLang(i18n.language.toUpperCase())
   }, [i18n.language]);
+
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -54,7 +63,9 @@ export default function NavbarTop() {
             <Link
               key={to}
               to={to}
-              className="whitespace-nowrap hover:text-[#B6F500] transition font-semibold"
+              className={`whitespace-nowrap hover:text-[#B6F500] transition font-semibold ${
+                location.pathname === to ? "text-[#B6F500]" : "text-gray-700"
+              }`}
             >
               {label}
             </Link>

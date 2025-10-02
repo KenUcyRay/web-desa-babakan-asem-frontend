@@ -73,7 +73,7 @@ export default function ManagePesan() {
           {["all", "read", "unread"].map((f) => (
             <button
               key={f}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all flex items-center gap-2 ${
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all flex items-center gap-2 cursor-pointer ${
                 filter === f
                   ? "bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow"
                   : "bg-gray-100 hover:bg-gray-200 text-gray-700"
@@ -129,7 +129,7 @@ export default function ManagePesan() {
                 {!p.is_read && (
                   <button
                     onClick={() => handleMarkRead(p.id)}
-                    className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg text-sm font-medium transition"
+                    className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg text-sm font-medium transition cursor-pointer"
                   >
                     <FaEnvelopeOpen size={14} /> Tandai Dibaca
                   </button>
@@ -144,15 +144,13 @@ export default function ManagePesan() {
       </div>
 
       {/* - PAGINATION */}
-      {messages.length > 0 && (
-        <div className="mt-8 flex justify-center">
-          <Pagination
-            currentPage={page}
-            totalPages={totalPages}
-            onPageChange={setPage}
-          />
-        </div>
-      )}
+      <div className="mt-8 flex justify-center">
+        <Pagination
+          currentPage={page}
+          totalPages={totalPages}
+          onPageChange={setPage}
+        />
+      </div>
     </div>
   );
 }

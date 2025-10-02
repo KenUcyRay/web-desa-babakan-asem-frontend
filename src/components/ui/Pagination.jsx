@@ -27,7 +27,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
           className={`w-10 h-10 flex items-center justify-center rounded-md transition ${
             currentPage === 1
               ? "text-gray-400 cursor-not-allowed"
-              : "hover:bg-gray-100 text-gray-700"
+              : "hover:bg-gray-100 text-gray-700 cursor-pointer"
           }`}
         >
           <HiChevronLeft className="text-lg" />
@@ -42,7 +42,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
             className={`w-10 h-10 flex items-center justify-center rounded-md text-sm font-medium transition ${
               currentPage === page
                 ? "bg-[#B6F500] text-black shadow cursor-default"
-                : "hover:bg-gray-100 text-gray-700 hover:shadow-sm"
+                : "hover:bg-gray-100 text-gray-700 hover:shadow-sm cursor-pointer"
             }`}
           >
             {page}
@@ -58,7 +58,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
           className={`w-10 h-10 flex items-center justify-center rounded-md transition ${
             currentPage === totalPages
               ? "text-gray-400 cursor-not-allowed"
-              : "hover:bg-gray-100 text-gray-700"
+              : "hover:bg-gray-100 text-gray-700 cursor-pointer"
           }`}
         >
           <HiChevronRight className="text-lg" />

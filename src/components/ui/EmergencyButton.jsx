@@ -21,7 +21,7 @@ import { useTranslation } from "react-i18next";
 import { EmergencyApi } from "../../libs/api/EmergencyApi";
 
 const EmergencyButton = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { profile } = useAuth();
   const [showEmergencyModal, setShowEmergencyModal] = useState(false);
   const [showFormModal, setShowFormModal] = useState(false);
@@ -268,7 +268,7 @@ const EmergencyButton = () => {
 
       console.log("Sending emergency data:", emergencyData);
 
-      await EmergencyApi.create(emergencyData);
+      await EmergencyApi.create(emergencyData, i18n.language);
 
       setEmergencyForm({
         phone_number: "",
@@ -334,7 +334,7 @@ const EmergencyButton = () => {
         className={`fixed left-6 z-[30] w-14 h-14 rounded-full shadow-lg text-white flex items-center justify-center transition-all duration-300 ${
           blockUntil && Date.now() < blockUntil
             ? "bg-gray-400"
-            : "bg-gradient-to-br from-red-500 to-red-600"
+            : "bg-gradient-to-br from-red-500 to-red-600 cursor-pointer hover:scale-105"
         }`}
         style={{ bottom: `${bottomPosition}px` }}
         whileTap={{ scale: 0.95 }}

@@ -117,7 +117,7 @@ export default function Bumdes() {
                         href={item.product.link_whatsapp}
                         target="_blank"
                         rel="noreferrer"
-                        className="flex items-center gap-2 text-white bg-green-500 hover:bg-green-600 px-4 py-2 rounded-lg shadow hover:shadow-md transition"
+                        className="flex items-center gap-2 text-white bg-green-500 hover:bg-green-600 px-4 py-2 rounded-lg shadow hover:shadow-md transition cursor-pointer"
                       >
                         <FaWhatsapp className="text-lg" /> {t("bumdes.order")}
                       </a>
@@ -129,15 +129,13 @@ export default function Bumdes() {
           </div>
         )}
 
-        {products.length > 0 && (
-          <div className="mt-10 flex justify-end" data-aos="fade-up">
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-            />
-          </div>
-        )}
+        <div className="mt-10 flex justify-end" data-aos="fade-up">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+        </div>
       </div>
 
       <div className="bg-gradient-to-r from-green-400 to-[#B6F500] py-12 text-center shadow-inner">

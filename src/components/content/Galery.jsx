@@ -50,7 +50,7 @@ export default function Galery() {
             {galery.map((img, idx) => (
               <div
                 key={img.image}
-                className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition duration-300 group"
+                className="bg-white rounded-xl overflow-hidden shadow-md transition duration-300"
                 data-aos="fade-up"
                 data-aos-delay={idx * 50}
               >
@@ -60,15 +60,8 @@ export default function Galery() {
                       img.image
                     }`}
                     alt={`Galeri ${idx + 1}`}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    className="w-full h-full object-cover"
                   />
-
-                  {/* Overlay efek saat hover */}
-                  <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
-                    <p className="text-white text-lg font-semibold">
-                      {t("galery.overlay")}
-                    </p>
-                  </div>
                 </div>
               </div>
             ))}

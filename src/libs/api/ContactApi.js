@@ -1,14 +1,14 @@
 import { getAuthHeaders } from "./authHelpers";
 
 export class ContactApi {
-  static async get(page = 1, limit = 10) {
+  static async get(page = 1, limit = 10, language) {
     try {
       const response = await fetch(
         `${import.meta.env.VITE_NEW_BASE_URL}/admin/contacts?page=${page}&limit=${limit}`,
         {
           method: "GET",
           credentials: "include",
-          headers: getAuthHeaders("id"),
+          headers: getAuthHeaders(language),
         }
       );
       const body = await response.json();
@@ -21,7 +21,7 @@ export class ContactApi {
     }
   }
 
-  static async create(data) {
+  static async create(data, language) {
     try {
       const response = await fetch(
         `${import.meta.env.VITE_NEW_BASE_URL}/admin/contacts`,
@@ -29,7 +29,7 @@ export class ContactApi {
           method: "POST",
           credentials: "include",
           headers: {
-            ...getAuthHeaders("id"),
+            ...getAuthHeaders(language),
             "Content-Type": "application/json", // ✅ biar body JSON kebaca
           },
           body: JSON.stringify(data),
@@ -45,7 +45,7 @@ export class ContactApi {
     }
   }
 
-  static async update(id, data) {
+  static async update(id, data, language) {
     try {
       let response = await fetch(
         `${import.meta.env.VITE_NEW_BASE_URL}/admin/contacts/${id}`,
@@ -53,7 +53,7 @@ export class ContactApi {
           method: "PATCH",
           credentials: "include",
           headers: {
-            ...getAuthHeaders("id"),
+            ...getAuthHeaders(language),
             "Content-Type": "application/json", // ✅ sama di update
           },
           body: JSON.stringify(data),
@@ -67,7 +67,7 @@ export class ContactApi {
             method: "PUT",
             credentials: "include",
             headers: {
-              ...getAuthHeaders("id"),
+              ...getAuthHeaders(language),
               "Content-Type": "application/json",
             },
             body: JSON.stringify(data),
@@ -85,14 +85,14 @@ export class ContactApi {
     }
   }
 
-  static async delete(id) {
+  static async delete(id, language) {
     try {
       const response = await fetch(
         `${import.meta.env.VITE_NEW_BASE_URL}/admin/contacts/${id}`,
         {
           method: "DELETE",
           credentials: "include",
-          headers: getAuthHeaders("id"),
+          headers: getAuthHeaders(language),
         }
       );
       if (!response.ok) {
@@ -110,7 +110,7 @@ export class ContactApi {
     }
   }
 
-  static async getPublic() {
+  static async getPublic(language) {
     try {
       const response = await fetch(
         `${import.meta.env.VITE_NEW_BASE_URL}/contacts`,
@@ -119,6 +119,7 @@ export class ContactApi {
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
+            "Accept-Language": language,
           },
         }
       );

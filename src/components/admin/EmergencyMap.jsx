@@ -182,7 +182,7 @@ export default function EmergencyMap({ isOpen, onClose }) {
           </div>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 text-xl md:text-2xl font-bold p-2"
+            className="text-gray-500 hover:text-gray-700 text-xl md:text-2xl font-bold p-2 cursor-pointer"
           >
             ×
           </button>

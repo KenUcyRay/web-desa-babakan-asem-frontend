@@ -279,7 +279,7 @@ export default function ManageCall() {
         </div>
         <button
           onClick={handleAdd}
-          className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-4 py-2 rounded-lg shadow-lg transition transform hover:-translate-y-0.5"
+          className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-4 py-2 rounded-lg shadow-lg transition transform hover:-translate-y-0.5 cursor-pointer"
         >
           <FaPlus /> Tambah Kontak
         </button>
@@ -296,7 +296,7 @@ export default function ManageCall() {
                 setKategori(k.key);
                 setCurrentPage(1);
               }}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition ${
+              className={`px-4 py-2 rounded-full text-sm font-medium transition cursor-pointer ${
                 kategori === k.key
                   ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg"
                   : "bg-gray-100 hover:bg-blue-50 text-gray-700"
@@ -319,7 +319,7 @@ export default function ManageCall() {
                 setStatusFilter(s.key);
                 setCurrentPage(1);
               }}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition ${
+              className={`px-4 py-2 rounded-full text-sm font-medium transition cursor-pointer ${
                 statusFilter === s.key
                   ? "bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg"
                   : "bg-gray-100 hover:bg-green-50 text-gray-700"
@@ -390,13 +390,13 @@ export default function ManageCall() {
             <div className="flex justify-between p-4 border-t text-sm">
               <button 
                 onClick={() => handleEdit(call.id)} 
-                className="flex items-center gap-1 text-blue-600 hover:text-blue-800 transition"
+                className="flex items-center gap-1 text-blue-600 hover:text-blue-800 transition cursor-pointer"
               >
                 <FaEdit /> Edit
               </button>
               <button 
                 onClick={() => handleDelete(call.id)} 
-                className="flex items-center gap-1 text-red-600 hover:text-red-800 transition"
+                className="flex items-center gap-1 text-red-600 hover:text-red-800 transition cursor-pointer"
               >
                 <FaTrash /> Hapus
               </button>
@@ -407,11 +407,9 @@ export default function ManageCall() {
       </div>
 
       {/* PAGINATION */}
-      {filteredCalls.length > 0 && (
-        <div className="mt-6 flex justify-center">
-          <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
-        </div>
-      )}
+      <div className="mt-6 flex justify-center">
+        <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+      </div>
 
       {/* MODAL */}
       {showModal && (
@@ -424,7 +422,7 @@ export default function ManageCall() {
               </h2>
               <button 
                 onClick={() => setShowModal(false)} 
-                className="text-white hover:text-gray-200 transition"
+                className="text-white hover:text-gray-200 transition cursor-pointer"
               >
                 <FaTimes size={22} />
               </button>
@@ -439,6 +437,7 @@ export default function ManageCall() {
                       value={formData.name} 
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })} 
                       className="w-full border rounded-lg p-3" 
+                      placeholder={formData.type === "CALL_CENTER" ? "Contoh: Puskesmas Desa, Polsek" : "Contoh: Admin Website Desa"}
                       required 
                     />
                   </div>
@@ -449,6 +448,7 @@ export default function ManageCall() {
                       value={formData.number} 
                       onChange={(e) => setFormData({ ...formData, number: e.target.value })} 
                       className="w-full border rounded-lg p-3" 
+                      placeholder={formData.type === "CALL_CENTER" ? "Contoh: 112, 119, 110" : "08123456789"}
                       required 
                     />
                   </div>
@@ -497,13 +497,13 @@ export default function ManageCall() {
                   <button 
                     type="button" 
                     onClick={() => setShowModal(false)} 
-                    className="px-6 py-3 bg-gray-200 rounded-lg hover:bg-gray-300 transition"
+                    className="px-6 py-3 bg-gray-200 rounded-lg hover:bg-gray-300 transition cursor-pointer"
                   >
                     Batal
                   </button>
                   <button 
                     type="submit" 
-                    className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                    className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition cursor-pointer"
                   >
                     {editingId ? "Simpan" : "Tambah"}
                   </button>

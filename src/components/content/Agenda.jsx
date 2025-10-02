@@ -71,10 +71,10 @@ export default function Agenda() {
   }, [currentPage, selectedCategory, i18n.language]);
 
   return (
-    <div className="bg-[#F8F8F8] w-full py-10">
-      <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-6">
+    <div className="bg-[#F8F8F8] w-full py-6 sm:py-8 md:py-10 overflow-x-hidden">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 grid grid-cols-1 md:grid-cols-4 gap-4 sm:gap-6">
         {/* KONTEN UTAMA */}
-        <div className="md:col-span-3 space-y-6">
+        <div className="md:col-span-3 space-y-4 sm:space-y-6">
           {/* Header judul */}
           <div className="text-center sm:text-left">
             <h1 className="text-3xl font-bold text-gray-800">
@@ -95,7 +95,7 @@ export default function Agenda() {
                 className={`px-2.5 py-1.5 rounded-full text-xs font-medium transition-all duration-300 ${
                   selectedCategory === kategori
                     ? "bg-gradient-to-r from-[#9BEC00] to-[#D2FF72] text-gray-800 shadow-md"
-                    : "bg-white text-gray-600 border hover:bg-green-50"
+                    : "bg-white text-gray-600 border hover:bg-green-50 cursor-pointer"
                 }`}
               >
                 {t(`agenda.category.${kategori}`)}
@@ -118,7 +118,7 @@ export default function Agenda() {
                 <div className="relative rounded-lg shadow hover:shadow-md transition-all duration-200">
                   <div className="absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-[#9BEC00] to-[#D2FF72] rounded-l-lg"></div>
                   <div
-                    className="flex items-center bg-white rounded-lg p-3 ml-1"
+                    className="flex flex-col sm:flex-row items-start sm:items-center bg-white rounded-lg p-3 ml-1 gap-3 sm:gap-0"
                     data-aos="fade-left"
                     data-aos-delay={index * 100}
                   >
@@ -127,24 +127,27 @@ export default function Agenda() {
                         import.meta.env.VITE_NEW_BASE_URL
                       }/public/images/${item.agenda.featured_image}`}
                       alt={item.agenda.title}
-                      className="w-24 h-24 object-cover rounded-md mr-4 flex-shrink-0"
+                      className="w-full sm:w-20 md:w-24 h-32 sm:h-20 md:h-24 object-cover rounded-md sm:mr-4 flex-shrink-0"
                     />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between">
-                        <h2 className="text-lg font-semibold text-gray-800 truncate">
+                    <div className="flex-1 min-w-0 w-full">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
+                        <h2 className="text-base sm:text-lg font-semibold text-gray-800 line-clamp-2 sm:truncate">
                           {item.agenda.title}
                         </h2>
-                        <span className="text-[11px] px-2 py-0.5 bg-gradient-to-r from-[#9BEC00] to-[#D2FF72] text-gray-800 rounded-full whitespace-nowrap">
+                        <span className="text-[10px] sm:text-[11px] px-2 py-0.5 bg-gradient-to-r from-[#9BEC00] to-[#D2FF72] text-gray-800 rounded-full whitespace-nowrap self-start sm:self-auto">
                           {item.agenda.type || "Kegiatan"}
                         </span>
                       </div>
                       <p className="text-sm text-gray-700 line-clamp-2 mt-1">
                         {truncateText(item.agenda.content, 90)}
                       </p>
-                      <p className="text-xs text-gray-500 flex items-center gap-1 mt-1">
-                        <FaCalendarAlt className="text-green-500" />
-                        {Helper.formatTanggal(item.agenda.start_time)} | 👁{" "}
-                        {item.agenda.view_count} {t("agenda.viewCount")}
+                      <p className="text-xs text-gray-500 flex items-center gap-1 mt-1 flex-wrap">
+                        <FaCalendarAlt className="text-green-500 flex-shrink-0" />
+                        <span className="truncate">{Helper.formatTanggal(item.agenda.start_time)}</span>
+                        <span>|</span>
+                        <span className="flex items-center gap-1">
+                          👁 {item.agenda.view_count} {t("agenda.viewCount")}
+                        </span>
                       </p>
                     </div>
                   </div>
@@ -153,13 +156,11 @@ export default function Agenda() {
             ))
           )}
 
-          {totalPages > 1 && (
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={(page) => setCurrentPage(page)}
-            />
-          )}
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={(page) => setCurrentPage(page)}
+          />
         </div>
 
         {/* SIDEBAR */}

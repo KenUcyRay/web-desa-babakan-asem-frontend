@@ -30,6 +30,17 @@ export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  const resetForm = () => {
+    setName("");
+    setEmail("");
+    setPhone("");
+    setPassword("");
+    setconfirmPassword("");
+    setRememberMe(false);
+    setReCaptchaToken("");
+    recaptchaRef.current?.reset();
+  };
+
   useEffect(() => {
     AOS.init({ duration: 700, once: true });
   }, []);
@@ -50,8 +61,8 @@ export default function Register() {
 
     const responseBody = await response.json();
     if (!response.ok) {
-      await Helper.errorResponseHandler(responseBody);
-      if (responseBody.errors.name !== "ZodError") {
+      await Helper.errorResponseHandler(responseBody, Helper.CONTEXT.REGISTER);
+      if (responseBody?.errors?.name !== "ZodError") {
         resetForm();
       }
       return;
@@ -271,7 +282,7 @@ export default function Register() {
 
             <button
               type="submit"
-              className="w-full py-3 bg-gradient-to-r from-green-400 to-[#B6F500] text-white font-semibold rounded-lg hover:opacity-90 transition duration-200"
+              className="w-full py-3 bg-gradient-to-r from-green-400 to-[#B6F500] text-white font-semibold rounded-lg hover:opacity-90 transition duration-200 cursor-pointer"
             >
               {t("register.registerButton")}
             </button>

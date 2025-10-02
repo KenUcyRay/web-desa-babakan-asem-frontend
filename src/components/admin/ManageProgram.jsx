@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useTranslation } from "react-i18next";
 import { alertConfirm, alertError, alertSuccess } from "../../libs/alert";
 import { Helper } from "../../utils/Helper";
 import { getAuthHeaders } from "../../libs/api/authHelpers";
@@ -78,7 +77,7 @@ const mapStatusToApi = (uiStatus) => {
 };
 
 // Helper untuk mendapatkan status yang diterjemahkan
-const getTranslatedStatus = (status, t) => {
+const getTranslatedStatus = (status) => {
   switch (status) {
     case "DIRENCANAKAN":
       return "Direncanakan";
@@ -276,7 +275,7 @@ const ManageProgram = () => {
           </div>
 
           <button
-            className="flex items-center justify-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2 sm:px-5 sm:py-2.5 rounded-lg shadow-md transition text-sm sm:text-base w-full sm:w-auto mt-2 sm:mt-0"
+            className="flex items-center justify-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2 sm:px-5 sm:py-2.5 rounded-lg shadow-md transition text-sm sm:text-base w-full sm:w-auto mt-2 sm:mt-0 cursor-pointer"
             onClick={() => {
               resetForm();
               setShowForm(true);
@@ -289,6 +288,7 @@ const ManageProgram = () => {
         {/* Form */}
         {showForm && (
           <div
+            id={editingId ? `edit-program-form-${editingId}` : "create-program-form"}
             ref={formRef}
             className="bg-white rounded-xl shadow-md border border-gray-200 p-4 sm:p-6 mb-4 sm:mb-6 md:mb-8"
           >
@@ -301,7 +301,7 @@ const ManageProgram = () => {
                   setShowForm(false);
                   resetForm();
                 }}
-                className="text-gray-500 hover:text-gray-700 transition p-1 rounded-full hover:bg-gray-100"
+                className="text-gray-500 hover:text-gray-700 transition p-1 rounded-full hover:bg-gray-100 cursor-pointer"
               >
                 <FaTimes size={20} />
               </button>
@@ -315,7 +315,7 @@ const ManageProgram = () => {
                   </label>
                   <input
                     type="text"
-                    placeholder="Nama Program Kerja"
+                    placeholder="Contoh: Pembangunan Jalan Desa, Pelatihan UMKM"
                     className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition"
                     value={newProgram.nama}
                     onChange={(e) =>
@@ -330,7 +330,7 @@ const ManageProgram = () => {
                   </label>
                   <input
                     type="date"
-                    className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition cursor-pointer"
                     value={newProgram.tanggal}
                     onChange={(e) =>
                       setNewProgram({ ...newProgram, tanggal: e.target.value })
@@ -350,7 +350,7 @@ const ManageProgram = () => {
                     </span>
                     <input
                       type="number"
-                      placeholder="Budget"
+                      placeholder="50000000"
                       className="w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-2 sm:py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition"
                       value={newProgram.budget}
                       onChange={(e) =>
@@ -384,7 +384,7 @@ const ManageProgram = () => {
                   Keterangan Program
                 </label>
                 <textarea
-                  placeholder="Keterangan program kerja"
+                  placeholder="Deskripsikan detail program kerja, tujuan, dan manfaatnya untuk masyarakat desa"
                   className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition"
                   value={newProgram.justifikasi}
                   onChange={(e) =>
@@ -401,7 +401,7 @@ const ManageProgram = () => {
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mt-4 sm:mt-6 pt-4 sm:pt-5 border-t border-gray-200">
               <button
                 onClick={handleSubmit}
-                className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2.5 sm:px-6 sm:py-3 rounded-xl shadow-md transition order-1 sm:order-none"
+                className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2.5 sm:px-6 sm:py-3 rounded-xl shadow-md transition order-1 sm:order-none cursor-pointer"
               >
                 <FaSave />
                 {editingId ? "Update Program Kerja" : "Simpan Program Kerja"}
@@ -411,7 +411,7 @@ const ManageProgram = () => {
                   setShowForm(false);
                   resetForm();
                 }}
-                className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2.5 sm:px-5 sm:py-3 rounded-xl transition"
+                className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2.5 sm:px-5 sm:py-3 rounded-xl transition cursor-pointer"
               >
                 <FaTimes /> Batal
               </button>
@@ -455,7 +455,7 @@ const ManageProgram = () => {
                   resetForm();
                   setShowForm(true);
                 }}
-                className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2 sm:px-5 sm:py-2.5 rounded-lg shadow-md transition w-full sm:w-auto"
+                className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2 sm:px-5 sm:py-2.5 rounded-lg shadow-md transition w-full sm:w-auto cursor-pointer"
               >
                 <FaPlus /> Tambah Program
               </button>
@@ -519,16 +519,17 @@ const ManageProgram = () => {
                         </td>
                         <td className="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-sm font-medium">
                           <div className="flex gap-3">
-                            <button
+                            <a
+                              href={`#edit-program-form-${item.id}`}
                               onClick={() => handleEdit(item.id)}
-                              className="text-blue-600 hover:text-blue-900 transition"
+                              className="text-blue-600 hover:text-blue-900 transition cursor-pointer"
                               title="Edit"
                             >
                               <FaEdit size={16} />
-                            </button>
+                            </a>
                             <button
                               onClick={() => handleDelete(item.id)}
-                              className="text-red-600 hover:text-red-900 transition"
+                              className="text-red-600 hover:text-red-900 transition cursor-pointer"
                               title="Hapus"
                             >
                               <FaTrash size={16} />

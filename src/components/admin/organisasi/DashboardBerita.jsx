@@ -159,7 +159,7 @@ export default function ManageBerita() {
               resetForm();
               setShowForm(true);
             }}
-            className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-lg shadow-md transition-all hover:shadow-lg"
+            className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-lg shadow-md transition-all hover:shadow-lg cursor-pointer"
           >
             <FaPlus className="text-sm" />
             Tambah berita
@@ -170,6 +170,7 @@ export default function ManageBerita() {
       {/* FORM TAMBAH / EDIT */}
       {showForm && (
         <form
+          id="news-form"
           onSubmit={handleSubmit}
           className="bg-white p-6 rounded-xl shadow-lg mb-8 space-y-5 max-w-3xl border border-gray-100 animate-slideDown"
         >
@@ -251,13 +252,13 @@ export default function ManageBerita() {
           {/* STATUS */}
           <div className="space-y-2">
             <label className="block font-medium text-gray-700">
-              Statis publish
+              Status Publikasi
             </label>
             <div className="flex gap-3">
               <button
                 type="button"
                 onClick={() => setIsPublished(true)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all cursor-pointer ${
                   isPublished
                     ? "bg-green-500 text-white shadow-md"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
@@ -269,7 +270,7 @@ export default function ManageBerita() {
               <button
                 type="button"
                 onClick={() => setIsPublished(false)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all cursor-pointer ${
                   !isPublished
                     ? "bg-red-500 text-white shadow-md"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
@@ -285,7 +286,7 @@ export default function ManageBerita() {
             <button
               type="submit"
               disabled={isLoading}
-              className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-lg shadow-md transition-all hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-lg shadow-md transition-all hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
             >
               <FaSave /> {editingId ? "Edit berita" : "Simpan berita"}
             </button>
@@ -295,7 +296,7 @@ export default function ManageBerita() {
                 resetForm();
                 setShowForm(false);
               }}
-              className="flex items-center gap-2 bg-gray-400 hover:bg-gray-500 text-white px-4 py-2.5 rounded-lg transition"
+              className="flex items-center gap-2 bg-gray-400 hover:bg-gray-500 text-white px-4 py-2.5 rounded-lg transition cursor-pointer"
             >
               <FaTimes /> Batal
             </button>
@@ -324,7 +325,7 @@ export default function ManageBerita() {
                   resetForm();
                   setShowForm(true);
                 }}
-                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 cursor-pointer"
               >
                 <FaPlus className="-ml-1 mr-2 h-5 w-5" />
                 Tambah berita
@@ -376,16 +377,17 @@ export default function ManageBerita() {
                   </div>
 
                   <div className="flex gap-3">
-                    <button
+                    <a
+                      href="#news-form"
                       onClick={() => handleEdit(item.id)}
-                      className="text-indigo-600 hover:text-indigo-800 transition p-1"
+                      className="text-indigo-600 hover:text-indigo-800 transition p-1 cursor-pointer"
                       title="Edit"
                     >
                       <FaEdit size={16} />
-                    </button>
+                    </a>
                     <button
                       onClick={() => handleDelete(item.id)}
-                      className="text-red-600 hover:text-red-800 transition p-1"
+                      className="text-red-600 hover:text-red-800 transition p-1 cursor-pointer"
                       title="Hapus"
                     >
                       <FaTrash size={16} />
@@ -399,16 +401,14 @@ export default function ManageBerita() {
       )}
 
       {/* PAGINATION */}
-      {news.length > 0 && (
-        <div className="mt-8 flex justify-center">
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-            disabled={isLoading}
-          />
-        </div>
-      )}
+      <div className="mt-8 flex justify-center">
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+          disabled={isLoading}
+        />
+      </div>
     </div>
   );
 }

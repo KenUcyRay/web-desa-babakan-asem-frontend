@@ -66,7 +66,7 @@ export default function DetailPrestasi() {
       <div className="md:col-span-3">
         <button
           onClick={handleBack}
-          className="mb-5 flex items-center gap-2 px-4 py-2 rounded-full border border-gray-300 text-gray-800 hover:bg-gray-900 hover:text-white hover:scale-105 transition-all duration-300"
+          className="mb-5 flex items-center gap-2 px-4 py-2 rounded-full border border-gray-300 text-gray-800 hover:bg-gray-900 hover:text-white hover:scale-105 transition-all duration-300 cursor-pointer"
         >
           <HiArrowLeft className="text-lg" />
           {t("detailAchievement.backToProfile")}

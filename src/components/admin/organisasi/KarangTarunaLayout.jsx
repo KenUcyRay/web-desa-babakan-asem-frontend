@@ -56,7 +56,7 @@ const KarangTarunaLayout = () => {
         {/* - Topbar khusus mobile */}
         <div className="md:hidden flex items-center justify-between p-4 bg-white shadow">
           <button
-            className="text-gray-700 text-xl"
+            className="text-gray-700 text-xl cursor-pointer"
             onClick={() => setSidebarOpen(true)}
           >
             <FaBars />

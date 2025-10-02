@@ -125,7 +125,7 @@ export default function ManageBansos() {
         </div>
         <button
           onClick={handleAdd}
-          className="px-4 py-2 bg-green-500 text-white rounded shadow hover:bg-green-600 transition"
+          className="px-4 py-2 bg-green-500 text-white rounded shadow hover:bg-green-600 transition cursor-pointer"
         >
           + Tambah
         </button>
@@ -150,15 +150,16 @@ export default function ManageBansos() {
                 </p>
               )}
               <div className="mt-4 pt-4 border-t border-gray-100 flex gap-2">
-                <button
+                <a
+                  href={`#edit-bansos-form-${item.id}`}
                   onClick={() => handleEdit(item)}
-                  className="flex-1 px-3 py-2 bg-blue-500 text-white text-sm rounded-lg hover:bg-blue-600 transition font-medium"
+                  className="flex-1 px-3 py-2 bg-blue-500 text-white text-sm rounded-lg hover:bg-blue-600 transition font-medium cursor-pointer text-center block"
                 >
                   Edit
-                </button>
+                </a>
                 <button
                   onClick={() => handleDelete(item.id, item.name)}
-                  className="flex-1 px-3 py-2 bg-red-500 text-white text-sm rounded-lg hover:bg-red-600 transition font-medium"
+                  className="flex-1 px-3 py-2 bg-red-500 text-white text-sm rounded-lg hover:bg-red-600 transition font-medium cursor-pointer"
                 >
                   Hapus
                 </button>
@@ -180,7 +181,7 @@ export default function ManageBansos() {
       {/* Modal Form */}
       {showForm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-xl shadow-lg w-80">
+          <div id={isEditing ? `edit-bansos-form-${formData.id}` : "create-bansos-form"} className="bg-white p-6 rounded-xl shadow-lg w-80">
             <h3 className="text-xl font-semibold mb-4">
               {isEditing ? "Edit Bantuan Sosial" : " Tambah Bantuan Sosial"}
             </h3>
@@ -214,13 +215,13 @@ export default function ManageBansos() {
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => setShowForm(false)}
-                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 cursor-pointer"
               >
                 Batal
               </button>
               <button
                 onClick={handleSave}
-                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 cursor-pointer"
               >
                 Simpan
               </button>

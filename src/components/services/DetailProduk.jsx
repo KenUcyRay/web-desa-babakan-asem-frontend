@@ -277,7 +277,7 @@ export default function DetailProduk() {
             <div className="flex gap-2 mt-2">
               <button
                 onClick={handleSubmitRating}
-                className="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600"
+                className="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600 cursor-pointer"
               >
                 {userRated
                   ? t("detailProduct.updateRating")
@@ -286,7 +286,7 @@ export default function DetailProduk() {
               </button>
               <button
                 onClick={handleCancelRating}
-                className="bg-gray-400 text-white px-4 py-1 rounded hover:bg-gray-500"
+                className="bg-gray-400 text-white px-4 py-1 rounded hover:bg-gray-500 cursor-pointer"
               >
                 {t("detailProduct.cancel")}
               </button>
@@ -320,7 +320,7 @@ export default function DetailProduk() {
             />
             <button
               type="submit"
-              className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition"
+              className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition cursor-pointer"
             >
               {t("detailProduct.sendComment")}
             </button>
@@ -341,13 +341,13 @@ export default function DetailProduk() {
                       <div className="flex gap-2">
                         <button
                           onClick={() => handleUpdateComment(c.id)}
-                          className="px-4 py-1 bg-green-500 text-white rounded hover:bg-green-600"
+                          className="px-4 py-1 bg-green-500 text-white rounded hover:bg-green-600 cursor-pointer"
                         >
                           {t("detailProduct.editComment")}
                         </button>
                         <button
                           onClick={() => setEditingCommentId(null)}
-                          className="px-4 py-1 bg-gray-300 rounded hover:bg-gray-400"
+                          className="px-4 py-1 bg-gray-300 rounded hover:bg-gray-400 cusor-pointer"
                         >
                           {t("detailProduct.cancelEdit")}
                         </button>
@@ -366,7 +366,7 @@ export default function DetailProduk() {
                           {profile.id === c.user?.id && (
                             <button
                               onClick={() => startEditComment(c)}
-                              className="text-blue-500 text-sm hover:underline"
+                              className="text-blue-500 text-sm hover:underline cursor-pointer"
                             >
                               {t("detailProduct.edit")}
                             </button>
@@ -375,7 +375,7 @@ export default function DetailProduk() {
                             profile.role === "ADMIN") && (
                             <button
                               onClick={() => handleDeleteComment(c.id)}
-                              className="text-red-500 text-sm hover:underline"
+                              className="text-red-500 text-sm hover:underline cursor-pointer"
                             >
                               {t("detailProduct.delete")}
                             </button>

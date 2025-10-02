@@ -1,3 +1,19 @@
+// Helper function to get auth headers
+const getAuthHeaders = (language) => {
+  const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+  const headers = {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+    "Accept-Language": language,
+  };
+  
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+  
+  return headers;
+};
+
 export class CommentApi {
   // - Buat komentar baru
   static async createComment(id, type, content, language) {
@@ -6,11 +22,8 @@ export class CommentApi {
       {
         credentials: "include",
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          "Accept-Language": language,
-        },
+        credentials: "include",
+        headers: getAuthHeaders(language),
         body: JSON.stringify({
           target_type: type,
           content: content,
@@ -40,11 +53,8 @@ export class CommentApi {
       {
         credentials: "include",
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          "Accept-Language": language,
-        },
+        credentials: "include",
+        headers: getAuthHeaders(language),
         body: JSON.stringify({
           content: newContent,
         }),
@@ -61,11 +71,8 @@ export class CommentApi {
       {
         credentials: "include",
         method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          "Accept-Language": language,
-        },
+        credentials: "include",
+        headers: getAuthHeaders(language),
       }
     );
   }

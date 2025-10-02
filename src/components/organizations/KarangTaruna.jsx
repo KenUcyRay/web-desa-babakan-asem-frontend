@@ -57,7 +57,7 @@ export default function KarangTaruna() {
   }, [i18n.language]);
 
   return (
-    <div className="bg-gray-50 py-12 w-full max-w-screen-2xl mx-auto px-4 sm:px-6 md:px-8 font-poppins overflow-x-hidden">
+    <div className="bg-gray-50 py-12 w-full mx-auto px-4 sm:px-6 md:px-8 font-poppins">
       <div className="text-center mb-16" data-aos="fade-down">
         <h1 className="text-4xl md:text-5xl font-extrabold text-green-700">
           {t("karangTaruna.title")}

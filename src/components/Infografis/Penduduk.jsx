@@ -107,6 +107,89 @@ const renderCustomizedLabel = ({
 
 export default function Penduduk() {
   const { t } = useTranslation();
+
+  // Function to translate dynamic population data
+  const translatePopulationData = (key) => {
+    const translations = {
+      // Gender
+      'laki-laki': t('population.gender.male'),
+      'perempuan': t('population.gender.female'),
+      'male': t('population.gender.male'),
+      'female': t('population.gender.female'),
+      
+      // Marital Status
+      'menikah': t('population.marital.married'),
+      'belum menikah': t('population.marital.single'),
+      'cerai': t('population.marital.divorced'),
+      'janda': t('population.marital.widow'),
+      'duda': t('population.marital.widower'),
+      
+      // Religion
+      'islam': t('population.religion.islam'),
+      'kristen': t('population.religion.christian'),
+      'katolik': t('population.religion.catholic'),
+      'hindu': t('population.religion.hindu'),
+      'buddha': t('population.religion.buddhist'),
+      'konghucu': t('population.religion.confucian'),
+      
+      // Education
+      'sd': t('population.education.elementary'),
+      'smp': t('population.education.junior_high'),
+      'sma': t('population.education.senior_high'),
+      'diploma': t('population.education.diploma'),
+      'd3': t('population.education.associate'),
+      's1': t('population.education.bachelor'),
+      's2': t('population.education.master'),
+      's3': t('population.education.doctorate'),
+      'tidak sekolah': t('population.education.no_school'),
+      
+      // Occupation
+      'petani': t('population.occupation.farmer'),
+      'nelayan': t('population.occupation.fisherman'),
+      'guru': t('population.occupation.teacher'),
+      'pedagang': t('population.occupation.trader'),
+      'pegawai': t('population.occupation.employee'),
+      'wiraswasta': t('population.occupation.entrepreneur'),
+      'ibu rumah tangga': t('population.occupation.housewife'),
+      'pelajar': t('population.occupation.student'),
+      'pensiunan': t('population.occupation.retired'),
+      'tidak bekerja': t('population.occupation.unemployed'),
+      
+      // Family Head
+      'kepala keluarga': t('population.family.head'),
+      'jumlah kk': t('population.family.total_households'),
+      
+      // Children
+      'anak-anak': t('population.children.total'),
+      'balita': t('population.children.toddler'),
+      
+      // Age Groups
+      '0-5 tahun': t('population.age.0_5'),
+      '6-12 tahun': t('population.age.6_12'),
+      '13-17 tahun': t('population.age.13_17'),
+      '18-25 tahun': t('population.age.18_25'),
+      '26-35 tahun': t('population.age.26_35'),
+      '36-45 tahun': t('population.age.36_45'),
+      '46-55 tahun': t('population.age.46_55'),
+      '56-65 tahun': t('population.age.56_65'),
+      '65+ tahun': t('population.age.65_plus'),
+      
+      // Voting Rights
+      'wajib pilih': t('population.voting.eligible'),
+      'belum wajib pilih': t('population.voting.not_eligible'),
+      
+      // Hamlets/Villages
+      'dusun a': t('population.hamlet.a'),
+      'dusun b': t('population.hamlet.b'),
+      'dusun c': t('population.hamlet.c'),
+      'dusun 1': t('population.hamlet.1'),
+      'dusun 2': t('population.hamlet.2'),
+      'dusun 3': t('population.hamlet.3')
+    };
+    
+    const lowerKey = key.toLowerCase();
+    return translations[lowerKey] || key;
+  };
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -365,7 +448,7 @@ export default function Penduduk() {
           }))
         );
       } catch (error) {
-        setError("Gagal mengambil data penduduk");
+        setError(t("penduduk.error"));
       } finally {
         setLoading(false);
       }
@@ -389,7 +472,7 @@ export default function Penduduk() {
     return (
       <div className="max-w-6xl mx-auto px-6 py-10 font-poppins">
         <div className="flex justify-center items-center h-64">
-          <div className="text-xl text-gray-600">Memuat data penduduk...</div>
+          <div className="text-xl text-gray-600">{t("penduduk.loading")}</div>
         </div>
       </div>
     );
@@ -419,10 +502,7 @@ export default function Penduduk() {
           </p>
           <div className="mt-4 p-4 bg-blue-50 rounded-lg border-l-4 border-blue-400">
             <p className="text-sm text-blue-800">
-              💡 <strong>Tahukah Anda?</strong> Data demografis desa ini
-              mencerminkan keragaman sosial dan ekonomi masyarakat yang dinamis.
-              Setiap angka memiliki cerita tentang kehidupan dan perkembangan
-              komunitas lokal.
+              💡 <strong>{t("penduduk.didYouKnow")}</strong> {t("penduduk.demographicInsight")}
             </p>
           </div>
         </div>
@@ -445,9 +525,7 @@ export default function Penduduk() {
               </p>
               <div className="mt-3 p-3 bg-green-50 rounded-lg">
                 <p className="text-xs text-green-700">
-                  📊 <strong>Menarik:</strong> Komposisi gender dan struktur
-                  keluarga menentukan dinamika sosial dan kebutuhan pembangunan
-                  desa.
+                  📊 <strong>{t("penduduk.interesting")}</strong> {t("penduduk.genderInsight")}
                 </p>
               </div>
             </div>
@@ -458,7 +536,7 @@ export default function Penduduk() {
                     <StatCard
                       key={`gender-${idx}`}
                       icon={item.icon}
-                      label={item.key}
+                      label={translatePopulationData(item.key)}
                       value={item.value}
                       updatedAt={item.updated_at}
                     />
@@ -467,7 +545,7 @@ export default function Penduduk() {
                     <StatCard
                       key={`kk-${idx}`}
                       icon={item.icon}
-                      label={item.key}
+                      label={translatePopulationData(item.key)}
                       value={item.value}
                       updatedAt={item.updated_at}
                     />
@@ -476,7 +554,7 @@ export default function Penduduk() {
                     <StatCard
                       key={`anak-${idx}`}
                       icon={item.icon}
-                      label={item.key}
+                      label={translatePopulationData(item.key)}
                       value={item.value}
                       updatedAt={item.updated_at}
                     />
@@ -484,7 +562,7 @@ export default function Penduduk() {
                 </div>
               ) : (
                 <div className="text-center py-8">
-                  <p className="text-gray-500">Tidak ada data tersedia</p>
+                  <p className="text-gray-500">{t("penduduk.noData")}</p>
                 </div>
               )}
             </div>
@@ -493,11 +571,10 @@ export default function Penduduk() {
           {/* Chart untuk Data Penduduk Utama */}
           <div>
             <h4 className="text-2xl font-bold text-gray-800 text-center mb-2">
-              Komposisi Penduduk Utama
+              {t("penduduk.mainData.chartTitle")}
             </h4>
             <p className="text-center text-gray-600 mb-8">
-              Distribusi berdasarkan jenis kelamin, kepala keluarga, dan
-              anak-anak yang mencerminkan struktur demografis desa
+              {t("penduduk.mainData.chartDescription")}
             </p>
             <div className="w-full overflow-x-auto">
               <ResponsiveContainer width="100%" height={350} minWidth={300}>
@@ -524,7 +601,7 @@ export default function Penduduk() {
                   <Legend />
                   <Bar
                     dataKey="jumlah"
-                    name="Jumlah Penduduk"
+                    name={t("penduduk.populationCount")}
                     fill="#B6F500"
                     barSize={40}
                     radius={[6, 6, 0, 0]}
@@ -547,9 +624,7 @@ export default function Penduduk() {
               </p>
               <div className="mt-3 p-3 bg-purple-50 rounded-lg">
                 <p className="text-xs text-purple-700">
-                  🏢 <strong>Insight:</strong> Keragaman profesi menunjukkan
-                  ekonomi desa yang tidak tergantung pada satu sektor saja,
-                  menciptakan ketahanan ekonomi yang lebih baik.
+                  🏢 <strong>{t("penduduk.insight")}</strong> {t("penduduk.occupationInsight")}
                 </p>
               </div>
             </div>
@@ -560,7 +635,7 @@ export default function Penduduk() {
                     <StatCard
                       key={idx}
                       icon={item.icon}
-                      label={item.key}
+                      label={translatePopulationData(item.key)}
                       value={item.value}
                       updatedAt={item.updated_at}
                     />
@@ -568,18 +643,17 @@ export default function Penduduk() {
                 </div>
               ) : (
                 <div className="text-center py-8">
-                  <p className="text-gray-500">Tidak ada data tersedia</p>
+                  <p className="text-gray-500">{t("penduduk.noData")}</p>
                 </div>
               )}
             </div>
           </div>
 
           <h4 className="text-2xl font-bold text-gray-800 text-center mb-2">
-            Distribusi Pekerjaan Penduduk
+            {t("penduduk.pekerjaan.chartTitle")}
           </h4>
           <p className="text-center text-gray-600 mb-8">
-            Ragam profesi yang menunjukkan dinamika perekonomian dan potensi
-            pengembangan sektor unggulan desa
+            {t("penduduk.pekerjaan.chartDescription")}
           </p>
           <div className="w-full overflow-x-auto">
             <ResponsiveContainer width="100%" height={350} minWidth={300}>
@@ -596,7 +670,7 @@ export default function Penduduk() {
                 <Legend />
                 <Bar
                   dataKey="jumlah"
-                  name="Jumlah Penduduk"
+                  name={t("penduduk.populationCount")}
                   fill="#FF69B4"
                   barSize={35}
                   radius={[6, 6, 0, 0]}
@@ -629,7 +703,7 @@ export default function Penduduk() {
               <StatCard
                 key={idx}
                 icon={item.icon}
-                label={item.key}
+                label={translatePopulationData(item.key)}
                 value={item.value}
                 updatedAt={item.updated_at}
               />
@@ -637,11 +711,10 @@ export default function Penduduk() {
           </div>
 
           <h4 className="text-2xl font-bold text-gray-800 text-center mb-2">
-            Tingkat Pendidikan Penduduk
+            {t("penduduk.pendidikan.chartTitle")}
           </h4>
           <p className="text-center text-gray-600 mb-8">
-            Jenjang pendidikan yang menggambarkan kualitas SDM dan potensi
-            pengembangan kapasitas masyarakat
+            {t("penduduk.pendidikan.chartDescription")}
           </p>
           <div className="w-full overflow-x-auto">
             <ResponsiveContainer width="100%" height={350} minWidth={300}>
@@ -658,7 +731,7 @@ export default function Penduduk() {
                 <Legend />
                 <Bar
                   dataKey="jumlah"
-                  name="Jumlah Penduduk"
+                  name={t("penduduk.populationCount")}
                   fill="#FFD700"
                   barSize={35}
                   radius={[6, 6, 0, 0]}
@@ -679,9 +752,7 @@ export default function Penduduk() {
           <div className="text-center mb-8">
             <div className="inline-block p-4 bg-pink-50 rounded-lg border-l-4 border-pink-400">
               <p className="text-sm text-pink-800">
-                💕 <strong>Did You Know:</strong> Status pernikahan mempengaruhi
-                struktur sosial dan pola kehidupan bermasyarakat, serta menjadi
-                indikator stabilitas keluarga di desa.
+                💕 <strong>{t("penduduk.didYouKnow")}</strong> {t("penduduk.marriageInsight")}
               </p>
             </div>
           </div>
@@ -691,7 +762,7 @@ export default function Penduduk() {
               <StatCard
                 key={idx}
                 icon={item.icon}
-                label={item.key}
+                label={translatePopulationData(item.key)}
                 value={item.value}
                 updatedAt={item.updated_at}
               />
@@ -699,11 +770,10 @@ export default function Penduduk() {
           </div>
 
           <h4 className="text-2xl font-bold text-gray-800 text-center mb-2">
-            Status Pernikahan Penduduk
+            {t("penduduk.pernikahan.chartTitle")}
           </h4>
           <p className="text-center text-gray-600 mb-8">
-            Komposisi status pernikahan yang memberikan gambaran struktur sosial
-            dan dinamika keluarga di masyarakat
+            {t("penduduk.pernikahan.chartDescription")}
           </p>
           <div className="flex justify-center">
             <div className="w-full max-w-full md:max-w-[500px] h-[300px] md:h-[450px] mx-auto">
@@ -746,9 +816,7 @@ export default function Penduduk() {
           <div className="text-center mb-8">
             <div className="inline-block p-4 bg-indigo-50 rounded-lg border-l-4 border-indigo-400">
               <p className="text-sm text-indigo-800">
-                🕌 <strong>Keberagaman:</strong> Pluralitas agama mencerminkan
-                toleransi dan harmoni antar umat beragama, menjadi kekuatan
-                sosial dalam membangun persatuan masyarakat desa.
+                🕌 <strong>{t("penduduk.diversity")}</strong> {t("penduduk.religionInsight")}
               </p>
             </div>
           </div>
@@ -758,7 +826,7 @@ export default function Penduduk() {
               <StatCard
                 key={idx}
                 icon={item.icon}
-                label={item.key}
+                label={translatePopulationData(item.key)}
                 value={item.value}
                 updatedAt={item.updated_at}
               />
@@ -766,11 +834,10 @@ export default function Penduduk() {
           </div>
 
           <h4 className="text-2xl font-bold text-gray-800 text-center mb-2">
-            Komposisi Keagamaan
+            {t("penduduk.agama.chartTitle")}
           </h4>
           <p className="text-center text-gray-600 mb-8">
-            Keragaman kepercayaan yang menunjukkan toleransi beragama dan
-            harmoni sosial dalam masyarakat multikultural
+            {t("penduduk.agama.chartDescription")}
           </p>
           <div className="flex justify-center">
             <div className="w-full max-w-full md:max-w-[500px] h-[300px] md:h-[450px] mx-auto">
@@ -813,9 +880,7 @@ export default function Penduduk() {
           <div className="text-center mb-8">
             <div className="inline-block p-4 bg-green-50 rounded-lg border-l-4 border-green-400">
               <p className="text-sm text-green-800">
-                👥 <strong>Bonus Demografi:</strong> Struktur usia penduduk
-                menentukan potensi bonus demografi dan kebutuhan layanan publik
-                yang harus disediakan pemerintah desa.
+                👥 <strong>{t("penduduk.demographicBonus")}</strong> {t("penduduk.ageInsight")}
               </p>
             </div>
           </div>
@@ -825,7 +890,7 @@ export default function Penduduk() {
               <StatCard
                 key={idx}
                 icon={item.icon}
-                label={item.key}
+                label={translatePopulationData(item.key)}
                 value={item.value}
                 updatedAt={item.updated_at}
               />
@@ -833,11 +898,10 @@ export default function Penduduk() {
           </div>
 
           <h4 className="text-2xl font-bold text-gray-800 text-center mb-2">
-            Distribusi Kelompok Usia
+            {t("penduduk.usia.chartTitle")}
           </h4>
           <p className="text-center text-gray-600 mb-8">
-            Piramida usia yang menunjukkan potensi demografis dan perencanaan
-            pembangunan berkelanjutan
+            {t("penduduk.usia.chartDescription")}
           </p>
           <div className="w-full overflow-x-auto">
             <ResponsiveContainer width="100%" height={350} minWidth={300}>
@@ -858,7 +922,7 @@ export default function Penduduk() {
                 <Area
                   type="monotone"
                   dataKey="value"
-                  name="Jumlah Penduduk"
+                  name={t("penduduk.populationCount")}
                   stroke="#82ca9d"
                   fillOpacity={1}
                   fill="url(#colorAge)"
@@ -879,9 +943,7 @@ export default function Penduduk() {
           <div className="text-center mb-8">
             <div className="inline-block p-4 bg-teal-50 rounded-lg border-l-4 border-teal-400">
               <p className="text-sm text-teal-800">
-                🗺️ <strong>Pemerataan Wilayah:</strong> Distribusi penduduk per
-                dusun mempengaruhi alokasi anggaran pembangunan infrastruktur
-                dan pelayanan publik di setiap wilayah.
+                🗺️ <strong>{t("penduduk.regionalEquity")}</strong> {t("penduduk.hamletInsight")}
               </p>
             </div>
           </div>
@@ -891,7 +953,7 @@ export default function Penduduk() {
               <StatCard
                 key={idx}
                 icon={item.icon}
-                label={item.key}
+                label={translatePopulationData(item.key)}
                 value={item.value}
                 updatedAt={item.updated_at}
               />
@@ -899,11 +961,10 @@ export default function Penduduk() {
           </div>
 
           <h4 className="text-2xl font-bold text-gray-800 text-center mb-2">
-            Sebaran Penduduk Per Dusun
+            {t("penduduk.dusun.chartTitle")}
           </h4>
           <p className="text-center text-gray-600 mb-8">
-            Distribusi geografis yang menentukan pola pembangunan dan prioritas
-            pengembangan infrastruktur wilayah
+            {t("penduduk.dusun.chartDescription")}
           </p>
           <div className="w-full overflow-x-auto">
             <ResponsiveContainer width="100%" height={350} minWidth={300}>
@@ -917,7 +978,7 @@ export default function Penduduk() {
                 <Legend />
                 <Bar
                   dataKey="jumlah"
-                  name="Jumlah Penduduk"
+                  name={t("penduduk.populationCount")}
                   fill="#8884d8"
                   radius={[6, 6, 0, 0]}
                 />

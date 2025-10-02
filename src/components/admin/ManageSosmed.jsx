@@ -221,7 +221,7 @@ export default function ManageSosmed() {
               resetForm();
               setShowForm(true);
             }}
-            className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2 rounded-lg shadow-lg transition transform hover:-translate-y-0.5"
+            className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2 rounded-lg shadow-lg transition transform hover:-translate-y-0.5 cursor-pointer"
           >
             <FaPlus /> Tambah Kontak
           </button>
@@ -242,7 +242,7 @@ export default function ManageSosmed() {
                   resetForm();
                   setShowForm(false);
                 }} 
-                className="text-white hover:text-gray-200 transition"
+                className="text-white hover:text-gray-200 transition cursor-pointer"
               >
                 <FaTimes size={22} />
               </button>
@@ -263,10 +263,10 @@ export default function ManageSosmed() {
                           onClick={() => setFormType(type.id)}
                           className={`p-4 rounded-xl border-2 transition-all duration-300 ${
                             formType === type.id
-                              ? "border-green-500 bg-green-50 text-green-800 shadow-lg"
+                              ? "border-green-500 bg-green-50 text-green-800 shadow-lg cursor-pointer"
                               : disabled
                               ? "border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed"
-                              : "border-gray-200 bg-white text-gray-600 hover:border-green-300 hover:bg-green-50"
+                              : "border-gray-200 bg-white text-gray-600 hover:border-green-300 hover:bg-green-50 cursor-pointer"
                           }`}
                         >
                           <div className="flex flex-col items-center gap-2">
@@ -316,14 +316,14 @@ export default function ManageSosmed() {
                       resetForm();
                       setShowForm(false);
                     }} 
-                    className="px-6 py-3 bg-gray-200 rounded-lg hover:bg-gray-300 transition"
+                    className="px-6 py-3 bg-gray-200 rounded-lg hover:bg-gray-300 transition cursor-pointer"
                   >
                     Batal
                   </button>
                   <button 
                     type="submit" 
                     disabled={isLoading}
-                    className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:opacity-50 flex items-center gap-2"
+                    className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:opacity-50 flex items-center gap-2 cursor-pointer"
                   >
                     {isLoading && <LoadingSpinner className="w-4 h-4" />}
                     {isLoading ? "Menyimpan..." : (editingId ? "Simpan" : "Tambah")}
@@ -380,13 +380,13 @@ export default function ManageSosmed() {
               <div className="flex justify-between p-4 border-t text-sm">
                 <button 
                   onClick={() => handleEdit(item)} 
-                  className="flex items-center gap-1 text-blue-600 hover:text-blue-800 transition"
+                  className="flex items-center gap-1 text-blue-600 hover:text-blue-800 transition cursor-pointer"
                 >
                   <FaEdit /> Edit
                 </button>
                 <button 
                   onClick={() => handleDelete(item)} 
-                  className="flex items-center gap-1 text-red-600 hover:text-red-800 transition"
+                  className="flex items-center gap-1 text-red-600 hover:text-red-800 transition cursor-pointer"
                 >
                   <FaTrash /> Hapus
                 </button>

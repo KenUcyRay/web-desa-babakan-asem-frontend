@@ -15,6 +15,20 @@ import { Helper } from "../../utils/Helper";
 
 export default function IDM() {
   const { t, i18n } = useTranslation();
+
+  // Function to translate dynamic IDM data
+  const translateIDMData = (key) => {
+    if (!key || typeof key !== 'string') return key;
+    const translations = {
+      'mandiri': t('idm.status.independent'),
+      'maju': t('idm.status.advanced'),
+      'berkembang': t('idm.status.developing'),
+      'tertinggal': t('idm.status.underdeveloped'),
+      'sangat tertinggal': t('idm.status.very_underdeveloped'),
+      'tidak ada data': t('idm.noDataValue')
+    };
+    return translations[key.toLowerCase()] || key;
+  };
   const [idm, setIdm] = useState([]);
   const [extraIdm, setExtraIdm] = useState({
     status_desa: "Tidak ada data",
@@ -80,21 +94,21 @@ export default function IDM() {
         <div className="flex flex-col items-center bg-white p-6 rounded-xl shadow hover:shadow-md transition">
           <p className="text-gray-600">{t("idm.box.status")}</p>
           <p className="text-xl font-bold text-gray-800">
-            {extraIdm.status_desa}
+            {translateIDMData(extraIdm.status_desa)}
           </p>
         </div>
         <div className="flex flex-col items-center bg-white p-6 rounded-xl shadow hover:shadow-md transition">
           <p className="text-gray-600">{t("idm.box.sosial")}</p>
-          <p className="text-xl font-bold text-gray-800">{extraIdm.sosial}</p>
+          <p className="text-xl font-bold text-gray-800">{translateIDMData(extraIdm.sosial)}</p>
         </div>
         <div className="flex flex-col items-center bg-white p-6 rounded-xl shadow hover:shadow-md transition">
           <p className="text-gray-600">{t("idm.box.ekonomi")}</p>
-          <p className="text-xl font-bold text-gray-800">{extraIdm.ekonomi}</p>
+          <p className="text-xl font-bold text-gray-800">{translateIDMData(extraIdm.ekonomi)}</p>
         </div>
         <div className="flex flex-col items-center bg-white p-6 rounded-xl shadow hover:shadow-md transition">
           <p className="text-gray-600">{t("idm.box.lingkungan")}</p>
           <p className="text-xl font-bold text-gray-800">
-            {extraIdm.lingkungan}
+            {translateIDMData(extraIdm.lingkungan)}
           </p>
         </div>
       </div>
@@ -122,7 +136,7 @@ export default function IDM() {
         ) : (
           <div className="bg-white p-8 rounded-xl shadow border border-gray-200 text-center">
             <p className="text-gray-500 text-lg">
-              Tidak ada data IDM tersedia
+              {t("idm.noData")}
             </p>
           </div>
         )}

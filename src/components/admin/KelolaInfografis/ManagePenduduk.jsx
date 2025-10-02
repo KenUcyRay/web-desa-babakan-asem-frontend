@@ -460,13 +460,13 @@ export default function ManagePenduduk() {
   const DataCard = ({ item, index, color = "#B6F500" }) => (
     <div
       key={`${item.type}-${item.id}-${updateTrigger}-${index}`}
-      className="relative flex flex-col items-center bg-white p-4 rounded-xl shadow hover:shadow-lg hover:scale-[1.02] transition-all"
+      className="relative flex flex-col items-center bg-white p-3 sm:p-4 rounded-xl shadow hover:shadow-lg hover:scale-[1.02] transition-all"
     >
       <div className={`text-3xl mb-2`} style={{ color }}>
         {item.icon}
       </div>
-      <p className="text-gray-600 text-xs text-center mb-1">{item.key}</p>
-      <p className="text-lg font-bold text-gray-800">{item.value}</p>
+      <p className="text-gray-600 text-xs text-center mb-1 truncate max-w-full">{item.key}</p>
+      <p className="text-base sm:text-lg font-bold text-gray-800">{item.value}</p>
       {item.updated_at && (
         <p className="mt-1 text-xs text-gray-400">
           Diperbarui: {Helper.formatTanggal(item.updated_at)}
@@ -474,7 +474,7 @@ export default function ManagePenduduk() {
       )}
       <button
         onClick={() => handleEdit(item)}
-        className="absolute top-2 right-2 text-blue-500 hover:text-blue-700"
+        className="absolute top-2 right-2 text-blue-500 hover:text-blue-700 cursor-pointer"
       >
         <FaEdit className="text-sm" />
       </button>
@@ -501,7 +501,7 @@ export default function ManagePenduduk() {
       <div className="mb-12">
         <h3 className="text-2xl font-bold text-gray-800 mb-6">{title}</h3>
         {hasData ? (
-          <div className={`grid sm:grid-cols-2 ${gridCols} gap-4 mb-8`}>
+          <div className={`grid grid-cols-1 sm:grid-cols-2 ${gridCols} gap-3 sm:gap-4 mb-6 sm:mb-8`}>
             {data.map((item, index) => (
               <DataCard key={item.id} item={item} index={index} color={color} />
             ))}
@@ -594,14 +594,14 @@ export default function ManagePenduduk() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-8 font-poppins bg-gray-50 min-h-screen">
+    <div className="max-w-6xl mx-auto px-2 sm:px-4 md:px-6 py-4 sm:py-6 md:py-8 font-poppins bg-gray-50 min-h-screen overflow-x-hidden">
       {/* Header */}
-      <div className="grid md:grid-cols-2 gap-6 items-center mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 items-center mb-6 sm:mb-8">
         <div>
-          <h2 className="text-3xl font-bold text-gray-800">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800">
             Kelola Infografis Penduduk
           </h2>
-          <p className="text-gray-600 mt-2 text-justify">
+          <p className="text-sm sm:text-base text-gray-600 mt-2 text-justify">
             Data demografi Desa Babakan, Anda bisa memperbarui jumlah kategori
             penduduk sesuai kondisi terkini.
           </p>
@@ -641,28 +641,28 @@ export default function ManagePenduduk() {
               <h3 className="text-2xl font-bold text-gray-800">
                 Data Utama Penduduk
               </h3>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <button
                   onClick={() => handleCreate('GENDER')}
-                  className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600"
+                  className="px-2 sm:px-3 py-1 bg-blue-500 text-white rounded text-xs sm:text-sm hover:bg-blue-600 cursor-pointer whitespace-nowrap"
                 >
-                  + Data Berdasarkan Gender
+                  + Gender
                 </button>
                 <button
                   onClick={() => handleCreate('KEPALA_KELUARGA')}
-                  className="px-3 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600"
+                  className="px-2 sm:px-3 py-1 bg-green-500 text-white rounded text-xs sm:text-sm hover:bg-green-600 cursor-pointer whitespace-nowrap"
                 >
-                  + Data KK Berdasarkan Jumlah Keluarga
+                  + KK
                 </button>
                 <button
                   onClick={() => handleCreate('ANAK_ANAK')}
-                  className="px-3 py-1 bg-purple-500 text-white rounded text-sm hover:bg-purple-600"
+                  className="px-2 sm:px-3 py-1 bg-purple-500 text-white rounded text-xs sm:text-sm hover:bg-purple-600 cursor-pointer whitespace-nowrap"
                 >
-                  + Data Anak Berdasarkan Jumlah Anak
+                  + Anak
                 </button>
               </div>
             </div>
-            <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
               {[...genderData, ...kepalaKeluargaData, ...anakAnakData].map(
                 (item, index) => (
                   <DataCard
@@ -682,7 +682,7 @@ export default function ManagePenduduk() {
                 Distribusi data utama penduduk berdasarkan gender, kepala
                 keluarga, dan anak-anak
               </p>
-              <ResponsiveContainer width="100%" height={350}>
+              <ResponsiveContainer width="100%" height={300} className="sm:h-[350px]">
                 <BarChart
                   data={[
                     ...genderData,
@@ -709,14 +709,14 @@ export default function ManagePenduduk() {
         )}
 
       {/* Sections menggunakan komponen DataSection - Selalu tampil */}
-      <div className="mb-12">
-        <div className="flex justify-between items-center mb-6">
-          <h3 className="text-2xl font-bold text-gray-800">Data Pekerjaan</h3>
+      <div className="mb-8 sm:mb-12">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-0 mb-4 sm:mb-6">
+          <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800">Data Pekerjaan</h3>
           <button
-            onClick={() => handleCreate("PERKERJAAN")}
-            className="px-4 py-2 bg-pink-500 text-white rounded hover:bg-pink-600"
+            onClick={() => handleCreate('PERKERJAAN')}
+            className="px-3 sm:px-4 py-2 bg-pink-500 text-white rounded hover:bg-pink-600 cursor-pointer text-xs sm:text-sm whitespace-nowrap"
           >
-            + Tambah Data Pekerjaan Berdasarkan Pekerjaan
+            + Tambah Pekerjaan
           </button>
         </div>
         {pekerjaanData.length > 0 ? (
@@ -737,10 +737,10 @@ export default function ManagePenduduk() {
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-2xl font-bold text-gray-800">Data Pendidikan</h3>
           <button
-            onClick={() => handleCreate("PENDIDIKAN")}
-            className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600"
+            onClick={() => handleCreate('PENDIDIKAN')}
+            className="px-3 sm:px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 cursor-pointer text-xs sm:text-sm whitespace-nowrap"
           >
-            + Tambah Data Pendidikan Berdasarkan Tingkat Pendidikan
+            + Tambah Pendidikan
           </button>
         </div>
         {pendidikanData.length > 0 ? (
@@ -768,10 +768,10 @@ export default function ManagePenduduk() {
             Status Pernikahan
           </h3>
           <button
-            onClick={() => handleCreate("PERNIKAHAN")}
-            className="px-4 py-2 bg-sky-500 text-white rounded hover:bg-sky-600"
+            onClick={() => handleCreate('PERNIKAHAN')}
+            className="px-3 sm:px-4 py-2 bg-sky-500 text-white rounded hover:bg-sky-600 cursor-pointer text-xs sm:text-sm whitespace-nowrap"
           >
-            + Tambah Data Pernikahan Berdasarkan Status Pernikahan
+            + Tambah Pernikahan
           </button>
         </div>
         {pernikahanData.length > 0 ? (
@@ -797,10 +797,10 @@ export default function ManagePenduduk() {
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-2xl font-bold text-gray-800">Data Agama</h3>
           <button
-            onClick={() => handleCreate("AGAMA")}
-            className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+            onClick={() => handleCreate('AGAMA')}
+            className="px-3 sm:px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 cursor-pointer text-xs sm:text-sm whitespace-nowrap"
           >
-            + Tambah Data Agama Berdasarkan Pengikut Agama
+            + Tambah Agama
           </button>
         </div>
         {agamaData.length > 0 ? (
@@ -822,15 +822,15 @@ export default function ManagePenduduk() {
           </div>
         )}
       </div>
-
-      <div className="mb-12">
-        <div className="flex justify-between items-center mb-6">
-          <h3 className="text-2xl font-bold text-gray-800">Kelompok Usia</h3>
+      
+      <div className="mb-8 sm:mb-12">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-0 mb-4 sm:mb-6">
+          <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800">Kelompok Usia</h3>
           <button
-            onClick={() => handleCreate("USIA")}
-            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+            onClick={() => handleCreate('USIA')}
+            className="px-3 sm:px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 cursor-pointer text-xs sm:text-sm whitespace-nowrap"
           >
-            + Tambah Data Usia Berdasarkan Kelompok Usia
+            + Tambah Usia
           </button>
         </div>
         {usiaData.length > 0 ? (
@@ -851,15 +851,15 @@ export default function ManagePenduduk() {
           </div>
         )}
       </div>
-
-      <div className="mb-12">
-        <div className="flex justify-between items-center mb-6">
-          <h3 className="text-2xl font-bold text-gray-800">Distribusi Dusun</h3>
+      
+      <div className="mb-8 sm:mb-12">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-0 mb-4 sm:mb-6">
+          <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800">Distribusi Dusun</h3>
           <button
-            onClick={() => handleCreate("DUSUN")}
-            className="px-4 py-2 bg-teal-500 text-white rounded hover:bg-teal-600"
+            onClick={() => handleCreate('DUSUN')}
+            className="px-3 sm:px-4 py-2 bg-teal-500 text-white rounded hover:bg-teal-600 cursor-pointer text-xs sm:text-sm whitespace-nowrap"
           >
-            + Tambah Data Dusun Berdasarkan Dusun
+            + Tambah Dusun
           </button>
         </div>
         {dusunData.length > 0 ? (
@@ -878,8 +878,8 @@ export default function ManagePenduduk() {
 
       {/* Modal Edit */}
       {showForm && editingData && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-80">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 w-full max-w-sm sm:max-w-md mx-4">
             <h3 className="text-xl font-semibold mb-4">
               Edit Jumlah - {editingData.key}
             </h3>
@@ -900,13 +900,13 @@ export default function ManagePenduduk() {
                   setEditingData(null);
                   setJumlahBaru("");
                 }}
-                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 cursor-pointer"
               >
                 Batal
               </button>
               <button
                 onClick={handleSave}
-                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 cursor-pointer"
               >
                 Simpan
               </button>
@@ -917,8 +917,8 @@ export default function ManagePenduduk() {
 
       {/* Modal Create */}
       {showCreateForm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-80">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 w-full max-w-sm sm:max-w-md mx-4">
             <h3 className="text-xl font-semibold mb-4">
               Tambah Data {createFormData.type}
             </h3>
@@ -964,14 +964,14 @@ export default function ManagePenduduk() {
                   setShowCreateForm(false);
                   setCreateFormData({ type: "", key: "", value: "" });
                 }}
-                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 cursor-pointer"
               >
                 Batal
               </button>
               <button
                 onClick={handleCreateSave}
                 disabled={!createFormData.key || !createFormData.value}
-                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-400"
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-400 cursor-pointer"
               >
                 Tambah
               </button>

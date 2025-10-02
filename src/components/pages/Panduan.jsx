@@ -13,7 +13,7 @@ export default function Panduan() {
         <div className="mb-8 flex justify-end">
           <button
             onClick={() => navigate("/administrasi")}
-            className="bg-lime-400 text-black font-semibold px-6 py-2 rounded-full hover:bg-lime-300 flex items-center gap-2"
+            className="bg-lime-400 text-black font-semibold px-6 py-2 rounded-full hover:bg-lime-300 flex items-center gap-2 cursor-pointer"
           >
             <FaCheckCircle />
             {t("guide.button")}

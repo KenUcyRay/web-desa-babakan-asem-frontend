@@ -295,7 +295,7 @@ export default function ManageSuratPengantar() {
                     setFilterStatus(e.target.value);
                     setCurrentPage(1);
                   }}
-                  className="appearance-none px-6 py-3 pr-10 rounded-xl border border-gray-200 focus:ring-4 focus:ring-green-100 focus:border-green-400 bg-gradient-to-r from-white to-green-50/30 font-medium transition-all duration-300"
+                  className="appearance-none px-6 py-3 pr-10 rounded-xl border border-gray-200 focus:ring-4 focus:ring-green-100 focus:border-green-400 bg-gradient-to-r from-white to-green-50/30 font-medium transition-all duration-300 cursor-pointer"
                 >
                   <option value="Semua">Semua Status</option>
                   <option value="pending">Pending</option>
@@ -408,7 +408,7 @@ export default function ManageSuratPengantar() {
                                   handleTerima(idx);
                                 }}
                                 disabled={isLoading}
-                                className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-4 py-2 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-4 py-2 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                               >
                                 <span className="flex items-center gap-2">
                                   <CheckIcon className="w-4 h-4" />
@@ -551,7 +551,7 @@ export default function ManageSuratPengantar() {
                       <button
                         onClick={() => handleTerima(idx)}
                         disabled={isLoading}
-                        className="w-full mt-4 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50"
+                        className="w-full mt-4 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 cursor-pointer"
                       >
                         <span className="flex items-center justify-center gap-2">
                           <CheckIcon className="w-5 h-5" />

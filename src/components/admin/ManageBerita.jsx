@@ -142,7 +142,7 @@ export default function ManageBerita() {
               resetForm();
               setShowForm(true);
             }}
-            className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-lg shadow-md transition hover:shadow-lg"
+            className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-lg shadow-md transition hover:shadow-lg cursor-pointer"
           >
             <FaPlus /> Tambah Berita
           </button>
@@ -152,6 +152,7 @@ export default function ManageBerita() {
       {/* FORM TAMBAH / EDIT */}
       {showForm && (
         <form
+          id={editingId ? `edit-form-${editingId}` : "create-form"}
           onSubmit={handleSubmit}
           className="bg-white shadow-xl rounded-xl p-6 mb-8 border border-gray-100 space-y-5 max-w-3xl mx-auto"
         >
@@ -181,6 +182,24 @@ export default function ManageBerita() {
             </button>
           </div>
 
+          {/* ID Field - Show when editing */}
+          {editingId && (
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                <span className="bg-blue-100 text-blue-600 px-2 py-1 rounded text-xs font-bold">
+                  ID
+                </span>
+                <span>ID Berita</span>
+              </label>
+              <input
+                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 text-gray-600 cursor-not-allowed"
+                value={editingId}
+                readOnly
+                placeholder="ID akan otomatis dibuat"
+              />
+            </div>
+          )}
+
           <div className="space-y-1">
             <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
               <FaNewspaper size={14} />
@@ -191,6 +210,7 @@ export default function ManageBerita() {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Masukkan judul berita"
+              required
             />
           </div>
 
@@ -276,7 +296,7 @@ export default function ManageBerita() {
               <button
                 type="button"
                 onClick={() => setIsPublished(true)}
-                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg border transition ${
+                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg border transition cursor-pointer ${
                   isPublished
                     ? "bg-green-100 border-green-500 text-green-700"
                     : "bg-gray-50 border-gray-300 text-gray-600 hover:bg-gray-100"
@@ -287,7 +307,7 @@ export default function ManageBerita() {
               <button
                 type="button"
                 onClick={() => setIsPublished(false)}
-                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg border transition ${
+                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg border transition cursor-pointer ${
                   !isPublished
                     ? "bg-red-100 border-red-500 text-red-700"
                     : "bg-gray-50 border-gray-300 text-gray-600 hover:bg-gray-100"
@@ -305,14 +325,14 @@ export default function ManageBerita() {
                 resetForm();
                 setShowForm(false);
               }}
-              className="px-5 py-2.5 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 transition"
+              className="px-5 py-2.5 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 transition cursor-pointer"
             >
               <FaTimes className="inline mr-2" />
               Batal
             </button>
             <button
               type="submit"
-              className="px-6 py-2.5 rounded-lg bg-green-600 hover:bg-green-700 text-white shadow-md transition flex items-center gap-2"
+              className="px-6 py-2.5 rounded-lg bg-green-600 hover:bg-green-700 text-white shadow-md transition flex items-center gap-2 cursor-pointer"
             >
               {editingId ? (
                 <>
@@ -346,7 +366,7 @@ export default function ManageBerita() {
                   resetForm();
                   setShowForm(true);
                 }}
-                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 cursor-pointer"
               >
                 <FaPlus className="-ml-1 mr-2 h-5 w-5" />
                 Tambah Berita
@@ -395,15 +415,16 @@ export default function ManageBerita() {
                   </div>
 
                   <div className="flex justify-between mt-6 pt-4 border-t">
-                    <button
+                    <a
+                      href={`#edit-form-${item.id}`}
                       onClick={() => handleEdit(item.id)}
-                      className="flex items-center gap-1.5 text-sm font-medium text-blue-600 hover:text-blue-800 transition"
+                      className="flex items-center gap-1.5 text-sm font-medium text-blue-600 hover:text-blue-800 transition cursor-pointer"
                     >
                       <FaEdit size={14} /> Edit
-                    </button>
+                    </a>
                     <button
                       onClick={() => handleDelete(item.id)}
-                      className="flex items-center gap-1.5 text-sm font-medium text-red-600 hover:text-red-800 transition"
+                      className="flex items-center gap-1.5 text-sm font-medium text-red-600 hover:text-red-800 transition cursor-pointer"
                     >
                       <FaTrash size={14} /> Hapus
                     </button>
@@ -414,15 +435,13 @@ export default function ManageBerita() {
           </div>
 
           {/* PAGINATION */}
-          {totalPages > 1 && (
-            <div className="mt-8 flex justify-center">
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={setCurrentPage}
-              />
-            </div>
-          )}
+          <div className="mt-8 flex justify-center">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
+          </div>
         </>
       )}
     </div>

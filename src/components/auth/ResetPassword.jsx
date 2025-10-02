@@ -5,6 +5,7 @@ import { alertError, alertSuccess } from "../../libs/alert";
 import { UserApi } from "../../libs/api/UserApi";
 import { useTranslation, Trans } from "react-i18next";
 import { useProfile } from "../../hook/useProfile";
+import { Helper } from "../../utils/Helper";
 
 export default function ResetPassword() {
   const { t, i18n } = useTranslation();
@@ -30,7 +31,7 @@ export default function ResetPassword() {
       await alertSuccess(t("resetPassword.success"));
       navigate("/login");
     } else {
-      await Helper.errorResponseHandler(await response.json());
+      await Helper.errorResponseHandler(await response.json(), Helper.CONTEXT.RESET_PASSWORD);
     }
 
     setPassword("");
@@ -40,7 +41,7 @@ export default function ResetPassword() {
   const verifyToken = async () => {
     const response = await UserApi.verifyResetToken(token, i18n.language);
     if (!response.ok) {
-      await Helper.errorResponseHandler(await response.json());
+      await Helper.errorResponseHandler(await response.json(), Helper.CONTEXT.VERIFY_TOKEN);
       navigate("/forgot-password");
     }
   };

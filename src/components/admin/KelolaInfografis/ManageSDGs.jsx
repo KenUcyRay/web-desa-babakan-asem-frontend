@@ -214,12 +214,13 @@ export default function ManageSDGs() {
                 style={{ width: `${item.progress}%` }}
               />
             </div>
-            <button
+            <a
+              href={`#edit-sdg-form-${idx}`}
               onClick={() => handleEdit(idx)}
-              className="absolute top-3 right-3 text-blue-600 hover:underline text-sm"
+              className="absolute top-3 right-3 text-blue-600 hover:underline text-sm cursor-pointer"
             >
               Edit
-            </button>
+            </a>
           </div>
         ))}
       </div>
@@ -227,7 +228,7 @@ export default function ManageSDGs() {
       {/* Modal Edit */}
       {showForm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-80">
+          <div id={`edit-sdg-form-${editingIndex}`} className="bg-white rounded-lg shadow-lg p-6 w-80">
             <h3 className="text-xl font-semibold mb-4">
               Edit Progress - {getDisplayData()[editingIndex]?.name}
             </h3>
@@ -249,13 +250,13 @@ export default function ManageSDGs() {
                   setEditingIndex(null);
                   setProgressBaru("");
                 }}
-                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 cursor-pointer"
               >
                 Batal
               </button>
               <button
                 onClick={handleSave}
-                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 cursor-pointer"
               >
                 Simpan
               </button>

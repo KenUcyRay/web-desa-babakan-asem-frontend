@@ -192,7 +192,7 @@ export default function ManageApb() {
       <div className="text-right mt-6">
         <button
           onClick={() => setShowAddForm(!showAddForm)}
-          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded inline-flex items-center gap-2"
+          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded inline-flex items-center gap-2 cursor-pointer"
         >
           <FaPlus /> Tambah
         </button>
@@ -200,7 +200,7 @@ export default function ManageApb() {
 
       {/* FORM TAMBAH */}
       {showAddForm && (
-        <div className="mt-4 bg-white p-4 shadow rounded-lg">
+        <div id="create-apb-form" className="mt-4 bg-white p-4 shadow rounded-lg">
           <h4 className="font-bold mb-4">Tambah data APB Desa</h4>
           <div className="grid md:grid-cols-3 gap-4">
             <label>
@@ -240,13 +240,13 @@ export default function ManageApb() {
           <div className="flex justify-end gap-2 mt-4">
             <button
               onClick={() => setShowAddForm(false)}
-              className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+              className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 cursor-pointer"
             >
               Batal
             </button>
             <button
               onClick={addApb}
-              className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+              className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 cursor-pointer"
             >
               Simpan
             </button>
@@ -271,7 +271,8 @@ export default function ManageApb() {
               </p>
             </div>
             <div className="flex gap-3">
-              <button
+              <a
+                href={`#edit-apb-form-${item.id}`}
                 onClick={() => {
                   setEditing(item);
                   setForm({
@@ -280,13 +281,13 @@ export default function ManageApb() {
                     realisasi: item.realisasiMillion,
                   });
                 }}
-                className="text-blue-600 hover:text-blue-800"
+                className="text-blue-600 hover:text-blue-800 cursor-pointer"
               >
                 <FaEdit />
-              </button>
+              </a>
               <button
                 onClick={() => deleteApb(item.id)}
-                className="text-red-600 hover:text-red-800"
+                className="text-red-600 hover:text-red-800 cursor-pointer"
               >
                 <FaTrash />
               </button>
@@ -297,7 +298,7 @@ export default function ManageApb() {
 
       {/* FORM EDIT */}
       {editing && (
-        <div className="mt-6 bg-white p-4 shadow rounded-lg">
+        <div id={`edit-apb-form-${editing.id}`} className="mt-6 bg-white p-4 shadow rounded-lg">
           <h4 className="font-bold mb-4">Edit : {editing.key}</h4>
           <div className="grid md:grid-cols-3 gap-4">
             <label>
@@ -333,13 +334,13 @@ export default function ManageApb() {
           <div className="flex justify-end gap-2 mt-4">
             <button
               onClick={() => setEditing(null)}
-              className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+              className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 cursor-pointer"
             >
               Batal
             </button>
             <button
               onClick={updateApb}
-              className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+              className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 cursor-pointer"
             >
               Simpan
             </button>

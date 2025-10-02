@@ -56,18 +56,14 @@ export default function PkkSidebar({ isOpen, onClose }) {
     });
   };
 
+  const { logout } = useAuth();
+
   const handleLogout = async () => {
     const confirm = await alertConfirm("Apakah Anda yakin ingin keluar?");
     if (!confirm) return;
-    const response = await UserApi.logout(i18n.language);
-    if (!response.ok) {
-      const responseBody = await response.json();
-      await Helper.errorResponseHandler(responseBody);
-      return;
-    }
-    setProfile(null);
+    
+    await logout();
     await alertSuccess("Anda telah keluar.");
-    navigate("/login");
   };
 
   const menu = [
@@ -174,7 +170,7 @@ export default function PkkSidebar({ isOpen, onClose }) {
 
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 px-3 py-2 w-full text-left rounded-md hover:bg-red-50 text-red-500 text-sm transition-all duration-200"
+          className="flex items-center gap-3 px-3 py-2 w-full text-left rounded-md hover:bg-red-50 text-red-500 text-sm transition-all duration-200 cursor-pointer"
         >
           <FaSignOutAlt /> Keluar
         </button>
