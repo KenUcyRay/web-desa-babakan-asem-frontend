@@ -27,8 +27,8 @@ export class UserApi {
       },
       body: JSON.stringify({
         name: body.name,
-        email: body.email && body.email !== "" ? body.email : undefined,
-        phone_number: body.phone && body.phone !== "" ? body.phone : undefined,
+        email: body.email,
+        phone_number: body.phone,
         password: body.password,
         confirm_password: body.confirmPassword,
         remember_me: body.rememberMe,
@@ -76,7 +76,7 @@ export class UserApi {
     );
   }
 
-  static async forgetPassword(email, language) {
+  static async forgetPassword(email, phone, language) {
     return await fetch(
       `${import.meta.env.VITE_NEW_BASE_URL}/users/forgot-password`,
       {
@@ -87,7 +87,8 @@ export class UserApi {
           "Accept-Language": language,
         },
         body: JSON.stringify({
-          email: email,
+          email: email && email !== "" ? email : undefined,
+          phone_number: phone && phone !== "" ? phone : undefined,
         }),
       }
     );
@@ -157,6 +158,7 @@ export class UserApi {
       body: JSON.stringify({
         name: body.name,
         email: body.email,
+        phone_number: body.phone_number,
         password: body.password,
         confirm_password: body.confirm_password,
         role: body.role,

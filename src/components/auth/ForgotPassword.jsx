@@ -7,19 +7,26 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useTranslation } from "react-i18next";
 import { useProfile } from "../../hook/useProfile";
 import { Helper } from "../../utils/Helper";
+import { AnimatePresence, motion } from "framer-motion";
 
 export default function ForgotPassword() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const [resetMethod, setResetMethod] = useState("email");
   const [email, setEmail] = useState("");
-  const { profile, isReady } = useProfile(); // Assuming useAuth provides profile and isReady
+  const [phone, setPhone] = useState("");
+  const { profile, isReady } = useProfile();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     alertSuccess(t("forgotPassword.loading"));
 
-    const response = await UserApi.forgetPassword(email, i18n.language);
+    const response = await UserApi.forgetPassword(
+      resetMethod === "email" ? email : "",
+      resetMethod === "phone" ? phone : "",
+      i18n.language
+    );
 
     if (response.status === 204) {
       await alertSuccess(t("forgotPassword.successSend"));
@@ -28,6 +35,7 @@ export default function ForgotPassword() {
     }
     await Helper.errorResponseHandler(await response.json(), Helper.CONTEXT.FORGOT_PASSWORD);
     setEmail("");
+    setPhone("");
   };
 
   useEffect(() => {
@@ -50,16 +58,90 @@ export default function ForgotPassword() {
 
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div>
-              <label className="block text-gray-700 font-medium mb-1">
-                {t("forgotPassword.emailLabel")}
-              </label>
-              <input
-                type="email"
-                placeholder={t("forgotPassword.emailPlaceholder")}
-                className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-300 outline-none"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
+              <div className="flex justify-between items-center mb-1">
+                <label className="block text-gray-700 font-medium">
+                  {resetMethod === "email"
+                    ? t("forgotPassword.emailLabel")
+                    : "Nomor Telepon"}
+                </label>
+                <div className="flex gap-4">
+                  <label
+                    className="flex items-center gap-1 cursor-pointer"
+                    onClick={() => setResetMethod("email")}
+                  >
+                    <span
+                      className={`w-4 h-4 rounded-full border flex items-center justify-center ${
+                        resetMethod === "email"
+                          ? "border-green-400"
+                          : "border-gray-300"
+                      }`}
+                    >
+                      {resetMethod === "email" && (
+                        <span className="w-2.5 h-2.5 rounded-full bg-gradient-to-r from-green-400 to-[#B6F500]" />
+                      )}
+                    </span>
+                    <span className="text-xs text-gray-700">
+                      Email
+                    </span>
+                  </label>
+
+                  <label
+                    className="flex items-center gap-1 cursor-pointer"
+                    onClick={() => setResetMethod("phone")}
+                  >
+                    <span
+                      className={`w-4 h-4 rounded-full border flex items-center justify-center ${
+                        resetMethod === "phone"
+                          ? "border-green-400"
+                          : "border-gray-300"
+                      }`}
+                    >
+                      {resetMethod === "phone" && (
+                        <span className="w-2.5 h-2.5 rounded-full bg-gradient-to-r from-green-400 to-[#B6F500]" />
+                      )}
+                    </span>
+                    <span className="text-xs text-gray-700">
+                      Telepon
+                    </span>
+                  </label>
+                </div>
+              </div>
+
+              <AnimatePresence mode="wait">
+                {resetMethod === "email" ? (
+                  <motion.div
+                    key="email"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <input
+                      type="email"
+                      placeholder={t("forgotPassword.emailPlaceholder")}
+                      className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-300 outline-none"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="phone"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <input
+                      type="tel"
+                      placeholder="Masukkan nomor telepon"
+                      className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-300 outline-none"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             <button

@@ -175,6 +175,10 @@ export class Helper {
         errorMessage = isEnglish
           ? "Email is already registered. Please use a different email or try logging in."
           : "Email sudah terdaftar. Gunakan email lain atau coba login.";
+      } else if (errorText.includes('phone') && errorText.includes('already') || errorText.includes('nomor telepon') && errorText.includes('sudah terdaftar')) {
+        errorMessage = isEnglish
+          ? "Phone number is already registered. Please use a different phone number or try logging in."
+          : "Nomor telepon sudah terdaftar. Gunakan nomor lain atau coba login.";
       } else if (errorText.includes('user') && errorText.includes('not found') || errorText.includes('tidak ditemukan')) {
         errorMessage = isEnglish
           ? "Account not found. Please check your credentials or register first."
@@ -193,6 +197,10 @@ export class Helper {
         errorMessage = isEnglish
           ? "Email is already registered. Please use a different email or try logging in."
           : "Email sudah terdaftar. Gunakan email lain atau coba login.";
+      } else if (messageText.includes('phone') && messageText.includes('already') || messageText.includes('nomor telepon') && messageText.includes('sudah terdaftar')) {
+        errorMessage = isEnglish
+          ? "Phone number is already registered. Please use a different phone number or try logging in."
+          : "Nomor telepon sudah terdaftar. Gunakan nomor lain atau coba login.";
       } else if (messageText.includes('user') && messageText.includes('not found') || messageText.includes('tidak ditemukan')) {
         errorMessage = isEnglish
           ? "Account not found. Please check your credentials or register first."

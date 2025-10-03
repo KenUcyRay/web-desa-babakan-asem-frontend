@@ -17,7 +17,6 @@ export default function Register() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const recaptchaRef = useRef(null);
-  const [loginMethod, setLoginMethod] = useState("email");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [name, setName] = useState("");
@@ -123,90 +122,31 @@ export default function Register() {
             </div>
 
             <div>
-              <div className="flex justify-between items-center mb-1">
-                <label className="block text-gray-700 font-medium">
-                  {loginMethod === "email"
-                    ? t("register.emailLabel")
-                    : t("register.phoneLabel")}
-                </label>
-                <div className="flex gap-4">
-                  <label
-                    className="flex items-center gap-1 cursor-pointer"
-                    onClick={() => setLoginMethod("email")}
-                  >
-                    <span
-                      className={`w-4 h-4 rounded-full border flex items-center justify-center ${
-                        loginMethod === "email"
-                          ? "border-green-400"
-                          : "border-gray-300"
-                      }`}
-                    >
-                      {loginMethod === "email" && (
-                        <span className="w-2.5 h-2.5 rounded-full bg-gradient-to-r from-green-400 to-[#B6F500]" />
-                      )}
-                    </span>
-                    <span className="text-xs text-gray-700">
-                      {t("register.emailLabel")}
-                    </span>
-                  </label>
+              <label className="block text-gray-700 font-medium mb-1">
+                {t("register.emailLabel")} <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="email"
+                placeholder={t("register.emailPlaceholder")}
+                className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-300 outline-none"
+                onChange={(e) => setEmail(e.target.value)}
+                value={email}
+                required
+              />
+            </div>
 
-                  <label
-                    className="flex items-center gap-1 cursor-pointer"
-                    onClick={() => setLoginMethod("phone")}
-                  >
-                    <span
-                      className={`w-4 h-4 rounded-full border flex items-center justify-center ${
-                        loginMethod === "phone"
-                          ? "border-green-400"
-                          : "border-gray-300"
-                      }`}
-                    >
-                      {loginMethod === "phone" && (
-                        <span className="w-2.5 h-2.5 rounded-full bg-gradient-to-r from-green-400 to-[#B6F500]" />
-                      )}
-                    </span>
-                    <span className="text-xs text-gray-700">
-                      {t("register.phoneLabel")}
-                    </span>
-                  </label>
-                </div>
-              </div>
-
-              <AnimatePresence mode="wait">
-                {loginMethod === "email" ? (
-                  <motion.div
-                    key="email"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <input
-                      type="text"
-                      placeholder={t("register.emailPlaceholder")}
-                      className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-300 outline-none"
-                      onChange={(e) => setEmail(e.target.value)}
-                      value={email}
-                    />
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="phone"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <input
-                      type="tel"
-                      placeholder={t("register.phonePlaceholder")}
-                      className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-300 outline-none"
-                      onChange={(e) => setPhone(e.target.value)}
-                      value={phone}
-                    />
-                  </motion.div>
-                )}
-              </AnimatePresence>
+            <div>
+              <label className="block text-gray-700 font-medium mb-1">
+                {t("register.phoneLabel")} <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="tel"
+                placeholder={t("register.phonePlaceholder")}
+                className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-300 outline-none"
+                onChange={(e) => setPhone(e.target.value)}
+                value={phone}
+                required
+              />
             </div>
 
             <div>

@@ -17,6 +17,7 @@ export default function ManageUser() {
   const [form, setForm] = useState({
     name: "",
     email: "",
+    phone_number: "",
     password: "",
     confirm_password: "",
     role: "ADMIN",
@@ -132,6 +133,7 @@ export default function ManageUser() {
     setForm({
       name: "",
       email: "",
+      phone_number: "",
       password: "",
       confirm_password: "",
       role: "REGULAR",
@@ -291,7 +293,7 @@ export default function ManageUser() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Email
+                Email <span className="text-red-500">*</span>
               </label>
               <input
                 type="email"
@@ -299,6 +301,20 @@ export default function ManageUser() {
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-300 focus:border-green-500"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Nomor Telepon <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="tel"
+                placeholder="Nomor Telepon"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-300 focus:border-green-500"
+                value={form.phone_number}
+                onChange={(e) => setForm({ ...form, phone_number: e.target.value })}
+                required
               />
             </div>
             <div>
@@ -453,6 +469,7 @@ export default function ManageUser() {
               <th className="p-4 font-semibold rounded-tl-2xl">No</th>
               <th className="p-4 font-semibold">Nama</th>
               <th className="p-4 font-semibold">Email</th>
+              <th className="p-4 font-semibold">Telepon</th>
               <th className="p-4 font-semibold">Role</th>
               <th className="p-4 font-semibold text-center rounded-tr-2xl w-40">
                 Aksi
@@ -468,6 +485,7 @@ export default function ManageUser() {
                 <td className="p-4">{index + 1}</td>
                 <td className="p-4 font-medium text-gray-800">{user.name}</td>
                 <td className="p-4 text-gray-600">{user.email}</td>
+                <td className="p-4 text-gray-600">{user.phone_number}</td>
                 <td className="p-4">
                   {user.role && user.role !== "REGULAR" && (
                     <span className="flex items-center gap-2 font-medium">
@@ -494,7 +512,7 @@ export default function ManageUser() {
             ))}
             {users.length === 0 && (
               <tr>
-                <td colSpan="5" className="text-center p-8 text-gray-500">
+                <td colSpan="6" className="text-center p-8 text-gray-500">
                   Belum ada pengguna yang ditambahkan.
                 </td>
               </tr>
@@ -575,6 +593,7 @@ export default function ManageUser() {
                   {user.name}
                 </p>
                 <p className="text-sm text-gray-600 mt-1">{user.email}</p>
+                <p className="text-sm text-gray-600">{user.phone_number}</p>
               </div>
 
               {user.role && user.role !== "REGULAR" && (

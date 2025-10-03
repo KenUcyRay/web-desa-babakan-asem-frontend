@@ -46,8 +46,11 @@ export const AuthProvider = ({ children }) => {
       if (!response.ok) {
         if (response.status === 401 || response.status === 403) {
           // Token expired atau tidak valid, hapus dan logout silent
+          console.warn('Token expired, clearing authentication');
           removeToken();
           setProfile(null);
+        } else {
+          console.error('Profile fetch failed:', response.status, response.statusText);
         }
         setIsLoading(false);
         setIsInitialized(true);
@@ -57,7 +60,13 @@ export const AuthProvider = ({ children }) => {
       const responseBody = await response.json();
       setProfile(responseBody.data);
     } catch (error) {
-      removeToken();
+      console.error('Profile fetch error:', error);
+      // Only remove token if it's a network/auth error
+      if (error.name === 'TypeError' || error.message.includes('fetch')) {
+        console.warn('Network error, keeping token for retry');
+      } else {
+        removeToken();
+      }
       setProfile(null);
     } finally {
       setIsLoading(false);
@@ -78,13 +87,13 @@ export const AuthProvider = ({ children }) => {
       // Coba logout ke server, tapi jangan tunggu jika gagal
       const token = getToken();
       if (token) {
-        const UserApi = await import('../libs/api/UserApi');
-        await UserApi.UserApi.logout(i18n.language).catch(() => {
-          // Ignore server logout error - token mungkin sudah expired
-        });
+        const response = await UserApi.logout(i18n.language);
+        if (!response.ok && response.status !== 401) {
+          console.warn('Server logout failed:', response.status);
+        }
       }
     } catch (error) {
-      // Ignore any error
+      console.warn('Logout request failed:', error.message);
     }
     
     // Hapus token dari semua storage
@@ -92,14 +101,18 @@ export const AuthProvider = ({ children }) => {
     
     // Reset profile state
     setProfile(null);
-    setIsInitialized(true); // Keep initialized as true
+    setIsInitialized(true);
     
     // Show success message if requested
     if (showAlert) {
-      const { alertSuccess } = await import('../libs/alert');
-      await alertSuccess(
-        isEnglish ? "Successfully logged out." : "Berhasil keluar."
-      );
+      try {
+        const { alertSuccess } = await import('../libs/alert');
+        await alertSuccess(
+          isEnglish ? "Successfully logged out." : "Berhasil keluar."
+        );
+      } catch (error) {
+        console.warn('Alert failed:', error);
+      }
     }
     
     // Force redirect

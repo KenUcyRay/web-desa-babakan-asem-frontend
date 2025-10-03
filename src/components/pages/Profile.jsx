@@ -26,19 +26,34 @@ export default function Profile() {
   });
 
   const fetchProfile = async () => {
-    const response = await UserApi.profile(i18n.language);
-    if (!response.ok) return;
+    try {
+      const response = await UserApi.profile(i18n.language);
+      
+      if (!response.ok) {
+        if (response.status === 401) {
+          // Token expired, trigger logout
+          console.warn('Profile fetch: Token expired');
+          await logout(false); // Don't show alert, just logout
+          return;
+        }
+        console.error('Profile fetch failed:', response.status);
+        return;
+      }
 
-    const responseBody = await response.json();
-    setUser(responseBody.data);
+      const responseBody = await response.json();
+      setUser(responseBody.data);
 
-    setFormData({
-      name: responseBody.data.name,
-      email: responseBody.data.email || "",
-      phone: responseBody.data.phone_number || "",
-      password: "",
-      confirm_password: "",
-    });
+      setFormData({
+        name: responseBody.data.name,
+        email: responseBody.data.email || "",
+        phone: responseBody.data.phone_number || "",
+        password: "",
+        confirm_password: "",
+      });
+    } catch (error) {
+      console.error('Profile fetch error:', error);
+      // Don't logout on network errors, just show loading state
+    }
   };
 
   const { logout } = useAuth();
@@ -54,6 +69,7 @@ export default function Profile() {
       // Force logout even if server call fails
       localStorage.clear();
       sessionStorage.clear();
+      setProfile(null);
       window.location.replace('/');
     }
   };
