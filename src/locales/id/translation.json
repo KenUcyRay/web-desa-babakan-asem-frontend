@@ -548,12 +548,15 @@
       "namePlaceholder": "Masukkan nama lengkap",
       "nikLabel": "Nomor Induk Kependudukan (NIK)",
       "nikPlaceholder": "Masukkan NIK",
+      "phoneLabel": "Nomor Telepon",
+      "phonePlaceholder": "Masukkan nomor telepon",
       "typeLabel": "Jenis Surat",
       "typeDefault": "-- Pilih Jenis Surat --",
       "typeOptions": {
         "KTP": "Surat Pengantar KTP",
         "KK": "Surat Pengantar KK",
         "SKCK": "Surat Pengantar SKCK",
+        "PERPINDAHAN_PENDUDUK": "Perpindahan Penduduk",
         "LAINNYA": "Lainnya"
       },
       "noteLabel": "Keterangan Tambahan",

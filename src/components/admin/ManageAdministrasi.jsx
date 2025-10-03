@@ -14,6 +14,18 @@ export default function ManageSuratPengantar() {
   const [isLoading, setIsLoading] = useState(false);
   const perPage = 5;
 
+  // Function to get full letter type name
+  const getFullLetterTypeName = (type) => {
+    const typeNames = {
+      KTP: "Kartu Tanda Penduduk",
+      KK: "Kartu Keluarga", 
+      SKCK: "Surat Keterangan Catatan Kepolisian",
+      PERPINDAHAN_PENDUDUK: "Perpindahan Penduduk",
+      LAINNYA: "Lainnya"
+    };
+    return typeNames[type] || type;
+  };
+
   // Filter data berdasarkan status
   const filteredData = data.filter((item) =>
     filterStatus === "Semua" ? true : item.status === filterStatus
@@ -55,29 +67,33 @@ export default function ManageSuratPengantar() {
   // Fetch data surat pengantar
   const fetchData = async () => {
     setIsLoading(true);
-    const response = await AdministrasiApi.getPengantar(
-      "?size=1000",
-      i18n.language
-    );
-    if (!response.ok) {
-      setIsLoading(false);
+    try {
+      const response = await AdministrasiApi.getPengantar(
+        "?size=1000",
+        i18n.language
+      );
+      if (!response.ok) {
+        setIsLoading(false);
+        return;
+      }
 
-      return;
+      const responseData = await response.json();
+      setData(
+        responseData.data.map((item) => ({
+          id: item.id,
+          nama: item.name || "-",
+          nik: item.nik || "-",
+          phone: item.phone || item.phoneNumber || "-",
+          jenis: item.type || "-",
+          keterangan: item.keterangan || "-",
+          created_at: item.createdAt,
+          status: item.is_pending ? "pending" : "diterima",
+        }))
+      );
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setData([]);
     }
-
-    const responseData = await response.json();
-    setData(
-      responseData.data.map((item) => ({
-        id: item.id,
-        nama: item.name,
-        nik: item.nik,
-        jenis: Helper.formatText(item.type),
-        keterangan: item.keterangan,
-        created_at: item.createdAt,
-        status: item.is_pending ? "pending" : "diterima",
-      }))
-    );
-
     setIsLoading(false);
   };
 
@@ -189,8 +205,8 @@ export default function ManageSuratPengantar() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-lime-50 p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen">
+      <div className="max-w-full">
         {/* Header */}
         <div className="mb-8">
           <div className="relative inline-block">
@@ -329,18 +345,19 @@ export default function ManageSuratPengantar() {
                 <table className="w-full">
                   <thead>
                     <tr className="bg-gradient-to-r from-green-500 to-emerald-600 text-white">
-                      <th className="p-6 text-left font-semibold">
+                      <th className="p-4 text-left font-semibold min-w-[180px]">
                         Nama Pemohon
                       </th>
-                      <th className="p-6 text-left font-semibold">NIK</th>
-                      <th className="p-6 text-left font-semibold">
+                      <th className="p-4 text-left font-semibold min-w-[120px]">NIK</th>
+                      <th className="p-4 text-left font-semibold min-w-[110px]">Telepon</th>
+                      <th className="p-4 text-left font-semibold min-w-[140px]">
                         Jenis Surat
                       </th>
-                      <th className="p-6 text-left font-semibold">
-                        Tanggal Pengajuan
+                      <th className="p-4 text-left font-semibold min-w-[130px]">
+                        Tanggal
                       </th>
-                      <th className="p-6 text-center font-semibold">Status</th>
-                      <th className="p-6 text-center font-semibold">Aksi</th>
+                      <th className="p-4 text-center font-semibold min-w-[100px]">Status</th>
+                      <th className="p-4 text-center font-semibold min-w-[100px]">Aksi</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -352,36 +369,37 @@ export default function ManageSuratPengantar() {
                           }`}
                           onClick={() => toggleExpand(idx)}
                         >
-                          <td className="p-6">
-                            <div className="flex items-center gap-3">
-                              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center text-white font-bold">
+                          <td className="p-4">
+                            <div className="flex items-center gap-2">
+                              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
                                 {item.nama.charAt(0).toUpperCase()}
                               </div>
-                              <span className="font-semibold text-gray-800">
+                              <span className="font-semibold text-gray-800 truncate">
                                 {item.nama}
                               </span>
                             </div>
                           </td>
-                          <td className="p-6 text-gray-600 font-mono">
+                          <td className="p-4 text-gray-600 font-mono text-sm">
                             {item.nik || "-"}
                           </td>
-                          <td className="p-6">
-                            <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                              {item.jenis}
+                          <td className="p-4 text-gray-600 text-sm">
+                            {item.phone || "-"}
+                          </td>
+                          <td className="p-4">
+                            <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap" title={getFullLetterTypeName(item.jenis)}>
+                              {item.jenis === "PERPINDAHAN_PENDUDUK" ? "Perpindahan" : item.jenis}
                             </span>
                           </td>
-                          <td className="p-6 text-gray-600 text-sm">
-                            {new Date(item.created_at).toLocaleString("id-ID", {
+                          <td className="p-4 text-gray-600 text-xs">
+                            {new Date(item.created_at).toLocaleDateString("id-ID", {
+                              day: "2-digit",
+                              month: "short",
                               year: "numeric",
-                              month: "long",
-                              day: "numeric",
-                              hour: "2-digit",
-                              minute: "2-digit",
                             })}
                           </td>
-                          <td className="p-6 text-center">
+                          <td className="p-4 text-center">
                             <span
-                              className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold ${
+                              className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold ${
                                 item.status === "pending"
                                   ? "bg-gradient-to-r from-yellow-100 to-orange-100 text-yellow-800"
                                   : "bg-gradient-to-r from-green-100 to-emerald-100 text-green-800"
@@ -389,18 +407,18 @@ export default function ManageSuratPengantar() {
                             >
                               {item.status === "pending" ? (
                                 <>
-                                  <ClockIcon className="w-4 h-4" />
+                                  <ClockIcon className="w-3 h-3" />
                                   Pending
                                 </>
                               ) : (
                                 <>
-                                  <CheckIcon className="w-4 h-4" />
+                                  <CheckIcon className="w-3 h-3" />
                                   Diterima
                                 </>
                               )}
                             </span>
                           </td>
-                          <td className="p-6 text-center">
+                          <td className="p-4 text-center">
                             {item.status === "pending" && (
                               <button
                                 onClick={(e) => {
@@ -408,10 +426,10 @@ export default function ManageSuratPengantar() {
                                   handleTerima(idx);
                                 }}
                                 disabled={isLoading}
-                                className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-4 py-2 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                                className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-3 py-1 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer text-xs"
                               >
-                                <span className="flex items-center gap-2">
-                                  <CheckIcon className="w-4 h-4" />
+                                <span className="flex items-center gap-1">
+                                  <CheckIcon className="w-3 h-3" />
                                   Terima
                                 </span>
                               </button>
@@ -421,7 +439,7 @@ export default function ManageSuratPengantar() {
 
                         {expandedRow === idx && (
                           <tr>
-                            <td colSpan={6}>
+                            <td colSpan={7}>
                               <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-6 border-l-4 border-green-400">
                                 <div className="grid md:grid-cols-2 gap-4">
                                   <div className="bg-white rounded-xl p-4 shadow-sm">
@@ -433,6 +451,22 @@ export default function ManageSuratPengantar() {
                                     </p>
                                   </div>
                                   <div className="bg-white rounded-xl p-4 shadow-sm">
+                                    <p className="text-sm font-semibold text-gray-700 mb-2">
+                                      Nomor Telepon:
+                                    </p>
+                                    <p className="text-gray-800">
+                                      {item.phone || "-"}
+                                    </p>
+                                  </div>
+                                  <div className="bg-white rounded-xl p-4 shadow-sm md:col-span-2">
+                                    <p className="text-sm font-semibold text-gray-700 mb-2">
+                                      Detail Jenis Surat:
+                                    </p>
+                                    <p className="text-gray-800">
+                                      {getFullLetterTypeName(item.jenis)}
+                                    </p>
+                                  </div>
+                                  <div className="bg-white rounded-xl p-4 shadow-sm md:col-span-2">
                                     <p className="text-sm font-semibold text-gray-700 mb-2">
                                       Keterangan:
                                     </p>
@@ -450,7 +484,7 @@ export default function ManageSuratPengantar() {
 
                     {filteredData.length === 0 && (
                       <tr>
-                        <td colSpan={6} className="text-center p-12">
+                        <td colSpan={7} className="text-center p-12">
                           <div className="flex flex-col items-center gap-4">
                             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
                               <DocumentIcon className="w-8 h-8 text-gray-400" />
@@ -488,6 +522,9 @@ export default function ManageSuratPengantar() {
                           </h3>
                           <p className="text-sm text-gray-500">
                             NIK: {item.nik || "-"}
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            Telepon: {item.phone || "-"}
                           </p>
                         </div>
                       </div>

@@ -14,6 +14,7 @@ export default function SuratPengantar() {
   const [formData, setFormData] = useState({
     name: "",
     nik: "",
+    phone: "",
     type: "",
     keterangan: "",
   });
@@ -31,19 +32,36 @@ export default function SuratPengantar() {
       navigate("/login", { state: { from: location.pathname } });
       return;
     }
-    const response = await AdministrasiApi.createPengantar(
-      formData,
-      i18n.language
-    );
-    const responseBody = await response.json();
-
-    if (!response.ok) {
-      await Helper.errorResponseHandler(responseBody);
+    
+    // Validate required fields
+    if (!formData.name || !formData.nik || !formData.phone || !formData.type || !formData.keterangan) {
+      await alertError("Semua field harus diisi.");
       return;
     }
+    
+    if (formData.phone.length < 8) {
+      await alertError("Nomor telepon minimal 8 karakter.");
+      return;
+    }
+    
+    try {
+      const response = await AdministrasiApi.createPengantar(
+        formData,
+        i18n.language
+      );
+      const responseBody = await response.json();
 
-    await alertSuccess("Pengajuan surat pengantar berhasil dikirim!");
-    navigate("/administrasi");
+      if (!response.ok) {
+        await Helper.errorResponseHandler(responseBody);
+        return;
+      }
+
+      await alertSuccess("Pengajuan surat pengantar berhasil dikirim!");
+      navigate("/administrasi");
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      await alertError("Terjadi kesalahan saat mengirim formulir. Silakan coba lagi.");
+    }
   };
 
   return (
@@ -79,6 +97,7 @@ export default function SuratPengantar() {
                   onChange={handleChange}
                   placeholder={t("formLetter.form.namePlaceholder")}
                   className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 bg-gray-50 focus:bg-white"
+                  required
                 />
               </div>
 
@@ -97,6 +116,27 @@ export default function SuratPengantar() {
                   onChange={handleChange}
                   placeholder={t("formLetter.form.nikPlaceholder")}
                   className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 bg-gray-50 focus:bg-white"
+                  required
+                />
+              </div>
+
+              {/* Phone */}
+              <div className="space-y-2 md:col-span-2">
+                <label className="flex items-center text-gray-700 font-semibold text-sm">
+                  <svg className="w-4 h-4 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                  </svg>
+                  {t("formLetter.form.phoneLabel")}
+                </label>
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  placeholder={t("formLetter.form.phonePlaceholder")}
+                  className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 bg-gray-50 focus:bg-white"
+                  required
+                  minLength={8}
                 />
               </div>
             </div>
@@ -109,24 +149,33 @@ export default function SuratPengantar() {
                 </svg>
                 {t("formLetter.form.typeLabel")}
               </label>
-              <select
-                name="type"
-                value={formData.type}
-                onChange={handleChange}
-                className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 bg-gray-50 focus:bg-white appearance-none cursor-pointer"
-              >
-                <option value="">{t("formLetter.form.typeDefault")}</option>
-                <option value="KTP">
-                  {t("formLetter.form.typeOptions.KTP")}
-                </option>
-                <option value="KK">{t("formLetter.form.typeOptions.KK")}</option>
-                <option value="SKCK">
-                  {t("formLetter.form.typeOptions.SKCK")}
-                </option>
-                <option value="LAINNYA">
-                  {t("formLetter.form.typeOptions.LAINNYA")}
-                </option>
-              </select>
+              <div className="relative">
+                <select
+                  name="type"
+                  value={formData.type}
+                  onChange={handleChange}
+                  className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 pr-10 focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 bg-gray-50 focus:bg-white appearance-none cursor-pointer"
+                  required
+                >
+                  <option value="">{t("formLetter.form.typeDefault")}</option>
+                  <option value="KTP">
+                    {t("formLetter.form.typeOptions.KTP")}
+                  </option>
+                  <option value="KK">{t("formLetter.form.typeOptions.KK")}</option>
+                  <option value="SKCK">
+                    {t("formLetter.form.typeOptions.SKCK")}
+                  </option>
+                  <option value="PERPINDAHAN_PENDUDUK">
+                    {t("formLetter.form.typeOptions.PERPINDAHAN_PENDUDUK")}
+                  </option>
+                  <option value="LAINNYA">
+                    {t("formLetter.form.typeOptions.LAINNYA")}
+                  </option>
+                </select>
+                <svg className="w-5 h-5 text-gray-400 absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
             </div>
 
             {/* Keterangan */}
@@ -142,8 +191,9 @@ export default function SuratPengantar() {
                 value={formData.keterangan}
                 onChange={handleChange}
                 placeholder={t("formLetter.form.notePlaceholder")}
-                rows="5"
+                rows="4"
                 className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 bg-gray-50 focus:bg-white resize-none"
+                required
               ></textarea>
             </div>
 

@@ -589,12 +589,15 @@
       "namePlaceholder": "Enter full name",
       "nikLabel": "National Identity Number (NIK)",
       "nikPlaceholder": "Enter your NIK",
+      "phoneLabel": "Phone Number",
+      "phonePlaceholder": "Enter your phone number",
       "typeLabel": "Letter Type",
       "typeDefault": "-- Select Letter Type --",
       "typeOptions": {
         "KTP": "KTP Recommendation Letter",
         "KK": "KK Recommendation Letter",
         "SKCK": "SKCK Recommendation Letter",
+        "PERPINDAHAN_PENDUDUK": "Population Relocation",
         "LAINNYA": "Others"
       },
       "noteLabel": "Additional Notes",

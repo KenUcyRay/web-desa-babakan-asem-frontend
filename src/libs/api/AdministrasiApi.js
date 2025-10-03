@@ -7,12 +7,19 @@ export class AdministrasiApi {
         Accept: "application/json",
         "Accept-Language": language,
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify({
+        name: data.name,
+        nik: data.nik,
+        phone: data.phone,          // ✅ WAJIB
+        type: data.type,
+        keterangan: data.keterangan,
+      }),
     });
   }
 
   static async getPengantar(query = "", language) {
-    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    const token =
+      localStorage.getItem("token") || sessionStorage.getItem("token");
     return fetch(`${import.meta.env.VITE_NEW_BASE_URL}/admin/administrations`, {
       method: "GET",
       credentials: "include",
@@ -26,7 +33,8 @@ export class AdministrasiApi {
   }
 
   static async updatePengantar(id, language) {
-    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    const token =
+      localStorage.getItem("token") || sessionStorage.getItem("token");
     return fetch(
       `${import.meta.env.VITE_NEW_BASE_URL}/admin/administrations/${id}`,
       {
