@@ -202,13 +202,13 @@ export default function SuratPengantar() {
               <button
                 type="button"
                 onClick={() => navigate(-1)}
-                className="flex-1 px-8 py-4 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold transition-all duration-200 border-2 border-gray-200 hover:border-gray-300"
+                className="flex-1 px-8 py-4 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold transition-all duration-200 border-2 border-gray-200 hover:border-gray-300 cursor-pointer"
               >
                 {t("formLetter.form.cancel")}
               </button>
               <button
                 type="submit"
-                className="flex-1 px-8 py-4 rounded-xl bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                className="flex-1 px-8 py-4 rounded-xl bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 cursor-pointer"
               >
                 {t("formLetter.form.submit")}
               </button>
